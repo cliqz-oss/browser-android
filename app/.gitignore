@@ -1,0 +1,4 @@
+/build
+*.apk
+manifest-merger-release-report.txt
+google-services.json

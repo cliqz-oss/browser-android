@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:fragment="com.cliqz.browser.settings.GeneralSettingsFragment"
+        android:title="@string/settings_general" />
+    <!-- <header
+        android:fragment="com.cliqz.browser.fragment.DisplaySettingsFragment"
+        android:title="@string/settings_display" /> -->
+    <header
+        android:fragment="com.cliqz.browser.settings.PrivacySettingsFragment"
+        android:title="@string/settings_privacy" />
+    <header
+        android:fragment="com.cliqz.browser.settings.AdvancedSettingsFragment"
+        android:title="@string/settings_advanced" />
+    <header
+        android:fragment="com.cliqz.browser.settings.HumanWebSettings"
+        android:title="@string/humanweb" />
+    <header
+        android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
+        android:title="@string/settings_about"
+        android:summary="@string/settings_about_explain" />
+    <header
+        android:title="@string/imprint"
+        android:id="@+id/imprint" />
+    <header
+        android:summary="@string/feedback_at_cliqz_dot_com"
+        android:title="@string/contact_cliqz"
+        android:id="@+id/feedback" />
+
+</preference-headers>

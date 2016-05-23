@@ -1,0 +1,109 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+def props = project.properties.withDefault { "" }
+
+// Release sginature configuration if we have the environment correctly setted
+if (project.hasProperty('Browser.storeFile')) {
+    android {
+        signingConfigs {
+            release {
+                storeFile file(props['Browser.storeFile'])
+                storePassword props['Browser.storePassword']
+                keyAlias props['Browser.keyAlias']
+                keyPassword props['Browser.keyPassword']
+            }
+        }
+
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+def extPath = file('../external/extension')
+def downloadFile = new File(extPath, '.download')
+def extZip = new File(extPath, 'extension_latest.zip')
+
+task downloadExtension {
+  onlyIf {
+    !extZip.exists()
+  }
+  doLast {
+    def url = 'https://s3.amazonaws.com/cdn.cliqz.com/mobile/extension_stable/extension_latest.zip'
+    def f = extZip.newOutputStream()
+    f << new URL(url).openStream()
+    f.close()
+  }
+}
+
+task installExtension(type: Copy) {
+  onlyIf {
+    file('../external/extension/.download').exists() && !file('../external/extension/build').exists();
+  }
+  dependsOn downloadExtension
+  from zipTree(extZip)
+  into file(extPath)
+}
+
+def compileAdHostsList(File outputDir) {
+    File parent = project.buildscript.sourceFile.parentFile
+    File adFile = new File(parent, 'ad_servers.txt')
+    // Pattern p = ~/((([1-2]\d\d)|([1-9]\d)|(\d))\.?){4}\s+([^(localhost)].*)/
+    Pattern p = ~/^127\.0\.0\.1\s((localhost.*)|(.*))/
+    new File(outputDir, 'adhosts.txt').withWriter { writer ->
+        adFile.eachLine { line ->
+            Matcher matcher = p.matcher(line)
+            if (matcher.matches()) {
+                def host = matcher.group(3)
+                if (host != null) {
+                  writer.println(host)
+                }
+            }
+        }
+    }
+}
+
+afterEvaluate { project ->
+    project.tasks.each { tazk ->
+        if (tazk.name =~ /merge.*[^(Test)]Assets/) {
+            tazk << {
+                compileAdHostsList(tazk.outputDir)
+            }
+        }
+        if (tazk.name =~ /assemble.*/) {
+          tazk.dependsOn installExtension
+        }
+    }
+}
+
+// Default configuration for GCM (via Amazon SNS) and debug signing
+android {
+    def topics = props["Browser.topicARNs"].tokenize(',').collect { "\"${it}\"" }.join(',')
+
+    defaultConfig {
+        buildConfigField 'String', 'APPLICATION_ARN', "\"${props['Browser.applicationARN']}\""
+        buildConfigField 'String[]', 'TOPIC_ARNS', "new String[] { ${topics} }"
+        buildConfigField 'String', 'AMAZON_ACCOUNT_ID', "\"${props['Browser.amazonAccountID']}\""
+        buildConfigField 'String', 'AMAZON_IDENTITY_POOL_ID', "\"${props['Browser.amazonIdentityPoolID']}\""
+        buildConfigField 'String', 'AMAZON_UNAUTH_ROLE_ARN', "\"${props['Browser.amazonUnauthRoleARN']}\""
+        buildConfigField 'String', 'AMAZON_AUTH_ROLE_ARN', "\"${props['Browser.amazonAuthRoleARN']}\""
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+            keyAlias 'debug'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+}

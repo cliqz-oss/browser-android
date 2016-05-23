@@ -1,0 +1,140 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.google.gms.google-services'
+apply from: 'cliqz.gradle'
+
+android.metaClass.baseVersionCode = 43
+android.metaClass.baseVersionName = "0.7.0"
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+    defaultConfig {
+        targetSdkVersion 23
+
+        buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
+        buildConfigField "boolean", "FULL_VERSION", "true"
+
+        applicationId "com.cliqz.browser"
+        testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            shrinkResources false
+            proguardFiles 'proguard-project.txt'
+            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA02"'
+        }
+
+        release {
+            minifyEnabled false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            shrinkResources true
+            proguardFiles 'proguard-project.txt'
+            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude '.readme'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+    }
+    sourceSets {
+        main {
+            assets.srcDirs += [
+                    '../external/extension/build/mobile',
+            ]
+        }
+    }
+    productFlavors {
+        standard {
+            versionCode baseVersionCode+1
+            versionName baseVersionName
+            minSdkVersion 21
+            splits {
+                abi {
+                    enable true
+                    reset()
+                    include 'armeabi-v7a', 'x86'
+                    universalApk true
+                }
+            }
+        }
+        xwalk {
+            versionCode baseVersionCode
+            versionName baseVersionName+"xw"
+            minSdkVersion 16
+            splits {
+                abi {
+                    enable true
+                    reset()
+                    include 'armeabi-v7a', 'x86'
+                    universalApk true
+                }
+            }
+        }
+    }
+}
+
+dexcount {
+    includeClasses = false
+    includeFieldCount = false
+    printAsTree = true
+    orderByMethodCount = true
+    verbose = false
+}
+
+dependencies {
+    // support libraries
+    compile 'com.android.support:palette-v7:23.0.1'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    // Gson
+    compile 'com.google.code.gson:gson:2.6.1'
+    // html parsing fo reading mode
+    compile 'org.jsoup:jsoup:1.8.3'
+    // event bus
+    compile 'com.squareup:otto:1.3.8'
+    // dependency injection
+    compile 'com.google.dagger:dagger:2.0.1'
+    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    provided 'javax.annotation:jsr250-api:1.0'
+    // view binding
+    compile 'com.jakewharton:butterknife:7.0.1'
+    // proxy support
+    compile 'net.i2p.android:client:0.7'
+    // Use the following code to update the libnetcipher submodule
+    // git submodule foreach git reset --hard
+    // git submodule update --remote
+    // compile project(':libnetcipher')
+    compile 'info.guardianproject.netcipher:netcipher:1.2.+'
+    // memory leak analysis
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    provided 'javax.annotation:jsr250-api:1.0'
+    // Google Play Services
+    compile "com.google.android.gms:play-services-gcm:8.3.0"
+
+    // Testing-only dependencies
+    // Force usage of support annotations in the test app, since it is internally used by the runner module.
+    compile 'com.android.support:support-annotations:23.1.1'
+    androidTestCompile 'com.android.support:support-annotations:23.1.1'
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    androidTestCompile 'com.android.support.test:rules:0.4'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2'
+
+    // xwalk webview
+    xwalkCompile 'org.xwalk:xwalk_core_library:14.43.343.25'
+    
+    // AWS SNS SDK
+    compile 'com.amazonaws:aws-android-sdk-sns:2.+'
+    compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
+}

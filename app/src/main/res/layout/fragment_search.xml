@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:elevation="2dp"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/local_container" />
+
+    <acr.browser.lightning.view.AnimatedProgressBar
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        custom:backgroundColor="#00000000"
+        custom:bidirectionalAnimate="false"
+        custom:progressColor="?attr/colorAccent" />
+
+</FrameLayout>

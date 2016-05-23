@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="whatisit"
+        android:title="@string/what_is_humanweb" />
+
+    <CheckBoxPreference
+        android:key="humanweb"
+        android:title="@string/enable_human_web" />
+</PreferenceScreen>

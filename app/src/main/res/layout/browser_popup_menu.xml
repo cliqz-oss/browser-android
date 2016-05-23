@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:id="@+id/browser_popup_scrollview"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light">
+
+    <LinearLayout
+        android:id="@+id/browser_popup_entries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/action_add_bookmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_add_bookmark"
+                android:layout_gravity="center"
+                android:background="?attr/actionBarItemBackground"
+                android:src="@drawable/ic_action_star"/>
+
+            <ImageView
+                android:id="@+id/action_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_refresh"
+                android:src="@drawable/ic_action_refresh"
+                android:background="?attr/actionBarItemBackground" />
+
+            <ImageView
+                android:id="@+id/action_forward"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/action_forward"
+                android:src="@drawable/ic_action_forward"
+                android:background="?attr/actionBarItemBackground" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/action_new_tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_new_tab"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_incognito"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_incognito"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_share"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_share"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_reading_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reading_mode"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_copy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_copy"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_find"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_find"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_history"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_bookmarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_bookmarks"
+            style="@style/popupMenu.textViewStyle"/>
+
+        <TextView
+            android:id="@+id/action_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            style="@style/popupMenu.textViewStyle"/>
+    </LinearLayout>
+</ScrollView>

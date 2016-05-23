@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <!-- TODO we have no new tab currently
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="allow_new_window"
+            android:summary="@string/recommended"
+            android:title="@string/window" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="restore_tabs"
+            android:title="@string/restore" />  -->
+        <Preference
+            android:key="agent"
+            android:title="@string/agent" />
+        <Preference
+            android:key="text_encoding"
+            android:title="@string/text_encoding" />
+        <!-- TODO this is our custom urlbar currently, with our own logic
+        <Preference
+            android:key="url_contents"
+            android:title="@string/url_contents" /> -->
+        <Preference
+            android:key="download"
+            android:title="@string/download" />
+        <Preference
+            android:key="proxy"
+            android:title="@string/http_proxy" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cb_javascript"
+            android:title="@string/java" />
+
+</PreferenceScreen>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:padding="8dp">
+
+    <com.cliqz.browser.widget.AutocompleteEditText
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/searchBackground"
+        android:gravity="left|center_vertical"
+        android:hint="@string/search_hint"
+        android:imeOptions="actionGo"
+        android:inputType="textUri"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="@color/gray_dark"
+        android:textColorHint="@color/hint_text"
+        android:textCursorDrawable="@null" >
+    </com.cliqz.browser.widget.AutocompleteEditText>
+
+</RelativeLayout>

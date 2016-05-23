@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="no-referrer" />
+    <script>
+        "use strict";
+
+        function navigateTo(state) {
+          history.replaceState(state, 'trampoline', 'goto.html');
+          setTimeout(function() {
+            window.location.href = state.url;
+          }, 0);
+        }
+
+        /*
+         * The trampoline helps us to build a coherent navigation experience, it's loaded in the
+         * "browser" WebView and works like a place holder for the "search" WebView.
+         */
+        function redirect() {
+          var state = {}
+          if (history.state == null) {
+            var queryStr = window.location.search.substring(1).split('+').join(' ');
+            state = queryStr.split('&')
+                .reduce(function(acc, par) {
+                    var kv = par.split('=');
+                    acc[kv[0]] = decodeURIComponent(kv[1]);
+                    return acc;
+                }, {});
+            state.status = Boolean(state.h) ? 'history_result' : 'search_result';
+          } else {
+            var s = history.state;
+            state = {
+              url: s.url,
+              r: s.r,
+              status: s.status,
+              q: s.q,
+              h: s.h
+            }
+          }
+
+          // At this point we must have an url inside the state, if not just display
+          // the search page and break the history flow. This happens on android < 4.3.
+          if (state.url == undefined) {
+            state.url = "";
+            state.status = "search";
+            state.q = "";
+          }
+
+          switch (state.status) {
+            case 'search_result':
+              state.status = 'search';
+              navigateTo(state);
+              break;
+            case 'history_result':
+              state.status = 'history';
+              navigateTo(state);
+              break;
+            case 'search':
+              if (Boolean(state.r)) {
+                var oreq = new XMLHttpRequest();
+                oreq.open('GET', 'cliqz://trampoline/close.html');
+                oreq.send();
+                return;
+              }
+              var query = state.q;
+              var oreq = new XMLHttpRequest();
+              oreq.open("GET", "cliqz://trampoline/search.html?q=" + encodeURIComponent(query));
+              oreq.send();
+              break;
+            case 'history':
+              var oreq = new XMLHttpRequest();
+              oreq.open("GET", "cliqz://trampoline/history.html");
+              oreq.send();
+              break;
+            default:
+              console.log("Default case hitted")
+          }
+        }
+    </script>
+    <title></title>
+</head>
+<body onload="redirect()">
+</body>
+</html>

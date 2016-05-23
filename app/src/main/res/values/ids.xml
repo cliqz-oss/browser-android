@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="menu_cliqz_search_item" type="id">120114</item>
+    <item name="action_del_bookmark" type="id">130114</item>
+    <item name="main_activity_content" type="id">82451</item>
+    <item name="new_tab_menu_button" type="id"/>
+    <item name="new_incognito_tab_menu_button" type="id"/>
+    <item name="copy_link_menu_button" type="id"/>
+    <item name="add_to_favourites_menu_button" type="id"/>
+    <item name="settings_menu_button" type="id"/>
+    <item name="contact_cliqz_menu_button" type="id"/>
+    <item name="save_link_menu_button" type="id"/>
+</resources>
