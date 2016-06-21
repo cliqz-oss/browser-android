@@ -23,10 +23,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
@@ -69,23 +68,20 @@ public class LightningView implements ILightningTab {
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     final boolean mIsIncognitoTab;
-    private GestureDetector mGestureDetector;
-    private final Activity mActivity;
+    private final Activity activity;
     private static String mHomepage;
     private static String mDefaultUserAgent;
     private final Paint mPaint = new Paint();
     private boolean isForegroundTab;
     private boolean mInvertPage = false;
     private boolean mToggleDesktop = false;
-    private static float mMaxFling;
     private static final int API = android.os.Build.VERSION.SDK_INT;
-    private static final int SCROLL_UP_THRESHOLD = Utils.dpToPx(10);
     private final String mId;
     private String mUrl;
 //    // TODO fix so that mWebpageBitmap can be static - static changes the icon when switching from light to dark and then back to light
 //    private Bitmap mWebpageBitmap;
 //    private boolean mTextReflow = false;
-    public boolean clicked = false;
+    boolean clicked = false;
 
     /**
      * This prevent history point creation when navigating back and forward. It's used by {@link
@@ -101,7 +97,7 @@ public class LightningView implements ILightningTab {
             0, 0, -1.0f, 0, 255, // blue
             0, 0, 0, 1.0f, 0 // alpha
     };
-    private final WebViewHandler mWebViewHandler = new WebViewHandler(this);
+    final WebViewHandler webViewHandler = new WebViewHandler(this);
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
     //Id of the current page in the history database
@@ -134,14 +130,12 @@ public class LightningView implements ILightningTab {
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
         ((MainActivity)activity).mActivityComponent.inject(this);
-        mActivity = activity;
+        this.activity = activity;
         mId = uniqueId;
         mWebView = /* overrideWebView != null ? overrideWebView : */new CliqzWebView(activity);
         mIsIncognitoTab = isIncognito;
         Boolean useDarkTheme = mPreferences.getUseTheme() != 0 || isIncognito;
         mTitle = new LightningViewTitle(activity, useDarkTheme);
-
-        mMaxFling = ViewConfiguration.get(activity).getScaledMaximumFlingVelocity();
 
         mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
         mWebView.setFocusableInTouchMode(true);
@@ -164,8 +158,7 @@ public class LightningView implements ILightningTab {
         mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
         mWebView.setWebViewClient(new LightningWebClient(activity, this));
         mWebView.setDownloadListener(new LightningDownloadListener(activity));
-        mGestureDetector = new GestureDetector(activity, new CustomGestureListener());
-        //mWebView.setOnTouchListener(new TouchListener());
+        LightningViewTouchHandler.attachTouchListener(this);
         mDefaultUserAgent = mWebView.getSettings().getUserAgentString();
         initializeSettings(mWebView.getSettings(), activity);
 //        mUrl = "about:blank";
@@ -177,7 +170,7 @@ public class LightningView implements ILightningTab {
 //            return;
 //        }
 //        if (mHomepage.startsWith("about:home")) {
-//            mWebView.loadUrl(StartPage.getHomepage(mActivity), mRequestHeaders);
+//            mWebView.loadUrl(StartPage.getHomepage(activity), mRequestHeaders);
 //        } else if (mHomepage.startsWith("about:bookmarks")) {
 //            loadBookmarkpage();
 //        } else {
@@ -191,9 +184,9 @@ public class LightningView implements ILightningTab {
     public void loadBookmarkpage() {
         if (mWebView == null)
             return;
-        Bitmap folderIcon = ThemeUtils.getThemedBitmap(mActivity, R.drawable.ic_folder, false);
+        Bitmap folderIcon = ThemeUtils.getThemedBitmap(activity, R.drawable.ic_folder, false);
         FileOutputStream outputStream = null;
-        File image = new File(mActivity.getCacheDir(), "folder.png");
+        File image = new File(activity.getCacheDir(), "folder.png");
         try {
             outputStream = new FileOutputStream(image);
             folderIcon.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
@@ -203,10 +196,11 @@ public class LightningView implements ILightningTab {
         } finally {
             Utils.close(outputStream);
         }
-        File bookmarkWebPage = new File(mActivity.getFilesDir(), Constants.BOOKMARKS_FILENAME);
+        File bookmarkWebPage = new File(activity.getFilesDir(), Constants.BOOKMARKS_FILENAME);
 
         // BrowserApp.getAppComponent().getBookmarkPage().buildBookmarkPage(null);
         mWebView.loadUrl(Constants.FILE + bookmarkWebPage, mRequestHeaders);
+
     }
 
     /**
@@ -446,14 +440,14 @@ public class LightningView implements ILightningTab {
 
     public synchronized void onPause() {
         if (mWebView != null) {
-            mWebView.onPause();
+            //mWebView.onPause();
         }
     }
 
     public synchronized void onResume() {
         if (mWebView != null) {
             Log.w(LightningView.class.getSimpleName(), "Resuming");
-            initializePreferences(mWebView.getSettings(), mActivity);
+            initializePreferences(mWebView.getSettings(), activity);
             mWebView.onResume();
         }
     }
@@ -546,7 +540,7 @@ public class LightningView implements ILightningTab {
 
     public synchronized void pauseTimers() {
         if (mWebView != null) {
-            mWebView.onPause();
+           // mWebView.onPause();
         }
     }
 
@@ -595,7 +589,7 @@ public class LightningView implements ILightningTab {
     }
 
     @SuppressLint("NewApi")
-    public synchronized void find(String text) {
+    public synchronized void findInPage(String text) {
         if (mWebView != null) {
             if (API >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 mWebView.findAllAsync(text);
@@ -608,7 +602,13 @@ public class LightningView implements ILightningTab {
 
     public synchronized void onDestroy() {
         if (mWebView != null) {
-            deletePreview();
+            //deletePreview();
+            // Check to make sure the WebView has been removed
+            // before calling destroy() so that a memory leak is not created
+            ViewGroup parent = (ViewGroup) mWebView.getParent();
+            if (parent != null) {
+                parent.removeView(mWebView);
+            }
             mWebView.stopLoading();
             mWebView.onPause();
             mWebView.clearHistory();
@@ -683,36 +683,36 @@ public class LightningView implements ILightningTab {
 //        if (currentUrl != null && currentUrl.startsWith(Constants.FILE)) {
 //            if (currentUrl.endsWith(HistoryPage.FILENAME)) {
 //                if (url != null) {
-//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(mActivity, url);
+//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(activity, url);
 //                } else if (result != null && result.getExtra() != null) {
 //                    final String newUrl = result.getExtra();
-//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(mActivity, newUrl);
+//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(activity, newUrl);
 //                }
 //            } else if (currentUrl.endsWith(Constants.BOOKMARKS_FILENAME)) {
 //                if (url != null) {
-//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(mActivity, url);
+//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(activity, url);
 //                } else if (result != null && result.getExtra() != null) {
 //                    final String newUrl = result.getExtra();
-//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(mActivity, newUrl);
+//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(activity, newUrl);
 //                }
 //            }
 //        } else {
             if (url != null) {
                 if (result != null) {
                     if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                        mBookmarksDialogBuilder.showLongPressImageDialog(mActivity, url, getUserAgent());
+                        mBookmarksDialogBuilder.showLongPressImageDialog(activity, url, getUserAgent());
                     } else {
-                        mBookmarksDialogBuilder.showLongPressLinkDialog(mActivity, url, getUserAgent());
+                        mBookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
                     }
                 } else {
-                    mBookmarksDialogBuilder.showLongPressLinkDialog(mActivity, url, getUserAgent());
+                    mBookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
                 }
             } else if (result != null && result.getExtra() != null) {
                 final String newUrl = result.getExtra();
                 if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    mBookmarksDialogBuilder.showLongPressImageDialog(mActivity, newUrl, getUserAgent());
+                    mBookmarksDialogBuilder.showLongPressImageDialog(activity, newUrl, getUserAgent());
                 } else {
-                    mBookmarksDialogBuilder.showLongPressLinkDialog(mActivity, newUrl, getUserAgent());
+                    mBookmarksDialogBuilder.showLongPressLinkDialog(activity, newUrl, getUserAgent());
                 }
             }
 //        }
@@ -788,98 +788,7 @@ public class LightningView implements ILightningTab {
         }
     }
 
-//    private class TouchListener implements OnTouchListener {
-//
-//        float mLocation;
-//        float mY;
-//        int mAction;
-//
-//        @SuppressLint("ClickableViewAccessibility")
-//        @Override
-//        public boolean onTouch(View view, MotionEvent motionEvent) {
-//            if (view == null)
-//                return false;
-//
-//            if (!view.hasFocus()) {
-//                view.requestFocus();
-//            }
-//            mAction = motionEvent.getAction() & MotionEvent.ACTION_MASK;
-//            mY = motionEvent.getY();
-//            if (mAction == MotionEvent.ACTION_DOWN) {
-//                mLocation = mY;
-//                clicked = true;
-//            } else if (mAction == MotionEvent.ACTION_POINTER_UP && motionEvent.getPointerCount() == 2) {
-//                int pointerIndex = motionEvent.getActionIndex(); //index of the finger lifted
-//                int lastPointerIndex = pointerIndex ^ 1; //index of the last finger, it is always 0 or 1
-//                mLocation = motionEvent.getY(lastPointerIndex); //update the current location of the finger
-//            } else if (mAction == MotionEvent.ACTION_UP) {
-//                final float distance = (mY - mLocation);
-//                if (distance > SCROLL_UP_THRESHOLD && view.getScrollY() < SCROLL_UP_THRESHOLD) {
-//                  //  mEventBus.post(new BrowserEvents.ShowToolBar());
-//                } else if (distance < -SCROLL_UP_THRESHOLD) {
-//                   // mEventBus.post(new BrowserEvents.HideToolBar());
-//                }
-//                mLocation = 0;
-//            }
-//            mGestureDetector.onTouchEvent(motionEvent);
-//            return false;
-//        }
-//    }
-
-    private class CustomGestureListener extends SimpleOnGestureListener {
-
-//        @Override
-//        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//            int power = (int) (velocityY * 100 / mMaxFling);
-//            if (power < -10) {
-//                mEventBus.post(new BrowserEvents.HideToolBar());
-//            } else if (power > 15) {
-//                mEventBus.post(new BrowserEvents.ShowToolBar());
-//            }
-//            return super.onFling(e1, e2, velocityX, velocityY);
-//        }
-
-        /**
-         * Without this, onLongPress is not called when user is zooming using
-         * two fingers, but is when using only one.
-         * <p/>
-         * The required behaviour is to not trigger this when the user is
-         * zooming, it shouldn't matter how much fingers the user's using.
-         */
-        private boolean mCanTriggerLongPress = true;
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            if (mCanTriggerLongPress) {
-                Message msg = mWebViewHandler.obtainMessage();
-                if (msg != null) {
-                    msg.setTarget(mWebViewHandler);
-                    mWebView.requestFocusNodeHref(msg);
-                }
-            }
-        }
-
-        /**
-         * Is called when the user is swiping after the doubletap, which in our
-         * case means that he is zooming.
-         */
-        @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            mCanTriggerLongPress = false;
-            return false;
-        }
-
-        /**
-         * Is called when something is starting being pressed, always before
-         * onLongPress.
-         */
-        @Override
-        public void onShowPress(MotionEvent e) {
-            mCanTriggerLongPress = true;
-        }
-    }
-
-    private static class WebViewHandler extends Handler {
+    static class WebViewHandler extends Handler {
 
         private WeakReference<LightningView> mReference;
 
@@ -914,7 +823,7 @@ public class LightningView implements ILightningTab {
         mWebView.draw(canvas);
         mWebView.scrollTo(scrollX, scrollY);
         try {
-            File directory = mActivity.getDir(Constants.TABS_SCREENSHOT_FOLDER_NAME, Context.MODE_PRIVATE);
+            File directory = activity.getDir(Constants.TABS_SCREENSHOT_FOLDER_NAME, Context.MODE_PRIVATE);
             File file = new File(directory, mId + ".jpeg");
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fileOutputStream);
@@ -930,7 +839,7 @@ public class LightningView implements ILightningTab {
 
     //deletes the screenshot of the tab being deleted.
     private void deletePreview() {
-        File directory = mActivity
+        File directory = activity
                 .getDir(Constants.TABS_SCREENSHOT_FOLDER_NAME, Context.MODE_PRIVATE);
         File file = new File(directory, mId + ".jpeg");
         file.delete();

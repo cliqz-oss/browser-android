@@ -10,4 +10,6 @@
     <item name="settings_menu_button" type="id"/>
     <item name="contact_cliqz_menu_button" type="id"/>
     <item name="save_link_menu_button" type="id"/>
+    <item name="show_tab_manager_menu_button" type="id"/>
+    <item name="search_on_page_menu_button" type="id"/>
 </resources>

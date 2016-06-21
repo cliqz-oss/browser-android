@@ -7,8 +7,8 @@ import android.os.Debug;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.BuildConfig;
+import com.cliqz.browser.main.CliqzBrowserState;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +31,7 @@ public class SearchWebView extends BaseWebView {
     private String mLastQuery;
     private boolean mProfilingRunning = false;
     private boolean mSearchWithLocation = false;
+    private CliqzBrowserState currentTabState;
 
     public SearchWebView(Context context) {
         super(context);
@@ -93,13 +94,12 @@ public class SearchWebView extends BaseWebView {
     @Override
     void extensionReady() {
         super.extensionReady();
-        initExtensionPreferences();
         setDefaultSearchEngine();
         telemetry.sendStartingSignals("cards", "cold");
         // We are not sure this is called in onResume, especially if we were
-        if (shouldShowHomePage()) {
+        /*if (shouldShowHomePage()) {
             showHomepage();
-            state.setTimestamp(System.currentTimeMillis());
+            currentTabState.setTimestamp(System.currentTimeMillis());
         } else if (mLastQuery != null && !mLastQuery.isEmpty()) {
             performSearch(mLastQuery);
         } /*  TODO: Why?
@@ -109,20 +109,24 @@ public class SearchWebView extends BaseWebView {
         */
     }
 
-    private void performSearch(String query) {
+    public void setCurrentTabState(CliqzBrowserState currentTabState) {
+        this.currentTabState = currentTabState;
+    }
+
+    public void performSearch(String query) {
         mLastQuery = query;
         final String lowerQuery = query.toLowerCase();
-        state.setQuery(lowerQuery);
+        currentTabState.setQuery(lowerQuery);
         final Location location = locationCache.getLastLocation();
         final boolean hasLocation = mSearchWithLocation && location != null;
         final double lat = hasLocation ? location.getLatitude() : 0.0;
         final double lon = hasLocation ? location.getLongitude() : 0.0;
         if (hasLocation) {
-            state.setLatitude((float) lat);
-            state.setLongitude((float) lon);
+            currentTabState.setLatitude((float) lat);
+            currentTabState.setLongitude((float) lon);
         } else {
-            state.setLongitude(Float.MAX_VALUE);
-            state.setLatitude(Float.MAX_VALUE);
+            currentTabState.setLongitude(Float.MAX_VALUE);
+            currentTabState.setLatitude(Float.MAX_VALUE);
         }
         final String call = String.format(Locale.US,
                 "jsAPI.search('%1$s', %2$b, %3$.6f, %4$.6f)",
@@ -143,18 +147,18 @@ public class SearchWebView extends BaseWebView {
 //                showHomepage();
 //            }
             }
-        }
+    }
 
     private void initPreferences() {
         mSearchWithLocation = preferenceManager.getLocationEnabled();
     }
 
-    private void initExtensionPreferences() {
+    public void initExtensionPreferences() {
         final JSONObject preferences = new JSONObject();
         try {
             preferences.put("adultContentFilter",
                     preferenceManager.getBlockAdultContent() ? "moderate" : "liberal");
-            preferences.put("incognito", state.isIncognito());
+            preferences.put("incognito", currentTabState.isIncognito() );
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -170,32 +174,28 @@ public class SearchWebView extends BaseWebView {
         }
     }
 
-    private boolean shouldShowHomePage() {
-        return (System.currentTimeMillis() - state.getTimestamp() >= Constants.HOME_RESET_DELAY);
-    }
-
-    private void showHomepage() {
+    public void showHomepage() {
         final JSONObject params = new JSONObject();
         try {
-            switch (state.getMode()) {
+            switch (currentTabState.getMode()) {
                 case SEARCH:
-                    final float lon = state.getLongitude();
-                    final float lat = state.getLatitude();
+                    final float lon = currentTabState.getLongitude();
+                    final float lat = currentTabState.getLatitude();
                     if ((lon < Float.MAX_VALUE - 1) && (lat < Float.MAX_VALUE - 1)) {
                         params.put("lat", lat);
                         params.put("lon", lon);
                     }
-                    params.put("q", state.getQuery());
+                    params.put("q", currentTabState.getQuery());
                     break;
                 case WEBPAGE:
-                    params.put("url", state.getUrl());
-                    params.put("title", state.getTitle());
+                    params.put("url", currentTabState.getUrl());
+                    params.put("title", currentTabState.getTitle());
                     break;
             }
             executeJS(String.format(Locale.US, "jsAPI.resetState(%s);", params.toString()));
             bringToFront();
-            state.setTimestamp(System.currentTimeMillis());
-            state.setMode(CliqzBrowserState.Mode.SEARCH);
+            currentTabState.setTimestamp(System.currentTimeMillis());
+            currentTabState.setMode(CliqzBrowserState.Mode.SEARCH);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -219,5 +219,28 @@ public class SearchWebView extends BaseWebView {
 
     public void requestCardUrl() {
         executeJS("jsAPI.getCardUrl()");
+    }
+
+    //Disable scrolling the search web view
+    @Override
+    public boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY,
+                                int scrollRangeX, int scrollRangeY, int maxOverScrollX,
+                                int maxOverScrollY, boolean isTouchEvent) {
+        return false;
+    }
+
+    @Override
+    public void scrollTo(int x, int y) {
+        // Do nothing
+    }
+
+    @Override
+    public void computeScroll() {
+        // Do nothing
+    }
+
+    @Override
+    public void scrollBy(int x, int y) {
+        //do nothing
     }
 }

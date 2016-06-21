@@ -29,9 +29,6 @@ public abstract class FragmentWithBus extends Fragment {
     Timings timings;
 
     @Inject
-    CliqzBrowserState state;
-
-    @Inject
     PreferenceManager preferenceManager;
 
     @Inject

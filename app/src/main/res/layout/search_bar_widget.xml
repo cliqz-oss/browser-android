@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:contentDescription="@string/descr_search_bar">
 
     <com.cliqz.browser.widget.AutocompleteEditText
         android:id="@+id/search_edit_text"
@@ -25,8 +26,7 @@
         android:singleLine="true"
         android:textColor="@android:color/white"
         android:textColorHint="@color/hint_text"
-        android:textCursorDrawable="@null"
-        android:contentDescription="@string/descr_search_bar"/>
+        android:textCursorDrawable="@null"/>
 
     <TextView
         android:id="@+id/title_bar"

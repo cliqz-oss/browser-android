@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,21 +29,25 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.CliqzBrowserState.Mode;
+import com.cliqz.browser.utils.CustomChooserIntent;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.webview.SearchWebView;
 import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
@@ -60,9 +66,9 @@ import butterknife.OnEditorAction;
  * @author Stefano Pacifici
  * @date 2015/11/23
  */
-public class MainFragment extends BaseFragment {
+public class TabFragment extends BaseFragment {
 
-    private static final String TAG = MainFragment.class.getSimpleName();
+    private static final String TAG = TabFragment.class.getSimpleName();
     private static final String NAVIGATION_STATE_KEY = TAG + ".NAVIGATION_STATE";
     private static final int ICON_STATE_CLEAR = 0;
     //private static final int RELOAD = 1;
@@ -77,11 +83,13 @@ public class MainFragment extends BaseFragment {
     private String mSearchEngine;
     private Message newTabMessage = null;
     private String mExternalQuery = null;
+    protected final CliqzBrowserState state = new CliqzBrowserState();
+    protected boolean isHomePageShown = false;
 
     String lastQuery = "";
 
     SearchWebView mSearchWebView = null;
-    public LightningView mLightningView = null;
+    protected LightningView mLightningView = null;
 
     // A flag used to handle back button on old phones
     private boolean mShowWebPageAgain = false;
@@ -107,6 +115,9 @@ public class MainFragment extends BaseFragment {
     @Bind(R.id.overflow_menu)
     View overflowMenuButton;
 
+    @Bind(R.id.in_page_search_bar)
+    View inPageSearchBar;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,8 +134,10 @@ public class MainFragment extends BaseFragment {
         if (arguments.getBoolean(Constants.KEY_NEW_TAB_MESSAGE, false)) {
             newTabMessage = BrowserApp.popNewTabMessage();
         }
-        // We need to remove the key, otherwise the url get reloaded for each resume
+        // We need to remove the key, otherwise the url/query/msg gets reloaded for each resume
         arguments.remove(Constants.KEY_URL);
+        arguments.remove(Constants.KEY_NEW_TAB_MESSAGE);
+        arguments.remove(Constants.KEY_QUERY);
     }
 
     @Override
@@ -136,19 +149,20 @@ public class MainFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        inPageSearchBar.setVisibility(View.GONE);
+        state.setIncognito(isIncognito);
         if (mSearchWebView == null || mLightningView == null) {
             // Must use activity due to Crosswalk webview
-            mSearchWebView = new SearchWebView(getActivity());
+            mSearchWebView = ((MainActivity)getActivity()).searchWebView;
             mLightningView = new LightningView(getActivity()/*, mUrl */, isIncognito, "1");
             mSearchWebView.setLayoutParams(
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         } else {
             final WebView webView = mLightningView.getWebView();
-            ((ViewGroup) mSearchWebView.getParent()).removeView(mSearchWebView);
             ((ViewGroup) webView.getParent()).removeView(webView);
         }
 
-        MainFragmentListener.create(this);
+        TabFragmentListener.create(this);
         final WebView webView = mLightningView.getWebView();
         webView.setId(R.id.right_drawer_list);
         if (savedInstanceState != null) {
@@ -157,10 +171,14 @@ public class MainFragment extends BaseFragment {
                 webView.restoreState(webViewOutState);
             }
         }
+        if (mSearchWebView.getParent() != null) {
+            ((ViewGroup) mSearchWebView.getParent()).removeView(mSearchWebView);
+        }
+        mSearchWebView.setCurrentTabState(state);
         mLocalContainer.addView(webView);
         mLocalContainer.addView(mSearchWebView);
         titleBar.setOnTouchListener(onTouchListener);
-
+        mSearchWebView.initExtensionPreferences();
     }
 
     @Override
@@ -200,7 +218,20 @@ public class MainFragment extends BaseFragment {
             webView = null;
         }
 
-        // The logic below should be in main activity
+        if (state.shouldReset()) {
+            isHomePageShown = true;
+            searchBar.showSearchEditText();
+            mAutocompleteEditText.setText("");
+            mSearchWebView.showHomepage();
+            state.setShouldReset(false);
+            return;
+        }
+        if (state.getMode() == Mode.SEARCH) {
+            mSearchWebView.performSearch(state.getQuery());
+        } else if (state.getMode() == Mode.WEBPAGE) {
+            bringWebViewToFront();
+        }
+        // The code below shouldn't be executed if app is reset
         if (mInitialUrl != null && !mInitialUrl.isEmpty()) {
             state.setMode(Mode.WEBPAGE);
             bus.post(new CliqzMessages.OpenLink(mInitialUrl, true));
@@ -239,7 +270,7 @@ public class MainFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         if (mSearchWebView != null) {
-            mSearchWebView.onPause();
+            //mSearchWebView.onPause();
         }
         if (mLightningView != null) {
             mLightningView.onPause();
@@ -249,6 +280,8 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         mLightningView.pauseTimers();
+        //should we do this? if tab isn't opened for 30mins it gets reset
+        //state.setTimestamp(System.currentTimeMillis());
         super.onDestroyView();
     }
 
@@ -312,14 +345,32 @@ public class MainFragment extends BaseFragment {
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();
         } else {
-        mOverFlowMenu = new OverFlowMenu(getActivity());
-        // mOverFlowMenu.setBrowserState(state.getMode());
-        mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
-        mOverFlowMenu.setAnchorView(overflowMenuButton);
-        mOverFlowMenu.setIncognitoMode(isIncognito);
-        mOverFlowMenu.setHistoryId(mLightningView.historyId);
-        mOverFlowMenu.show();
+            mOverFlowMenu = new OverFlowMenu(getActivity());
+            // mOverFlowMenu.setBrowserState(state.getMode());
+            mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
+            mOverFlowMenu.setAnchorView(overflowMenuButton);
+            mOverFlowMenu.setIncognitoMode(isIncognito);
+            mOverFlowMenu.setHistoryId(mLightningView.historyId);
+            mOverFlowMenu.setState(state);
+            mOverFlowMenu.show();
+            hideKeyboard();
+        }
     }
+
+    @OnClick(R.id.in_page_search_cancel_button)
+    void closeInPageSearchClosed() {
+        inPageSearchBar.setVisibility(View.GONE);
+        mLightningView.findInPage("");
+    }
+
+    @OnClick(R.id.in_page_search_up_button)
+    void previousResultInPageSearchClicked() {
+        mLightningView.findPrevious();
+    }
+
+    @OnClick(R.id.in_page_search_down_button)
+    void nextResultInPageSearchClicked() {
+        mLightningView.findNext();
     }
 
     @OnEditorAction(R.id.search_edit_text)
@@ -426,6 +477,28 @@ public class MainFragment extends BaseFragment {
         historyDatabase.addToFavourites(event.id, true);
     }
 
+    @Subscribe
+    public void searchOnPage(BrowserEvents.SearchInPage event) {
+        final Context context = getContext();
+        final AlertDialog.Builder finder = new AlertDialog.Builder(context);
+        finder.setTitle(getResources().getString(R.string.action_find));
+        final EditText getHome = new EditText(context);
+        getHome.setHint(getResources().getString(R.string.search_hint));
+        finder.setView(getHome);
+        finder.setPositiveButton(getResources().getString(R.string.search_hint),
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String query = getHome.getText().toString();
+                    if (!query.isEmpty()) {
+                        inPageSearchBar.setVisibility(View.VISIBLE);
+                        mLightningView.findInPage(query);
+                    }
+                }
+            });
+        finder.show();
+    }
+
     private void openLink(String eventUrl, boolean reset, boolean fromHistory) {
         telemetry.resetNavigationVariables(eventUrl.length());
         new Uri.Builder();
@@ -527,6 +600,8 @@ public class MainFragment extends BaseFragment {
     public void showSearch(Messages.ShowSearch event) {
         searchBar.showSearchEditText();
         mSearchWebView.bringToFront();
+        inPageSearchBar.setVisibility(View.GONE);
+        mLightningView.findInPage("");
         mAutocompleteEditText.requestFocus();
         if (event != null) {
             mAutocompleteEditText.setText(event.query);
@@ -571,10 +646,11 @@ public class MainFragment extends BaseFragment {
 
     @Subscribe
     public void contactCliqz(Messages.ContactCliqz event) {
-        final Uri to = Uri.parse(String.format("mailto:%s?subject=%s",
-                getString(R.string.feedback_at_cliqz_dot_com),
-                Uri.encode(getString(R.string.feedback_mail_subject))));
-        final Intent intent = new Intent(Intent.ACTION_SENDTO, to);
+        final Uri to = Uri.parse(String.format("mailto:%s",
+                getString(R.string.feedback_at_cliqz_dot_com)));
+        final Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(to);
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_mail_subject));
         intent.putExtra(Intent.EXTRA_TEXT, new StringBuilder()
                         .append("\n")
                         .append("Feedback für CLIQZ for Android (")
@@ -586,7 +662,12 @@ public class MainFragment extends BaseFragment {
                         .append(")")
                         .toString()
         );
-        startActivity(Intent.createChooser(intent, getString(R.string.contact_cliqz)));
+        //List of apps(package names) not to be shown in the chooser
+        final ArrayList<String> blackList = new ArrayList<>();
+        blackList.add("paypal");
+        Intent customChooserIntent = CustomChooserIntent.create(getActivity().getPackageManager(),
+                intent, getString(R.string.contact_cliqz), blackList);
+        startActivity(customChooserIntent);
     }
 
     @Subscribe
@@ -747,4 +828,18 @@ public class MainFragment extends BaseFragment {
         }
     };
 
+    @Nullable
+    public Bitmap getFavicon() {
+        return mLightningView != null ? mLightningView.getFavicon() : null;
+    }
+
+    public void findInPage(String query) {
+        if (mLightningView != null) {
+            mLightningView.findInPage(query);
+        }
+    }
+
+    public String getPageTitle() {
+        return mLightningView != null ? mLightningView.getTitle() : "";
+    }
 }

@@ -263,10 +263,15 @@
     <string name="deleting_in_progress_message">Deleting...</string>
     <string name="add_to_favourites">Add to favourites</string>
     <string name="save_link">Save Link</string>
-    <string name="device_registered">Device Registered</string>
-    <string name="error_registering">Error registering the device</string>
+    <string name="device_registered" translatable="false">Device Registered</string>
+    <string name="error_registering" translatable="false">Error registering the device</string>
     <string name="news_notification">News Notification</string>
-    <string name="restore_top_sites">Show blocked topsites</string>
-    <string name="message_restore_top_sites">All blocked topsites will be shown on the start page again.</string>
-    <string name="descr_search_bar">Search Bar</string>
+    <string name="restore_top_sites">Restore blocked topsites</string>
+    <string name="message_restore_top_sites">Blocked topsites will be shown on the start page again.</string>
+    <string name="descr_search_bar" translatable="false">Search Bar</string>
+    <string name="action_show_tab_manager">Tab Manager</string>
+    <string name="action_search_on_page">Search on page</string>
+    <string name="in_page_search_next_result">In page search next result</string>
+    <string name="in_page_search_prev_result">In page search previous result</string>
+    <string name="close_in_page_search">Close in page search</string>
 </resources>

@@ -40,7 +40,8 @@
             android:label="@string/cliqz_app_name"
             android:theme="@style/Theme.LightTheme"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
@@ -119,6 +120,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name="com.cliqz.browser.utils.InstallReferrerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
         <!-- GCM Start -->
         <receiver

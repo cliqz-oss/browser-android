@@ -91,6 +91,8 @@ public class PreferenceManager {
         public static final String GCM_TOKEN_SENT = "gcmTokenSent";
         public static final String ARN_ENDPOINT = "aws_arn_endpoint";
         public static final String RESETORE_TOP_SITES = "restore_top_sites";
+        public static final String REFERRER = "referrer";
+        public static final String ADVERT_ID = "advert_id";
     }
 
     private final SharedPreferences mPrefs;
@@ -328,6 +330,14 @@ public class PreferenceManager {
 
     public boolean getRestoreTopSites() {
         return mPrefs.getBoolean(Name.RESETORE_TOP_SITES, false);
+    }
+
+    public String getReferrer() {
+        return mPrefs.getString(Name.REFERRER, "");
+    }
+
+    public String getAdvertID() {
+        return mPrefs.getString(Name.ADVERT_ID, "");
     }
 
     public ClearQueriesOptions shouldClearQueries() {
@@ -604,6 +614,14 @@ public class PreferenceManager {
 
     public void setRestoreTopSites(boolean restoreTopSites) {
         putBoolean(Name.RESETORE_TOP_SITES, restoreTopSites);
+    }
+
+    public void setReferrer(String referrer) {
+        putString(Name.REFERRER, referrer);
+    }
+
+    public void setAdvertID(String advertID) {
+        putString(Name.ADVERT_ID, advertID);
     }
 
 }

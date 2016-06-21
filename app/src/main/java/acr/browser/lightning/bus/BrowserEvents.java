@@ -227,4 +227,15 @@ public final class BrowserEvents {
         }
     }
 
+    /**
+     * Show the tab manager message
+     */
+    public static class ShowTabManager {
+    }
+
+    /**
+     * Search on page message
+     */
+    public static class SearchInPage {
+    }
 }

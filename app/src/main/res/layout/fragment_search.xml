@@ -1,17 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fitsSystemWindows="true"
-    android:elevation="2dp"
-    android:orientation="vertical">
+    android:elevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/in_page_search_bar"
+        android:background="@color/background_material_light">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_expand"
+            android:id="@+id/in_page_search_down_button"
+            android:contentDescription="@string/in_page_search_next_result"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_collapse"
+            android:id="@+id/in_page_search_up_button"
+            android:contentDescription="@string/in_page_search_prev_result"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_delete"
+            android:id="@+id/in_page_search_cancel_button"
+            android:contentDescription="@string/close_in_page_search"/>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/local_container" />
+        android:id="@+id/local_container"
+        android:layout_above="@id/in_page_search_bar"
+        android:layout_alignParentTop="true" />
 
     <acr.browser.lightning.view.AnimatedProgressBar
         android:id="@+id/progress_view"
@@ -19,6 +48,7 @@
         android:layout_height="2dp"
         custom:backgroundColor="#00000000"
         custom:bidirectionalAnimate="false"
-        custom:progressColor="?attr/colorAccent" />
+        custom:progressColor="?attr/colorAccent"
+        android:layout_alignParentTop="true"/>
 
-</FrameLayout>
+</RelativeLayout>

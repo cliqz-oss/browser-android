@@ -43,6 +43,7 @@ public class MainActivityTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
 
+/*
     @Test
     public void testEnter() throws Throwable {
         final WebView webView = mActivityRule.getActivity().mMainFragment.mLightningView.getWebView();
@@ -56,6 +57,7 @@ public class MainActivityTest {
         CliqzAssertions.assertWebViewUrlContains(webView, "pippo");
         CliqzAssertions.assertWebViewUrlContains(webView, "google");
     }
+*/
 
     @Test
     public void testTrampoline() throws InterruptedException {
@@ -84,6 +86,7 @@ public class MainActivityTest {
         onView(withId(R.id.search_edit_text)).check(matches(withText("Rafael Nadal wiki")));
     }
 
+/*
     @Test
     public void testAutoComplete() throws Throwable {
         final WebView webView = mActivityRule.getActivity().mMainFragment.mLightningView.getWebView();
@@ -93,4 +96,5 @@ public class MainActivityTest {
         onView(withId(R.id.search_edit_text)).perform(pressImeActionButton());
         CliqzAssertions.assertWebViewUrlContains(webView, "facebook");
     }
+*/
 }

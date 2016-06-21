@@ -43,9 +43,9 @@ public class WebUtils {
         Utils.trimCache(context);
     } */
 
-    public static void clearCache(WebView view) {
-        if (view == null) return;
-        view.clearCache(true);
+    public static void clearCache(Context context) {
+        final WebView webView = new WebView(context);
+        webView.clearCache(true);
     }
 
 }

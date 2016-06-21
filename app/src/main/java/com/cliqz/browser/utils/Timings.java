@@ -130,4 +130,8 @@ public class Timings {
         return getCurrentTime() - mAppStartTime;
     }
 
+    public long getAppStopTime() {
+        return mAppStopTime;
+    }
+
 }

@@ -19,6 +19,7 @@ import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.utils.CustomChooserIntent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,22 +85,28 @@ public class SettingsActivity extends ThemableSettingsActivity {
             startActivity(browserIntent);
             finish();
         } else if (info.id == R.id.feedback) {
-            final Uri to = Uri.parse(String.format("mailto:%s?subject=%s",
-                    getString(R.string.feedback_at_cliqz_dot_com),
-                    Uri.encode(getString(R.string.feedback_mail_subject))));
-            final Intent intent = new Intent(Intent.ACTION_SENDTO, to);
+            final Uri to = Uri.parse(String.format("mailto:%s",
+                    getString(R.string.feedback_at_cliqz_dot_com)));
+            final Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(to);
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_mail_subject));
             intent.putExtra(Intent.EXTRA_TEXT, new StringBuilder()
-                            .append("\n")
-                            .append("Feedback für CLIQZ for Android (")
-                            .append(BuildConfig.VERSION_NAME)
-                            .append("), auf ")
-                            .append(Build.MODEL)
-                            .append(" (")
-                            .append(Build.VERSION.SDK_INT)
-                            .append(")")
-                            .toString()
+                    .append("\n")
+                    .append("Feedback für CLIQZ for Android (")
+                    .append(BuildConfig.VERSION_NAME)
+                    .append("), auf ")
+                    .append(Build.MODEL)
+                    .append(" (")
+                    .append(Build.VERSION.SDK_INT)
+                    .append(")")
+                    .toString()
             );
-            startActivity(Intent.createChooser(intent, getString(R.string.contact_cliqz)));
+            //List of apps(package names) not to be shown in the chooser
+            final ArrayList<String> blackList = new ArrayList<>();
+            blackList.add("paypal");
+            Intent customChooserIntent = CustomChooserIntent.create(this.getPackageManager(),
+                    intent, getString(R.string.contact_cliqz), blackList);
+            startActivity(customChooserIntent);
         } else {
             super.onListItemClick(l, v, position, id);
         }

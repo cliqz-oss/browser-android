@@ -2,6 +2,7 @@ package acr.browser.lightning.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.cliqz.browser.R;
 
@@ -9,19 +10,21 @@ import acr.browser.lightning.utils.ThemeUtils;
 import acr.browser.lightning.utils.Utils;
 
 /**
+ * TODO: Remove this class
  * @author Stefano Pacifici base on Anthony C. Restaino's code
  * @date 2015/09/21
  */
+@Deprecated
 class LightningViewTitle {
 
-    private static Bitmap DEFAULT_ICON = null;
+    public static Bitmap DEFAULT_ICON = null;
 
     private Bitmap mFavicon;
     private String mTitle;
 
     public LightningViewTitle(Context context, boolean darkTheme) {
         if (DEFAULT_ICON == null) {
-            DEFAULT_ICON = ThemeUtils.getThemedBitmap(context, R.drawable.ic_webpage, darkTheme);
+            DEFAULT_ICON = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_webpage);
         }
         mFavicon = DEFAULT_ICON;
         mTitle = "";

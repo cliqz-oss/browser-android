@@ -4,8 +4,8 @@ apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.google.gms.google-services'
 apply from: 'cliqz.gradle'
 
-android.metaClass.baseVersionCode = 43
-android.metaClass.baseVersionName = "0.7.0"
+android.metaClass.baseVersionCode = 53
+android.metaClass.baseVersionName = "0.8.0"
 
 android {
     compileSdkVersion 23

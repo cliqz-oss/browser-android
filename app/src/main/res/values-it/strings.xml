@@ -256,4 +256,7 @@
     <string name="add_to_favourites">Aggiungi ai favoriti</string>
     <string name="save_link">Salva destinazione</string>
     <string name="news_notification">Notifica Notizie</string>
+    <string name="restore_top_sites">Resetta siti bloccati</string>
+    <string name="message_restore_top_sites">I siti precedentemente bloccati verrano visualizzati in home page.</string>
+    <string name="action_show_tab_manager">Tab Manager</string>
 </resources>

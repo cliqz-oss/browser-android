@@ -6,6 +6,7 @@ import com.cliqz.browser.gcm.NotificationDismissedReceiver;
 import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.settings.BaseSettingsFragment;
 import com.cliqz.browser.utils.HistoryCleaner;
+import com.cliqz.browser.utils.InstallReferrerReceiver;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
@@ -59,4 +60,6 @@ public interface AppComponent {
     void inject(RegistrationIntentService registrationIntentService);
 
     void inject(NotificationDismissedReceiver notificationDismissedReceiver);
+
+    void inject(InstallReferrerReceiver installReferrerReceiver);
 }

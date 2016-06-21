@@ -39,8 +39,4 @@ public class MainActivityModule {
         return activity;
     }
 
-    @Provides
-    CliqzBrowserState providesCliqzBrowserState() {
-        return activity.getBrowserState();
-    }
 }
