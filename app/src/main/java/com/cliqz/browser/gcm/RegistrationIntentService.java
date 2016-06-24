@@ -28,6 +28,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import javax.inject.Inject;
 
@@ -45,13 +46,32 @@ public class RegistrationIntentService extends IntentService {
     @Inject
     AwsSNSManager awsSNSManager;
 
+    private final Integer gcm_defaultSenderId;
+
     public RegistrationIntentService() {
         super(TAG);
         BrowserApp.getAppComponent().inject(this);
+
+        // We use reflection to get the sender id (fdroid flavour has no sender id)
+        Integer senderId = null;
+        try {
+            Field f = R.string.class.getField("gcm_defaultSenderId");
+            senderId = f.getInt(R.string.class);
+        } catch (NoSuchFieldException e) {
+            Log.i(TAG, "Can't find gcm default sender id");
+        } catch (IllegalAccessException e) {
+            Log.i(TAG, "Illegal access to gcm default sender id");
+        }
+        gcm_defaultSenderId = senderId;
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (gcm_defaultSenderId == null) {
+            // We do not have a sender id, do nothing
+            Log.i(TAG, "GCM Disabled");
+            return;
+        }
         try {
             // [START register_for_gcm]
             // Initially this call goes out to the network to retrieve the token, subsequent calls
@@ -59,9 +79,9 @@ public class RegistrationIntentService extends IntentService {
             // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
-            InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
-                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+            final InstanceID instanceID = InstanceID.getInstance(this);
+            final String id = getString(gcm_defaultSenderId);
+            final String token = instanceID.getToken(id, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 

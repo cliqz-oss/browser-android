@@ -12,12 +12,23 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         targetSdkVersion 23
-
+        minSdkVersion 21
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "boolean", "FULL_VERSION", "true"
+        buildConfigField 'String', 'TELEMETRY_DEBUG_CHANNEL', '"MA02"'
+        buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
 
         applicationId "com.cliqz.browser"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
+
+        splits {
+            abi {
+                enable true
+                reset()
+                include 'armeabi-v7a', 'x86'
+                universalApk true
+            }
+        }
     }
     buildTypes {
         debug {
@@ -25,7 +36,6 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
             shrinkResources false
             proguardFiles 'proguard-project.txt'
-            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA02"'
         }
 
         release {
@@ -33,7 +43,6 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
             shrinkResources true
             proguardFiles 'proguard-project.txt'
-            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
         }
     }
     lintOptions {
@@ -50,33 +59,28 @@ android {
                     '../external/extension/build/mobile',
             ]
         }
+        fdroid {
+            java.srcDirs += [
+                    'src/standard/java',
+            ]
+        }
     }
+
     productFlavors {
         standard {
             versionCode baseVersionCode+1
             versionName baseVersionName
-            minSdkVersion 21
-            splits {
-                abi {
-                    enable true
-                    reset()
-                    include 'armeabi-v7a', 'x86'
-                    universalApk true
-                }
-            }
         }
         xwalk {
             versionCode baseVersionCode
-            versionName baseVersionName+"xw"
+            versionName baseVersionName + "xw"
             minSdkVersion 16
-            splits {
-                abi {
-                    enable true
-                    reset()
-                    include 'armeabi-v7a', 'x86'
-                    universalApk true
-                }
-            }
+        }
+        fdroid {
+            versionCode baseVersionCode
+            versionName baseVersionName+'oss'
+            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA03"'
+            applicationId "com.cliqz.browser.oss"
         }
     }
 }

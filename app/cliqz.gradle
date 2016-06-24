@@ -74,7 +74,10 @@ afterEvaluate { project ->
             }
         }
         if (tazk.name =~ /assemble.*/) {
-          tazk.dependsOn installExtension
+            tazk.dependsOn installExtension
+        }
+        if (tazk.name =~ /processFdroid.*GoogleServices/) {
+            tazk.enabled = false
         }
     }
 }
