@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.google.gms.google-services'
 apply from: 'cliqz.gradle'
 
 android.metaClass.baseVersionCode = 53
@@ -11,24 +10,19 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
+        versionCode baseVersionCode
+        versionName baseVersionName+'oss'
+
         targetSdkVersion 23
         minSdkVersion 21
+
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "boolean", "FULL_VERSION", "true"
         buildConfigField 'String', 'TELEMETRY_DEBUG_CHANNEL', '"MA02"'
-        buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
+        buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA03"'
 
-        applicationId "com.cliqz.browser"
+        applicationId "com.cliqz.browser.oss"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
-
-        splits {
-            abi {
-                enable true
-                reset()
-                include 'armeabi-v7a', 'x86'
-                universalApk true
-            }
-        }
     }
     buildTypes {
         debug {
@@ -58,29 +52,9 @@ android {
             assets.srcDirs += [
                     '../external/extension/build/mobile',
             ]
-        }
-        fdroid {
             java.srcDirs += [
                     'src/standard/java',
             ]
-        }
-    }
-
-    productFlavors {
-        standard {
-            versionCode baseVersionCode+1
-            versionName baseVersionName
-        }
-        xwalk {
-            versionCode baseVersionCode
-            versionName baseVersionName + "xw"
-            minSdkVersion 16
-        }
-        fdroid {
-            versionCode baseVersionCode
-            versionName baseVersionName+'oss'
-            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA03"'
-            applicationId "com.cliqz.browser.oss"
         }
     }
 }
@@ -123,8 +97,6 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     provided 'javax.annotation:jsr250-api:1.0'
-    // Google Play Services
-    compile "com.google.android.gms:play-services-gcm:8.3.0"
 
     // Testing-only dependencies
     // Force usage of support annotations in the test app, since it is internally used by the runner module.
@@ -134,11 +106,4 @@ dependencies {
     androidTestCompile 'com.android.support.test:rules:0.4'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2'
-
-    // xwalk webview
-    xwalkCompile 'org.xwalk:xwalk_core_library:14.43.343.25'
-    
-    // AWS SNS SDK
-    compile 'com.amazonaws:aws-android-sdk-sns:2.+'
-    compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
 }

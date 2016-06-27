@@ -3,7 +3,8 @@ package com.cliqz.browser.di.modules;
 import android.content.Context;
 
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.gcm.AwsSNSManager;
+
+// import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
 import com.google.gson.Gson;
@@ -88,9 +89,11 @@ public class AppModule {
         return new PasswordDatabase(context);
     }
 
+/*  F-DROID Version
     @Provides
     public AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager, Context context) {
         return new AwsSNSManager(preferenceManager, context);
     }
+*/
 
 }

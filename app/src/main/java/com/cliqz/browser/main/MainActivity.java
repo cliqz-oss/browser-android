@@ -44,14 +44,18 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.di.modules.MainActivityModule;
+/* F-DROID Version
 import com.cliqz.browser.gcm.RegistrationIntentService;
+*/
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.Telemetry;
 import com.cliqz.browser.utils.Timings;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.webview.SearchWebView;
+/* F-DROID Version
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+*/
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -215,10 +219,12 @@ public class MainActivity extends AppCompatActivity {
             telemetry.sendLifeCycleSignal(Telemetry.Action.UPDATE);
         }
 
+/* F-DROID Version
         if (!"fdroid".contentEquals(BuildConfig.FLAVOR) && checkPlayServices()) {
             final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
             startService(registrationIntent);
         }
+*/
     }
 
     private void setupContentView() {
@@ -599,6 +605,7 @@ public class MainActivity extends AppCompatActivity {
      * Fully copied from the code at https://github.com/googlesamples/google-services/blob/master/android/gcm/app/src/main/java/gcm/play/android/samples/com/gcmquickstart/MainActivity.java
      * It checks form Google Play Services APK.
      */
+/*  F-DROID Version
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
@@ -614,6 +621,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+*/
 
     private int getCurrentTabPosition() {
         for(TabFragment tabFragment : mFragmentsList) {
