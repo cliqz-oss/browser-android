@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             telemetry.sendLifeCycleSignal(Telemetry.Action.UPDATE);
         }
 
-        if (checkPlayServices()) {
+        if (!"fdroid".contentEquals(BuildConfig.FLAVOR) && checkPlayServices()) {
             final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
             startService(registrationIntent);
         }

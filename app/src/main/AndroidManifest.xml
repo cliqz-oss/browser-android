@@ -5,9 +5,9 @@
     package="com.cliqz.browser" >
 
     <!-- GCM Permissions -->
-    <permission android:name="com.cliqz.browser.permission.C2D_MESSAGE"
+    <permission android:name="${applicationId}.permission.C2D_MESSAGE"
                 android:protectionLevel="signature"/>
-    <uses-permission android:name="com.cliqz.browser.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -145,7 +145,7 @@
         <service
             android:name=".gcm.MessageListenerService"
             android:exported="true"
-            android:permission="com.cliqz.browser.permission.C2D_MESSAGE">
+            android:permission="${applicationId}.permission.C2D_MESSAGE">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
