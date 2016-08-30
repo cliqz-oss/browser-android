@@ -5,7 +5,8 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 
-import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.Telemetry;
 
@@ -61,7 +62,10 @@ public abstract class BaseWebView extends AbstractionWebView {
 
     @Override
     protected  void setup() {
-        ((MainActivity)context).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(context);
+        if (component != null) {
+            component.inject(this);
+        }
         // Make extra sure web performance is nice on scrolling. Can this actually be harmful?
         super.setup();
 
@@ -131,6 +135,13 @@ public abstract class BaseWebView extends AbstractionWebView {
             }
         }
         return super.dispatchTouchEvent(motionEvent);
+    }
+
+    /**
+     * Should be called whenever the Cliqz related webViews become visible
+     */
+    public void isVisible() {
+        evaluateJavascript("jsAPI.onShow()", null);
     }
 
     private void hideKeyboard() {

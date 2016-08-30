@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:background="?attr/actionBarItemBackground"
-        android:src="@drawable/ic_action_cliqz_forward"/>
+        android:src="@drawable/ic_action_forward"/>
 
     <ImageView
         android:id="@+id/action_refresh"
@@ -22,7 +22,7 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:background="?attr/actionBarItemBackground"
-        android:src="@drawable/ic_action_cliqz_reload"/>
+        android:src="@drawable/ic_refresh"/>
 
     <ImageView
         android:id="@+id/action_share"
@@ -31,6 +31,6 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:background="?attr/actionBarItemBackground"
-        android:src="@drawable/ic_action_cliqz_share"/>
+        android:src="@drawable/ic_share"/>
 
 </LinearLayout>

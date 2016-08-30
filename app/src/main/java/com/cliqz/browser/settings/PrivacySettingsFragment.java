@@ -30,6 +30,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_THIRDPCOOKIES = "third_party";
     private static final String SETTINGS_SAVEPASSWORD = "password";
     private static final String SETTINGS_CLEARHISTORY = "clear_history";
+    private static final String SETTINGS_CLEARFAVORITES = "clear_favorites";
     // private static final String SETTINGS_COOKIESINKOGNITO = "incognito_cookies";
     private static final String SETTINGS_CACHEEXIT = "clear_cache_exit";
     private static final String SETTINGS_HISTORYEXIT = "clear_history_exit";
@@ -42,7 +43,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 
     private static final int API = Build.VERSION.SDK_INT;
     private Activity mActivity;
-    private CheckBoxPreference cblocation, cbenablecookies, cb3cookies, cbsavepasswords, cbcacheexit,
+    private CheckBoxPreference cblocation, cbenablecookies, cbsavepasswords, cbcacheexit,
             cbhistoryexit, cbcookiesexit; //cbcookiesInkognito, cbwebstorageexit
     // private boolean mSystemBrowser;
     private Handler messageHandler;
@@ -71,7 +72,6 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         cblocation = (CheckBoxPreference) findPreference(SETTINGS_LOCATION);
         cbenablecookies = (CheckBoxPreference) findPreference(SETTINGS_ENABLECOOKIES);
         // cbcookiesInkognito = (CheckBoxPreference) findPreference(SETTINGS_COOKIESINKOGNITO);
-        cb3cookies = (CheckBoxPreference) findPreference(SETTINGS_THIRDPCOOKIES);
         cbsavepasswords = (CheckBoxPreference) findPreference(SETTINGS_SAVEPASSWORD);
         cbcacheexit = (CheckBoxPreference) findPreference(SETTINGS_CACHEEXIT);
         cbhistoryexit = (CheckBoxPreference) findPreference(SETTINGS_HISTORYEXIT);
@@ -100,17 +100,13 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         cbhistoryexit.setChecked(mPreferenceManager.getClearHistoryExitEnabled());
         cbcookiesexit.setChecked(mPreferenceManager.getClearCookiesExitEnabled());
         // cbwebstorageexit.setChecked(mPreferenceManager.getClearWebStorageExitEnabled());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cb3cookies.setOnPreferenceChangeListener(this);
-            cb3cookies.setChecked(mPreferenceManager.getBlockThirdPartyCookiesEnabled());
-        } else {
-            getPreferenceScreen().removePreference(cb3cookies);
-        }
 
-        final Preference prefClearHistory = (Preference) findPreference(SETTINGS_CLEARHISTORY);
+        final Preference prefClearHistory = findPreference(SETTINGS_CLEARHISTORY);
         prefClearHistory.setOnPreferenceClickListener(this);
         final Preference restoreTopSites = findPreference(SETTINGS_RESTORETOPSITES);
         restoreTopSites.setOnPreferenceClickListener(this);
+        final Preference prefClearFavorites = findPreference(SETTINGS_CLEARFAVORITES);
+        prefClearFavorites.setOnPreferenceClickListener(this);
 
         messageHandler = new MessageHandler(mActivity);
     }
@@ -146,6 +142,9 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
             case SETTINGS_CLEARHISTORY:
                 clearHistoryDialog();
                 return true;
+            case SETTINGS_CLEARFAVORITES:
+                clearFavoritesDialog();
+                return true;
 //            case SETTINGS_CLEARCOOKIES:
 //                clearCookiesDialog();
 //                return true;
@@ -160,10 +159,39 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         }
     }
 
+//    private void clearHistoryDialog() {
+//        final View view = View.inflate(getActivity(), R.layout.dialog_clear_history, null);
+//        final CheckBox deleteFavoritesCheckbox = (CheckBox) view.findViewById(R.id.clear_history_favorites);
+//        final CheckBox deleteQueriesCheckbox = (CheckBox) view.findViewById(R.id.clear_history_queries);
+//        final DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                switch (which) {
+//                    case DialogInterface.BUTTON_POSITIVE:
+//                        HistoryCleaner
+//                                .builder()
+//                                .setContext(getActivity())
+//                                .setDeleteFavorites(deleteFavoritesCheckbox.isChecked())
+//                                .setDeleteQueries(deleteQueriesCheckbox.isChecked())
+//                                .build()
+//                                .cleanup();
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                dialog.dismiss();
+//            }
+//        };
+//        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+//            builder.setTitle(getResources().getString(R.string.title_clear_history))
+//                    .setMessage(R.string.dialog_history)
+//                    .setView(view)
+//                    .setPositiveButton(R.string.action_delete, dialogListener)
+//                    .setNegativeButton(R.string.action_cancel, dialogListener)
+//                    .show();
+//    }
+
     private void clearHistoryDialog() {
-        final View view = View.inflate(getActivity(), R.layout.dialog_clear_history, null);
-        final CheckBox deleteFavoritesCheckbox = (CheckBox) view.findViewById(R.id.clear_history_favorites);
-        final CheckBox deleteQueriesCheckbox = (CheckBox) view.findViewById(R.id.clear_history_queries);
         final DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -172,8 +200,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
                         HistoryCleaner
                                 .builder()
                                 .setContext(getActivity())
-                                .setDeleteFavorites(deleteFavoritesCheckbox.isChecked())
-                                .setDeleteQueries(deleteQueriesCheckbox.isChecked())
+                                .setDeleteFavorites(false)
                                 .build()
                                 .cleanup();
                         break;
@@ -183,13 +210,39 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
                 dialog.dismiss();
             }
         };
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-            builder.setTitle(getResources().getString(R.string.title_clear_history))
-                    .setMessage(R.string.dialog_history)
-                    .setView(view)
-                    .setPositiveButton(R.string.action_delete, dialogListener)
-                    .setNegativeButton(R.string.action_cancel, dialogListener)
-                    .show();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle(getResources().getString(R.string.clear_history));
+        builder.setMessage(getResources().getString(R.string.dialog_history))
+                .setPositiveButton(getResources().getString(R.string.yes),dialogListener)
+                .setNegativeButton(getResources().getString(R.string.no),dialogListener)
+                .show();
+    }
+
+    private void clearFavoritesDialog() {
+        final DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        HistoryCleaner
+                                .builder()
+                                .setContext(getActivity())
+                                .setDeleteFavorites(true)
+                                .build()
+                                .cleanup();
+                        break;
+                    default:
+                        break;
+                }
+                dialog.dismiss();
+            }
+        };
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle(getResources().getString(R.string.clear_favorites));
+        builder.setMessage(getResources().getString(R.string.dialog_favorites))
+                .setPositiveButton(getResources().getString(R.string.yes),dialogListener)
+                .setNegativeButton(getResources().getString(R.string.no),dialogListener)
+                .show();
     }
 
     private void restoreTopSitesDialog() {
@@ -273,10 +326,6 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 //                mPreferenceManager.setIncognitoCookiesEnabled((Boolean) newValue);
 //                cbcookiesInkognito.setChecked((Boolean) newValue);
 //                return true;
-            case SETTINGS_THIRDPCOOKIES:
-                mPreferenceManager.setBlockThirdPartyCookiesEnabled((Boolean) newValue);
-                cb3cookies.setChecked((Boolean) newValue);
-                return true;
             case SETTINGS_SAVEPASSWORD:
                 mPreferenceManager.setSavePasswordsEnabled((Boolean) newValue);
                 cbsavepasswords.setChecked((Boolean) newValue);

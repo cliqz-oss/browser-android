@@ -3,10 +3,9 @@ package com.cliqz.browser.di.modules;
 import android.app.Activity;
 
 import com.cliqz.browser.di.annotations.PerActivity;
-import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.webview.CliqzBridge;
-import com.squareup.otto.Bus;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,12 +23,6 @@ public class MainActivityModule {
     }
 
     @Provides
-    @PerActivity
-    Bus provideBus() {
-        return new Bus();
-    }
-
-    @Provides
     CliqzBridge provideCliqzBridge() {
         return new CliqzBridge(activity);
     }
@@ -39,4 +32,9 @@ public class MainActivityModule {
         return activity;
     }
 
+    @PerActivity
+    @Provides
+    public TabsManager providesTabsManager() {
+        return new TabsManager(activity, activity.getSupportFragmentManager());
+    }
 }

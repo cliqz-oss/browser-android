@@ -22,6 +22,8 @@ import android.webkit.URLUtil;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.main.Messages;
 import com.squareup.otto.Bus;
 
 import java.io.File;
@@ -54,7 +56,7 @@ public class DownloadHandler {
      * @param mimetype           The mimetype of the content reported by the server
      */
     public static void onDownloadStart(Activity activity, String url, String userAgent,
-                                       String contentDisposition, String mimetype) {
+                                       String contentDisposition, String mimetype, boolean isYouTubeVideo) {
         // if we're dealing wih A/V content that's not explicitly marked
         // for download, check if it's streamable.
         if (contentDisposition == null
@@ -88,7 +90,7 @@ public class DownloadHandler {
                 }
             }
         }
-        onDownloadStartNoStream(activity, url, userAgent, contentDisposition, mimetype);
+        onDownloadStartNoStream(activity, url, userAgent, contentDisposition, mimetype, isYouTubeVideo);
     }
 
     // This is to work around the fact that java.net.URI throws Exceptions
@@ -133,8 +135,9 @@ public class DownloadHandler {
      */
     /* package */
     private static void onDownloadStartNoStream(final Activity activity, String url, String userAgent,
-                                                String contentDisposition, String mimetype) {
-        final Bus eventBus = ((com.cliqz.browser.main.MainActivity)activity).mActivityComponent.getBus();
+                                                String contentDisposition, String mimetype, final boolean isYouTubeVideo) {
+        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final Bus eventBus = component != null ? component.getBus() : new Bus();
         final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
 
         // Check to see if we have an SDCard
@@ -148,7 +151,7 @@ public class DownloadHandler {
                 msg = activity.getString(R.string.download_sdcard_busy_dlg_msg);
                 title = R.string.download_sdcard_busy_dlg_title;
             } else {
-                msg = activity.getString(R.string.download_no_sdcard_dlg_msg, filename);
+                msg = activity.getString(R.string.download_no_sdcard_dlg_msg);
                 title = R.string.download_no_sdcard_dlg_title;
             }
 
@@ -225,7 +228,7 @@ public class DownloadHandler {
             }
             // We must have long pressed on a link or image to download it. We
             // are not sure of the mimetype in this case, so do a head request
-            new FetchUrlMimeType(activity, request, addressString, cookies, userAgent).start();
+            new FetchUrlMimeType(activity, request, addressString, cookies, userAgent, isYouTubeVideo).start();
         } else {
             final DownloadManager manager = (DownloadManager) activity
                     .getSystemService(Context.DOWNLOAD_SERVICE);
@@ -233,7 +236,10 @@ public class DownloadHandler {
                 @Override
                 public void run() {
                     try {
-                        manager.enqueue(request);
+                        final long downloadId = manager.enqueue(request);
+                        if (isYouTubeVideo) {
+                            eventBus.post(new Messages.SaveId(downloadId));
+                        }
                     } catch (IllegalArgumentException e) {
                         // Probably got a bad URL or something
                         e.printStackTrace();

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/descr_search_bar"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <com.cliqz.browser.widget.AutocompleteEditText
+            android:id="@+id/search_edit_text"
+            style="@style/editTextNormal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawableRight="@drawable/ic_action_delete"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="left|center_vertical"
+            android:hint="@string/search_hint"
+            android:imeActionLabel="@string/go"
+            android:imeOptions="actionGo"
+            android:inputType="textUri"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColorHint="#aaaaaa"
+            android:textCursorDrawable="@null" />
+
+        <TextView
+            android:id="@+id/title_bar"
+            style="@style/editTextNormal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawableRight="@drawable/ic_action_delete"
+            android:gravity="left|center_vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:singleLine="true"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/anti_tracking_details"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:background="#2CBA64"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="16dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:src="@drawable/shield" />
+
+        <TextView
+            android:id="@+id/tracker_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:paddingRight="5dp"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

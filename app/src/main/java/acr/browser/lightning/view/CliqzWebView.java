@@ -5,7 +5,9 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 
-import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.main.Messages;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -31,12 +33,16 @@ public class CliqzWebView extends WebView {
 
     public CliqzWebView(Activity activity, AttributeSet attrs, int defStyleAttr) {
         super(activity, attrs, defStyleAttr);
-        ((MainActivity)activity).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        if (component != null) {
+            component.inject(this);
+        }
     }
 
     @Override
     public void bringToFront() {
         super.bringToFront();
+        bus.post(new Messages.AdjustResize());
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             requestLayout();
         }
@@ -50,5 +56,9 @@ public class CliqzWebView extends WebView {
                 this.loadUrl("javascript:" + js);
             }
         }
+    }
+
+    public int getVerticalScrollHeight() {
+        return computeVerticalScrollRange();
     }
 }

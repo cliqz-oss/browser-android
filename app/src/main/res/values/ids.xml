@@ -12,4 +12,8 @@
     <item name="save_link_menu_button" type="id"/>
     <item name="show_tab_manager_menu_button" type="id"/>
     <item name="search_on_page_menu_button" type="id"/>
+    <item name="download_youtube_video_menu_button" type="id"/>
+    <item name="tracker_counter" type="id"/>
+    <item name="anti_tracking_details" type="id"/>
+
 </resources>

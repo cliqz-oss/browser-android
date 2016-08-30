@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:background="@drawable/onboarding_gradient">
+                android:background="#e8e8e8">
 
     <ImageView
         android:id="@+id/background"
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:background="@color/gray_dark">
+            android:background="#2d3e50">
 
             <TextView
                 android:id="@+id/textView"
@@ -40,36 +40,32 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                android:layout_marginTop="20dp"
                 android:text="@string/onboarding_text_2"
-                android:textColor="@color/white"
-                android:textSize="16dp"/>
+                android:textColor="#8be0e7"
+                android:textSize="16dp"
+                android:textAlignment="center"
+                android:password="false"
+                android:layout_marginTop="30dp"/>
 
-            <FrameLayout
-                android:layout_width="match_parent"
+            <Button
+                android:minHeight="30dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="onBoardingDone"
+                android:text="@string/start_now_bang"
+                android:background="@drawable/start_now_button_background"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:id="@+id/start_now"
+                android:contentDescription="@string/start_now_bang"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/start_now_background"
                 android:layout_marginBottom="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
-                <Button
-                    android:minHeight="30dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:onClick="onBoardingDone"
-                    android:text="@string/start_now_bang"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/start_now_button_background"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textAllCaps="false"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:id="@+id/start_now"
-                    android:contentDescription="@string/start_now_bang"/>
-            </FrameLayout>
+                android:layout_centerHorizontal="true"/>
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -80,6 +80,7 @@
     <string name="title_clear_cookies">Cancella i cookies</string>
     <string name="dialog_history">Vorresti cancellare tutta la cronologia?</string>
     <string name="dialog_cookies">Vorresti cancellare tutti i cookies?</string>
+    <string name="dialog_favorites">Vorresti cancellare tutti i preferiti?</string>
     <string name="action_yes">Si</string>
     <string name="action_no">No</string>
     <string name="title_text_size">Dimensioni carattere</string>
@@ -94,7 +95,7 @@
     <string name="hint_url">URL</string>
     <string name="title_edit_bookmark">Edita</string>
     <string name="action_edit">Edita</string>
-    <string name="action_incognito">Nuova scheda in incognito</string>
+    <string name="action_incognito">Nuovo Forget Tab</string>
     <string name="action_homepage">Default</string>
     <string name="action_back">Indietro</string>
     <string name="action_find">Trova nella pagina</string>
@@ -212,7 +213,6 @@
     <string name="message_web_storage_cleared">Web Storage Cleared</string>
     <string name="complementary_search_engine">Motore di ricerca complementare</string>
     <string name="go">Vai</string>
-    <string name="about_version_format">%1$s basato su Lightning %2$s</string>
     <string name="action_refresh">Ricarica la pagina </string>
     <string name="contact_cliqz">Contatta CLIQZ</string>
     <string name="default_page_title">Nessun Titolo</string>
@@ -244,7 +244,7 @@
     <string name="enable_human_web">Abilita Human Web</string>
     <string name="share_link">Condividi con</string>
     <string name="shared_using">Condiviso con CLIQZ per Android</string>
-    <string name="also_clear_favorites">Cancella favoriti</string>
+    <string name="clear_favorites">Cancella favoriti</string>
     <string name="also_clear_queries">Cancella le query</string>
     <string name="clear_history">Cancella cronologia</string>
     <string name="deleting_in_progress_message">Cancellando...</string>
@@ -258,5 +258,32 @@
     <string name="news_notification">Notifica Notizie</string>
     <string name="restore_top_sites">Resetta siti bloccati</string>
     <string name="message_restore_top_sites">I siti precedentemente bloccati verrano visualizzati in home page.</string>
+    <string name="download_successful">Download completato</string>
+    <string name="download_failed">Download non riuscito</string>
+    <string name="action_search_on_page">Cerca nella pagina</string>
+    <string name="app_not_found">App non trovata</string>
+    <string name="settings_block_ads">Blocca Pubblicità</string>
+    <string name="optimized_block_ads">Consenti le pubblicità non inopportune</string>
+    <string name="what_does_optimized_mean">Cosa significa \'non inopportune\'?</string>
+    <string name="optimized_block_ads_description">La funzione anti-pubblicità di CLIQZ è ancora in fase Beta. La versione definitiva permetterà all’utente di scegliere fra le seguenti opzioni: consenti le pubblicità non inopportune, blocca tutta la pubblicità, consenti tutta la pubblicità.\nPer saperne di più: https://cliqz.com/whycliqz/adblocking</string>
     <string name="action_show_tab_manager">Tab Manager</string>
+    <string name="make_video_available_offline">Rendi disponibile offline</string>
+    <string name="dialog_youtube_video">Che cosa vorresti fare con questo video?</string>
+    <string name="close_in_page_search">Chiudi ricerca nella pagina</string>
+    <string name="in_page_search_next_result">Prossimo risultato nella pagina</string>
+    <string name="in_page_search_prev_result">Precedente risultato nella pagina</string>
+    <string name="antiphishing_dialog_title">Attenzione: sito ingannevole!</string>
+    <string name="antiphishing_message">CLIQZ ha bloccato  %1$s perchè il dominio é stato segnalato come phishing.\nIl phishing é la pratica di apparire come altri siti di cui ti potresti fidare in modo di estorcerti lo username, la password o altre informazioni sensibili.\nClicca [qui|https://cliqz.com/en/whycliqz/anti-phishing] per maggiori informazioni</string>
+    <string name="antiphishing_walk_away">Allontanati</string>
+    <string name="antiphishing_ignore_danger">Continua comunque</string>
+    <string name="antitracking_header">Le tue informazioni sono al sicuro</string>
+    <string name="antitracking_datapoints">Le informazioni sensibili sono state rimosse</string>
+    <string name="antitracking_tracking_companies">Società di tracking</string>
+    <string name="antitracking_datapoints_count">Informazioni sensibili</string>
+    <string name="help">Aiuto</string>
+    <string name="loading_screen">Sto caricando le ultime notizie</string>
+    <string name="favorites">Favoriti</string>
+    <string name="open_tabs">Tab aperti</string>
+    <string name="overview">Panoramica</string>
+    <string name="others">Altri</string>
 </resources>

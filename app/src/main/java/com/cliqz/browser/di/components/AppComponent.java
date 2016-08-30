@@ -1,9 +1,10 @@
 package com.cliqz.browser.di.components;
 
-import com.cliqz.browser.di.modules.MainActivityModule;
 import com.cliqz.browser.di.modules.AppModule;
+import com.cliqz.browser.di.modules.MainActivityModule;
 import com.cliqz.browser.gcm.NotificationDismissedReceiver;
 import com.cliqz.browser.gcm.RegistrationIntentService;
+import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.settings.BaseSettingsFragment;
 import com.cliqz.browser.utils.HistoryCleaner;
 import com.cliqz.browser.utils.InstallReferrerReceiver;
@@ -62,4 +63,6 @@ public interface AppComponent {
     void inject(NotificationDismissedReceiver notificationDismissedReceiver);
 
     void inject(InstallReferrerReceiver installReferrerReceiver);
+
+    void inject(TabsManager tabsManager);
 }

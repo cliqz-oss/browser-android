@@ -52,14 +52,14 @@ import acr.browser.lightning.download.DownloadHandler;
 public final class Utils {
 
     public static void downloadFile(final Activity activity, final String url,
-                                    final String userAgent, final String contentDisposition) {
+                                    final String userAgent, final String contentDisposition, final boolean isYouTubeVideo) {
         PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsResultAction() {
             @Override
             public void onGranted() {
                 String fileName = URLUtil.guessFileName(url, null, null);
-                DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null
-                );
+                DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null,
+                        isYouTubeVideo);
                 Log.i(Constants.TAG, "Downloading" + fileName);
             }
 
@@ -97,16 +97,45 @@ public final class Utils {
         alert.show();
     }
 
+    /**
+     * Display a Snackbar with a message
+     * @param resource String resource of the message to be displayed
+     */
     public static void showSnackbar(@NonNull Activity activity, @StringRes int resource) {
         View view = activity.findViewById(android.R.id.content);
-        if (view == null) return;
+        if (view == null) {
+            return;
+        }
         Snackbar.make(view, resource, Snackbar.LENGTH_SHORT).show();
     }
 
+    /**
+     * Display a Snackbar with a message
+     * @param message Message to be displayed
+     */
     public static void showSnackbar(@NonNull Activity activity, String message) {
         View view = activity.findViewById(android.R.id.content);
-        if (view == null) return;
+        if (view == null) {
+            return;
+        }
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Display a SnackBar with a message and a action button
+     * @param message Message to be displayed
+     * @param action Name of the action
+     * @param eventListener Implementation of the OnClickListener for the action
+     */
+    public static void showSnackbar(@NonNull Activity activity, String message, String action,
+                                    View.OnClickListener eventListener) {
+        View view = activity.findViewById(android.R.id.content);
+        if (view == null) {
+            return;
+        }
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+                .setAction(action, eventListener)
+                .show();
     }
 
     /**

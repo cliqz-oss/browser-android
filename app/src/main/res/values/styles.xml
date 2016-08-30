@@ -125,15 +125,34 @@
     <style name="Theme.Cliqz.Present.Incognito" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/incognito_tab_primary_color</item>
         <item name="colorPrimaryDark">@color/incognito_tab_primary_color_dark</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
     <style name="Theme.Cliqz.Suggestions" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">#55B046</item>
     </style>
 
+    <style name="Theme.Cliqz.Overview" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/normal_tab_primary_color</item>
+        <item name="colorPrimaryDark">@color/gray_medium</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
     <style name="overFlowButtonStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:minWidth">48dp</item>
         <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="editTextNormal" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:background">#ffffff</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="editTextIncognito" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:background">#333333</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="boldText">

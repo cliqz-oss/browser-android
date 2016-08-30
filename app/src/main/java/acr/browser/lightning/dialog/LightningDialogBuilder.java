@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.main.Messages;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
+import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 
 /**
@@ -244,7 +246,8 @@ public class LightningDialogBuilder {
     // TODO There should be a way in which we do not need an activity reference to dowload a file
     public void showLongPressImageDialog(@NonNull final Activity activity, @NonNull final String url,
                                           @NonNull final String userAgent) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
@@ -255,17 +258,16 @@ public class LightningDialogBuilder {
                         eventBus.post(new BrowserEvents.OpenUrlInCurrentTab(url));
                         break;
                     case DialogInterface.BUTTON_NEUTRAL:
-                            Utils.downloadFile(activity, url,
-                                    userAgent, "attachment");
+                        Utils.downloadFile(activity, url, userAgent, "attachment", false);
                         break;
                 }
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(url.replace(Constants.HTTP, ""))
                 .setCancelable(true)
-                .setMessage(R.string.dialog_image)
+                .setMessage(isYoutubeVideo ? R.string.dialog_youtube_video : R.string.dialog_image)
                 .setPositiveButton(R.string.action_new_tab, dialogClickListener)
                 .setNegativeButton(R.string.action_open, dialogClickListener)
                 .setNeutralButton(R.string.action_download, dialogClickListener)
@@ -273,6 +275,7 @@ public class LightningDialogBuilder {
     }
 
     public void showLongPressLinkDialog(final Activity activity, final String url, final String userAgent) {
+        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
         final CharSequence[] mOptions = new CharSequence[] {
                 activity.getString(R.string.action_copy),
                 activity.getString(R.string.open_in_new_tab),
@@ -298,7 +301,7 @@ public class LightningDialogBuilder {
                                 eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, true));
                                 break;
                             case 3:
-                                Utils.downloadFile(activity, url, userAgent, "attachment");
+                                Utils.downloadFile(activity, url, userAgent, "attachment", false);
                                 break;
                         }
                     }

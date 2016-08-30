@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -17,6 +19,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -24,14 +28,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +55,10 @@ import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
 import com.squareup.otto.Subscribe;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
+import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
@@ -55,6 +66,7 @@ import acr.browser.lightning.utils.ThemeUtils;
 import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.view.AnimatedProgressBar;
+import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
 import butterknife.Bind;
@@ -68,6 +80,8 @@ import butterknife.OnEditorAction;
  */
 public class TabFragment extends BaseFragment {
 
+    private static final String antiTrackingHelpUrlDe = "https://cliqz.com/whycliqz/anti-tracking";
+    private static final String antiTrackingHelpUrlEn = "https://cliqz.com/en/whycliqz/anti-tracking";
     private static final String TAG = TabFragment.class.getSimpleName();
     private static final String NAVIGATION_STATE_KEY = TAG + ".NAVIGATION_STATE";
     private static final int ICON_STATE_CLEAR = 0;
@@ -83,8 +97,12 @@ public class TabFragment extends BaseFragment {
     private String mSearchEngine;
     private Message newTabMessage = null;
     private String mExternalQuery = null;
-    protected final CliqzBrowserState state = new CliqzBrowserState();
+    // TODO: @Ravjit this should not be public (avoid public members)
+    public final CliqzBrowserState state = new CliqzBrowserState();
     protected boolean isHomePageShown = false;
+    private JSONArray videoUrls = null;
+    private int mTrackerCount = 0;
+    private View loadingScreen;
 
     String lastQuery = "";
 
@@ -115,8 +133,22 @@ public class TabFragment extends BaseFragment {
     @Bind(R.id.overflow_menu)
     View overflowMenuButton;
 
+    @Bind(R.id.overflow_menu_icon)
+    ImageView overflowMenuIcon;
+
     @Bind(R.id.in_page_search_bar)
     View inPageSearchBar;
+
+    @Nullable
+    @Bind(R.id.tracker_counter)
+    TextView trackerCounter;
+
+    @Nullable
+    @Bind(R.id.anti_tracking_details)
+    LinearLayout antiTrackingDetails;
+
+    @Bind(R.id.open_tabs_count)
+    TextView openTabsCounter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,8 +181,15 @@ public class TabFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        openTabsCounter.setText(Integer.toString(((MainActivity)getActivity()).tabsManager.getTabCount()));
+        final int iconColor = isIncognito ? R.color.toolbar_icon_color_incognito : R.color.toolbar_icon_color_normal;
+        openTabsCounter.getBackground().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
+        overflowMenuIcon.getDrawable().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
+        openTabsCounter.setTextColor(ContextCompat.getColor(getContext(), iconColor));
         inPageSearchBar.setVisibility(View.GONE);
         state.setIncognito(isIncognito);
+        searchBar.setStyle(isIncognito);
+        //openTabsCounter.setBa
         if (mSearchWebView == null || mLightningView == null) {
             // Must use activity due to Crosswalk webview
             mSearchWebView = ((MainActivity)getActivity()).searchWebView;
@@ -179,6 +218,7 @@ public class TabFragment extends BaseFragment {
         mLocalContainer.addView(mSearchWebView);
         titleBar.setOnTouchListener(onTouchListener);
         mSearchWebView.initExtensionPreferences();
+        setTrackerCountText(Integer.toString(mTrackerCount));
     }
 
     @Override
@@ -190,6 +230,13 @@ public class TabFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         telemetry.sendLayerChangeSignal("present");
+        if (!mSearchWebView.isExtensionReady()) {
+            final LayoutInflater inflater = LayoutInflater.from(getContext());
+            loadingScreen = inflater.inflate(R.layout.loading_screen, null, false);
+            mLocalContainer.addView(loadingScreen);
+            mSearchWebView.setVisibility(View.INVISIBLE);
+            mLightningView.getWebView().setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -260,6 +307,7 @@ public class TabFragment extends BaseFragment {
             } else {
                 mLightningView.getWebView().bringToFront();
                 searchBar.showTitleBar();
+                setAntiTrackingDetailsVisibility(View.VISIBLE);
                 searchBar.setTitle(mLightningView.getTitle());
                 switchIcon(ICON_STATE_NONE);
             }
@@ -315,7 +363,7 @@ public class TabFragment extends BaseFragment {
         if(isIncognito) {
             return R.style.Theme_Cliqz_Present_Incognito;
         } else {
-            return R.style.Theme_Cliqz_Present;
+            return R.style.Theme_Cliqz_Overview;
         }
     }
 
@@ -328,11 +376,12 @@ public class TabFragment extends BaseFragment {
     @OnClick(R.id.menu_history)
     void historyClicked() {
         hideKeyboard();
-        delayedPostOnBus(new Messages.GoToHistory());
+        delayedPostOnBus(new Messages.GoToOverview());
     }
 
     @OnClick(R.id.title_bar)
     void titleClicked() {
+        setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showSearchEditText();
         mAutocompleteEditText.setText(mLightningView.getUrl());
         mAutocompleteEditText.requestFocus();
@@ -345,12 +394,13 @@ public class TabFragment extends BaseFragment {
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();
         } else {
+            final String url = mLightningView != null ? mLightningView.getUrl() : "";
             mOverFlowMenu = new OverFlowMenu(getActivity());
-            // mOverFlowMenu.setBrowserState(state.getMode());
             mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
             mOverFlowMenu.setAnchorView(overflowMenuButton);
             mOverFlowMenu.setIncognitoMode(isIncognito);
-            mOverFlowMenu.setHistoryId(mLightningView.historyId);
+            mOverFlowMenu.setUrl(mLightningView.getUrl());
+            mOverFlowMenu.setIsYoutubeVideo(videoUrls != null && videoUrls.length() > 0);
             mOverFlowMenu.setState(state);
             mOverFlowMenu.show();
             hideKeyboard();
@@ -371,6 +421,62 @@ public class TabFragment extends BaseFragment {
     @OnClick(R.id.in_page_search_down_button)
     void nextResultInPageSearchClicked() {
         mLightningView.findNext();
+    }
+
+    // TODO @Ravjit, please extraxt this as a class, it is too much convoluted
+    // TODO @Ravjit, the dialog should disappear if you pause the app
+    @Nullable
+    @OnClick(R.id.anti_tracking_details)
+    void showAntiTrackingDialog() {
+        final ArrayList<TrackerDetailsModel> details = mLightningView.getTrackerDetails();
+        int trackerPoints = 0;
+        for (TrackerDetailsModel model: details) {
+            trackerPoints += model.trackerCount;
+        }
+        final int othersCount = mTrackerCount - trackerPoints;
+        if (othersCount > 0) {
+            final TrackerDetailsModel othersEntry = new TrackerDetailsModel(getString(R.string.others), othersCount);
+            details.add(othersEntry);
+        }
+        final View popupView = getActivity().getLayoutInflater().inflate(R.layout.anti_tracking_dialog, null);
+        final int popupBgColor = isIncognito ? R.color.incognito_tab_primary_color : R.color.normal_tab_primary_color;
+        final int popupTextColor = isIncognito ? R.color.normal_tab_primary_color : R.color.incognito_tab_primary_color;
+        popupView.setBackgroundColor(ContextCompat.getColor(getContext(), popupBgColor));
+        popupView.setAlpha(0.95f);
+        final PopupWindow antiTrackindDialog = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+        final TextView counter = (TextView) popupView.findViewById(R.id.counter);
+        final RecyclerView trackersList = (RecyclerView) popupView.findViewById(R.id.trackers_list);
+        final Button helpButton = (Button) popupView.findViewById(R.id.help);
+        final TextView companiesHeader = (TextView) popupView.findViewById(R.id.companies_header);
+        final TextView counterHeader = (TextView) popupView.findViewById(R.id.counter_header);
+        final View upperLine = popupView.findViewById(R.id.upperLine);
+        final View lowerLine = popupView.findViewById(R.id.lowerLine);
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Bundle args = new Bundle();
+                final String helpUrl = Locale.getDefault().getLanguage().equals("de") ?
+                        antiTrackingHelpUrlDe : antiTrackingHelpUrlEn;
+                args.putString(Constants.KEY_URL, helpUrl);
+                ((MainActivity)getActivity()).tabsManager.addNewTab(args);
+                antiTrackindDialog.dismiss();
+            }
+        });
+        companiesHeader.setTextColor(ContextCompat.getColor(getContext(), popupTextColor));
+        counterHeader.setTextColor(ContextCompat.getColor(getContext(), popupTextColor));
+        counter.setTextColor(ContextCompat.getColor(getContext(), popupTextColor));
+        helpButton.setTextColor(ContextCompat.getColor(getContext(), popupBgColor));
+        helpButton.getBackground().setColorFilter(ContextCompat.getColor(getContext(), popupTextColor), PorterDuff.Mode.SRC_ATOP);
+        upperLine.getBackground().setColorFilter(ContextCompat.getColor(getContext(), popupTextColor), PorterDuff.Mode.SRC_ATOP);
+        lowerLine.getBackground().setColorFilter(ContextCompat.getColor(getContext(), popupTextColor), PorterDuff.Mode.SRC_ATOP);
+        counter.setText(Integer.toString(mTrackerCount));
+        trackersList.setLayoutManager(new LinearLayoutManager(getContext()));
+        trackersList.setAdapter(new TrackersListAdapter(details, isIncognito, getContext(), bus, antiTrackindDialog));
+        antiTrackindDialog.setBackgroundDrawable(new ColorDrawable());
+        antiTrackindDialog.setOutsideTouchable(true);
+        antiTrackindDialog.setFocusable(true);
+        antiTrackindDialog.showAsDropDown(searchBar);
     }
 
     @OnEditorAction(R.id.search_edit_text)
@@ -430,9 +536,6 @@ public class TabFragment extends BaseFragment {
     public void updateProgress(BrowserEvents.UpdateProgress event) {
         mProgressBar.setProgress(event.progress);
         if (!mLightningView.getUrl().contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
-            if(event.progress > 30) {
-                // mLightningContainer.setRefreshing(false); //Dismiss the refreshing spinner
-            }
             if (event.progress == 100) {
                 switchIcon(ICON_STATE_NONE);
             } else {
@@ -457,10 +560,16 @@ public class TabFragment extends BaseFragment {
     private void bringWebViewToFront() {
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
+        setAntiTrackingDetailsVisibility(View.VISIBLE);
         mLightningView.getWebView().bringToFront();
         state.setMode(Mode.WEBPAGE);
     }
 
+    private void setAntiTrackingDetailsVisibility(int visibility) {
+        if (antiTrackingDetails != null) {
+            antiTrackingDetails.setVisibility(visibility);
+        }
+    }
     @Subscribe
     public void openLink(CliqzMessages.OpenLink event) {
         openLink(event.url, event.reset, false);
@@ -468,13 +577,8 @@ public class TabFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void openHistoryLink(CliqzMessages.OpenHistoryLink event) {
-        openLink(event.url, false, true);
-    }
-
-    @Subscribe
     public void addToFavourites(Messages.AddToFavourites event) {
-        historyDatabase.addToFavourites(event.id, true);
+        historyDatabase.setFavorites(event.url, System.currentTimeMillis(), true);
     }
 
     @Subscribe
@@ -499,7 +603,7 @@ public class TabFragment extends BaseFragment {
         finder.show();
     }
 
-    private void openLink(String eventUrl, boolean reset, boolean fromHistory) {
+    public void openLink(String eventUrl, boolean reset, boolean fromHistory) {
         telemetry.resetNavigationVariables(eventUrl.length());
         new Uri.Builder();
         final Uri.Builder builder = new Uri.Builder();
@@ -520,9 +624,23 @@ public class TabFragment extends BaseFragment {
         bringWebViewToFront();
     }
 
-    @Subscribe
-    public void notifyQuery(CliqzMessages.NotifyQuery event) {
-        bus.post(new Messages.ShowSearch(event.query));
+    /**
+     * Show the search interface in the current tab fro the given query
+     * @param query the query to display (and search)
+     */
+    public void searchQuery(String query) {
+        searchBar.showSearchEditText();
+        mSearchWebView.bringToFront();
+        inPageSearchBar.setVisibility(View.GONE);
+        mLightningView.findInPage("");
+        mAutocompleteEditText.requestFocus();
+        if (query != null) {
+            mAutocompleteEditText.setText(query);
+            mAutocompleteEditText.setSelection(query.length());
+        }
+        state.setMode(Mode.SEARCH);
+        setAntiTrackingDetailsVisibility(View.GONE);
+        showKeyBoard();
     }
 
     @Subscribe
@@ -533,6 +651,17 @@ public class TabFragment extends BaseFragment {
             onBackPressedV16();
         } else {
             onBackPressedV21();
+        }
+    }
+
+    @Subscribe
+    public void hideLoadingScreen(Messages.HideLoadingScreen event) {
+        if (loadingScreen != null) {
+            loadingScreen.setVisibility(View.GONE);
+            mSearchWebView.setVisibility(View.VISIBLE);
+            mLightningView.getWebView().setVisibility(View.VISIBLE);
+            mAutocompleteEditText.requestFocus();
+            showKeyBoard();
         }
     }
 
@@ -558,7 +687,7 @@ public class TabFragment extends BaseFragment {
         final Mode mode = state.getMode();
         if (hideOverFlowMenu()) {
             return;
-        } else if (mode == CliqzBrowserState.Mode.SEARCH &&
+        } else if (mode == Mode.SEARCH &&
                 !"".equals(url) &&
                 !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
             bringWebViewToFront();
@@ -595,27 +724,15 @@ public class TabFragment extends BaseFragment {
         }
     }
 
-
     @Subscribe
     public void showSearch(Messages.ShowSearch event) {
-        searchBar.showSearchEditText();
-        mSearchWebView.bringToFront();
-        inPageSearchBar.setVisibility(View.GONE);
-        mLightningView.findInPage("");
-        mAutocompleteEditText.requestFocus();
-        if (event != null) {
-            mAutocompleteEditText.setText(event.query);
-            mAutocompleteEditText.setSelection(event.query.length());
-        }
-        state.setMode(Mode.SEARCH);
-        showKeyBoard();
+        searchQuery(event.query);
     }
 
     @Subscribe
     public void autocomplete(CliqzMessages.Autocomplete event) {
         mAutocompleteEditText.setAutocompleteText(event.completion);
     }
-
 
     @Subscribe
     public void reloadPage(Messages.ReloadPage event) {
@@ -683,7 +800,7 @@ public class TabFragment extends BaseFragment {
     @Subscribe
     public void saveLink(Messages.SaveLink event) {
         Utils.downloadFile(getActivity(), mLightningView.getUrl(),
-                mLightningView.getWebView().getSettings().getUserAgentString(), "attachment");
+                mLightningView.getWebView().getSettings().getUserAgentString(), "attachment", false);
     }
 
     @Subscribe
@@ -699,8 +816,13 @@ public class TabFragment extends BaseFragment {
     @Subscribe
     public synchronized void hideToolBar(BrowserEvents.HideToolBar event) {
         if (mStatusBar.getTranslationY() >= 0.0f && !isAnimationInProgress) {
-            isAnimationInProgress = true;
             final int height = mStatusBar.getHeight();
+            //Don't hide the status bar if page is not long enough
+            if (((CliqzWebView)mLightningView.getWebView()).getVerticalScrollHeight() - mLocalContainer.getHeight()
+                    < 2*mStatusBar.getHeight()) {
+                return;
+            }
+            isAnimationInProgress = true;
             mStatusBar.animate().translationY(-height).setInterpolator(new AccelerateInterpolator()).start();
             mContentContainer.animate().translationY(-height).setInterpolator(new AccelerateInterpolator())
                     .setListener(new Animator.AnimatorListener() {
@@ -760,6 +882,55 @@ public class TabFragment extends BaseFragment {
         }
     }
 
+    @Subscribe
+    public void setYoutubeUrls(Messages.SetVideoUrls event) {
+        videoUrls = event.urls;
+        if (videoUrls == null) {
+            return;
+        }
+        if (videoUrls.length() == 0) {
+            telemetry.sendVideoPageSignal(false);
+        } else {
+            telemetry.sendVideoPageSignal(true);
+        }
+    }
+
+    @Subscribe
+    public void fetchYoutubeVideo(Messages.FetchYoutubeVideoUrls event) {
+        videoUrls = null;
+        // To fetch the videos url we have to run the ytdownloader.getUrls script that is bundled
+        // with the extension
+        final String url =
+                event.videoPageUrl != null ? event.videoPageUrl : mLightningView.getUrl();
+        YTPageFetcher.asyncGetYoutubeVideoUrls(mSearchWebView, url);
+    }
+
+    @Subscribe
+    public void downloadYoutubeVideo(Messages.DownloadYoutubeVideo event) {
+        if (videoUrls != null) {
+            YTDownloadDialog.show(getActivity(), videoUrls);
+            telemetry.sendVideoDownloadSignal(event.targetType);
+        }
+    }
+
+    @Subscribe
+    public void updateTrackerCount(Messages.UpdateTrackerCount event) {
+        mTrackerCount++;
+        setTrackerCountText(Integer.toString(mTrackerCount));
+    }
+
+    @Subscribe
+    public void resetTrackerCount(Messages.ResetTrackerCount event) {
+        mTrackerCount = 0;
+        setTrackerCountText(Integer.toString(mTrackerCount));
+    }
+
+    private void setTrackerCountText(String text) {
+        if (trackerCounter != null) {
+            trackerCounter.setText(text);
+        }
+    }
+
     void updateTitle() {
         final String title = mLightningView.getTitle();
         searchBar.setTitle(title);
@@ -782,13 +953,13 @@ public class TabFragment extends BaseFragment {
         Drawable icon;
         switch (type) {
             case ICON_STATE_CLEAR:
-                icon = ThemeUtils.getLightThemedDrawable(getContext(), R.drawable.ic_action_delete);
+                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
                 break;
 //            case RELOAD:
 //                icon = ThemeUtils.getLightThemedDrawable(getContext(), R.drawable.ic_action_refresh);
 //                break;
             case ICON_STATE_STOP:
-                icon = ThemeUtils.getLightThemedDrawable(getContext(), R.drawable.ic_action_delete);
+                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
                 break;
             case ICON_STATE_NONE:
                 icon = null;
@@ -797,7 +968,7 @@ public class TabFragment extends BaseFragment {
                 titleBar.setHeight(height);
                 break;
             default:
-                icon = ThemeUtils.getLightThemedDrawable(getContext(), R.drawable.ic_action_delete);
+                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
         }
         titleBar.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null);
 

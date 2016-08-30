@@ -54,7 +54,7 @@ public class CliqzBridge extends Bridge {
                     // TODO This fallback should be removed when the JS bridge will use pagination
                     try {
                         final JSONObject params = new JSONObject().put("start", 0).put("end", 50);
-                        getHistory.execute(bridge, params, callback);
+                        getHistoryItems.execute(bridge, params, callback);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -62,46 +62,60 @@ public class CliqzBridge extends Bridge {
             }
         }),
 
-        /**
-         * Return history (paged)
-         */
-        getHistory(new IAction() {
+        getFavorites(new IAction() {
             @Override
             public void execute(Bridge bridge, Object data, String callback) {
-                final JSONObject jsonObject = (data instanceof JSONObject) ? (JSONObject) data: new JSONObject();
                 if (callback == null || callback.isEmpty()) {
-                    Log.e(TAG, "Can't perform getHistory without a callback");
-                    return; // Nothing to do without callback or data
+                    Log.e(TAG, "Can't perform getFavorites without a callback");
+                    return;
                 }
-
-                final int start = jsonObject.optInt("start", 0);
-                final int end = jsonObject.optInt("end", 50);
-
-                final JsonArray items =
-                        bridge.historyDatabase.getHistoryItems(start, end);
-
+                final JsonArray items = bridge.historyDatabase.getFavorites();
                 final String callbackCode = buildItemsCallback(callback, "", items);
-                bridge.executeJavascript(callbackCode);
+                bridge.executeJavascript(String.format("%s(%s)", callback,items.toString()));
             }
         }),
 
-        /**
-         * Mark history entry as favorite or remove the favorite status
-         */
-        setHistoryFavorite(new IAction() {
+        setFavorites(new IAction() {
             @Override
             public void execute(Bridge bridge, Object data, String callback) {
-                final JSONObject json = (data instanceof JSONObject) ? (JSONObject) data : null;
-                if (json != null && json.has("ids") && json.has("value")) {
-                    final JSONArray ids = json.optJSONArray("ids");
-                    final boolean value = json.optBoolean("value");
-                    for (int i = 0; ids != null && i < ids.length(); i++) {
-                        final long id = ids.optLong(i, -1);
-                        if (id > -1) {
-                            bridge.historyDatabase.addToFavourites(id, value);
+                final JSONObject jsonObject = (data instanceof JSONObject) ? (JSONObject) data : new JSONObject();
+                if (!jsonObject.has("favorites")) {
+                    Log.e(TAG, "Can't set favorites. Request is empty");
+                }
+                final JSONArray favoritesList = jsonObject.optJSONArray("favorites");
+                final boolean isFavorite = jsonObject.optBoolean("value", false);
+                if (favoritesList == null) {
+                    return;
+                }
+                for (int i = 0; i < favoritesList.length(); i++) {
+                    JSONObject favoriteItem = favoritesList.optJSONObject(i);
+                    if (favoriteItem != null) {
+                        final String url = favoriteItem.optString("url");
+                        final long favTime = favoriteItem.optLong("timestamp", -1);
+                        if (url == null) {
+                            continue;
                         }
+                        bridge.historyDatabase.setFavorites(url, favTime, isFavorite);
                     }
                 }
+            }
+        }),
+
+        getHistoryItems(new IAction() {
+            @Override
+            public void execute(Bridge bridge, Object data, String callback) {
+                final JSONObject jsonObject = (data instanceof JSONObject) ? (JSONObject) data : new JSONObject();
+                if (callback == null || callback.isEmpty()) {
+                    Log.e(TAG, "Can't perform getHistoryItems without a callback");
+                    return;
+                }
+
+                final int start = jsonObject.optInt("start", 0);
+                final int end = jsonObject.optInt("end", bridge.historyDatabase.getHistoryItemsCount());
+
+                final JsonArray items = bridge.historyDatabase.getHistoryItems(start, end);
+                final String callbackCode = buildItemsCallback(callback, "", items);
+                bridge.executeJavascript(String.format("%s(%s)", callback,items.toString()));
             }
         }),
 
@@ -109,7 +123,7 @@ public class CliqzBridge extends Bridge {
          * Remove multiple items from the history
          * Javascript example: removeHistory([id1, id2, id3, ...])
          */
-        removeHistory(new IAction() {
+        removeHistoryItems(new IAction() {
             @Override
             public void execute(Bridge bridge, Object data, String callback) {
                 final JSONArray json = (data instanceof JSONArray) ? (JSONArray) data : null;
@@ -129,6 +143,7 @@ public class CliqzBridge extends Bridge {
         isReady(new IAction() {
             @Override
             public void execute(Bridge bridge, Object data, String callback) {
+                bridge.bus.post(new Messages.HideLoadingScreen());
                 bridge.getWebView().extensionReady();
                 bridge.executeJavascript(String.format(Locale.US,  "%s(-1)", callback));
             }
@@ -241,6 +256,14 @@ public class CliqzBridge extends Bridge {
                     return;
                 }
                 bridge.bus.post(new Messages.ShareCard(cardLink));
+            }
+        }),
+
+        notifyYoutubeVideoUrls(new IAction() {
+            @Override
+            public void execute(Bridge bridge, Object data, String callback) {
+                final JSONArray json = (data instanceof JSONArray) ? (JSONArray) data: new JSONArray();
+                bridge.bus.post(new Messages.SetVideoUrls(json));
             }
         }),
 

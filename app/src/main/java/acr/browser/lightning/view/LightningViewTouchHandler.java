@@ -71,10 +71,10 @@ class LightningViewTouchHandler {
                 // Do not perform the following actions if the webview didn't scroll vertically
                 if (distance > SCROLL_UP_THRESHOLD && scrollY < SCROLL_UP_THRESHOLD &&
                         mLightningViewScrollPositionY != scrollY) {
-                    lightningView.mEventBus.post(new BrowserEvents.ShowToolBar());
+                    lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
                 } else if (distance < -SCROLL_UP_THRESHOLD &&
                         mLightningViewScrollPositionY != scrollY) {
-                    lightningView.mEventBus.post(new BrowserEvents.HideToolBar());
+                    lightningView.eventBus.post(new BrowserEvents.HideToolBar());
                 }
                 mLocation = 0;
             }
@@ -92,9 +92,9 @@ class LightningViewTouchHandler {
             int power = (int) (velocityY * 100 / maxFling);
             // Do not perform the following actions if the webview didn't scroll vertically
             if (power < -10 && mLightningViewScrollPositionY != webViewScrollPositionY) {
-                lightningView.mEventBus.post(new BrowserEvents.HideToolBar());
+                lightningView.eventBus.post(new BrowserEvents.HideToolBar());
             } else if (power > 15 && mLightningViewScrollPositionY != webViewScrollPositionY) {
-                lightningView.mEventBus.post(new BrowserEvents.ShowToolBar());
+                lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
             }
             return super.onFling(e1, e2, velocityX, velocityY);
         }

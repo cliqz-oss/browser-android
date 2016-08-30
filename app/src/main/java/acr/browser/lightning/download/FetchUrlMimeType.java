@@ -13,7 +13,10 @@ import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.Messages;
 import com.squareup.otto.Bus;
 
 import java.io.IOException;
@@ -42,20 +45,24 @@ class FetchUrlMimeType extends Thread {
 
     private final String mUserAgent;
 
+    private final boolean mIsYouTubeVideo;
+
     public FetchUrlMimeType(Activity activity, DownloadManager.Request request, String uri,
-                            String cookies, String userAgent) {
+                            String cookies, String userAgent, boolean isYouTubeVideo) {
         mActivity = activity;
         mRequest = request;
         mUri = uri;
         mCookies = cookies;
         mUserAgent = userAgent;
+        mIsYouTubeVideo = isYouTubeVideo;
     }
 
     @Override
     public void run() {
         // User agent is likely to be null, though the AndroidHttpClient
         // seems ok with that.
-        final Bus eventBus = ((MainActivity)mActivity).mActivityComponent.getBus();
+        final ActivityComponent component = BrowserApp.getActivityComponent(mActivity);
+        final Bus eventBus = component != null ? component.getBus() : new Bus();
         String mimeType = null;
         String contentDisposition = null;
         HttpURLConnection connection = null;
@@ -109,12 +116,15 @@ class FetchUrlMimeType extends Thread {
         // Start the download
         DownloadManager manager = (DownloadManager) mActivity
                 .getSystemService(Context.DOWNLOAD_SERVICE);
-        manager.enqueue(mRequest);
+        final long downloadId = manager.enqueue(mRequest);
         Handler handler = new Handler(Looper.getMainLooper());
         final String file = filename;
         handler.post(new Runnable() {
             @Override
             public void run() {
+                if (mIsYouTubeVideo) {
+                    eventBus.post(new Messages.SaveId(downloadId));
+                }
                 eventBus.post(new BrowserEvents.ShowSnackBarMessage(mActivity.getString(R.string.download_pending) + ' ' + file));
             }
         });

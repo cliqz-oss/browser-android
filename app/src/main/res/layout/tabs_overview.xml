@@ -1,0 +1,25 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/normal_tab_primary_color">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/tabs_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/new_tab_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_action_add_white"
+        app:layout_anchor="@id/tabs_list_view"
+        app:layout_anchorGravity="bottom|right|end"
+        app:backgroundTint="#a2d9e3"
+        android:tint="@color/black"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -48,8 +48,7 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
 
     private String getVersion() {
         final String version = BuildConfig.VERSION_NAME;
-        final String lightningVersion = BuildConfig.LIGHTNING_VERSION_NAME;
-        return getString(R.string.about_version_format, version, lightningVersion);
+        return getString(R.string.about_version_format, version);
     }
 
     private final Preference.OnPreferenceClickListener versionClickListener =

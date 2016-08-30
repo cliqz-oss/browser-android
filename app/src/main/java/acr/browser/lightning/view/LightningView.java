@@ -22,9 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
@@ -33,17 +31,28 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 
+import com.cliqz.antitracking.AntiTracking;
 import com.cliqz.browser.R;
+import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.TrackerDetailsModel;
+import com.cliqz.browser.main.TrackersListAdapter;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -54,21 +63,21 @@ import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
 import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.AdBlock;
 import acr.browser.lightning.utils.ProxyUtils;
 import acr.browser.lightning.utils.ThemeUtils;
 import acr.browser.lightning.utils.Utils;
 
-public class LightningView implements ILightningTab {
+public class LightningView {
 
     public static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     public static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
     public static final String HEADER_DNT = "DNT";
+    private static final String TAG = LightningView.class.getSimpleName();
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     final boolean mIsIncognitoTab;
-    private final Activity activity;
+    final Activity activity;
     private static String mHomepage;
     private static String mDefaultUserAgent;
     private final Paint mPaint = new Paint();
@@ -77,10 +86,6 @@ public class LightningView implements ILightningTab {
     private boolean mToggleDesktop = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
     private final String mId;
-    private String mUrl;
-//    // TODO fix so that mWebpageBitmap can be static - static changes the icon when switching from light to dark and then back to light
-//    private Bitmap mWebpageBitmap;
-//    private boolean mTextReflow = false;
     boolean clicked = false;
 
     /**
@@ -104,19 +109,19 @@ public class LightningView implements ILightningTab {
     public long historyId = -1;
 
     @Inject
-    Bus mEventBus;
+    Bus eventBus;
 
     @Inject
-    PreferenceManager mPreferences;
+    PreferenceManager preferences;
 
     @Inject
-    LightningDialogBuilder mBookmarksDialogBuilder;
+    LightningDialogBuilder bookmarksDialogBuilder;
 
     @Inject
-    AdBlock mAdBlock;
+    AntiTracking attrack;
 
     @Inject
-    HistoryDatabase mHistoryDatabase;
+    HistoryDatabase historyDatabase;
 
     @Inject
     Telemetry telemetry;
@@ -127,14 +132,20 @@ public class LightningView implements ILightningTab {
     @Inject
     PasswordManager passwordManager;
 
+    @Inject
+    AntiPhishing antiPhishing;
+
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        ((MainActivity)activity).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        if (component != null) {
+            component.inject(this);
+        }
         this.activity = activity;
         mId = uniqueId;
         mWebView = /* overrideWebView != null ? overrideWebView : */new CliqzWebView(activity);
         mIsIncognitoTab = isIncognito;
-        Boolean useDarkTheme = mPreferences.getUseTheme() != 0 || isIncognito;
+        Boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
         mTitle = new LightningViewTitle(activity, useDarkTheme);
 
         mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
@@ -218,18 +229,20 @@ public class LightningView implements ILightningTab {
             settings = mWebView.getSettings();
         }
 
-        settings.setDefaultTextEncodingName(mPreferences.getTextEncoding());
-        mAdBlock.setEnabled(mPreferences.getAdBlockEnabled());
-        mHomepage = mPreferences.getHomepage();
-        setColorMode(mPreferences.getRenderingMode());
+        settings.setDefaultTextEncodingName(preferences.getTextEncoding());
+        //This should be replaced with regular preferences
+        attrack.setEnabled(true);
+        attrack.setAdblockEnabled(preferences.getAdBlockEnabled());
+        mHomepage = preferences.getHomepage();
+        setColorMode(preferences.getRenderingMode());
 
-        if (mPreferences.getDoNotTrackEnabled()) {
+        if (preferences.getDoNotTrackEnabled()) {
             mRequestHeaders.put(HEADER_DNT, "1");
         } else {
             mRequestHeaders.remove(HEADER_DNT);
         }
 
-        if (mPreferences.getRemoveIdentifyingHeadersEnabled()) {
+        if (preferences.getRemoveIdentifyingHeadersEnabled()) {
             mRequestHeaders.put(HEADER_REQUESTED_WITH, "");
             mRequestHeaders.put(HEADER_WAP_PROFILE, "");
         } else {
@@ -238,12 +251,12 @@ public class LightningView implements ILightningTab {
         }
 
         if (!mIsIncognitoTab) {
-            settings.setGeolocationEnabled(mPreferences.getLocationEnabled());
+            settings.setGeolocationEnabled(preferences.getLocationEnabled());
         } else {
             settings.setGeolocationEnabled(false);
         }
         if (API < Build.VERSION_CODES.KITKAT) {
-            switch (mPreferences.getFlashSupport()) {
+            switch (preferences.getFlashSupport()) {
                 case 0:
                     //noinspection deprecation
                     settings.setPluginState(PluginState.OFF);
@@ -261,23 +274,14 @@ public class LightningView implements ILightningTab {
             }
         }
 
-        setUserAgent(context, mPreferences.getUserAgentChoice());
+        setUserAgent(context, preferences.getUserAgentChoice());
 
-//        if (mPreferences.getSavePasswordsEnabled() && !mIsIncognitoTab) {
-//            if (API < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-//                //noinspection deprecation
-//                settings.setSavePassword(true);
-//            }
-//            settings.setSaveFormData(true);
-//        } else {
         if (API <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             //noinspection deprecation
             settings.setSavePassword(false);
         }
-//            settings.setSaveFormData(false);
-//        }
 
-        if (mPreferences.getJavaScriptEnabled()) {
+        if (preferences.getJavaScriptEnabled()) {
             settings.setJavaScriptEnabled(true);
             settings.setJavaScriptCanOpenWindowsAutomatically(true);
         } else {
@@ -285,7 +289,7 @@ public class LightningView implements ILightningTab {
             settings.setJavaScriptCanOpenWindowsAutomatically(false);
         }
 
-        if (mPreferences.getTextReflowEnabled()) {
+        if (preferences.getTextReflowEnabled()) {
             settings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
             if (API >= android.os.Build.VERSION_CODES.KITKAT) {
                 try {
@@ -300,15 +304,15 @@ public class LightningView implements ILightningTab {
             settings.setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
         }
 
-        settings.setBlockNetworkImage(mPreferences.getBlockImagesEnabled());
+        settings.setBlockNetworkImage(preferences.getBlockImagesEnabled());
         if (!mIsIncognitoTab) {
-            settings.setSupportMultipleWindows(mPreferences.getPopupsEnabled());
+            settings.setSupportMultipleWindows(preferences.getPopupsEnabled());
         } else {
             settings.setSupportMultipleWindows(false);
         }
-        settings.setUseWideViewPort(mPreferences.getUseWideViewportEnabled());
-        settings.setLoadWithOverviewMode(mPreferences.getOverviewModeEnabled());
-        switch (mPreferences.getTextSize()) {
+        settings.setUseWideViewPort(preferences.getUseWideViewportEnabled());
+        settings.setLoadWithOverviewMode(preferences.getOverviewModeEnabled());
+        switch (preferences.getTextSize()) {
             case 0:
                 settings.setTextZoom(200);
                 break;
@@ -328,9 +332,9 @@ public class LightningView implements ILightningTab {
                 settings.setTextZoom(50);
                 break;
         }
+        CookieManager.getInstance().setAcceptCookie(preferences.getCookiesEnabled());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView,
-                    !mPreferences.getBlockThirdPartyCookiesEnabled());
+            CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, false);
         }
     }
 
@@ -397,7 +401,7 @@ public class LightningView implements ILightningTab {
         if (!mToggleDesktop)
             mWebView.getSettings().setUserAgentString(Constants.DESKTOP_USER_AGENT);
         else
-            setUserAgent(context, mPreferences.getUserAgentChoice());
+            setUserAgent(context, preferences.getUserAgentChoice());
         mToggleDesktop = !mToggleDesktop;
     }
 
@@ -420,7 +424,7 @@ public class LightningView implements ILightningTab {
                 settings.setUserAgentString(Constants.MOBILE_USER_AGENT);
                 break;
             case 4:
-                String ua = mPreferences.getUserAgentString(mDefaultUserAgent);
+                String ua = preferences.getUserAgentString(mDefaultUserAgent);
                 if (ua == null || ua.isEmpty()) {
                     ua = " ";
                 }
@@ -461,7 +465,7 @@ public class LightningView implements ILightningTab {
 
     public void setForegroundTab(boolean isForeground) {
         isForegroundTab = isForeground;
-        mEventBus.post(new BrowserEvents.TabsChanged());
+        eventBus.post(new BrowserEvents.TabsChanged());
     }
 
     public boolean isForegroundTab() {
@@ -679,43 +683,24 @@ public class LightningView implements ILightningTab {
      */
     private void longClickPage(final String url) {
         final WebView.HitTestResult result = mWebView.getHitTestResult();
-        String currentUrl = mWebView.getUrl();
-//        if (currentUrl != null && currentUrl.startsWith(Constants.FILE)) {
-//            if (currentUrl.endsWith(HistoryPage.FILENAME)) {
-//                if (url != null) {
-//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(activity, url);
-//                } else if (result != null && result.getExtra() != null) {
-//                    final String newUrl = result.getExtra();
-//                    mBookmarksDialogBuilder.showLongPressedHistoryLinkDialog(activity, newUrl);
-//                }
-//            } else if (currentUrl.endsWith(Constants.BOOKMARKS_FILENAME)) {
-//                if (url != null) {
-//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(activity, url);
-//                } else if (result != null && result.getExtra() != null) {
-//                    final String newUrl = result.getExtra();
-//                    mBookmarksDialogBuilder.showLongPressedDialogForBookmarkUrl(activity, newUrl);
-//                }
-//            }
-//        } else {
-            if (url != null) {
-                if (result != null) {
-                    if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                        mBookmarksDialogBuilder.showLongPressImageDialog(activity, url, getUserAgent());
-                    } else {
-                        mBookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
-                    }
-                } else {
-                    mBookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
-                }
-            } else if (result != null && result.getExtra() != null) {
-                final String newUrl = result.getExtra();
+        if (url != null) {
+            if (result != null) {
                 if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    mBookmarksDialogBuilder.showLongPressImageDialog(activity, newUrl, getUserAgent());
+                    bookmarksDialogBuilder.showLongPressImageDialog(activity, url, getUserAgent());
                 } else {
-                    mBookmarksDialogBuilder.showLongPressLinkDialog(activity, newUrl, getUserAgent());
+                    bookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
                 }
+            } else {
+                bookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
             }
-//        }
+        } else if (result != null && result.getExtra() != null) {
+            final String newUrl = result.getExtra();
+            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                bookmarksDialogBuilder.showLongPressImageDialog(activity, newUrl, getUserAgent());
+            } else {
+                bookmarksDialogBuilder.showLongPressLinkDialog(activity, newUrl, getUserAgent());
+            }
+        }
     }
 
     public boolean canGoBack() {
@@ -741,15 +726,7 @@ public class LightningView implements ILightningTab {
             return;
         }
 
-        // if (mWebView != null && !mIsCustomWebView) {
-            mUrl = url;
             mWebView.loadUrl(url, mRequestHeaders);
-
-            /* if (API > 16) {
-                final WebSettings settings = mWebView.getSettings();
-                setAccessFromUrl(url, settings);
-            } */
-        // }
     }
 
     public synchronized void invalidate() {
@@ -778,10 +755,10 @@ public class LightningView implements ILightningTab {
     boolean isProxyReady() {
         switch (proxyUtils.getProxyState()) {
             case I2P_NOT_RUNNING:
-                mEventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_not_running));
+                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_not_running));
                 return false;
             case I2P_TUNNELS_NOT_READY:
-                mEventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_tunnels_not_ready));
+                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_tunnels_not_ready));
                 return false;
             default:
                 return true;
@@ -851,7 +828,7 @@ public class LightningView implements ILightningTab {
             @Override
             public void run() {
                 try {
-                   LightningView.this.historyId = mHistoryDatabase.visitHistoryItem(url, title);
+                   LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
                 } catch (IllegalStateException e) {
                     Log.e(Constants.TAG, "IllegalStateException in updateHistory", e);
                 } catch (NullPointerException e) {
@@ -865,5 +842,40 @@ public class LightningView implements ILightningTab {
             new Thread(update).start();
         }
     }
+
+    /**
+     * Gets a JSONObject containing info about the trackers from the Antitracking module and processes
+     * it and returns an ArrayList of Trackers
+     * @return ArrayList of TrackerDetailsModel objects. TrackerDetailsModel has the name of the trackers and no of
+     * data points blocked for each tracker
+     * This method is not called in the xwalk build variant
+     */
+    public @NonNull ArrayList<TrackerDetailsModel> getTrackerDetails() {
+        final ArrayList<TrackerDetailsModel> trackerDetails = new ArrayList<>();
+        try {
+            final JSONObject jsonObject = attrack.getTabBlockingInfo(mWebView.hashCode());
+            final JSONArray companies = jsonObject.getJSONObject("companies").names();
+            if (companies == null) {
+                return trackerDetails;
+            }
+            for (int i = 0; i < companies.length(); i++) {
+                final String key = companies.getString(i);
+                final JSONArray domains = jsonObject.getJSONObject("companies").getJSONArray(key);
+                int trackersCount = 0;
+                for (int j = 0; j < domains.length(); j++) {
+                    final JSONObject trackers = jsonObject.getJSONObject("trackers").getJSONObject(domains.optString(j));
+                    trackersCount += trackers.optInt("bad_qs",0); //  + trackers.optInt("adblock_block",0);
+                }
+                if (trackersCount > 0) {
+                    trackerDetails.add(new TrackerDetailsModel(key, trackersCount));
+                }
+            }
+            return trackerDetails;
+        } catch (JSONException e) {
+            Log.e(TAG, "Can't parse json from antitracking module", e);
+            return trackerDetails;
+        }
+    }
+
 
 }

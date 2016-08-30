@@ -9,7 +9,7 @@
               android:paddingEnd="@dimen/abc_dialog_padding_material"
               android:paddingStart="@dimen/abc_dialog_padding_material">
 
-    <CheckBox
+    <!--CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/also_clear_favorites"
@@ -21,5 +21,5 @@
         android:layout_height="wrap_content"
         android:text="@string/also_clear_queries"
         android:id="@+id/clear_history_queries"
-        android:textSize="16sp"/>
+        android:textSize="16sp"/-->
 </LinearLayout>

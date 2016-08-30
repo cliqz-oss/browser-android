@@ -16,6 +16,9 @@
         android:fragment="com.cliqz.browser.settings.HumanWebSettings"
         android:title="@string/humanweb" />
     <header
+        android:fragment="com.cliqz.browser.settings.AdBlockSettings"
+        android:title="@string/settings_block_ads" />
+    <header
         android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
         android:title="@string/settings_about"
         android:summary="@string/settings_about_explain" />

@@ -33,9 +33,12 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
             fragment.hideKeyboard();
             if(mode == Mode.WEBPAGE) {
                 fragment.searchBar.showTitleBar();
+                if (fragment.antiTrackingDetails != null) {
+                    fragment.antiTrackingDetails.setVisibility(View.VISIBLE);
+                }
             }
         } else {
-
+            fragment.bus.post(new Messages.AdjustPan());
             fragment.timings.setUrlBarFocusedTime();
             // TODO: The next two lines should be in a method
             fragment.mSearchWebView.bringToFront();

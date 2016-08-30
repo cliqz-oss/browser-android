@@ -31,6 +31,9 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
     @Inject
     PreferenceManager preferenceManager;
 
+    @Inject
+    Telemetry telemetry;
+
     public InstallReferrerReceiver() {
         super();
         BrowserApp.getAppComponent().inject(this);
@@ -39,22 +42,26 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String referrer = intent.getStringExtra("referrer");
+        preferenceManager.setReferrerUrl(referrer);
         try {
             referrer = URLDecoder.decode(referrer, "UTF-8");
+            final Map<String, String> parameters = new HashMap<>();
+            final String[] pairs = referrer.split("&");
+            for (String pair : pairs) {
+                final String[] keyValuePair = pair.split("=");
+                parameters.put(keyValuePair[0], keyValuePair[1]);
+            }
+            if (parameters.containsKey(KEY_CAMPAIGN)) {
+                preferenceManager.setDistribution(parameters.get(KEY_CAMPAIGN));
+            }
+            if (parameters.containsKey(KEY_ADVERT_ID)) {
+                preferenceManager.setAdvertID(parameters.get(KEY_ADVERT_ID));
+            }
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error decoding referrer", e);
-        }
-        final Map<String, String> parameters = new HashMap<>();
-        final String[] pairs = referrer.split("&");
-        for (String pair : pairs) {
-            final String[] keyValuePair = pair.split("=");
-            parameters.put(keyValuePair[0], keyValuePair[1]);
-        }
-        if (parameters.containsKey(KEY_CAMPAIGN)) {
-            preferenceManager.setReferrer(parameters.get(KEY_CAMPAIGN));
-        }
-        if (parameters.containsKey(KEY_ADVERT_ID)) {
-            preferenceManager.setAdvertID(parameters.get(KEY_ADVERT_ID));
+            preferenceManager.setDistributionException(true);
+        } finally {
+            telemetry.sendLifeCycleSignal(Telemetry.Action.INSTALL);
         }
     }
 }

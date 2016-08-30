@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.R;
@@ -53,7 +55,6 @@ public class OverFlowMenu extends FrameLayout {
 
     private enum Entries {
         ACTIONS(-1, -1),
-        TAB_MANAGER(R.id.show_tab_manager_menu_button, R.string.action_show_tab_manager),
         NEW_TAB(R.id.new_tab_menu_button, R.string.action_new_tab),
         NEW_INCOGNITO_TAB(R.id.new_incognito_tab_menu_button, R.string.action_incognito),
         COPY_LINK(R.id.copy_link_menu_button, R.string.action_copy),
@@ -61,7 +62,8 @@ public class OverFlowMenu extends FrameLayout {
         SEARCH_IN_PAGE(R.id.search_on_page_menu_button, R.string.action_search_on_page),
         SETTINGS(R.id.settings_menu_button, R.string.settings),
         CONTACT_CLIQZ(R.id.contact_cliqz_menu_button, R.string.contact_cliqz),
-        SAVE_LINK(R.id.save_link_menu_button, R.string.save_link);
+        SAVE_LINK(R.id.save_link_menu_button, R.string.save_link),
+        DOWNLOAD_YOUTUBE_VIDEO(R.id.download_youtube_video_menu_button, R.string.make_video_available_offline);
 
         final int stringID;
         final int id;
@@ -74,11 +76,11 @@ public class OverFlowMenu extends FrameLayout {
 
     private static final Entries[] ENTRIES = new Entries[] {
             Entries.ACTIONS,
-            Entries.TAB_MANAGER,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
             Entries.COPY_LINK,
             Entries.SAVE_LINK,
+            Entries.DOWNLOAD_YOUTUBE_VIDEO,
             Entries.SEARCH_IN_PAGE,
             Entries.ADD_TO_FAVOURITES,
             Entries.SETTINGS,
@@ -87,7 +89,6 @@ public class OverFlowMenu extends FrameLayout {
 
     private static final Entries[] INCOGNITO_ENTRIES = new Entries[] {
             Entries.ACTIONS,
-            Entries.TAB_MANAGER,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
             Entries.SEARCH_IN_PAGE,
@@ -98,8 +99,11 @@ public class OverFlowMenu extends FrameLayout {
     private final Context context;
     private final OverFlowMenuAdapter overFlowMenuAdapter;
     private boolean mCanGoForward = false;
-    private boolean mIncognitoMode;
-    private long historyId;
+    private boolean mIncognitoMode = false;
+
+    private boolean mIsYoutubeVideo = false;
+
+    private String mUrl;
 
     public View getAnchorView() {
         return mAnchorView;
@@ -136,7 +140,10 @@ public class OverFlowMenu extends FrameLayout {
         prepareEntries();
         listView = new ListView(context);
         this.addView(listView);
-        ((MainActivity)context).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(context);
+        if (component != null) {
+            component.inject(this);
+        }
         overFlowMenuAdapter = new OverFlowMenuAdapter();
         listView.setAdapter(overFlowMenuAdapter);
         listView.setOnItemClickListener(itemClickListener);
@@ -235,6 +242,16 @@ public class OverFlowMenu extends FrameLayout {
         overFlowMenuAdapter.notifyDataSetInvalidated();
     }
 
+    public boolean isYoutubeVideo() {
+        return mIsYoutubeVideo;
+    }
+
+    public void setIsYoutubeVideo(boolean value) {
+        this.mIsYoutubeVideo = value;
+        prepareEntries();
+        overFlowMenuAdapter.notifyDataSetInvalidated();
+    }
+
     private void prepareEntries() {
         List<Entries> entries = new ArrayList<>(
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
@@ -242,11 +259,16 @@ public class OverFlowMenu extends FrameLayout {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             entries.remove(Entries.SEARCH_IN_PAGE);
         }
+        if (mIsYoutubeVideo) {
+            entries.remove(Entries.SAVE_LINK);
+        } else {
+            entries.remove(Entries.DOWNLOAD_YOUTUBE_VIDEO);
+        }
         mEntries = entries.toArray(new Entries[entries.size()]);
     }
 
-    public void setHistoryId(long historyId) {
-        this.historyId = historyId;
+    public void setUrl(String url) {
+        this.mUrl = url;
     }
 
     public void setState(CliqzBrowserState state) {
@@ -297,17 +319,19 @@ public class OverFlowMenu extends FrameLayout {
 
         @Override
         public boolean isEnabled(int position) {
-            final boolean isAddToFavourites = mEntries[position] == Entries.ADD_TO_FAVOURITES;
-            final boolean isCopyLink = mEntries[position] == Entries.COPY_LINK;
-            final boolean isSaveLink = mEntries[position] == Entries.SAVE_LINK;
-            final boolean hasValidId = historyId != -1;
+            final Entries entry = mEntries[position];
+            final boolean isAddToFavourites = entry == Entries.ADD_TO_FAVOURITES;
+            final boolean isCopyLink = entry == Entries.COPY_LINK;
+            final boolean isSaveLinkOrDownloadYoutube = entry == Entries.SAVE_LINK ||
+                    entry == Entries.DOWNLOAD_YOUTUBE_VIDEO;
+            final boolean hasValidId = !mUrl.isEmpty() && mUrl != null;
             final boolean isShowingWebPage = state.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
 
-            return (!isAddToFavourites && !isCopyLink && !isSaveLink && !isSearchInPage) ||
+            return (!isAddToFavourites && !isCopyLink && !isSaveLinkOrDownloadYoutube && !isSearchInPage) ||
                     (isAddToFavourites && hasValidId && isShowingWebPage) ||
                     (isCopyLink && isShowingWebPage) ||
-                    (isSaveLink && isShowingWebPage) ||
+                    (isSaveLinkOrDownloadYoutube && isShowingWebPage) ||
                     (isSearchInPage && isShowingWebPage);
         }
 
@@ -418,17 +442,17 @@ public class OverFlowMenu extends FrameLayout {
                 case NEW_TAB:
                     bus.post(new BrowserEvents.NewTab(false));
                     break;
-                case TAB_MANAGER:
-                    bus.post(new BrowserEvents.ShowTabManager());
-                    break;
                 case SEARCH_IN_PAGE:
                     bus.post(new BrowserEvents.SearchInPage());
                     break;
                 case ADD_TO_FAVOURITES:
-                    bus.post(new Messages.AddToFavourites(historyId));
+                    bus.post(new Messages.AddToFavourites(mUrl));
                     break;
                 case SAVE_LINK:
                     bus.post(new Messages.SaveLink());
+                    break;
+                case DOWNLOAD_YOUTUBE_VIDEO:
+                    bus.post(new Messages.DownloadYoutubeVideo("download_page"));
                     break;
                 default:
                     break;

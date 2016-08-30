@@ -1,13 +1,13 @@
 package com.cliqz.browser.webview;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
 
@@ -40,7 +40,10 @@ public abstract class Bridge {
 
     protected Bridge(Activity activity) {
         this.handler = new Handler(Looper.getMainLooper());
-        ((MainActivity)activity).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        if (component != null) {
+            component.inject(this);
+        }
     }
 
     interface IAction {

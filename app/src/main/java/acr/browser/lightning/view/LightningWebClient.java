@@ -1,13 +1,14 @@
 package acr.browser.lightning.view;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.net.MailTo;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -19,17 +20,20 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
+import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.cliqz.antitracking.AntiTrackingResponse;
 import com.cliqz.browser.R;
+import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.utils.PasswordManager;
-import com.squareup.otto.Bus;
+import com.cliqz.utils.StreamUtils;
 
 import java.io.ByteArrayInputStream;
 import java.net.URISyntaxException;
@@ -38,102 +42,109 @@ import java.util.List;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
-import acr.browser.lightning.utils.Utils;
+import acr.browser.lightning.utils.UrlUtils;
 
 /**
  * @author Stefano Pacifici based on Anthony C. Restaino's code
  * @date 2015/09/22
  */
-class LightningWebClient extends WebViewClient {
+class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhishingCallback {
 
     private static final String CLIQZ_PATH = "/CLIQZ";
 
-    private final Activity mActivity;
-    private final LightningView mLightningView;
-    private final Bus mEventBus;
-    private final PasswordManager mPasswordManager;
+    private final Context context;
+    private final LightningView lightningView;
     private String mLastUrl = "";
-//    private final IntentUtils mIntentUtils;
-//    private final WebView mWebView;
+    private final AntiPhishingDialog antiPhishingDialog;
 
-    LightningWebClient(Activity activity, LightningView lightningView) {
-        mActivity = activity;
-        mLightningView = lightningView;
-        mEventBus = lightningView.mEventBus;
-        mPasswordManager = lightningView.passwordManager;
-
-//        mIntentUtils = new IntentUtils(activity);
-//        mWebView = lightningView.getWebView();
+    LightningWebClient(Context context, LightningView lightningView) {
+        this.context = context;
+        this.lightningView = lightningView;
+        this.antiPhishingDialog = new AntiPhishingDialog(context, lightningView.eventBus);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        final WebResourceResponse response = handleUrl(view, request.getUrl());
-        return response != null ? response : super.shouldInterceptRequest(view, request);
+        WebResourceResponse response = handleUrl(view, request.getUrl());
+        if (response == null) {
+            final AntiTrackingResponse atresponse =
+                    lightningView.attrack.shouldInterceptRequest(view, request);
+            response = atresponse != null ? atresponse.response : null;
+            if (atresponse.type == AntiTrackingResponse.ANTITRACKING_TYPE) {
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lightningView.eventBus.post(new Messages.UpdateTrackerCount());
+                    }
+                });
+            }
+        }
+        return response;
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-        final WebResourceResponse response = handleUrl(view, Uri.parse(url));
-        return response != null ? response : super.shouldInterceptRequest(view, url);
+        final Uri uri = Uri.parse(url);
+        WebResourceResponse response = handleUrl(view, uri);
+        if (response == null) {
+            final AntiTrackingResponse atresponse =
+                    lightningView.attrack.shouldInterceptRequest(view, Uri.parse(url));
+            response  = atresponse != null ? atresponse.response : null;
+        }
+        return response;
     }
 
     private WebResourceResponse handleUrl(final WebView view, Uri uri) {
-        // Check if this is ad
-        if (mLightningView.mAdBlock.isAd(uri)) {
-            return new WebResourceResponse("text/html", "UTF-8",
-                    new ByteArrayInputStream("".getBytes()));
-        }
         final String cliqzPath = String.format("%s%d", CLIQZ_PATH, view.hashCode());
         final String path = uri.getPath();
-        // We only handle urls that has the cliqz scheme or the cliqz path ("/CLIQZ+(webview hashcode)")
-        if (!TrampolineConstants.CLIQZ_SCHEME.equals(uri.getScheme()) && !cliqzPath.equals(path)) {
-            return null;
-        }
 
-        if (TrampolineConstants.CLIQZ_TRAMPOLINE_AUTHORITY.equals(uri.getAuthority())) {
-            if (TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO_PATH.equals(path)) {
-                final Resources resources = view.getResources();
-                final WebResourceResponse response =
-                        new WebResourceResponse("text/html", "UTF-8",
-                                resources.openRawResource(R.raw.trampoline_forward));
-                return response;
-            }
-            if (TrampolineConstants.CLIQZ_TRAMPOLINE_SEARCH_PATH.equals(path)) {
-                final String query = uri.getQueryParameter("q");
-                mLightningView.telemetry.sendBackPressedSignal("web", "cards", query.length());
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEventBus.post(new Messages.ShowSearch(query));
-                    }
-                });
-                return createOKResponse();
-            }
-            if (TrampolineConstants.CLIQZ_TRAMPOLINE_CLOSE_PATH.equals(path)) {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEventBus.post(new Messages.Exit());
-                    }
-                });
-            }
-            if (TrampolineConstants.CLIQZ_TRAMPOLINE_HISTORY_PATH.equals(path)) {
-                mLightningView.telemetry.sendBackPressedSignal("web", "history", 0);
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEventBus.post(new Messages.GoToHistory());
-                        if (mLightningView.canGoBack()) {
-                            mLightningView.goBack();
+        if (TrampolineConstants.CLIQZ_SCHEME.equals(uri.getScheme())) {
+            // Urls with the cliqz scheme
+            if (TrampolineConstants.CLIQZ_TRAMPOLINE_AUTHORITY.equals(uri.getAuthority())) {
+                if (TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO_PATH.equals(path)) {
+                    final Resources resources = view.getResources();
+                    final WebResourceResponse response =
+                            new WebResourceResponse("text/html", "UTF-8",
+                                    resources.openRawResource(R.raw.trampoline_forward));
+                    return response;
+                }
+                if (TrampolineConstants.CLIQZ_TRAMPOLINE_SEARCH_PATH.equals(path)) {
+                    final String query = uri.getQueryParameter("q");
+                    lightningView.telemetry.sendBackPressedSignal("web", "cards", query.length());
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            lightningView.eventBus.post(new Messages.ShowSearch(query));
                         }
-                    }
-                });
-                return createOKResponse();
+                    });
+                    return createOKResponse();
+                }
+                if (TrampolineConstants.CLIQZ_TRAMPOLINE_CLOSE_PATH.equals(path)) {
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            lightningView.eventBus.post(new Messages.Exit());
+                        }
+                    });
+                }
+                if (TrampolineConstants.CLIQZ_TRAMPOLINE_HISTORY_PATH.equals(path)) {
+                    lightningView.telemetry.sendBackPressedSignal("web", "history", 0);
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            lightningView.eventBus.post(new Messages.GoToOverview());
+                            if (lightningView.canGoBack()) {
+                                lightningView.goBack();
+                            }
+                        }
+                    });
+                    return createOKResponse();
+                }
             }
         } else if (cliqzPath.equals(path)) {
-            mPasswordManager.provideOrSavePassword(uri, view);
+            // Urls with the special CLIQZ Path
+            lightningView.passwordManager.provideOrSavePassword(uri, view);
             return createOKResponse();
         }
         return null;
@@ -150,7 +161,7 @@ class LightningWebClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         if (view.isShown()) {
-            mEventBus.post(new BrowserEvents.UpdateUrl(url,true));
+            lightningView.eventBus.post(new BrowserEvents.UpdateUrl(url,true));
             view.postInvalidate();
         }
         final String title = view.getTitle();
@@ -158,71 +169,73 @@ class LightningWebClient extends WebViewClient {
                 !title.isEmpty() &&
                 !title.startsWith(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO) &&
                 !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
-            mLightningView.mTitle.setTitle(view.getTitle());
-            mEventBus.post(new Messages.UpdateTitle());
+            lightningView.mTitle.setTitle(view.getTitle());
+            lightningView.eventBus.post(new Messages.UpdateTitle());
         }
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT &&
-                mLightningView.getInvertePage()) {
+                lightningView.getInvertePage()) {
             view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
         }
 
-        if (!mLightningView.mIsIncognitoTab && mLightningView.mPreferences.getSavePasswordsEnabled()) {
+        if (!lightningView.mIsIncognitoTab && lightningView.preferences.getSavePasswordsEnabled()) {
             //Inject javascript to check for id and pass fields in the page
-            mPasswordManager.injectJavascript(view);
+            lightningView.passwordManager.injectJavascript(view);
         }
         ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
-
-        mEventBus.post(new BrowserEvents.TabsChanged());
+        lightningView.eventBus.post(new BrowserEvents.TabsChanged());
     }
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         if (!mLastUrl.equals(url)) {
-            mLightningView.historyId = -1;
+            lightningView.historyId = -1;
             mLastUrl = url;
+            if (url != null && !url.isEmpty() && !url.startsWith("cliqz://")) {
+                lightningView.antiPhishing.processUrl(url, this);
+            }
         }
-        if(mLightningView.telemetry.backPressed) {
+        if(lightningView.telemetry.backPressed) {
             if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
-                if(mLightningView.telemetry.showingCards) {
-                    mLightningView.telemetry.sendBackPressedSignal("cards", "web", url.length());
-                    mLightningView.telemetry.showingCards = false;
+                if(lightningView.telemetry.showingCards) {
+                    lightningView.telemetry.sendBackPressedSignal("cards", "web", url.length());
+                    lightningView.telemetry.showingCards = false;
                 } else {
-                    mLightningView.telemetry.sendBackPressedSignal("web", "web", url.length());
+                    lightningView.telemetry.sendBackPressedSignal("web", "web", url.length());
                 }
             }
-            mLightningView.telemetry.backPressed = false;
+            lightningView.telemetry.backPressed = false;
         }
-        mLightningView.mTitle.setFavicon(null);
-        if (mLightningView.isShown()) {
-            mEventBus.post(new BrowserEvents.UpdateUrl(url, false));
-            mEventBus.post(new BrowserEvents.ShowToolBar());
+        lightningView.mTitle.setFavicon(null);
+        if (lightningView.isShown()) {
+            lightningView.eventBus.post(new BrowserEvents.UpdateUrl(url, false));
+            lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
         }
-        mEventBus.post(new BrowserEvents.TabsChanged());
+        lightningView.eventBus.post(new Messages.ResetTrackerCount());
+        lightningView.eventBus.post(new BrowserEvents.TabsChanged());
     }
 
     @Override
     public void onReceivedHttpAuthRequest(final WebView view, @NonNull final HttpAuthHandler handler,
                                           final String host, final String realm) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        final EditText name = new EditText(mActivity);
-        final EditText password = new EditText(mActivity);
-        LinearLayout passLayout = new LinearLayout(mActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        final EditText name = new EditText(context);
+        final EditText password = new EditText(context);
+        LinearLayout passLayout = new LinearLayout(context);
         passLayout.setOrientation(LinearLayout.VERTICAL);
 
         passLayout.addView(name);
         passLayout.addView(password);
 
-        name.setHint(mActivity.getString(R.string.hint_username));
+        name.setHint(context.getString(R.string.hint_username));
         name.setSingleLine();
         password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         password.setSingleLine();
         password.setTransformationMethod(new PasswordTransformationMethod());
-        password.setHint(mActivity.getString(R.string.hint_password));
-        builder.setTitle(mActivity.getString(R.string.title_sign_in));
+        password.setHint(context.getString(R.string.hint_password));
+        builder.setTitle(context.getString(R.string.title_sign_in));
         builder.setView(passLayout);
         builder.setCancelable(true)
-                .setPositiveButton(mActivity.getString(R.string.title_sign_in),
+                .setPositiveButton(context.getString(R.string.title_sign_in),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
@@ -230,10 +243,9 @@ class LightningWebClient extends WebViewClient {
                                 String pass = password.getText().toString();
                                 handler.proceed(user.trim(), pass.trim());
                                 Log.d(Constants.TAG, "Request Login");
-
                             }
                         })
-                .setNegativeButton(mActivity.getString(R.string.action_cancel),
+                .setNegativeButton(context.getString(R.string.action_cancel),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
@@ -252,7 +264,7 @@ class LightningWebClient extends WebViewClient {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onScaleChanged(final WebView view, final float oldScale, final float newScale) {
-        if (view.isShown() && mLightningView.mPreferences.getTextReflowEnabled() &&
+        if (view.isShown() && lightningView.preferences.getTextReflowEnabled() &&
                 Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             if (mIsRunning)
                 return;
@@ -303,23 +315,23 @@ class LightningWebClient extends WebViewClient {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (Integer messageCode : errorCodeMessageCodes) {
-            stringBuilder.append(" - ").append(mActivity.getString(messageCode)).append('\n');
+            stringBuilder.append(" - ").append(context.getString(messageCode)).append('\n');
         }
         String alertMessage =
-                mActivity.getString(R.string.message_insecure_connection, stringBuilder.toString());
+                context.getString(R.string.message_insecure_connection, stringBuilder.toString());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        builder.setTitle(mActivity.getString(R.string.title_warning));
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.title_warning));
         builder.setMessage(alertMessage)
                 .setCancelable(true)
-                .setPositiveButton(mActivity.getString(R.string.action_yes),
+                .setPositiveButton(context.getString(R.string.action_yes),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 handler.proceed();
                             }
                         })
-                .setNegativeButton(mActivity.getString(R.string.action_no),
+                .setNegativeButton(context.getString(R.string.action_no),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
@@ -331,18 +343,18 @@ class LightningWebClient extends WebViewClient {
 
     @Override
     public void onFormResubmission(WebView view, @NonNull final Message dontResend, final Message resend) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        builder.setTitle(mActivity.getString(R.string.title_form_resubmission));
-        builder.setMessage(mActivity.getString(R.string.message_form_resubmission))
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.title_form_resubmission));
+        builder.setMessage(context.getString(R.string.message_form_resubmission))
                 .setCancelable(true)
-                .setPositiveButton(mActivity.getString(R.string.action_yes),
+                .setPositiveButton(context.getString(R.string.action_yes),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 resend.sendToTarget();
                             }
                         })
-                .setNegativeButton(mActivity.getString(R.string.action_no),
+                .setNegativeButton(context.getString(R.string.action_no),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
@@ -355,32 +367,23 @@ class LightningWebClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        final Uri uri = Uri.parse(url);
+        final String scheme = uri.getScheme();
         // Check if configured proxy is available
-        if (!mLightningView.isProxyReady()) {
+        if (!lightningView.isProxyReady()) {
             // User has been notified
             return true;
         }
 
-        if (mLightningView.mIsIncognitoTab) {
+        if (lightningView.mIsIncognitoTab) {
             return super.shouldOverrideUrlLoading(view, url);
         }
-        if (url.startsWith("tel:")) {
-            final Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
-            mActivity.startActivity(intent);
-            view.reload();
-            return true;
-        }
-        if (url.startsWith("about:")) {
+
+        if (scheme.equals("about")) {
             return super.shouldOverrideUrlLoading(view, url);
         }
-        if (url.contains("mailto:")) {
-            MailTo mailTo = MailTo.parse(url);
-            Intent i = Utils.newEmailIntent(mailTo.getTo(), mailTo.getSubject(),
-                    mailTo.getBody(), mailTo.getCc());
-            mActivity.startActivity(i);
-            view.reload();
-            return true;
-        } else if (url.startsWith("intent://")) {
+
+        if (scheme.equals("intent")) {
             Intent intent;
             try {
                 intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
@@ -394,29 +397,46 @@ class LightningWebClient extends WebViewClient {
                     intent.setSelector(null);
                 }
                 try {
-                    mActivity.startActivity(intent);
+                    context.startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Log.e(Constants.TAG, "ActivityNotFoundException");
                 }
                 return true;
             }
-        } else if (Uri.parse(url).getScheme().equals("market")) {
-            try {
-                final Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                mActivity.startActivity(intent);
-                return true;
-            } catch (ActivityNotFoundException e) {
-                Log.e(Constants.TAG, "ActivityNotFoundException");
+        }
+
+        if (!scheme.equals("http") && !scheme.equals("https")) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            PackageManager packageManager = context.getPackageManager();
+            List<ResolveInfo> activites = packageManager.queryIntentActivities(intent, 0);
+            if (activites.size() > 0) {
+                context.startActivity(intent);
+            } else {
+                Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
             }
+            return true;
         }
         // CLIQZ! We do not want to open external app from our browser, so we return false here
         // boolean startActivityForUrl = mIntentUtils.startActivityForUrl(view, url);
-         if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO) && mLightningView.clicked) {
-             mLightningView.clicked = false;
-             mLightningView.telemetry.sendNavigationSignal(url.length());
-         }
+        if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO) && lightningView.clicked) {
+            lightningView.clicked = false;
+            lightningView.telemetry.sendNavigationSignal(url.length());
+        }
         // return startActivityForUrl;
         return false;
     }
+
+    @Override
+    public void onUrlProcessed(final String url, boolean isPhishing) {
+        if (!isPhishing) { return; }
+        lightningView.activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!url.equals(mLastUrl)|| antiPhishingDialog.isShowing()) { return; }
+                antiPhishingDialog.setUrl(UrlUtils.getDomain(url));
+                antiPhishingDialog.show();
+            }
+        });
+    }
+
 }

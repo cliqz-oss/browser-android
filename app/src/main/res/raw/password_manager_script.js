@@ -3,12 +3,17 @@ var usernameField, passwordField, targetForm, savedUsername = '', savedPassword 
 var USERNAME_INPUT_TYPES = ['number', 'tel', 'text', 'email'];
 
 allForms.forEach(function(form) {
-  for(var i = form.length - 1; i >= 1; i--) {
+  var isFound = false;
+  for(var i = 1; i < form.length; i++) {
     if(form.elements[i].type === 'password' && USERNAME_INPUT_TYPES.indexOf(form.elements[i - 1].type) >= 0) {
       usernameField = form.elements[i-1];
       passwordField = form.elements[i];
+      isFound = true;
       form.onsubmit = sendLoginDetails;
       sendRequest();
+    }
+    if (isFound && form.elements[i].type === 'button' && form.elements[i].name && form.elements[i].name.toLowerCase() === 'login' ) {
+      form.elements[i].addEventListener('touchend', sendLoginDetails);
     }
   }
 });

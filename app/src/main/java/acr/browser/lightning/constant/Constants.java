@@ -43,6 +43,7 @@ public final class Constants {
     public static final String GCM_REGISTRATION_COMPLETE = "gcm_registration_completed";
 
     //Keys for arguments in intents/bundles
+    public static final String KEY_DO_NOT_SHOW_ONBOARDING = "do_not_show_onboarding";
     public static final String KEY_IS_INCOGNITO = "incognito";
     public static final String KEY_URL = "url";
     public static final String KEY_NEW_TAB_MESSAGE = "new_tab_message";

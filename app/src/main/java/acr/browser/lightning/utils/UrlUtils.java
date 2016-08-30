@@ -15,12 +15,13 @@
  */
 package acr.browser.lightning.utils;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.webkit.URLUtil;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -46,6 +47,10 @@ public class UrlUtils {
     // the trailing slash
     private static final Pattern STRIP_URL_PATTERN =
             Pattern.compile("^http://(.*?)/?$");
+
+    // Regular expression to recognize youtube video page
+    private static final Pattern YOUTUBE_VIDEO_URL_PATTERN =
+            Pattern.compile("https?://(m\\.|www\\.)?youtube.+/watch\\?v=.*");
 
     private final static Set<String> HOST_PREFIXES = new HashSet<>(Arrays.asList(new String[] {
             "www", "m"
@@ -113,6 +118,21 @@ public class UrlUtils {
         return null;
     }
 
+    public static @NonNull String getDomain(@Nullable String url) {
+        if (url == null) {
+            return "";
+        }
+        try {
+            final URL purl = new URL(url);
+            final String host = purl.getHost();
+            return (host == null || host.isEmpty()) ? "" : host;
+        } catch (MalformedURLException e) {
+            // Keep it pure java as possible
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     /**
      * Try to determine the top level domain, removing www, m and other known prefixes.
      *
@@ -120,14 +140,7 @@ public class UrlUtils {
      * @return a domain or an empty string
      */
     public static @NonNull String getTopDomain(@Nullable String url) {
-        if (url == null) {
-            return "";
-        }
-        final Uri uri = Uri.parse(url);
-        final String host = uri.getHost();
-        if (host == null || host.isEmpty()) {
-            return "";
-        }
+        final String host = getDomain(url);
         final LinkedList<String> parts = new LinkedList<>(Arrays.asList(host.split("\\.")));
         while (parts.size() > 0 && HOST_PREFIXES.contains(parts.get(0))) {
             parts.remove(0);
@@ -140,5 +153,14 @@ public class UrlUtils {
             divider=".";
         }
         return builder.toString();
+    }
+
+    public static boolean isYoutubeVideo(@Nullable String url) {
+        if (url == null) {
+            return false;
+        }
+
+        final Matcher matcher = YOUTUBE_VIDEO_URL_PATTERN.matcher(url);
+        return matcher.matches();
     }
 }

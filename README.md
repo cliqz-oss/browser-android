@@ -72,7 +72,8 @@ The extension must be built. To do so, run the following commands:
 $> cd <project_dir>/external/extension
 $> npm install
 $> bower install
-$> ./fern.js build configs/mobile.json
+$> CLIQZ_OUTPUT_PATH=build/search/ ./fern.js build \
+> configs/mobile-prod.json --version=tag
 ```
 
 ## Flavors

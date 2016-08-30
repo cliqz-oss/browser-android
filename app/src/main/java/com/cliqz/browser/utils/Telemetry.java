@@ -18,6 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,14 +37,6 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 public class Telemetry {
 
-    public Telemetry(Context context) {
-        BrowserApp.getAppComponent().inject(this);
-        this.context = context;
-        batteryLevel = -1;
-        context.registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        context.registerReceiver(mNetworkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-    
     private static class Key {
 
         private static final String ALPHA_NUMERIC_SPACE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -53,6 +47,8 @@ public class Telemetry {
         private static final String ACTION = "action";
         private static final String TYPE = "type";
         private static final String VERSION = "version";
+        private static final String VERSION_DIST = "version_dist";
+        private static final String VERSION_HOST = "version_host";
         private static final String OS_VERSION = "os_version";
         private static final String DEVICE = "device";
         private static final String LANGUAGE = "language";
@@ -114,6 +110,13 @@ public class Telemetry {
         private static final String PRIVATE = "private";
         private static final String DISTRIBUTION = "distribution";
         private static final String ADVERT_ID = "advert_id";
+        private static final String VIDEO_DOWNLOADER = "video_downloader";
+        private static final String IS_DOWNLOADABLE = "is_downloadable";
+        private static final String DOWNLOAD_PAGE = "download_page";
+        private static final String DOWNLOAD_LINK = "download_link";
+        private static final String IS_SUCCESS = "is_success";
+        private static final String ENCODING_EXCEPTION = "referrer_encoding_exception";
+        private static final String REFERRER_URL = "referrer_url";
     }
 
     public static class Action {
@@ -143,6 +146,8 @@ public class Telemetry {
         public static final String NEW_TAB = "new_tab";
         public static final String OPEN_TAB = "open_tab";
         public static final String CLOSE_TAB = "close_tab";
+        public static final String DOWNLOAD = "download";
+        public static final String PAGE_LOAD = "page_load";
     }
 
     private static final int BATCH_SIZE = 50;
@@ -161,11 +166,22 @@ public class Telemetry {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private String currentNetwork, currentLayer;
+    private String mExtensionVersion;
     private Context context;
     private int batteryLevel, forwardStep, backStep, urlLength, previousPage;
-
+    private boolean isFirstNetworkSignal = true;
     public boolean backPressed;
     public boolean showingCards;
+
+
+    public Telemetry(Context context) {
+        BrowserApp.getAppComponent().inject(this);
+        this.context = context;
+        batteryLevel = -1;
+        context.registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        context.registerReceiver(mNetworkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        mExtensionVersion = getExtensionVersion();
+    }
 
     /**
      * Sends a telemetry signal related to the application life cycle: install/update
@@ -178,6 +194,10 @@ public class Telemetry {
             signal.put(Key.ACTION, action);
             if (action == Action.INSTALL) {
                 signal.put(Key.ADVERT_ID, mPreferenceManager.getAdvertID());
+                signal.put(Key.DISTRIBUTION, mPreferenceManager.getDistribution());
+                signal.put(Key.ENCODING_EXCEPTION, mPreferenceManager.getDistributionException());
+                signal.put(Key.REFERRER_URL, mPreferenceManager.getReferrerUrl());
+                sendEnvironmentSignal(true);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -359,14 +379,15 @@ public class Telemetry {
 
     /**
      *Sends a telemetry signal about the environment when the app starts.
-     *This signal is sent at most once an hour.
+     *This signal is sent at most once an hour unless force sent.
+     * @param forceSend If true the method will not respect the 1 hour rule for sending the signal
      */
-    private void sendEnvironmentSignal() {
-        long oneHour = 3600000;
-        long oneDay = 86400000;
+    private void sendEnvironmentSignal(boolean forceSend) {
+        final long oneHour = 3600000;
+        final long oneDay = 86400000;
         long days = 0;
-        long timeSinceLastSingal = timings.getTimeSinceLastEnvSignal();
-        if(timeSinceLastSingal < oneHour) {
+        final long timeSinceLastSingal = timings.getTimeSinceLastEnvSignal();
+        if(timeSinceLastSingal < oneHour && !forceSend) {
             return;
         }
         timings.setLastEnvSingalTime();
@@ -376,12 +397,14 @@ public class Telemetry {
             signal.put(Key.TYPE, Key.ENVIRONMENT);
             signal.put(Key.DEVICE, Build.MODEL);
             signal.put(Key.LANGUAGE, getLanguage());
-            signal.put(Key.VERSION, BuildConfig.VERSION_NAME);
+            signal.put(Key.VERSION, mExtensionVersion);
+            signal.put(Key.VERSION_DIST, BuildConfig.VERSION_NAME);
+            signal.put(Key.VERSION_HOST, BuildConfig.LIGHTNING_VERSION_NAME);
             signal.put(Key.OS_VERSION, Integer.toString(Build.VERSION.SDK_INT));
             signal.put(Key.DEFAULT_SEARCH_ENGINE, getDefaultSearchEngine());
             signal.put(Key.HISTORY_URLS, historySize);
             signal.put(Key.NEWS_NOTIFICATION, mPreferenceManager.getNewsNotificationEnabled());
-            signal.put(Key.DISTRIBUTION, mPreferenceManager.getReferrer());
+            signal.put(Key.DISTRIBUTION, mPreferenceManager.getDistribution());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -421,7 +444,7 @@ public class Telemetry {
     public void sendStartingSignals(String context, String startType) {
         timings.setNetworkStartTime();
         currentNetwork = getNetworkState();
-        sendEnvironmentSignal();
+        sendEnvironmentSignal(false);
         sendAppStartupSignal(context, startType);
     }
 
@@ -431,7 +454,9 @@ public class Telemetry {
      */
     public void sendClosingSignals(String closeOrKill, String context) {
         currentLayer = "";
-        sendNetworkStatus();
+        if (closeOrKill == Action.CLOSE) {
+            sendNetworkStatus();
+        }
         sendAppCloseSignal(closeOrKill, context);
     }
 
@@ -630,6 +655,43 @@ public class Telemetry {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        saveSignal(signal, false);
+    }
+
+    public void sendVideoPageSignal(boolean isDownloadable) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
+            signal.put(Key.ACTION, Action.PAGE_LOAD);
+            signal.put(Key.IS_DOWNLOADABLE, isDownloadable);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendVideoDownloadSignal(String targetType) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
+            signal.put(Key.ACTION, Action.CLICK);
+            signal.put(Key.TARGET_TYPE, targetType);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendVideoDownloadedSignal(boolean success) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
+            signal.put(Key.ACTION, Action.DOWNLOAD);
+            signal.put(Key.IS_SUCCESS, success);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
     }
 
     /**
@@ -854,6 +916,25 @@ public class Telemetry {
         return -1;
     }
 
+    private String getExtensionVersion() {
+        String extensionVersion = "";
+        try {
+            final InputStream inputStream = context.getAssets().open("search/cliqz.json");
+            final byte[] buffer = new byte[inputStream.available()];
+            inputStream.read(buffer);
+            inputStream.close();
+            final String contents = new String(buffer, "UTF-8");
+            final JSONObject jsonObject = new JSONObject(contents);
+            extensionVersion = jsonObject.getString("EXTENSION_VERSION");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            return extensionVersion;
+        }
+    }
+
     //receiver listening to changes in battery levels
     private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver() {
         @Override
@@ -869,6 +950,11 @@ public class Telemetry {
     private BroadcastReceiver mNetworkChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            //Prevent sending a signal when the receiver is registered
+            if (isFirstNetworkSignal) {
+                isFirstNetworkSignal = false;
+                return;
+            }
             //check to make sure the app is in foreground
             if(timings.getAppUsageTime() < 0) {
                 sendNetworkStatus();

@@ -2,20 +2,25 @@ package com.cliqz.browser.di.modules;
 
 import android.content.Context;
 
+import com.cliqz.antitracking.AntiTracking;
+import com.cliqz.antitracking.AntiTrackingSupport;
+import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
 import com.google.gson.Gson;
+import com.squareup.otto.Bus;
 
 import net.i2p.android.ui.I2PAndroidHelper;
+
+import org.json.JSONObject;
 
 import javax.inject.Singleton;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.database.PasswordDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.AdBlock;
 import acr.browser.lightning.utils.ProxyUtils;
 import dagger.Module;
 import dagger.Provides;
@@ -55,12 +60,6 @@ public class AppModule {
     }
 
     @Provides
-    @Singleton
-    public AdBlock provideAdBlock() {
-        return new AdBlock(app.getApplicationContext());
-    }
-
-    @Provides
     public I2PAndroidHelper providesI2PAndroidHelper() {
         return new I2PAndroidHelper(app.getApplicationContext());
     }
@@ -91,6 +90,49 @@ public class AppModule {
     @Provides
     public AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager, Context context) {
         return new AwsSNSManager(preferenceManager, context);
+    }
+
+    @Provides
+    @Singleton
+    Bus provideBus() {
+        return new Bus();
+    }
+
+    @Provides
+    @Singleton
+    public AntiPhishing provideAntiPhishing() {
+        return new AntiPhishing();
+	}
+
+    @Provides
+    @Singleton
+    public AntiTracking provideAntiTracking(Context context, final Telemetry telemetry) {
+        return new AntiTracking(context, new AntiTrackingSupport() {
+            @Override
+            public void sendSignal(JSONObject obj) {
+                telemetry.saveExtSignal(obj);
+            }
+
+            @Override
+            public boolean isAntiTrackTestEnabled() {
+                return true;
+            }
+
+            @Override
+            public boolean isForceBlockEnabled() {
+                return false;
+            }
+
+            @Override
+            public boolean isBloomFilterEnabled() {
+                return true;
+            }
+
+            @Override
+            public String getDefaultAction() {
+                return "placeholder";
+            }
+        });
     }
 
 }

@@ -14,8 +14,9 @@ public class PreferenceManager {
 
     public enum ClearQueriesOptions {
         NO,
-        CLEAR_QUERIES,
-        CLEAR_QUERIES_INCLUDING_FAVORITES;
+        CLEAR_HISTORY,
+        CLEAR_FAVORITES,
+        CLEAR_BOTH;
 
         public static ClearQueriesOptions safeValueOf(String name) {
             try {
@@ -91,8 +92,11 @@ public class PreferenceManager {
         public static final String GCM_TOKEN_SENT = "gcmTokenSent";
         public static final String ARN_ENDPOINT = "aws_arn_endpoint";
         public static final String RESETORE_TOP_SITES = "restore_top_sites";
-        public static final String REFERRER = "referrer";
         public static final String ADVERT_ID = "advert_id";
+        public static final String OPTIMIZED_BLOCK_ADS = "optimized_block_ads";
+        public static final String REFERRER_URL = "referrer_url";
+        public static final String DISTRIBUTION = "distribution";
+        public static final String DISTRIBUTION_EXCEPTION = "distribution_exception";
     }
 
     private final SharedPreferences mPrefs;
@@ -103,8 +107,17 @@ public class PreferenceManager {
         mPrefs = context.getSharedPreferences(PREFERENCES, 0);
     }
 
+    /**
+     * Is adblocking enabled?
+     * !!! As Richard asked on 2016/08/22 we should not enable adblocker by default !!!
+     * @return true if adblocking is enabled, false otherwise
+     */
     public boolean getAdBlockEnabled() {
-        return mPrefs.getBoolean(Name.BLOCK_ADS, true);
+        return mPrefs.getBoolean(Name.BLOCK_ADS, false);
+    }
+
+    public boolean getOptimizedAdBlockEnabled() {
+        return mPrefs.getBoolean(Name.OPTIMIZED_BLOCK_ADS, true);
     }
 
     public boolean getBlockImagesEnabled() {
@@ -112,7 +125,7 @@ public class PreferenceManager {
     }
 
     public boolean getBlockThirdPartyCookiesEnabled() {
-        return mPrefs.getBoolean(Name.BLOCK_THIRD_PARTY, false);
+        return mPrefs.getBoolean(Name.BLOCK_THIRD_PARTY, true);
     }
 
     public boolean getCheckedForTor() {
@@ -305,7 +318,7 @@ public class PreferenceManager {
     }
 
     public int getVersionCode() {
-        return mPrefs.getInt(Name.VERSION_CODE, 1);
+        return mPrefs.getInt(Name.VERSION_CODE, 0);
     }
 
     public long getTimeOfLastEnvSignal() {
@@ -332,12 +345,20 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.RESETORE_TOP_SITES, false);
     }
 
-    public String getReferrer() {
-        return mPrefs.getString(Name.REFERRER, "");
+    public String getDistribution() {
+        return mPrefs.getString(Name.DISTRIBUTION, "");
     }
 
     public String getAdvertID() {
         return mPrefs.getString(Name.ADVERT_ID, "");
+    }
+
+    public boolean getDistributionException() {
+        return mPrefs.getBoolean(Name.DISTRIBUTION_EXCEPTION, false);
+    }
+
+    public String getReferrerUrl() {
+        return mPrefs.getString(Name.REFERRER_URL, "");
     }
 
     public ClearQueriesOptions shouldClearQueries() {
@@ -390,6 +411,10 @@ public class PreferenceManager {
 
     public void setAdBlockEnabled(boolean enable) {
         putBoolean(Name.BLOCK_ADS, enable);
+    }
+
+    public void setOptimizedAdBlockEnabled(boolean enable) {
+        putBoolean(Name.OPTIMIZED_BLOCK_ADS, enable);
     }
 
     public void setBlockImagesEnabled(boolean enable) {
@@ -601,7 +626,13 @@ public class PreferenceManager {
     }
 
     public void setShouldClearQueries(ClearQueriesOptions value) {
-        putString(Name.CLEAR_QUERIES, value.name());
+        if (value == ClearQueriesOptions.NO || shouldClearQueries() == ClearQueriesOptions.NO) {
+            putString(Name.CLEAR_QUERIES, value.name());
+        } else if (shouldClearQueries() != value) {
+            putString(Name.CLEAR_QUERIES, ClearQueriesOptions.CLEAR_BOTH.name());
+        } else {
+            putString(Name.CLEAR_QUERIES, value.name());
+        }
     }
 
     public void setGCMTokenSent(boolean value) {
@@ -616,12 +647,20 @@ public class PreferenceManager {
         putBoolean(Name.RESETORE_TOP_SITES, restoreTopSites);
     }
 
-    public void setReferrer(String referrer) {
-        putString(Name.REFERRER, referrer);
+    public void setDistribution(String distribution) {
+        putString(Name.DISTRIBUTION, distribution);
     }
 
     public void setAdvertID(String advertID) {
         putString(Name.ADVERT_ID, advertID);
+    }
+
+    public void setDistributionException(boolean exception) {
+        putBoolean(Name.DISTRIBUTION_EXCEPTION, exception);
+    }
+
+    public void setReferrerUrl(String referrerUrl) {
+        putString(Name.REFERRER_URL, referrerUrl);
     }
 
 }

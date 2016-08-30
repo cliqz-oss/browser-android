@@ -26,6 +26,7 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:layout_marginBottom="20dp"
-        android:contentDescription="@string/next"/>
+        android:contentDescription="@string/next"
+        style="?android:attr/borderlessButtonStyle" />
 
 </RelativeLayout>

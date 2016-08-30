@@ -2,6 +2,8 @@ package com.cliqz.browser.main;
 
 import android.support.v4.app.Fragment;
 
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.utils.Telemetry;
 import com.cliqz.browser.utils.Timings;
 import com.squareup.otto.Bus;
@@ -41,7 +43,10 @@ public abstract class FragmentWithBus extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        ((MainActivity) getActivity()).mActivityComponent.inject(this);
+        final ActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        if (component != null) {
+            component.inject(this);
+        }
     }
 
     @Override

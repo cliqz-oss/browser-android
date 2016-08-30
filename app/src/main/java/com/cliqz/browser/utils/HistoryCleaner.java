@@ -13,10 +13,12 @@ import javax.inject.Inject;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
 
-import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_QUERIES;
-import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_QUERIES_INCLUDING_FAVORITES;
+import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_HISTORY;
+import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_FAVORITES;
 
 /**
+ * Helper to clean history. If deleteFavorites is False, it will delete all history(and queries)
+ * which are not favorite. If deleteFavorites is True, it will unfavorite all favored history(and queries)
  * @author Stefano Pacifici
  * @date 2016/02/24
  */
@@ -75,10 +77,11 @@ public class HistoryCleaner {
         final ProgressDialog progressDialog =
                 ProgressDialog.show(context, context.getString(R.string.clear_history),
                         context.getString(R.string.deleting_in_progress_message), true, false);
-        if (deleteQueries) {
-            preferenceManager.setShouldClearQueries(deleteFavorites
-                    ? CLEAR_QUERIES_INCLUDING_FAVORITES : CLEAR_QUERIES);
-        }
+//        if (deleteQueries) {
+//            preferenceManager.setShouldClearQueries(deleteFavorites
+//                    ? CLEAR_QUERIES_INCLUDING_FAVORITES : CLEAR_QUERIES);
+//        }
+        preferenceManager.setShouldClearQueries(deleteFavorites ? CLEAR_FAVORITES : CLEAR_HISTORY);
         new Thread(new Runnable() {
             @Override
             public void run() {

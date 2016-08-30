@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="cb_block_ads"
+        android:title="@string/block_ads"
+        android:checked="true"/>
+    <CheckBoxPreference
+        android:key="cb_optimized_block_ads"
+        android:title="@string/optimized_block_ads"
+        android:checked="true"/>
+    <Preference
+        android:key="what_does_optimized_mean"
+        android:title="@string/what_does_optimized_mean"/>
+</PreferenceScreen>

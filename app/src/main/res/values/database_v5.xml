@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_urls_table_v5" translatable="false">CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT, title TEXT, visits INTEGER, time INTEGER, favorite BOOLEAN DEFAULT 0, fav_time INTEGER DEFAULT -1)</string>
+    <string name="create_history_table_v5" translatable="false">CREATE TABLE history (id INTEGER PRIMARY KEY, url_id INTEGER, time INTEGER)</string>
+    <string name="create_urls_index_v5" translatable="false">CREATE INDEX IF NOT EXISTS urlIndex ON urls (url COLLATE NOCASE)</string>
+    <string name="create_visits_index_v5" translatable="false">CREATE INDEX IF NOT EXISTS visitsIndex ON urls (visits DESC)</string>
+    <string name="add_column_fav_time_v5" translatable="false">ALTER TABLE urls ADD COLUMN fav_time INTEGER DEFAULT -1</string>
+    <string name="move_favorites_to_urls_v5" translatable="false">UPDATE urls SET favorite = 1, fav_time = time WHERE id IN (SELECT DISTINCT url_id FROM history WHERE favorite = 1)</string>
+
+    <string name="seach_history_query_v5" translatable="false">SELECT DISTINCT urls.id, urls.url, urls.title FROM urls, history WHERE urls.id=history.url_id AND (title LIKE ? OR url LIKE ?) ORDER BY history.time DESC LIMIT ?</string>
+    <string name="get_history_query_v5" translatable="false">SELECT h.id, u.url, u.title, h.time FROM urls AS u, history AS h WHERE u.id=h.url_id ORDER BY h.time ASC LIMIT ? OFFSET ?</string>
+    <string name="get_favorite_query_v5" translatable="false">SELECT title, url, fav_time FROM urls WHERE favorite = 1 ORDER BY fav_time ASC </string>
+    <string name="get_url_from_by_history_id_v5" translatable="false">SELECT urls.* FROM urls,history WHERE history.id=? AND history.url_id=urls.id</string>
+    <string name="get_history_favorite_v5" translatable="false">SELECT h.id, u.url, u.title, h.time FROM urls AS u, history AS h WHERE u.id=h.url_id AND h.favorite=true ORDER BY h.time DESC</string>
+    <string name="get_top_sites_v5" translatable="false">SELECT t.url AS url, t.title AS title, SUM(t.days_count) as count FROM (SELECT urls.url, urls.title, (history.time / 86400000 - STRFTIME(\'%s\', DATE(\'now\', \'-6 months\')) / 86400) AS days_count, urls.id AS id, urls.visits as visits, urls.time as time FROM urls, history WHERE urls.id=history.url_id AND history.time&gt;STRFTIME(\'%s\', DATE(\'now\', \'-6 months\'))*1000 AND urls.visits&gt;2) AS t GROUP by t.id ORDER BY count DESC, t.visits DESC, t.time DESC LIMIT 15</string>
+</resources>

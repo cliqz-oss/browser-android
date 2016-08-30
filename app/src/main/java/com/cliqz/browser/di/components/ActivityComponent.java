@@ -4,6 +4,8 @@ import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.di.modules.MainActivityModule;
 import com.cliqz.browser.main.FragmentWithBus;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.overview.OverviewFragment;
+import com.cliqz.browser.overview.TabOverviewFragment;
 import com.cliqz.browser.webview.BaseWebView;
 import com.cliqz.browser.webview.Bridge;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -38,4 +40,8 @@ public interface ActivityComponent {
     void inject(ProxyUtils proxyUtils);
 
     void inject(CliqzWebView cliqzWebView);
+
+    void inject(OverviewFragment overviewFragment);
+
+    void inject(TabOverviewFragment tabOverviewFragment);
 }

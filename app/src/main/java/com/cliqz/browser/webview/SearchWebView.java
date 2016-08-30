@@ -53,7 +53,7 @@ public class SearchWebView extends BaseWebView {
     @Nullable
     @Override
     protected String getExtensionUrl() {
-        if ("xwalk".equals(BuildConfig.FLAVOR)) {
+        if ("xwalk".equals(BuildConfig.FLAVOR_api)) {
             return CLIQZ_MANIFEST_URL;
         } else {
             return CLIQZ_URL;
@@ -140,13 +140,21 @@ public class SearchWebView extends BaseWebView {
         super.onResume();
         initPreferences();
         if (isExtensionReady()) {
+            isVisible();
             // Apply settings here
+            //TODO: Look into optimising this call
             initExtensionPreferences();
             setDefaultSearchEngine();
 //            if (shouldShowHomePage()) {
 //                showHomepage();
 //            }
             }
+    }
+
+    @Override
+    public void bringToFront() {
+        super.bringToFront();
+        isVisible();
     }
 
     private void initPreferences() {

@@ -28,24 +28,24 @@ def downloadFile = new File(extPath, '.download')
 def extZip = new File(extPath, 'extension_latest.zip')
 
 task downloadExtension {
-  onlyIf {
-    !extZip.exists()
-  }
-  doLast {
+    onlyIf {
+        downloadFile.exists() && !extZip.exists()
+    }
+    doLast {
     def url = 'https://s3.amazonaws.com/cdn.cliqz.com/mobile/extension_stable/extension_latest.zip'
     def f = extZip.newOutputStream()
     f << new URL(url).openStream()
     f.close()
-  }
+    }
 }
 
 task installExtension(type: Copy) {
-  onlyIf {
-    file('../external/extension/.download').exists() && !file('../external/extension/build').exists();
-  }
-  dependsOn downloadExtension
-  from zipTree(extZip)
-  into file(extPath)
+    onlyIf {
+        downloadFile.exists() && !file('../external/extension/build').exists();
+    }
+    dependsOn downloadExtension
+    from zipTree(extZip)
+    into file(extPath)
 }
 
 def compileAdHostsList(File outputDir) {
@@ -68,13 +68,13 @@ def compileAdHostsList(File outputDir) {
 
 afterEvaluate { project ->
     project.tasks.each { tazk ->
-        if (tazk.name =~ /merge.*[^(Test)]Assets/) {
+        if (tazk.name =~ /mergeXwalk.*Assets/ && !tazk.name.endsWith('TestAssets')) {
             tazk << {
                 compileAdHostsList(tazk.outputDir)
             }
         }
         if (tazk.name =~ /assemble.*/) {
-          tazk.dependsOn installExtension
+            tazk.dependsOn installExtension
         }
     }
 }
@@ -90,6 +90,7 @@ android {
         buildConfigField 'String', 'AMAZON_IDENTITY_POOL_ID', "\"${props['Browser.amazonIdentityPoolID']}\""
         buildConfigField 'String', 'AMAZON_UNAUTH_ROLE_ARN', "\"${props['Browser.amazonUnauthRoleARN']}\""
         buildConfigField 'String', 'AMAZON_AUTH_ROLE_ARN', "\"${props['Browser.amazonAuthRoleARN']}\""
+        buildConfigField 'String', 'LOOKBACK_SDK_TOKEN', "\"${props['Browser.lookbackSdkToken']}\""
     }
 
     signingConfigs {

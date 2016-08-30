@@ -15,10 +15,6 @@
             android:key="incognito_cookies"
             android:title="@string/incognito_cookies" /> -->
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="third_party"
-            android:title="@string/third_party" />
-        <CheckBoxPreference
             android:defaultValue="true"
             android:key="password"
             android:summary="@string/recommended"
@@ -26,6 +22,9 @@
         <Preference
             android:key="clear_history"
             android:title="@string/clear_history" />
+        <Preference
+            android:key="clear_favorites"
+            android:title="@string/clear_favorites" />
         <Preference
             android:key="restore_top_sites"
             android:title="@string/restore_top_sites"/>

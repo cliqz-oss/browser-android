@@ -1,5 +1,7 @@
 package com.cliqz.browser.main;
 
+import org.json.JSONArray;
+
 /**
  * @author Stefano Pacifici
  * @date 2015/11/24
@@ -10,7 +12,7 @@ public final class Messages {
 
     public static class Exit {}
 
-    public static class GoToHistory {}
+    public static class GoToOverview {}
 
     public static class GoToSuggestions {}
 
@@ -50,18 +52,6 @@ public final class Messages {
      */
     public static class ShowHomePage {}
 
-    /**
-     * This will make the app to transact to the Main fragment, the main fragment then will switch
-     * to browsing mode displaying the relative web page
-     */
-    public static class GoToLink {
-        public final String url;
-
-        public GoToLink(String url) {
-            this.url = url;
-        }
-    }
-
     public static class ReloadPage {}
 
     public static class ShareLink {}
@@ -81,12 +71,73 @@ public final class Messages {
     }
 
     public static class AddToFavourites {
-        public final long id;
+        public final String url;
 
-        public AddToFavourites(long id) {
-            this.id = id;
+        public AddToFavourites(String url) {
+            this.url = url;
         }
     }
 
     public static class SaveLink {}
+
+    public static class AdjustPan {}
+
+    public static class AdjustResize {}
+
+    public static class FetchYoutubeVideoUrls {
+        public final JSONArray urls;
+        public final String videoPageUrl;
+        //public final boolean instantDownload;
+
+        public FetchYoutubeVideoUrls() {
+            this. urls = null;
+            this.videoPageUrl = null;
+        }
+
+        public FetchYoutubeVideoUrls(JSONArray urls) {
+            this.urls = urls;
+            this.videoPageUrl = null;
+        }
+
+        public FetchYoutubeVideoUrls(String url) {
+            this.urls = null;
+            this.videoPageUrl = url;
+        }
+    }
+
+    public static class SetVideoUrls {
+        public final JSONArray urls;
+
+        public SetVideoUrls(JSONArray urls) {
+            this.urls = urls;
+        }
+    }
+
+    public static class DownloadYoutubeVideo {
+        public final String targetType;
+
+        public DownloadYoutubeVideo(String targetType) {
+            this.targetType = targetType;
+        }
+    }
+
+    public static class SaveId {
+        public final long downloadId;
+
+        public SaveId(long downloadId) {
+            this.downloadId = downloadId;
+        }
+    }
+
+    public static class UpdateTrackerCount {
+    }
+
+    public static class ResetTrackerCount {
+    }
+
+    public static class UpdateTabsOverview {
+    }
+
+    public static class HideLoadingScreen {
+    }
 }

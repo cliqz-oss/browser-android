@@ -31,17 +31,24 @@
     <color name="transparent">#00000000</color>
 
     <color name="icon_light_theme">#FFFFFFFF</color>
-    <color name="icon_dark_theme">#FFFFFFFF</color>
+    <color name="icon_dark_theme">#FF000000</color>
 
     <color name="error_red">#F44336</color>
     <color name="onboarding_background">#5DB0EA</color>
 
-    <color name="incognito_tab_primary_color">#4F4F4F</color>
-    <color name="normal_tab_primary_color">#1F68AD</color>
+    <color name="incognito_tab_primary_color">#4A4A4A</color>
+    <color name="normal_tab_primary_color">#e8e8e8</color>
     <color name="history_primary_color">#F87140</color>
 
-    <color name="incognito_tab_primary_color_dark">#3E3E3E</color>
+    <color name="incognito_tab_primary_color_dark">#333333</color>
     <color name="normal_tab_primary_color_dark">#0E579C</color>
     <color name="history_primary_color_dark">#E76030</color>
+
+    <color name="url_bar_bg_normal">#ffffff</color>
+    <color name="url_bar_text_color_normal">#333333</color>
+    <color name="url_bar_bg_incognito">#ffffff</color>
+    <color name="url_bar_text_color_incognito">#333333</color>
+    <color name="toolbar_icon_color_normal">#333333</color>
+    <color name="toolbar_icon_color_incognito">#ffffff</color>
 
 </resources>

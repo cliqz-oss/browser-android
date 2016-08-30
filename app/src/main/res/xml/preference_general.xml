@@ -9,10 +9,10 @@
         android:defaultValue="true"
         android:key="cb_news_notification"
         android:title="@string/news_notification" />
-    <CheckBoxPreference
-           android:defaultValue="false"
-           android:key="cb_ads"
-           android:title="@string/block_ads" />
+    <!--<CheckBoxPreference-->
+           <!--android:defaultValue="false"-->
+           <!--android:key="cb_ads"-->
+           <!--android:title="@string/block_ads" />-->
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="cb_images"
