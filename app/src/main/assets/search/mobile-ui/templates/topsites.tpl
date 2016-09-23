@@ -8,8 +8,8 @@
       {{#each list}}
           <td align="center" valign="top">
             {{#if this}}
-              <div class="blockTopsite" mainDomain="{{mainDomain}}" {{#unless ../isEditMode}} style="display: none;" {{/unless}}>X</div>
-              <div class="topSitesLink" url="{{url}}">
+              <div class="blockTopsite" mainDomain="{{mainDomain}}" {{#unless ../isEditMode}} style="display: none;" {{/unless}} data-index="{{@index}}">X</div>
+              <div class="topSitesLink" url="{{url}}" data-index="{{@index}}">
                   <div class="topsites__item"
                    style="{{style}}"
                    show-status=""
@@ -18,7 +18,7 @@
                   </div>
               </div>
             {{else}}
-              <div class="topsites__item" style="background-color:#eee"></div>
+              <div class="topsites__item {{../theme}}"></div>
             {{/if}}
           </td>
       {{/each}}

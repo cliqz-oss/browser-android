@@ -18,7 +18,7 @@
 			{{/each}}
 		</div>
 		<div extra="des" class="card__description">
-			{{{ emphasis description_wiki ../query 2 true }}}
+			{{ emphasis description_wiki ../query 2 true }}
 		</div>
 
 		<div class="social">

@@ -97,6 +97,9 @@ public class PreferenceManager {
         public static final String REFERRER_URL = "referrer_url";
         public static final String DISTRIBUTION = "distribution";
         public static final String DISTRIBUTION_EXCEPTION = "distribution_exception";
+
+        // TODO: Temporary fix for faulty autocompletion
+        public static final String AUTO_COMPLETION_ENABLED = "auto_completion_enabled";
     }
 
     private final SharedPreferences mPrefs;
@@ -375,6 +378,10 @@ public class PreferenceManager {
      */
     public String getARNEndpoint() {
         return mPrefs.getString(Name.ARN_ENDPOINT, null);
+    }
+
+    public boolean isAutocompletionEnebled() {
+        return mPrefs.getBoolean(Name.AUTO_COMPLETION_ENABLED, true);
     }
 
     private void putBoolean(String name, boolean value) {
@@ -663,4 +670,7 @@ public class PreferenceManager {
         putString(Name.REFERRER_URL, referrerUrl);
     }
 
+    public void setAutocompletionEnabled(boolean value) {
+        putBoolean(Name.AUTO_COMPLETION_ENABLED, value);
+    }
 }

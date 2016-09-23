@@ -20,7 +20,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
-import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -29,11 +28,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.cliqz.antitracking.AntiTrackingResponse;
 import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.utils.StreamUtils;
 
 import java.io.ByteArrayInputStream;
 import java.net.URISyntaxException;
@@ -60,7 +57,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     LightningWebClient(Context context, LightningView lightningView) {
         this.context = context;
         this.lightningView = lightningView;
-        this.antiPhishingDialog = new AntiPhishingDialog(context, lightningView.eventBus);
+        this.antiPhishingDialog = new AntiPhishingDialog(context, lightningView.eventBus, lightningView.telemetry);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -68,10 +65,8 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         WebResourceResponse response = handleUrl(view, request.getUrl());
         if (response == null) {
-            final AntiTrackingResponse atresponse =
-                    lightningView.attrack.shouldInterceptRequest(view, request);
-            response = atresponse != null ? atresponse.response : null;
-            if (atresponse.type == AntiTrackingResponse.ANTITRACKING_TYPE) {
+            response = lightningView.attrack.shouldInterceptRequest(view, request);
+            if (response != null) {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
@@ -88,9 +83,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         final Uri uri = Uri.parse(url);
         WebResourceResponse response = handleUrl(view, uri);
         if (response == null) {
-            final AntiTrackingResponse atresponse =
-                    lightningView.attrack.shouldInterceptRequest(view, Uri.parse(url));
-            response  = atresponse != null ? atresponse.response : null;
+            response = lightningView.attrack.shouldInterceptRequest(view, Uri.parse(url));
         }
         return response;
     }
@@ -124,7 +117,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                     view.post(new Runnable() {
                         @Override
                         public void run() {
-                            lightningView.eventBus.post(new Messages.Exit());
+                            lightningView.eventBus.post(new BrowserEvents.CloseTab());
                         }
                     });
                 }
@@ -136,6 +129,8 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                             lightningView.eventBus.post(new Messages.GoToOverview());
                             if (lightningView.canGoBack()) {
                                 lightningView.goBack();
+                            } else {
+                                lightningView.eventBus.post(new Messages.ShowSearch(""));
                             }
                         }
                     });

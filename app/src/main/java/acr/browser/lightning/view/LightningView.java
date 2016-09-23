@@ -53,6 +53,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -864,12 +866,19 @@ public class LightningView {
                 int trackersCount = 0;
                 for (int j = 0; j < domains.length(); j++) {
                     final JSONObject trackers = jsonObject.getJSONObject("trackers").getJSONObject(domains.optString(j));
-                    trackersCount += trackers.optInt("bad_qs",0); //  + trackers.optInt("adblock_block",0);
+                    trackersCount += trackers.optInt("bad_qs",0) + trackers.optInt("adblock_block",0);
                 }
                 if (trackersCount > 0) {
                     trackerDetails.add(new TrackerDetailsModel(key, trackersCount));
                 }
             }
+            Collections.sort(trackerDetails, new Comparator<TrackerDetailsModel>() {
+                @Override
+                public int compare(TrackerDetailsModel lhs, TrackerDetailsModel rhs) {
+                    final int count = rhs.trackerCount - lhs.trackerCount;
+                    return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
+                }
+            });
             return trackerDetails;
         } catch (JSONException e) {
             Log.e(TAG, "Can't parse json from antitracking module", e);

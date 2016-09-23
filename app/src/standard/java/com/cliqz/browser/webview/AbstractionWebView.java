@@ -100,25 +100,6 @@ public class AbstractionWebView extends WebView {
         });
     }
 
-    /**
-     * Evaluate JS in web context
-     * @param js JS command
-     */
-    protected final void executeJS(final String js) {
-        if (js != null && !js.isEmpty()) {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        evaluateJavascript(js, null);
-                    } else {
-                        loadUrl("javascript:" + js);
-                    }
-                }
-            });
-        }
-    }
-
     void addBridge(final Bridge bridge, final String name) {
         addJavascriptInterface(new BridgeWrapper(bridge), name);
     }

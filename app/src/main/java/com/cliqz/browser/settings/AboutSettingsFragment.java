@@ -5,17 +5,12 @@ package com.cliqz.browser.settings;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
-
-import java.net.URI;
-
-import acr.browser.lightning.preference.PreferenceManager;
+import com.cliqz.browser.utils.TelemetryKeys;
 
 public class AboutSettingsFragment extends BaseSettingsFragment {
 
@@ -24,10 +19,13 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_VERSION = "pref_version";
     private static final String AMAZON_ARN = "pref_arn";
     private static final String CONTACT = "pref_contact";
+    private long startTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ABOUT, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_about);
 
@@ -76,5 +74,10 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     @Override
     public boolean onPreferenceClick(Preference preference) {
         return false;
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ABOUT, System.currentTimeMillis() - startTime);
     }
 }

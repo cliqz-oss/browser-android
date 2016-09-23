@@ -371,10 +371,11 @@ class V8Engine {
                 int responseCode = 0;
                 boolean error = false;
 
-                if (requestedUrl.startsWith("file://")) {
+                if (requestedUrl.startsWith("file://") || requestedUrl.startsWith("chrome://")) {
                     // load resource from filesystem
+                    final String assetPath = requestedUrl.replace("file://", "").replace("chrome://cliqz/content", "v8/modules");
                     try {
-                        DataInputStream in = new DataInputStream(context.getAssets().open(requestedUrl.substring(8)));
+                        DataInputStream in = new DataInputStream(context.getAssets().open(assetPath));
                         BufferedReader lines = new BufferedReader(new InputStreamReader(in, "UTF-8"));
                         while (true) {
                             String line = lines.readLine();

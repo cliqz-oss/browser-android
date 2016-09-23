@@ -44,7 +44,7 @@
             {{/if}}
           </div>
 
-          <p class="main__content description">{{{description}}}</p>
+          <p class="main__content description">{{description}}</p>
 
 
         </div>

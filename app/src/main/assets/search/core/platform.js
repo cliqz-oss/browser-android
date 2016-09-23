@@ -1,5 +1,7 @@
-System.register('core/platform', [], function (_export) {
+System.register('core/platform', ['platform/platform'], function (_export) {
   'use strict';
+
+  var platform, isFirefox, isMobile;
 
   _export('notImplemented', notImplemented);
 
@@ -8,8 +10,17 @@ System.register('core/platform', [], function (_export) {
   }
 
   return {
-    setters: [],
-    execute: function () {}
+    setters: [function (_platformPlatform) {
+      platform = _platformPlatform['default'];
+    }],
+    execute: function () {
+      isFirefox = platform.isFirefox;
+
+      _export('isFirefox', isFirefox);
+
+      isMobile = platform.isMobile;
+
+      _export('isMobile', isMobile);
+    }
   };
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvcmUvcGxhdGZvcm0uZXMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7QUFBTyxXQUFTLGNBQWMsR0FBRztBQUMvQixVQUFNLElBQUksS0FBSyxDQUFDLGlCQUFpQixDQUFDLENBQUM7R0FDcEMiLCJmaWxlIjoiY29yZS9wbGF0Zm9ybS5lcyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBmdW5jdGlvbiBub3RJbXBsZW1lbnRlZCgpIHtcbiAgdGhyb3cgbmV3IEVycm9yKCdOb3QgaW1wbGVtZW50ZWQnKTtcbn1cbiJdfQ==

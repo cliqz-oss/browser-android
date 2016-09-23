@@ -12,10 +12,7 @@ import com.cliqz.utils.StreamUtils;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import acr.browser.lightning.utils.AdBlock;
 
@@ -43,17 +40,15 @@ public class AntiTracking {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public AntiTrackingResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         return shouldInterceptRequest(view, request.getUrl());
     }
 
-    public AntiTrackingResponse shouldInterceptRequest(final WebView view, Uri uri) {
+    public WebResourceResponse shouldInterceptRequest(final WebView view, Uri uri) {
         if (mAdBlockEnabled && adBlock.isAd(uri)) {
-            final WebResourceResponse response =
-                    new WebResourceResponse("text/html", "UTF-8", StreamUtils.createEmptyStream());
-            return new AntiTrackingResponse(AntiTrackingResponse.ADBLOCKING_TYPE, response);
+            return new WebResourceResponse("text/html", "UTF-8", StreamUtils.createEmptyStream());
         }
-        return new AntiTrackingResponse(-1, null);
+        return null;
     }
 
     //dummy method to suppress the error

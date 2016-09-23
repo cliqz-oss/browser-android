@@ -19,9 +19,10 @@ import android.view.ViewGroup;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -41,8 +42,11 @@ public class OverviewFragment extends Fragment {
     @Inject
     TabsManager tabsManager;
 
+    @Inject
+    Telemetry telemetry;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_overview, container, false);
         final int themeResId = R.style.Theme_Cliqz_Overview;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -54,6 +58,30 @@ public class OverviewFragment extends Fragment {
         mOverviewPagerAdapter = new OverviewPagerAdapter(getChildFragmentManager());
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mViewPager.setAdapter(mOverviewPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                final String currentPage;
+                if (position == 0) {
+                    currentPage = TelemetryKeys.OPEN_TABS;
+                } else if (position == 1) {
+                    currentPage = TelemetryKeys.HISTORY;
+                } else {
+                    currentPage = TelemetryKeys.FAVORITES;
+                }
+                telemetry.sendPagerChangeSignal(currentPage);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -66,6 +94,7 @@ public class OverviewFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        telemetry.sendOverflowMenuSignal(false, "overview");
         inflater.inflate(R.menu.fragment_overview_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -75,12 +104,15 @@ public class OverviewFragment extends Fragment {
         final int id = item.getItemId();
         switch (id) {
             case R.id.action_new_tab:
+                telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, false, TelemetryKeys.OVERVIEW);
                 tabsManager.addNewTab(false);
                 return true;
             case R.id.action_new_forget_tab:
+                telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, false, TelemetryKeys.OVERVIEW);
                 tabsManager.addNewTab(true);
                 return true;
             case R.id.action_settings:
+                telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, false, TelemetryKeys.OVERVIEW);
                 if (bus != null) {
                     bus.post(new Messages.GoToSettings());
                 }

@@ -31,6 +31,17 @@ public enum BrowserActionTypes {
         }
     }),
 
+    map(new IntentCreator() {
+        @Nullable
+        @Override
+        public Intent create(Context context, String data) {
+            if (data != null || !data.isEmpty()) {
+                return new Intent(Intent.ACTION_VIEW, Uri.parse(data));
+            }
+            return null;
+        }
+    }),
+
     /**
      * Every thing we do not know how to handle
      */

@@ -5,6 +5,7 @@ package com.cliqz.browser.settings;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.util.Log;
@@ -22,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.utils.ViewUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +42,7 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_USERAGENT = "agent";
     private static final String SETTINGS_DOWNLOAD = "download";
     private static final String SETTINGS_PROXY = "proxy";
+    private static final String SETTINGS_AUTOCOMPLETION = "cb_autocompletion";
     private static final String SETTINGS_JAVASCRIPT = "cb_javascript";
 
     private Activity mActivity;
@@ -45,18 +50,19 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
     private CharSequence[] mProxyChoices;
     private int mAgentChoice;
     private String mDownloadLocation;
-    private CheckBoxPreference cbJsScript; //cbAllowPopups, cbrestoreTabs
+    private CheckBoxPreference cbAutocompletionEnabled, cbJsScript; //cbAllowPopups, cbrestoreTabs
     private Preference textEncoding, useragent, downloadloc, proxy; //urlcontent,
     private CharSequence[] mUrlOptions;
+    private long startTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ADVANCED, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_advanced);
-
         mActivity = getActivity();
-
         initPrefs();
     }
 
@@ -66,6 +72,7 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
         // urlcontent = findPreference(SETTINGS_URLCONTENT);
         // cbAllowPopups = (CheckBoxPreference) findPreference(SETTINGS_NEWWINDOW);
         // cbrestoreTabs = (CheckBoxPreference) findPreference(SETTINGS_RESTORETABS);
+        cbAutocompletionEnabled = (CheckBoxPreference) findPreference(SETTINGS_AUTOCOMPLETION);
         cbJsScript = (CheckBoxPreference) findPreference(SETTINGS_JAVASCRIPT);
         proxy = findPreference(SETTINGS_PROXY);
         useragent = findPreference(SETTINGS_USERAGENT);
@@ -78,6 +85,7 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
         downloadloc.setOnPreferenceClickListener(this);
         // cbAllowPopups.setOnPreferenceChangeListener(this);
         // cbrestoreTabs.setOnPreferenceChangeListener(this);
+        cbAutocompletionEnabled.setOnPreferenceChangeListener(this);
         cbJsScript.setOnPreferenceChangeListener(this);
 
         textEncoding.setSummary(mPreferenceManager.getTextEncoding());
@@ -88,6 +96,7 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
 
         // cbAllowPopups.setChecked(mPreferenceManager.getPopupsEnabled());
         // cbrestoreTabs.setChecked(mPreferenceManager.getRestoreLostTabsEnabled());
+        cbAutocompletionEnabled.setChecked(mPreferenceManager.isAutocompletionEnebled());
         cbJsScript.setChecked(mPreferenceManager.getJavaScriptEnabled());
 
         mProxyChoices = getResources().getStringArray(R.array.proxy_choices_array);
@@ -122,18 +131,22 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case SETTINGS_PROXY:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.HTTP_PROXY, TelemetryKeys.ADVANCED);
                 proxyChoicePicker();
                 return true;
             case SETTINGS_USERAGENT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.USER_AGENT, TelemetryKeys.ADVANCED);
                 agentDialog();
                 return true;
             case SETTINGS_DOWNLOAD:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.DOWNLOAD_LOCATION, TelemetryKeys.ADVANCED);
                 downloadLocDialog();
                 return true;
 //            case SETTINGS_URLCONTENT:
 //                urlBoxPicker();
 //                return true;
             case SETTINGS_TEXTENCODING:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.TEXT_ENCODING, TelemetryKeys.ADVANCED);
                 textEncodingPicker();
                 return true;
             default:
@@ -153,7 +166,15 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
 //                mPreferenceManager.setRestoreLostTabsEnabled((Boolean) newValue);
 //                cbrestoreTabs.setChecked((Boolean) newValue);
 //                return true;
+            case SETTINGS_AUTOCOMPLETION:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_AUTOCOMPLETE, TelemetryKeys.ADVANCED,
+                        !((Boolean) newValue));
+                mPreferenceManager.setAutocompletionEnabled((Boolean) newValue);
+                cbAutocompletionEnabled.setChecked((Boolean) newValue);
+                return true;
             case SETTINGS_JAVASCRIPT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_JS, TelemetryKeys.ADVANCED,
+                        !((Boolean) newValue));
                 mPreferenceManager.setJavaScriptEnabled((Boolean) newValue);
                 cbJsScript.setChecked((Boolean) newValue);
                 return true;
@@ -184,13 +205,19 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
 
     private void setProxyChoice(int choice) {
         switch (choice) {
+            case Constants.NO_PROXY:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.NONE, TelemetryKeys.HTTP_PROXY);
+                break;
             case Constants.PROXY_ORBOT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ORBOT, TelemetryKeys.HTTP_PROXY);
                 choice = mProxyUtils.setProxyChoice(choice, mActivity);
                 break;
             case Constants.PROXY_I2P:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.I2P, TelemetryKeys.HTTP_PROXY);
                 choice = mProxyUtils.setProxyChoice(choice, mActivity);
                 break;
             case Constants.PROXY_MANUAL:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.MANUAL, TelemetryKeys.HTTP_PROXY);
                 manualProxyPicker();
                 break;
         }
@@ -249,15 +276,19 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
                         mPreferenceManager.setUserAgentChoice(which + 1);
                         switch (which + 1) {
                             case 1:
+                                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.DEFAULT, TelemetryKeys.USER_AGENT);
                                 useragent.setSummary(getResources().getString(R.string.agent_default));
                                 break;
                             case 2:
+                                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.DESKTOP, TelemetryKeys.USER_AGENT);
                                 useragent.setSummary(getResources().getString(R.string.agent_desktop));
                                 break;
                             case 3:
+                                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.MOBILE, TelemetryKeys.USER_AGENT);
                                 useragent.setSummary(getResources().getString(R.string.agent_mobile));
                                 break;
                             case 4:
+                                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CUSTOM, TelemetryKeys.USER_AGENT);
                                 useragent.setSummary(getResources().getString(R.string.agent_custom));
                                 agentPicker();
                                 break;
@@ -268,6 +299,7 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CONFIRM, TelemetryKeys.USER_AGENT);
                     }
                 });
         agentPicker.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -341,28 +373,15 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
 
         int padding = Utils.dpToPx(10);
 
-        TextView v = new TextView(mActivity);
+        final TextView v = new TextView(mActivity);
         v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         v.setTextColor(Color.DKGRAY);
         v.setText(Constants.EXTERNAL_STORAGE + '/');
         v.setPadding(padding, padding, 0, padding);
         layout.addView(v);
         layout.addView(getDownload);
-        if (API < Build.VERSION_CODES.JELLY_BEAN) {
-            layout.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.edit_text));
-        } else {
-            Drawable drawable;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                drawable = getResources().getDrawable(android.R.drawable.edit_text, getActivity().getTheme());
-            } else {
-                drawable = getResources().getDrawable(android.R.drawable.edit_text);
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                layout.setBackground(drawable);
-            } else {
-                layout.setBackgroundDrawable(drawable);
-            }
-        }
+        final Resources.Theme theme = getActivity().getTheme();
+        ViewUtils.setThemedBackgroundDrawable(layout, android.R.drawable.edit_text, theme);
         downLocationPicker.setView(layout);
         downLocationPicker.setPositiveButton(getResources().getString(R.string.action_ok),
                 new DialogInterface.OnClickListener() {
@@ -423,5 +442,11 @@ public class AdvancedSettingsFragment extends BaseSettingsFragment {
                     }
                 });
         picker.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ADVANCED, System.currentTimeMillis() - startTime);
     }
 }

@@ -1,5 +1,7 @@
 package com.cliqz.browser.webview;
 
+import acr.browser.lightning.bus.BrowserEvents;
+
 /**
  * These messages replace older callback mechanism with a more generic message passing. We were
  * calling the callback inside the bridge, but the bridge should not be so dependant on the type
@@ -41,7 +43,7 @@ public class CliqzMessages {
      * or history element and by the search to open result pages. The reset flag is used when
      * opening a new tab in a new Task, it avoids the search screen to appear when back is pressed:
      * by navigating back to the trampoline, it will send an "Exit" message
-     * ({@link com.cliqz.browser.main.Messages.Exit}).
+     * ({@link BrowserEvents.CloseTab}).
      */
     public static final class OpenLink {
         public final String url;

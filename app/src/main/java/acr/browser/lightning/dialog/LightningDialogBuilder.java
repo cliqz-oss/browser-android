@@ -9,7 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -35,6 +36,9 @@ public class LightningDialogBuilder {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    Telemetry telemetry;
 
     @Inject
     public LightningDialogBuilder() {
@@ -246,6 +250,7 @@ public class LightningDialogBuilder {
     // TODO There should be a way in which we do not need an activity reference to dowload a file
     public void showLongPressImageDialog(@NonNull final Activity activity, @NonNull final String url,
                                           @NonNull final String userAgent) {
+        telemetry.sendLongPressSignal(TelemetryKeys.IMAGE);
         final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
         final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
@@ -275,6 +280,7 @@ public class LightningDialogBuilder {
     }
 
     public void showLongPressLinkDialog(final Activity activity, final String url, final String userAgent) {
+        telemetry.sendLongPressSignal(TelemetryKeys.LINK);
         final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
         final CharSequence[] mOptions = new CharSequence[] {
                 activity.getString(R.string.action_copy),

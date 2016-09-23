@@ -23,7 +23,8 @@ import acr.browser.lightning.preference.PreferenceManager;
  * @date 2015/12/08
  */
 public abstract class BaseWebView extends AbstractionWebView {
-    private static final String TAG = BaseWebView.class.getSimpleName();
+
+    private static final String CLIQZ_EVENT_FORMAT = "CliqzEvents.pub('%s'%s)";
 
     private boolean mSuperSetupCalled = false;
     private boolean mJsReady = false;
@@ -141,9 +142,26 @@ public abstract class BaseWebView extends AbstractionWebView {
      * Should be called whenever the Cliqz related webViews become visible
      */
     public void isVisible() {
-        evaluateJavascript("jsAPI.onShow()", null);
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_SHOW);
     }
 
+    public void notifyEvent(String event, Object... params) {
+        if (mJsReady) {
+            final StringBuilder builder = new StringBuilder();
+            for (Object obj: params) {
+                builder.append(',');
+                if (String.class.isInstance(obj)) {
+                    final String escaped =
+                            String.class.cast(obj).replace("'", "\'");
+                    builder.append("'").append(escaped).append("'");
+                } else {
+                    builder.append(obj.toString());
+                }
+            }
+            evaluateJavascript(
+                    String.format(CLIQZ_EVENT_FORMAT, event, builder.toString()), null);
+        }
+    }
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);

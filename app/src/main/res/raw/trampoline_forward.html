@@ -59,19 +59,24 @@
             case 'search':
               if (Boolean(state.r)) {
                 var oreq = new XMLHttpRequest();
-                oreq.open('GET', 'cliqz://trampoline/close.html');
+                oreq.open('GET', 'cliqz://trampoline/close.html?t=' + Date.now());
                 oreq.send();
                 return;
               }
               var query = state.q;
               var oreq = new XMLHttpRequest();
-              oreq.open("GET", "cliqz://trampoline/search.html?q=" + encodeURIComponent(query));
+              oreq.open("GET", "cliqz://trampoline/search.html?q=" + encodeURIComponent(query) + "&t=" + Date.now());
               oreq.send();
               break;
             case 'history':
+              state.status = 'history';
+              history.replaceState(state, 'trampoline', 'goto.html');
               var oreq = new XMLHttpRequest();
-              oreq.open("GET", "cliqz://trampoline/history.html");
+              oreq.open("GET", "cliqz://trampoline/history.html?t=" + Date.now());
               oreq.send();
+              break;
+            case 'history-back':
+              alert("history-back");
               break;
             default:
               console.log("Default case hitted")

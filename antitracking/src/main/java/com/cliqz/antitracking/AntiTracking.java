@@ -206,9 +206,9 @@ public class AntiTracking {
         runtime.executeVoidScript(javascript);
     }
 
-    public AntiTrackingResponse shouldInterceptRequest(final WebView view, final WebResourceRequest request) {
+    public WebResourceResponse shouldInterceptRequest(final WebView view, final WebResourceRequest request) {
         if (!isEnabled()) {
-            return new AntiTrackingResponse(-1, null);
+            return null;
         }
 
         final boolean isMainDocument = request.isForMainFrame();
@@ -230,7 +230,7 @@ public class AntiTracking {
 
         if (mWebRequest == null) {
             // antitracking not finished initialising, skip v8 query
-            return new AntiTrackingResponse(-1, null);
+            return null;
         }
 
         String block = "{}";
@@ -303,8 +303,7 @@ public class AntiTracking {
             JSONObject blockResponse = new JSONObject(block);
             if (blockResponse.has("cancel") && blockResponse.getBoolean("cancel")) {
                 Log.d(TAG, "Block request: " + requestUrl.toString());
-                final int type = getBlockType(blockResponse);
-                return new AntiTrackingResponse(type, blockRequest());
+                return blockRequest();
             } else if(blockResponse.has("redirectUrl") || blockResponse.has("requestHeaders")) {
                 String newUrl;
                 if (blockResponse.has("redirectUrl")) {
@@ -322,34 +321,18 @@ public class AntiTracking {
                 }
                 Log.d(TAG, "Modify request from: " + requestUrl.toString());
                 //Log.d(TAG, "                 to: " + newUrl);
-                return new AntiTrackingResponse(AntiTrackingResponse.ANTITRACKING_TYPE, modifyRequest(request, newUrl, modifiedHeaders));
+                return modifyRequest(request, newUrl, modifiedHeaders);
             }
         } catch(JSONException e) {
             Log.e(TAG, "Bad data from JS: " + block, e);
         }
 
-        return new AntiTrackingResponse(-1, null);
+        return null;
     }
 
-    private int getBlockType(JSONObject blockResponse) throws JSONException {
-        if (blockResponse.has("extras")) {
-            final JSONArray extras = blockResponse.getJSONArray("extras");
-            for (int i = 0; i < extras.length(); i++) {
-                final String extra = extras.optString(i, "");
-                if ("adblocking".equals(extra)) {
-                    return AntiTrackingResponse.ADBLOCKING_TYPE;
-                }
-                if ("antitracking".equals(extra)) {
-                    return AntiTrackingResponse.ANTITRACKING_TYPE;
-                }
-            }
-        }
-        return -1;
-    }
-
-    public AntiTrackingResponse shouldInterceptRequest(final WebView view, Uri url) {
+    public WebResourceResponse shouldInterceptRequest(final WebView view, Uri url) {
         // from old API level
-        return new AntiTrackingResponse(-1, null);
+        return null;
     }
 
     WebResourceResponse modifyRequest(WebResourceRequest request, String newUrlString, Map<String, String> modifyHeaders) {

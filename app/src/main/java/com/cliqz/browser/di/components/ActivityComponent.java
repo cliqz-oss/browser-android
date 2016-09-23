@@ -4,6 +4,8 @@ import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.di.modules.MainActivityModule;
 import com.cliqz.browser.main.FragmentWithBus;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.OnBoardingHelper;
+import com.cliqz.browser.main.TabFragment;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.overview.TabOverviewFragment;
 import com.cliqz.browser.webview.BaseWebView;
@@ -27,6 +29,8 @@ public interface ActivityComponent {
 
     void inject(LightningView lightningView);
 
+    void inject(TabFragment tabFragment);
+
     void inject(FragmentWithBus fragmentWithBus);
 
     void inject(Bridge bridge);
@@ -44,4 +48,6 @@ public interface ActivityComponent {
     void inject(OverviewFragment overviewFragment);
 
     void inject(TabOverviewFragment tabOverviewFragment);
+
+    void inject(OnBoardingHelper onBoardingHelper);
 }

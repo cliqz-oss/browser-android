@@ -51,4 +51,7 @@
     <color name="toolbar_icon_color_normal">#333333</color>
     <color name="toolbar_icon_color_incognito">#ffffff</color>
 
+    <color name="showcase_background_color">#f22d3e50</color>
+    <color name="showcase_title_color">#fff</color>
+    <color name="showcase_message_color">#fff</color>
 </resources>

@@ -2,6 +2,7 @@ package com.cliqz.browser.main;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.webkit.WebView;
@@ -17,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import acr.browser.lightning.constant.Constants;
+import acr.browser.lightning.view.LightningView;
 
 /**
  * Created by Ravjit on 21/07/16.
@@ -36,10 +38,6 @@ public class TabsManager {
     public TabsManager(Context context, FragmentManager fragmentManager) {
         mFragmentManager = fragmentManager;
         BrowserApp.getAppComponent().inject(this);
-    }
-
-    public List<TabFragment> getTabsList() {
-        return mFragmentsList;
     }
 
     /**
@@ -86,12 +84,19 @@ public class TabsManager {
     }
 
     /**
-     * Create a new Tab and add it to the TabsList and switches the view to it
+     * Create a new Tab and add it to the TabsList
      * @param bundle Arguments for the newly created Tab
+     * @param showImmediately If true the view is switched to the newly created tab
      */
-    public void addNewTab(Bundle bundle, boolean showImmediately) {
+    public void addNewTab(@Nullable Bundle bundle, boolean showImmediately) {
         final TabFragment newTab = new TabFragment();
         newTab.setArguments(bundle);
+        final String url = bundle != null ? bundle.getString(Constants.KEY_URL) : null;
+        if (url != null && !url.isEmpty()) {
+            newTab.state.setUrl(bundle.getString(Constants.KEY_URL));
+            newTab.state.setTitle(bundle.getString(Constants.KEY_URL));
+            newTab.state.setMode(CliqzBrowserState.Mode.WEBPAGE);
+        }
         mFragmentsList.add(newTab);
         if (showImmediately) {
             showTab(mFragmentsList.size()-1);
@@ -113,6 +118,35 @@ public class TabsManager {
     }
 
     /**
+     * It closes the tab associated with the given {@link LightningView}, the method is meant to
+     * close visible tabs and it tries to switch to another tab if the given one is the currently
+     * visible one.
+     * Generally this method is called to handle the
+     * {@link acr.browser.lightning.bus.BrowserEvents.CloseWindow CloseWindow}
+     * message.
+     *
+     * @param view a {@link LightningView} associate with the tab we want to close
+     */
+    public synchronized void closeTab(LightningView view) {
+        int position = -1;
+        final int currentTab = getCurrentTabPosition();
+        for (int i = 0; i < mFragmentsList.size(); i++) {
+            final TabFragment tab = mFragmentsList.get(i);
+            if (tab != null && tab.mLightningView == view) {
+                position = i;
+                break;
+            }
+        }
+
+        if (position > -1) {
+            deleteTab(position);
+            if (currentTab == position) {
+                showTab(getCurrentTabPosition());
+            }
+        }
+    }
+
+    /**
      * Handles deleting Tabs at a given position and switching between Tabs after deleting the current Tab
      * @param position Position of the Tab to be deleted
      */
@@ -122,7 +156,6 @@ public class TabsManager {
         }
 
         TabFragment reference = mFragmentsList.get(position);
-        telemetry.sendTabCloseSignal(mFragmentsList.size() - 1, reference.state.isIncognito());
         if (reference == null) {
             return;
         }
@@ -177,6 +210,12 @@ public class TabsManager {
             if (webView != null) {
                 webView.onResume();
             }
+        }
+    }
+
+    public void setShouldReset(boolean shouldReset) {
+        for (TabFragment tabFragment : mFragmentsList) {
+            tabFragment.state.setShouldReset(shouldReset);
         }
     }
 }

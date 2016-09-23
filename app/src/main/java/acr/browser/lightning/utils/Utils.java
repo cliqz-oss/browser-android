@@ -60,6 +60,7 @@ public final class Utils {
                 String fileName = URLUtil.guessFileName(url, null, null);
                 DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null,
                         isYouTubeVideo);
+                Utils.showSnackbar(activity, activity.getString(R.string.download_started));
                 Log.i(Constants.TAG, "Downloading" + fileName);
             }
 

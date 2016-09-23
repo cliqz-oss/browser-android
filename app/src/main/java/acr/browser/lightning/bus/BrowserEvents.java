@@ -1,11 +1,13 @@
 package acr.browser.lightning.bus;
 
-import android.net.Uri;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.FileChooserParams;
 
 import acr.browser.lightning.view.LightningView;
 
@@ -16,31 +18,6 @@ public final class BrowserEvents {
 
     private BrowserEvents() {
         // No instances
-    }
-
-    /**
-     * The {@link acr.browser.lightning.activity.BrowserActivity} signal a new bookmark was added
-     * (mainly to the {@link acr.browser.lightning.fragment.BookmarksFragment}).
-     */
-    public static class BookmarkAdded {
-        public final String title, url;
-
-        public BookmarkAdded(final String title, final String url) {
-            this.title = title;
-            this.url = url;
-        }
-    }
-
-    /**
-     * Notify the current page has a new url. This is generally used to update the
-     * {@link acr.browser.lightning.fragment.BookmarksFragment} interface.
-     */
-    public static class CurrentPageUrl {
-        public final String url;
-
-        public CurrentPageUrl(final String url) {
-            this.url = url;
-        }
     }
 
     /**
@@ -164,27 +141,29 @@ public final class BrowserEvents {
     }
 
     /**
-     * Tell the browser to open a file chooser.
-     */
-    public static class OpenFileChooser {
-        public final ValueCallback<Uri> uploadMsg;
-
-        public OpenFileChooser(ValueCallback<Uri> uploadMsg) {
-            this.uploadMsg = uploadMsg;
-        }
-    }
-
-    /**
      * Tell the browser to show a file chooser.
      *
      * This is called to handle HTML forms with 'file' input type, in response to the
      * user pressing the "Select File" button.
      */
     public static class ShowFileChooser {
-        public final ValueCallback<Uri[]> filePathCallBack;
 
-        public ShowFileChooser(ValueCallback<Uri[]> filePathCallBack) {
-            this.filePathCallBack = filePathCallBack;
+        @NonNull
+        public final Class callbackParamType;
+        @NonNull
+        public final ValueCallback valueCallback;
+        @Nullable
+        public final String acceptType;
+        @Nullable
+        public final FileChooserParams fileChooserParams;
+
+        public ShowFileChooser(@NonNull Class callbackParamType,
+                               @NonNull  ValueCallback valueCallback, @Nullable String acceptType,
+                               @Nullable FileChooserParams fileChooserParams) {
+            this.callbackParamType = callbackParamType;
+            this.valueCallback = valueCallback;
+            this.acceptType = acceptType;
+            this.fileChooserParams = fileChooserParams;
         }
     }
 
@@ -232,4 +211,9 @@ public final class BrowserEvents {
      */
     public static class SearchInPage {
     }
+
+    /**
+     * Sent when the user want to close the current tab
+     */
+    public static class CloseTab {}
 }

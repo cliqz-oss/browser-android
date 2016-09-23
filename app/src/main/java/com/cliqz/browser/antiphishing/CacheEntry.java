@@ -9,8 +9,8 @@ import java.util.ArrayList;
  * @date 2016/07/11
  */
 class CacheEntry {
-    ArrayList<String> blacklist;
-    ArrayList<String> whitelist;
+    ArrayList<ArrayList<String>> blacklist;
+    ArrayList<ArrayList<String>> whitelist;
 
     static CacheEntry newEmptyCacheEntry() {
         final CacheEntry entry = new CacheEntry();

@@ -1,6 +1,7 @@
 package com.cliqz.browser.main;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.SearchManager;
@@ -9,7 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -22,13 +22,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -39,21 +37,19 @@ import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.di.modules.MainActivityModule;
-import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.cliqz.browser.utils.Timings;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.webview.SearchWebView;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.io.File;
 import java.util.HashSet;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -77,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private final static String TAG = MainActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
+
     private ActivityComponent mActivityComponent;
 
     private static final String OVERVIEW_FRAGMENT_TAG = "overview_fragment";
@@ -85,8 +83,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private Bundle firstTabArgs;
     private OverviewFragment mOverViewFragment;
-    private OnBoardingAdapter onBoardingAdapter;
-    private ViewPager pager;
     private boolean askedGPSPermission = false;
     private CustomViewHandler mCustomViewHandler;
     protected SearchWebView searchWebView;
@@ -94,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private boolean mIsColdStart = true;
     private boolean mShouldShowLookbackDialog = true;
     private final HashSet<Long> downloadIds = new HashSet<>();
+    private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
 
     @Inject
     Bus bus;
@@ -122,6 +119,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Inject
     ProxyUtils proxyUtils;
 
+    @Inject
+    OnBoardingHelper onBoardingHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         searchWebView = new SearchWebView(this);
         searchWebView.setBackgroundColor(ContextCompat.getColor(this, R.color.normal_tab_primary_color));
         mOverViewFragment = new OverviewFragment();
-        performExitCleanUp();
         // Ignore intent if we are being recreated
         final Intent intent = savedInstanceState == null ? getIntent() : null;
         final String url;
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             isIncognito = false;
         }
         if(isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(Telemetry.Action.CLICK);
+            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
         }
         firstTabArgs = new Bundle();
         firstTabArgs.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
@@ -183,23 +182,20 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             firstTabArgs.putString(Constants.KEY_QUERY, query);
         }
 
-        // File used to override the onboarding during UIAutomation tests
-        final File onBoardingOverrideFile = new File(Constants.ONBOARDING_OVERRIDE_FILE);
-        final boolean hasAProperOverrideOnBoardingFile =
-                onBoardingOverrideFile.exists() &&
-                onBoardingOverrideFile.length() > 0;
-        final boolean hasBeenLaunchedWithNoOnboarding = intent != null &&
-                intent.getBooleanExtra(Constants.KEY_DO_NOT_SHOW_ONBOARDING, false);
-        final boolean shouldShowOnboarding = !preferenceManager.getOnBoardingComplete() &&
-                !hasAProperOverrideOnBoardingFile && !hasBeenLaunchedWithNoOnboarding;
-        if (shouldShowOnboarding) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            setContentView(R.layout.activity_on_boarding);
-            onBoardingAdapter = new OnBoardingAdapter(getSupportFragmentManager(), telemetry);
-            pager = (ViewPager) findViewById(R.id.viewpager);
-            pager.setAdapter(onBoardingAdapter);
-            pager.addOnPageChangeListener(onBoardingAdapter.onPageChangeListener);
-        } else {
+        final boolean onBoardingShown =
+                onBoardingHelper.conditionallyShowOnBoarding(new Callable<Void>() {
+                    final long startTime = System.currentTimeMillis();
+
+                    @Override
+                    public Void call() throws Exception {
+                        final long now = System.currentTimeMillis();
+                        telemetry.sendOnBoardingHideSignal(now - startTime);
+                        setupContentView();
+                        return null;
+                    }
+                });
+
+        if (!onBoardingShown) {
             setupContentView();
         }
 
@@ -214,22 +210,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             preferenceManager.setVersionCode(BuildConfig.VERSION_CODE);
         } else if(currentVersionCode > previousVersionCode) {
             preferenceManager.setVersionCode(currentVersionCode);
-            telemetry.sendLifeCycleSignal(Telemetry.Action.UPDATE);
-        }
-
-        if (checkPlayServices()) {
-            final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
-            startService(registrationIntent);
+            telemetry.sendLifeCycleSignal(TelemetryKeys.UPDATE);
         }
     }
 
     private void setupContentView() {
-        //final MainViewContainer content = new MainViewContainer(this);
-        //content.setFitsSystemWindows(true);
-        //content.setBackgroundColor(Color.WHITE);
-        //final LayoutParams params = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
-        //content.setId(CONTENT_VIEW_ID);
-        //setContentView(content, params);
         setContentView(R.layout.activity_main);
         tabsManager.addNewTab(firstTabArgs);
     }
@@ -264,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         //Ask for "Dangerous Permissions" on runtime
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if(preferenceManager.getLocationEnabled()
-                    && preferenceManager.getOnBoardingComplete()
+                    && onBoardingHelper.isOnboardingCompleted()
                     && !askedGPSPermission
                     && checkSelfPermission(LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
                 askedGPSPermission = true;
@@ -274,10 +259,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         }
         //The idea is to reset all tabs if the app has been in background for 30mins
-        for (TabFragment tabFragment : tabsManager.getTabsList()) {
-            tabFragment.state.setShouldReset(
-                    System.currentTimeMillis() - timings.getAppStopTime() >= Constants.HOME_RESET_DELAY);
-        }
+        tabsManager.setShouldReset(
+                System.currentTimeMillis() - timings.getAppStopTime() >= Constants.HOME_RESET_DELAY);
         if (preferenceManager.getLocationEnabled()) {
             locationCache.start();
         } else {
@@ -319,10 +302,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             args.putString(Constants.KEY_QUERY, query);
         }
         if(isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(Telemetry.Action.CLICK);
+            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
         }
         tabsManager.addNewTab(args);
-        telemetry.sendNewTabSignal(tabsManager.getTabCount(), false);
     }
 
     private void showGPSPermissionDialog() {
@@ -348,13 +330,16 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        showLookbackDialog();
-                    }
-                });
+                        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    showLookbackDialog();
+                }
+            });
+        }
         builder.create().show();
         dontShowAgain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -374,13 +359,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     protected void onPause() {
         super.onPause();
+        performExitCleanUp();
         gcmReceiver.unregister();
         unregisterReceiver(onComplete);
         tabsManager.pauseAllTabs();
         String context = getCurrentVisibleFragmentName();
         timings.setAppStopTime();
         if(!context.isEmpty()) {
-            telemetry.sendClosingSignals(Telemetry.Action.CLOSE, context);
+            telemetry.sendClosingSignals(TelemetryKeys.CLOSE, context);
         }
         locationCache.stop();
     }
@@ -398,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         bus.unregister(this);
         String context = getCurrentVisibleFragmentName();
         if(!context.isEmpty()) {
-            telemetry.sendClosingSignals(Telemetry.Action.KILL, context);
+            telemetry.sendClosingSignals(TelemetryKeys.KILL, context);
         }
     }
 
@@ -422,7 +408,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void openLinkInNewTab(BrowserEvents.OpenUrlInNewTab event) {
-        createTab(event.url, event.isIncognito);
+        createTab(event.url, event.isIncognito, false);
+        bus.post(new Messages.UpdateTabCounter(tabsManager.getTabCount()));
+        Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tabsManager.showTab(tabsManager.getTabCount() - 1);
+            }
+        });
     }
 
     @Subscribe
@@ -434,7 +427,17 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void createNewTab(BrowserEvents.NewTab event) {
-        createTab("", event.isIncognito);
+        createTab("", event.isIncognito, true);
+    }
+
+    @Subscribe
+    public void closeWindow(BrowserEvents.CloseWindow event) {
+        tabsManager.closeTab(event.lightningView);
+    }
+
+    @Subscribe
+    public void showFileChooser(BrowserEvents.ShowFileChooser event) {
+        fileChooserHelper.showFileChooser(event);
     }
 
     private void createTab(Message msg, boolean isIncognito) {
@@ -443,17 +446,15 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         args.putBoolean(Constants.KEY_NEW_TAB_MESSAGE, true);
         BrowserApp.pushNewTabMessage(msg);
         tabsManager.addNewTab(args);
-        telemetry.sendNewTabSignal(tabsManager.getTabCount(), isIncognito);
     }
 
-    private void createTab(String url, boolean isIncognito) {
+    private void createTab(String url, boolean isIncognito, boolean showImmediately) {
         final Bundle args = new Bundle();
         args.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
         if(url != null && Patterns.WEB_URL.matcher(url).matches()) {
             args.putString(Constants.KEY_URL, url);
         }
-        tabsManager.addNewTab(args);
-        telemetry.sendNewTabSignal(tabsManager.getTabCount(), isIncognito);
+        tabsManager.addNewTab(args, showImmediately);
     }
 
     @Subscribe
@@ -525,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    public void exit(Messages.Exit event) {
+    public void closeTab(BrowserEvents.CloseTab event) {
         if (tabsManager.getTabCount() > 1) {
             tabsManager.deleteTab(tabsManager.getCurrentTabPosition());
             final int currentPos = tabsManager.getCurrentTabPosition();
@@ -537,20 +538,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
-    public void nextScreen(View view) {
-        final int page = pager.getCurrentItem() + 1;
-        pager.setCurrentItem(page);
-    }
-
-    public void onBoardingDone(View view) {
-        ((ViewGroup)(view.getParent())).removeAllViews();
-        preferenceManager.setOnBoardingComplete(true);
-        long curTime = System.currentTimeMillis();
-        telemetry.sendOnBoardingHideSignal(curTime - onBoardingAdapter.startTime);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_USER);
-        // Send telemetry "installed" signal
-        // telemetry.sendLifeCycleSignal(Telemetry.Action.INSTALL);
-        setupContentView();
+    @Subscribe
+    public void quit(Messages.Quit event) {
+        finish();
     }
 
     // returns screen that is visible
@@ -565,17 +555,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             name = "cards";
         }
         return name;
-    }
-
-    /**
-     * We check for Google Play Services availability, but we do not rely on them so much so we
-     * do not show any error message if they are not installed.
-     * See https://github.com/googlesamples/google-services/blob/master/android/gcm/app/src/main/java/gcm/play/android/samples/com/gcmquickstart/MainActivity.java
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        return resultCode == ConnectionResult.SUCCESS;
     }
 
     private final BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -629,6 +608,20 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FILE_UPLOAD_REQUEST_CODE) {
+            if (resultCode != Activity.RESULT_OK) {
+                fileChooserHelper.notifyResultCancel();
+                return;
+            }
+
+            fileChooserHelper.notifyResultOk(data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

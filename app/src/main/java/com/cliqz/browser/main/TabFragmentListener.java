@@ -29,7 +29,7 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
     public void onFocusChange(View v, boolean hasFocus) {
         Mode mode = fragment.state.getMode();
         if (!hasFocus) {
-            fragment.telemetry.sendURLBarBlurSignal();
+            fragment.telemetry.sendURLBarBlurSignal(fragment.state.isIncognito(), mode == Mode.SEARCH ? "cards" : "web");
             fragment.hideKeyboard();
             if(mode == Mode.WEBPAGE) {
                 fragment.searchBar.showTitleBar();
@@ -45,7 +45,7 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
             fragment.inPageSearchBar.setVisibility(View.GONE);
             fragment.findInPage("");
             fragment.state.setMode(CliqzBrowserState.Mode.SEARCH);
-            fragment.telemetry.sendURLBarFocusSignal("cards");
+            fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(), mode == Mode.SEARCH ? "cards" : "web");
         }
     }
 

@@ -1,15 +1,33 @@
-System.register("mobile-ui/background", [], function (_export) {
-  "use strict";
+System.register('mobile-ui/background', ['core/base/background'], function (_export) {
+  /* global jsAPI */
 
+  'use strict';
+
+  var background;
   return {
-    setters: [],
+    setters: [function (_coreBaseBackground) {
+      background = _coreBaseBackground['default'];
+    }],
     execute: function () {
-      _export("default", {
-        init: function init(settings) {},
+      _export('default', background({
+        enabled: function enabled() {
+          return true;
+        },
+        init: function init() {},
 
-        unload: function unload() {}
-      });
+        unload: function unload() {},
+
+        events: {
+          'mobile-browser:show': jsAPI.onShow,
+          'mobile-browser:search': jsAPI.search,
+          'mobile-browser:notify-preferences': jsAPI.setClientPreferences,
+          'mobile-browser:restore-blocked-topsites': jsAPI.restoreBlockedTopSites,
+          'mobile-browser:reset-state': jsAPI.resetState,
+          'mobile-browser:set-search-engine': jsAPI.setDefaultSearchEngine,
+          'mobile-browser:publish-card-url': jsAPI.getCardUrl,
+          'mobile-browser:showcase-swipe-card': jsAPI.onboardingSwipe
+        }
+      }));
     }
   };
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vYmlsZS11aS9iYWNrZ3JvdW5kLmVzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozt5QkFBZTtBQUNiLFlBQUksRUFBQSxjQUFDLFFBQVEsRUFBRSxFQUVkOztBQUVELGNBQU0sRUFBQSxrQkFBRyxFQUVSO09BQ0YiLCJmaWxlIjoibW9iaWxlLXVpL2JhY2tncm91bmQuZXMiLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgZGVmYXVsdCB7XG4gIGluaXQoc2V0dGluZ3MpIHtcblxuICB9LFxuXG4gIHVubG9hZCgpIHtcblxuICB9XG59XG4iXX0=

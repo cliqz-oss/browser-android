@@ -10,11 +10,12 @@ public final class Messages {
     // No instances, please
     private Messages() {}
 
-    public static class Exit {}
+    /**
+     * Sent when the user click on the Quit entry in the Overflow Menu
+     */
+    public static class Quit {}
 
     public static class GoToOverview {}
-
-    public static class GoToSuggestions {}
 
     public static class GoToSettings {}
 
@@ -72,9 +73,11 @@ public final class Messages {
 
     public static class AddToFavourites {
         public final String url;
+        public final String title;
 
-        public AddToFavourites(String url) {
+        public AddToFavourites(String url, String title) {
             this.url = url;
+            this.title = title;
         }
     }
 
@@ -139,5 +142,13 @@ public final class Messages {
     }
 
     public static class HideLoadingScreen {
+    }
+
+    public static class UpdateTabCounter {
+        public final int count;
+
+        public UpdateTabCounter(int count) {
+            this.count = count;
+        }
     }
 }

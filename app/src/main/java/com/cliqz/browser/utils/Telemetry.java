@@ -10,9 +10,12 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
+import android.util.Log;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.CliqzBrowserState;
+import com.cliqz.browser.main.OnBoardingHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,122 +40,8 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 public class Telemetry {
 
-    private static class Key {
-
-        private static final String ALPHA_NUMERIC_SPACE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        private static final String NUMERIC_SPACE = "0123456789";
-        private static final String SESSION = "session";
-        private static final String TIME_STAMP = "ts";
-        private static final String TELEMETRY_SEQUENCE = "seq";
-        private static final String ACTION = "action";
-        private static final String TYPE = "type";
-        private static final String VERSION = "version";
-        private static final String VERSION_DIST = "version_dist";
-        private static final String VERSION_HOST = "version_host";
-        private static final String OS_VERSION = "os_version";
-        private static final String DEVICE = "device";
-        private static final String LANGUAGE = "language";
-        private static final String DEFAULT_SEARCH_ENGINE = "defaultSearchEngine";
-        private static final String HISTORY_URLS = "history_urls";
-        private static final String HISTORY_DAYS = "history_days";
-        private static final String PREFERENCES = "prefs";
-        private static final String NETWORK = "network";
-        private static final String BATTERY = "battery";
-        private static final String CONTEXT = "context";
-        private static final String MEMORY = "memory";
-        private static final String TIME_USED = "time_used";
-        private static final String LENGTH = "key_length";
-        private static final String ACTION_TARGET = "action_target";
-        private static final String DISPLAY_TIME = "display_time";
-        private static final String DURATION = "duration";
-        private static final String ACTIVITY = "activity";
-        private static final String ENVIRONMENT = "environment";
-        private static final String ONBOARDING = "onboarding";
-        private static final String CURRENT_LAYER = "current_layer";
-        private static final String NEXT_LAYER = "next_layer";
-        private static final String STEP = "step";
-        private static final String URL_LENGTH = "url_length";
-        private static final String HAS_SCROLLED = "has_scrolled";
-        private static final String NAVIGATION = "navigation";
-        private static final String CURRENT_CONTEXT = "current_context";
-        private static final String NEXT_CONTEXT = "next_context";
-        private static final String QUERY_LENGTH = "query_length";
-        private static final String AUTOCOMPLETED_LENGTH = "autocompleted_length";
-        private static final String CURRENT_POSITION = "current_position";
-        private static final String INNER_LINK = "inner_link";
-        private static final String EXTRA = "extra";
-        private static final String SEARCH = "search";
-        private static final String HAS_IMAGE = "has_image";
-        private static final String CLUSTERING_OVERRIDE = "clustering_override";
-        private static final String AUTOCOMPLETED = "autocompleted";
-        private static final String NEW_TAB = "new_tab";
-        private static final String REACTION_TIME = "reaction_time";
-        private static final String URLBAR_TIME = "urlbar_time";
-        private static final String POSITION_TYPE = "position_type";
-        private static final String INBAR_URL = "inbar_url";
-        private static final String INBAR_QUERY = "inbar_query";
-        private static final String PRODUCT = "product";
-        private static final String ANDROID = "cliqz_android";
-        private static final String APP_STATE_CHANGE = "app_state_change";
-        private static final String STATE = "state";
-        private static final String ONBOARDING_VERSION = "1.0";
-        private static final String SHARE = "share";
-        private static final String TARGET_TYPE = "target_type";
-        private static final String MAIN = "main";
-        private static final String NEWS_NOTIFICATION = "news_notification";
-        private static final String STARTUP_TYPE = "startup_type";
-        private static final String STARTUP_TIME = "startup_time";
-        private static final String TABS = "tabs";
-        private static final String TAB_COUNT = "tab_count";
-        private static final String TAB_INDEX = "tab_index";
-        private static final String MODE = "mode";
-        private static final String NORMAL = "normal";
-        private static final String PRIVATE = "private";
-        private static final String DISTRIBUTION = "distribution";
-        private static final String ADVERT_ID = "advert_id";
-        private static final String VIDEO_DOWNLOADER = "video_downloader";
-        private static final String IS_DOWNLOADABLE = "is_downloadable";
-        private static final String DOWNLOAD_PAGE = "download_page";
-        private static final String DOWNLOAD_LINK = "download_link";
-        private static final String IS_SUCCESS = "is_success";
-        private static final String ENCODING_EXCEPTION = "referrer_encoding_exception";
-        private static final String REFERRER_URL = "referrer_url";
-    }
-
-    public static class Action {
-
-        public static final String INSTALL = "install";
-        public static final String UPDATE = "update";
-        public static final String URLBAR_FOCUS = "urlbar_focus";
-        public static final String URLBAR_BLUR = "urlbar_blur";
-        public static final String KEYSTROKE_DEL = "keystroke_del";
-        public static final String PASTE = "paste";
-        public static final String SHOW = "show";
-        public static final String HIDE = "hide";
-        public static final String NETWORK_STATUS = "network_status";
-        public static final String OPEN = "open";
-        public static final String CLOSE = "close";
-        public static final String KILL = "kill";
-        public static final String LAYER_CHANGE = "layer_change";
-        public static final String LOCATION_CHANGE = "location_change";
-        public static final String BACK = "back";
-        public static final String RESULT_ENTER = "result_enter";
-        public static final String CLICK = "click";
-        public static final String ENABLE = "enable";
-        public static final String DISABLE = "disable";
-        public static final String RECEIVE = "receive";
-        public static final String DISMISS = "dismiss";
-        public static final String OPEN_MENU = "open_menu";
-        public static final String NEW_TAB = "new_tab";
-        public static final String OPEN_TAB = "open_tab";
-        public static final String CLOSE_TAB = "close_tab";
-        public static final String DOWNLOAD = "download";
-        public static final String PAGE_LOAD = "page_load";
-    }
-
     private static final int BATCH_SIZE = 50;
     private JSONArray mSignalCache = new JSONArray();
-
 
     @Inject
     PreferenceManager mPreferenceManager;
@@ -190,13 +79,14 @@ public class Telemetry {
     public void sendLifeCycleSignal(String action) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, action);
-            if (action == Action.INSTALL) {
-                signal.put(Key.ADVERT_ID, mPreferenceManager.getAdvertID());
-                signal.put(Key.DISTRIBUTION, mPreferenceManager.getDistribution());
-                signal.put(Key.ENCODING_EXCEPTION, mPreferenceManager.getDistributionException());
-                signal.put(Key.REFERRER_URL, mPreferenceManager.getReferrerUrl());
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ACTIVITY);
+            signal.put(TelemetryKeys.ACTION, action);
+            if (action == TelemetryKeys.INSTALL) {
+                signal.put(TelemetryKeys.ADVERT_ID, mPreferenceManager.getAdvertID());
+                signal.put(TelemetryKeys.DISTRIBUTION, mPreferenceManager.getDistribution());
+                signal.put(TelemetryKeys.ENCODING_EXCEPTION, mPreferenceManager.getDistributionException());
+                signal.put(TelemetryKeys.REFERRER_URL, mPreferenceManager.getReferrerUrl());
+                signal.put(TelemetryKeys.VERSION_DIST, BuildConfig.VERSION_NAME);
                 sendEnvironmentSignal(true);
             }
         } catch (JSONException e) {
@@ -213,14 +103,14 @@ public class Telemetry {
     private void sendAppCloseSignal(String action, String context) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.APP_STATE_CHANGE);
-            signal.put(Key.STATE, action);
-            signal.put(Key.NETWORK, getNetworkState());
-            signal.put(Key.BATTERY, batteryLevel);
-            signal.put(Key.MEMORY, getMemoryUsage());
-            signal.put(Key.CONTEXT, context);
-            if(action.equals(Action.CLOSE)) {
-                signal.put(Key.TIME_USED, timings.getAppUsageTime());
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.APP_STATE_CHANGE);
+            signal.put(TelemetryKeys.STATE, action);
+            signal.put(TelemetryKeys.NETWORK, getNetworkState());
+            signal.put(TelemetryKeys.BATTERY, batteryLevel);
+            signal.put(TelemetryKeys.MEMORY, getMemoryUsage());
+            signal.put(TelemetryKeys.CONTEXT, context);
+            if(action.equals(TelemetryKeys.CLOSE)) {
+                signal.put(TelemetryKeys.TIME_USED, timings.getAppUsageTime());
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -236,14 +126,14 @@ public class Telemetry {
     private void sendAppStartupSignal(String context, String startType) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.APP_STATE_CHANGE);
-            signal.put(Key.STATE, Action.OPEN);
-            signal.put(Key.NETWORK, getNetworkState());
-            signal.put(Key.BATTERY, batteryLevel);
-            signal.put(Key.CONTEXT, context);
-            signal.put(Key.STARTUP_TYPE, startType);
-            signal.put(Key.STARTUP_TIME, timings.getAppStartUpTime());
-            signal.put(Key.MEMORY, getMemoryUsage());
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.APP_STATE_CHANGE);
+            signal.put(TelemetryKeys.STATE, TelemetryKeys.OPEN);
+            signal.put(TelemetryKeys.NETWORK, getNetworkState());
+            signal.put(TelemetryKeys.BATTERY, batteryLevel);
+            signal.put(TelemetryKeys.CONTEXT, context);
+            signal.put(TelemetryKeys.STARTUP_TYPE, startType);
+            signal.put(TelemetryKeys.STARTUP_TIME, timings.getAppStartUpTime());
+            signal.put(TelemetryKeys.MEMORY, getMemoryUsage());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -252,14 +142,16 @@ public class Telemetry {
 
     /**
      * Send a telemetry signal when the url bar gets focus
-     * @param context The screen which is visible when the signal is sent. (Web or Cards)
+     * @param view The screen which is visible when the signal is sent. (Web or Cards)
      */
-    public void sendURLBarFocusSignal(String context) {
+    public void sendURLBarFocusSignal(Boolean isIncognito, String view) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, Action.URLBAR_FOCUS);
-            signal.put(Key.CONTEXT, context);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.FOCUS);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.SEARCH);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -269,11 +161,14 @@ public class Telemetry {
     /**
      * Send a telemetry signal when the url bar looses focus
      */
-    public void sendURLBarBlurSignal() {
+    public void sendURLBarBlurSignal(boolean isIncognito, String view) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, Action.URLBAR_BLUR);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.BLUR);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.SEARCH);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -289,9 +184,9 @@ public class Telemetry {
     public void sendTypingSignal(String action, int length) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, action);
-            signal.put(Key.LENGTH, length);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ACTIVITY);
+            signal.put(TelemetryKeys.ACTION, action);
+            signal.put(TelemetryKeys.LENGTH, length);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -305,9 +200,9 @@ public class Telemetry {
     public void sendPasteSignal(int length) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, Action.PASTE);
-            signal.put(Key.LENGTH, length);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ACTIVITY);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.PASTE);
+            signal.put(TelemetryKeys.LENGTH, length);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -322,11 +217,11 @@ public class Telemetry {
         previousPage = currentPage;
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.ONBOARDING);
-            signal.put(Key.ACTION, Action.SHOW);
-            signal.put(Key.ACTION_TARGET, currentPage);
-            signal.put(Key.PRODUCT, Key.ANDROID);
-            signal.put(Key.VERSION, Key.ONBOARDING_VERSION);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ONBOARDING);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.ACTION_TARGET, currentPage);
+            signal.put(TelemetryKeys.PRODUCT, TelemetryKeys.ANDROID);
+            signal.put(TelemetryKeys.VERSION, TelemetryKeys.ONBOARDING_VERSION);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -340,15 +235,16 @@ public class Telemetry {
     public void sendOnBoardingHideSignal(long time) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.ONBOARDING);
-            signal.put(Key.ACTION, Action.HIDE);
-            signal.put(Key.ACTION_TARGET, previousPage);
-            signal.put(Key.DISPLAY_TIME,time);
-            signal.put(Key.PRODUCT, Key.ANDROID);
-            signal.put(Key.VERSION, BuildConfig.VERSION_NAME);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ONBOARDING);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.INTRO);
+            signal.put(TelemetryKeys.VERSION, OnBoardingHelper.ONBOARDING_VERSION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.NEXT);
+            signal.put(TelemetryKeys.SHOW_DURATION, time);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("Onboarding", signal.toString());
         saveSignal(signal, false);
     }
 
@@ -363,11 +259,11 @@ public class Telemetry {
         } else {
             JSONObject signal = new JSONObject(); ;
             try {
-                signal.put(Key.TYPE, Key.ACTIVITY);
-                signal.put(Key.ACTION, Action.LAYER_CHANGE);
-                signal.put(Key.CURRENT_LAYER, currentLayer);
-                signal.put(Key.NEXT_LAYER, newLayer);
-                signal.put(Key.DISPLAY_TIME, timings.getLayerDisplayTime());
+                signal.put(TelemetryKeys.TYPE, TelemetryKeys.ACTIVITY);
+                signal.put(TelemetryKeys.ACTION, TelemetryKeys.LAYER_CHANGE);
+                signal.put(TelemetryKeys.CURRENT_LAYER, currentLayer);
+                signal.put(TelemetryKeys.NEXT_LAYER, newLayer);
+                signal.put(TelemetryKeys.DISPLAY_TIME, timings.getLayerDisplayTime());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -394,17 +290,18 @@ public class Telemetry {
         final int historySize = mHistoryDatabase.getHistoryItemsCount();
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.ENVIRONMENT);
-            signal.put(Key.DEVICE, Build.MODEL);
-            signal.put(Key.LANGUAGE, getLanguage());
-            signal.put(Key.VERSION, mExtensionVersion);
-            signal.put(Key.VERSION_DIST, BuildConfig.VERSION_NAME);
-            signal.put(Key.VERSION_HOST, BuildConfig.LIGHTNING_VERSION_NAME);
-            signal.put(Key.OS_VERSION, Integer.toString(Build.VERSION.SDK_INT));
-            signal.put(Key.DEFAULT_SEARCH_ENGINE, getDefaultSearchEngine());
-            signal.put(Key.HISTORY_URLS, historySize);
-            signal.put(Key.NEWS_NOTIFICATION, mPreferenceManager.getNewsNotificationEnabled());
-            signal.put(Key.DISTRIBUTION, mPreferenceManager.getDistribution());
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ENVIRONMENT);
+            signal.put(TelemetryKeys.DEVICE, Build.MODEL);
+            signal.put(TelemetryKeys.LANGUAGE, getLanguage());
+            signal.put(TelemetryKeys.VERSION, mExtensionVersion);
+            signal.put(TelemetryKeys.VERSION_DIST, BuildConfig.VERSION_NAME);
+            signal.put(TelemetryKeys.VERSION_HOST, BuildConfig.LIGHTNING_VERSION_NAME);
+            signal.put(TelemetryKeys.VERSION_OS, Build.VERSION.SDK_INT);
+            signal.put(TelemetryKeys.OS_VERSION, Integer.toString(Build.VERSION.SDK_INT));
+            signal.put(TelemetryKeys.DEFAULT_SEARCH_ENGINE, getDefaultSearchEngine());
+            signal.put(TelemetryKeys.HISTORY_URLS, historySize);
+            signal.put(TelemetryKeys.NEWS_NOTIFICATION, mPreferenceManager.getNewsNotificationEnabled());
+            signal.put(TelemetryKeys.DISTRIBUTION, mPreferenceManager.getDistribution());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -413,7 +310,7 @@ public class Telemetry {
             days = (getUnixTimeStamp() - firstItemTime) / oneDay;
         }
         try {
-            signal.put(Key.HISTORY_DAYS, days);
+            signal.put(TelemetryKeys.HISTORY_DAYS, days);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -425,9 +322,9 @@ public class Telemetry {
         long duration = timings.getNetworkUsageTime();
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Action.NETWORK_STATUS);
-            signal.put(Key.NETWORK, currentNetwork);
-            signal.put(Key.DURATION, duration);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.NETWORK_STATUS);
+            signal.put(TelemetryKeys.NETWORK, currentNetwork);
+            signal.put(TelemetryKeys.DURATION, duration);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -454,7 +351,7 @@ public class Telemetry {
      */
     public void sendClosingSignals(String closeOrKill, String context) {
         currentLayer = "";
-        if (closeOrKill == Action.CLOSE) {
+        if (closeOrKill == TelemetryKeys.CLOSE) {
             sendNetworkStatus();
         }
         sendAppCloseSignal(closeOrKill, context);
@@ -467,11 +364,11 @@ public class Telemetry {
     public void sendNavigationSignal(int urlLength) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.NAVIGATION);
-            signal.put(Key.ACTION, Action.LOCATION_CHANGE);
-            signal.put(Key.STEP, forwardStep);
-            signal.put(Key.URL_LENGTH, this.urlLength);
-            signal.put(Key.DISPLAY_TIME, timings.getPageDisplayTime());
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.NAVIGATION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.LOCATION_CHANGE);
+            signal.put(TelemetryKeys.STEP, forwardStep);
+            signal.put(TelemetryKeys.URL_LENGTH, this.urlLength);
+            signal.put(TelemetryKeys.DISPLAY_TIME, timings.getPageDisplayTime());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -491,13 +388,13 @@ public class Telemetry {
     public void sendBackPressedSignal(String currentContext, String nextContext, int urlLength) {
         JSONObject signal = new JSONObject(); ;
         try {
-            signal.put(Key.TYPE, Key.NAVIGATION);
-            signal.put(Key.ACTION, Action.BACK);
-            signal.put(Key.STEP, this.backStep);
-            signal.put(Key.URL_LENGTH, this.urlLength);
-            signal.put(Key.DISPLAY_TIME, timings.getPageDisplayTime());
-            signal.put(Key.CURRENT_CONTEXT, currentContext);
-            signal.put(Key.NEXT_CONTEXT, nextContext);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.NAVIGATION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.BACK);
+            signal.put(TelemetryKeys.STEP, this.backStep);
+            signal.put(TelemetryKeys.URL_LENGTH, this.urlLength);
+            signal.put(TelemetryKeys.DISPLAY_TIME, timings.getPageDisplayTime());
+            signal.put(TelemetryKeys.CURRENT_CONTEXT, currentContext);
+            signal.put(TelemetryKeys.NEXT_CONTEXT, nextContext);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -525,27 +422,27 @@ public class Telemetry {
         try {
             JSONArray positionType = new JSONArray();
             if(isQuery) {
-                positionType.put(Key.INBAR_QUERY);
+                positionType.put(TelemetryKeys.INBAR_QUERY);
             } else {
-                positionType.put(Key.INBAR_URL);
+                positionType.put(TelemetryKeys.INBAR_URL);
             }
-            signal.put(Key.TYPE, Key.ACTIVITY);
-            signal.put(Key.ACTION, Action.RESULT_ENTER);
-            signal.put(Key.CURRENT_POSITION, -1);
-            signal.put(Key.EXTRA, null);
-            signal.put(Key.SEARCH, false);
-            signal.put(Key.HAS_IMAGE, false);
-            signal.put(Key.CLUSTERING_OVERRIDE, false);
-            signal.put(Key.NEW_TAB, false);
-            signal.put(Key.QUERY_LENGTH, queryLength);
-            signal.put(Key.REACTION_TIME, timings.getReactionTime());
-            signal.put(Key.URLBAR_TIME, timings.getUrlBarTime());
-            signal.put(Key.POSITION_TYPE, positionType);
-            signal.put(Key.INNER_LINK, innerLink);
-            signal.put(Key.VERSION, BuildConfig.VERSION_NAME);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ACTIVITY);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.RESULT_ENTER);
+            signal.put(TelemetryKeys.CURRENT_POSITION, -1);
+            signal.put(TelemetryKeys.EXTRA, null);
+            signal.put(TelemetryKeys.SEARCH, false);
+            signal.put(TelemetryKeys.HAS_IMAGE, false);
+            signal.put(TelemetryKeys.CLUSTERING_OVERRIDE, false);
+            signal.put(TelemetryKeys.NEW_TAB, false);
+            signal.put(TelemetryKeys.QUERY_LENGTH, queryLength);
+            signal.put(TelemetryKeys.REACTION_TIME, timings.getReactionTime());
+            signal.put(TelemetryKeys.URLBAR_TIME, timings.getUrlBarTime());
+            signal.put(TelemetryKeys.POSITION_TYPE, positionType);
+            signal.put(TelemetryKeys.INNER_LINK, innerLink);
+            signal.put(TelemetryKeys.VERSION, BuildConfig.VERSION_NAME);
             if(isAutocompleted) {
-                signal.put(Key.AUTOCOMPLETED, "url");
-                signal.put(Key.AUTOCOMPLETED_LENGTH, autoCompleteLength);
+                signal.put(TelemetryKeys.AUTOCOMPLETED, "url");
+                signal.put(TelemetryKeys.AUTOCOMPLETED_LENGTH, autoCompleteLength);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -560,10 +457,10 @@ public class Telemetry {
     public void sendShareSignal(String context) {
        JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.SHARE);
-            signal.put(Key.ACTION, Action.CLICK);
-            signal.put(Key.TARGET_TYPE, Key.MAIN);
-            signal.put(Key.CONTEXT, context);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SHARE);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET_TYPE, TelemetryKeys.MAIN);
+            signal.put(TelemetryKeys.CONTEXT, context);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -577,8 +474,8 @@ public class Telemetry {
     public void sendNewsNotificationSignal(String action) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.NEWS_NOTIFICATION);
-            signal.put(Key.ACTION, action);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.NEWS_NOTIFICATION);
+            signal.put(TelemetryKeys.ACTION, action);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -588,15 +485,14 @@ public class Telemetry {
     /**
      * Send signal whenever a new tab is opened
      * @param count Number of open tabs
-     * @param isIncognito True if the new tab is incognito
      */
-    public void sendNewTabSignal(int count, boolean isIncognito) {
+    public void sendNewTabSignal(int count) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.TABS);
-            signal.put(Key.ACTION, Action.NEW_TAB);
-            signal.put(Key.MODE, isIncognito ? Key.PRIVATE : Key.NORMAL);
-            signal.put(Key.TAB_COUNT, count);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.OPEN_TABS);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.NEW_TAB);
+            signal.put(TelemetryKeys.COUNT, count);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -610,9 +506,9 @@ public class Telemetry {
     public void sendTabsMenuOpen(int count) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.TABS);
-            signal.put(Key.ACTION, Action.OPEN_MENU);
-            signal.put(Key.TAB_COUNT, count);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TABS);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.OPEN_MENU);
+            signal.put(TelemetryKeys.TAB_COUNT, count);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -628,11 +524,12 @@ public class Telemetry {
     public void sendTabOpenSignal(int position, int count, boolean isIncognito) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.TABS);
-            signal.put(Key.ACTION, Action.OPEN_TAB);
-            signal.put(Key.MODE, isIncognito ? Key.PRIVATE : Key.NORMAL);
-            signal.put(Key.TAB_INDEX, position);
-            signal.put(Key.TAB_COUNT, count);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.OPEN_TABS);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.TAB);
+            signal.put(TelemetryKeys.INDEX, position);
+            signal.put(TelemetryKeys.COUNT, count);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -644,14 +541,15 @@ public class Telemetry {
      * @param count number of tabs in the list after deleting
      * @param isIncognito whether the tab is incognito or not
      */
-    public void sendTabCloseSignal(int count, boolean isIncognito) {
+    public void sendTabCloseSignal(String direction, int position, int count, boolean isIncognito) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.TABS);
-            signal.put(Key.ACTION, Action.CLOSE_TAB);
-            signal.put(Key.MODE, isIncognito ? Key.PRIVATE : Key.NORMAL);
-            signal.put(Key.TAB_COUNT, count);
-
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.OPEN_TABS);
+            signal.put(TelemetryKeys.ACTION, direction);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.TAB);
+            signal.put(TelemetryKeys.INDEX, position);
+            signal.put(TelemetryKeys.COUNT, count);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -661,21 +559,23 @@ public class Telemetry {
     public void sendVideoPageSignal(boolean isDownloadable) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
-            signal.put(Key.ACTION, Action.PAGE_LOAD);
-            signal.put(Key.IS_DOWNLOADABLE, isDownloadable);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.PAGE_LOAD);
+            signal.put(TelemetryKeys.IS_DOWNLOADABLE, isDownloadable);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         saveSignal(signal, false);
     }
 
-    public void sendVideoDownloadSignal(String targetType) {
+    public void sendVideoDownloadSignal(boolean isIncognito) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
-            signal.put(Key.ACTION, Action.CLICK);
-            signal.put(Key.TARGET_TYPE, targetType);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.MAIN_MENU);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.DOWNLOAD_VIDEO);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.WEB);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -685,9 +585,260 @@ public class Telemetry {
     public void sendVideoDownloadedSignal(boolean success) {
         JSONObject signal = new JSONObject();
         try {
-            signal.put(Key.TYPE, Key.VIDEO_DOWNLOADER);
-            signal.put(Key.ACTION, Action.DOWNLOAD);
-            signal.put(Key.IS_SUCCESS, success);
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.DOWNLOAD);
+            signal.put(TelemetryKeys.IS_SUCCESS, success);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendVideoDialogSignal(String target) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendSettingsMenuSignal(String target, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SETTINGS);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendSettingsMenuSignal(String target, String view, boolean state) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SETTINGS);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.STATE, state ? TelemetryKeys.ON : TelemetryKeys.OFF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendSettingsMenuSignal(String view, long time) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SETTINGS);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.BACK);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendOverViewSignal(int tabCount, boolean isIncognito, CliqzBrowserState.Mode mode) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.OVERVIEW);
+            signal.put(TelemetryKeys.OPEN_TABS, tabCount);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, mode == CliqzBrowserState.Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendOverflowMenuSignal(boolean isIncognito, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.MAIN_MENU);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendCLearUrlBarSignal(boolean isIncognito, int urlLength, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.DELETE);
+            signal.put(TelemetryKeys.CHAR_COUNT, urlLength);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendMainMenuSignal(String target, boolean isIncognito, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.MAIN_MENU);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendLongPressSignal(String target) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.WEB);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.LONGPRESS);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiTrackingOpenSignal(boolean isIncognito, int trackerCount) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.ATTRACK);
+            signal.put(TelemetryKeys.TRACKER_COUNT, trackerCount);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiTrackingHelpSignal() {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ATTRACK);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.HELP);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiTrackingInfoSignal(int index) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ATTRACK);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.INFO_COMPANY);
+            signal.put(TelemetryKeys.INDEX, index);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiPhisingShowSignal() {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ANTI_PHISHING);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiPhisingSignal(String target) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ANTI_PHISHING);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendPagerChangeSignal(String target) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendPageHideSignal(String type, long time) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, type);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.HIDE);
+            signal.put(TelemetryKeys.SHOW_DURATION, time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAttrackShowCaseSignal() {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ONBOARDING);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.ATTRACK);
+            signal.put(TelemetryKeys.VERSION, OnBoardingHelper.ONBOARDING_VERSION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.SHOW_COUNT, "1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendCardsShowCaseSignal() {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ONBOARDING);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.CARDS);
+            signal.put(TelemetryKeys.VERSION, OnBoardingHelper.ONBOARDING_VERSION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.SHOW_COUNT, "1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendShowCaseDoneSignal(String view, long duration) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ONBOARDING);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.VERSION, OnBoardingHelper.ONBOARDING_VERSION);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, TelemetryKeys.CONFIRM);
+            signal.put(TelemetryKeys.SHOW_DURATION, duration);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -724,50 +875,7 @@ public class Telemetry {
             final TelemetrySender sender = new TelemetrySender(cache, context);
             executorService.execute(sender);
         }
-
     }
-
-    /*
-    protected synchronized void saveSignal(JSONObject signal) {
-        addIdentifiers(signal);
-        try {
-            if(file.exists()) {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                ArrayList< JSONObject > signalList =
-                        (ArrayList<JSONObject>) objectInputStream.readObject();
-                objectInputStream.close();
-                fileInputStream.close();
-                signalList.add(signal);
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                objectOutputStream.writeObject(signalList);
-                objectOutputStream.close();
-                fileOutputStream.close();
-                if(signalList.size() > BATCH_SIZE && !getNetworkState().equals("Disconnected")) {
-                    File newFile = new File(context.getFilesDir(),
-                            Constants.TELEMETRY_LOG_PREFIX+Long.toString(getUnixTimeStamp())+".dat");
-                    file.renameTo(newFile);
-                    HttpHandler httpHandler = new HttpHandler(mPreferenceManager, context);
-                    executorService.execute(httpHandler);
-                }
-            } else {
-                file.createNewFile();
-                ArrayList<JSONObject> signalList = new ArrayList<>();
-                signalList.add(signal);
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                objectOutputStream.writeObject(signalList);
-                objectOutputStream.close();
-                fileOutputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     /**
      * Posts the telemetry signal sent by the extension, to the logger
@@ -823,9 +931,9 @@ public class Telemetry {
     private void addIdentifiers(JSONObject signal) {
         int telemetrySequence = mPreferenceManager.getTelemetrySequence();
         try {
-            signal.put(Key.SESSION, mPreferenceManager.getSessionId());
-            signal.put(Key.TIME_STAMP, getUnixTimeStamp());
-            signal.put(Key.TELEMETRY_SEQUENCE, telemetrySequence);
+            signal.put(TelemetryKeys.SESSION, mPreferenceManager.getSessionId());
+            signal.put(TelemetryKeys.TIME_STAMP, getUnixTimeStamp());
+            signal.put(TelemetryKeys.TELEMETRY_SEQUENCE, telemetrySequence);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -836,9 +944,9 @@ public class Telemetry {
     //adds session id. timestamp, sequence number to the signals
     private void addIdentifiers(JSONObject signal) {
         int telemetrySequence = mPreferenceManager.getTelemetrySequence();
-        signal.put(Key.SESSION, mPreferenceManager.getSessionId());
-        signal.put(Key.TIME_STAMP, getUnixTimeStamp());
-        signal.put(Key.TELEMETRY_SEQUENCE, telemetrySequence);
+        signal.put(TelemetryKeys.SESSION, mPreferenceManager.getSessionId());
+        signal.put(TelemetryKeys.TIME_STAMP, getUnixTimeStamp());
+        signal.put(TelemetryKeys.TELEMETRY_SEQUENCE, telemetrySequence);
         mPreferenceManager.setTelemetrySequence(telemetrySequence);
     }
     */
@@ -849,8 +957,8 @@ public class Telemetry {
      * @return A newly generated SessionID
      */
     public String generateSessionID() {
-        String randomAlphaNumericString = generateRandomString(18, Key.ALPHA_NUMERIC_SPACE);
-        String randomNumericString = generateRandomString(6, Key.NUMERIC_SPACE);
+        String randomAlphaNumericString = generateRandomString(18, TelemetryKeys.ALPHA_NUMERIC_SPACE);
+        String randomNumericString = generateRandomString(6, TelemetryKeys.NUMERIC_SPACE);
         String days = Long.toString(getUnixTimeStamp() / 86400000);
         return randomAlphaNumericString + randomNumericString + "|" + days + "|" + BuildConfig.TELEMETRY_CHANNEL;
     }

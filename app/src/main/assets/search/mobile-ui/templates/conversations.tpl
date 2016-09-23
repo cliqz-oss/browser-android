@@ -5,25 +5,26 @@
 
         {{#if url}}
 
-            <li class="cf answer" data="{{url}}" data-title="{{title}}"
+            <li class="cf answer" data-ref="{{url}}" data-title="{{title}}"
                  data-id="{{id}}" data-timestamp={{ timestamp }} data-index="{{@index}}">
 
                 <div class="item">
                     {{#with logo}}
                         {{#if backgroundImage}}
-                            <div class="item__logo bg" style="background-image:{{backgroundImage}};
-                                                              background-color:#{{backgroundColor}}"></div>
+                            <div class="item__logo bg" data-name="logo"
+                            style="background-image:{{backgroundImage}};
+                                   background-color:#{{backgroundColor}}"></div>
                         {{else}}
-                            <div class="item__logo" style="{{ style }}">
+                            <div class="item__logo" style="{{ style }}" data-name="logo">
                                 {{ text }}
                             </div>
                         {{/if}}
                     {{/with}}
-                    <div class="url"><div>{{domain}}</div></div>
-                    <div class="item__head">
+                    <div class="url" data-name="url"><div>{{domain}}</div></div>
+                    <div class="item__head" data-name="title">
                         {{title}}
                     </div>
-                    <div class="item__meta">
+                    <div class="item__meta" data-name="time">
                         {{conversationsTime timestamp}}
                     </div>
                 </div>
@@ -33,13 +34,13 @@
 
             {{#if query}}
 
-                <li class="cf question" data="{{query}}"
+                <li class="cf question" data-ref="{{query}}"
                        data-id="{{id}}" data-timestamp={{ timestamp }} data-index="{{@index}}">
                     <div class="item">
                         <div class="item__meta">
-                            <div>{{conversationsTime timestamp}}</div>
+                            <div data-name="time">{{conversationsTime timestamp}}</div>
                         </div>
-                        <div class="item__head">
+                        <div data-name="title" class="item__head">
                             {{query}}
                         </div>
                     </div>

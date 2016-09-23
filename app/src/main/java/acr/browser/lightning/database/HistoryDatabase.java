@@ -329,12 +329,27 @@ public class HistoryDatabase extends SQLiteOpenHelper {
         return results;
     }
 
-    public synchronized void setFavorites(String url, long favTime, boolean isFavorite) {
+    public synchronized void setFavorites(String url, String title, long favTime, boolean isFavorite) {
         final SQLiteDatabase db = dbHandler.getDatabase();
         final ContentValues values = new ContentValues();
         values.put(UrlsTable.FAVORITE, isFavorite);
         values.put(UrlsTable.FAV_TIME, favTime);
-        db.update(UrlsTable.TABLE_NAME,values, "url = ?", new String[]{url});
+        final Cursor cursor = db.rawQuery(res.getString(R.string.search_url_v5), new String[] {url});
+        db.beginTransaction();
+        try {
+            if (cursor.getCount() > 0) {
+                db.update(UrlsTable.TABLE_NAME,values, "url = ?", new String[]{url});
+            } else {
+                values.put(UrlsTable.URL, url);
+                values.put(UrlsTable.TITLE, title);
+                values.put(UrlsTable.VISITS, 0);
+                db.insert(UrlsTable.TABLE_NAME, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        cursor.close();
     }
 
     /**

@@ -8,16 +8,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -31,12 +31,16 @@ public class TabOverviewFragment extends Fragment {
     private RecyclerView mTabsListView;
     private TabsOverviewAdapter mTabsOverviewAdapter;
     private FloatingActionButton mNewTabButton;
+    private long startTime;
 
     @Inject
     TabsManager tabsManager;
 
     @Inject
     Bus bus;
+
+    @Inject
+    Telemetry telemetry;
 
     @Nullable
     @Override
@@ -48,6 +52,7 @@ public class TabOverviewFragment extends Fragment {
         mNewTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                telemetry.sendNewTabSignal(tabsManager.getTabCount()+1);
                 tabsManager.addNewTab(null);
             }
         });
@@ -60,6 +65,9 @@ public class TabOverviewFragment extends Fragment {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                telemetry.sendTabCloseSignal(direction == ItemTouchHelper.LEFT ?
+                        TelemetryKeys.SWIPE_LEFT : TelemetryKeys.SWIPE_RIGHT, viewHolder.getAdapterPosition(),
+                        tabsManager.getTabCount(), tabsManager.getTab(viewHolder.getAdapterPosition()).state.isIncognito());
                 tabsManager.deleteTab(viewHolder.getAdapterPosition());
                 mTabsOverviewAdapter.notifyDataSetChanged();
             }
@@ -82,7 +90,8 @@ public class TabOverviewFragment extends Fragment {
             component.inject(this);
             bus.register(this);
         }
-        mTabsOverviewAdapter = new TabsOverviewAdapter(getContext(), R.layout.tab_list_item, tabsManager);
+        mTabsOverviewAdapter = new TabsOverviewAdapter(getContext(), R.layout.tab_list_item,
+                tabsManager, telemetry);
         mTabsListView.setAdapter(mTabsOverviewAdapter);
     }
 

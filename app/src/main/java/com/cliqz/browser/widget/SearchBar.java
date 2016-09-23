@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 
+
 import acr.browser.lightning.utils.ThemeUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -71,9 +72,9 @@ public class SearchBar extends FrameLayout {
                     searchEditText.setText("");
                     return false;
                 }
-            }
+    }
             return false;
-        }
+    }
     };
 
     private void hideKeyboard() {

@@ -5,12 +5,7 @@
 {{/with}}
 
 <div extra="url" class="card__meta">
-
-    {{#if data.richData.discovery_timestamp}}
-        <div class="timestamp">{{ agoline data.richData.discovery_timestamp }}</div>
-    {{else}}
-        <div>{{urlDetails.friendly_url}}</div>
-    {{/if}}
+    <div>{{urlDetails.friendly_url}}</div>
 </div>
 
 <section class="primary">
@@ -27,6 +22,13 @@
         {{/if}}
         {{#if data.richData.under_name}}<span>{{data.richData.under_name}}</span>{{/if}}
     </h1>
+
+
+    {{#if data.richData.discovery_timestamp}}
+        <div class="timestamp">{{ agoline data.richData.discovery_timestamp }}</div>
+    {{else}}
+    	<div class="separator"></div>
+    {{/if}}
 
     <!-- main images -->
 
@@ -112,7 +114,7 @@
 		{{/with}}
 
 		{{#if data.des}}
-			{{{data.des}}}
+			{{ emphasis data.des query 2 true }}
 		{{else}}
 			{{#if data.richData.current_company}}
 			{{else}}

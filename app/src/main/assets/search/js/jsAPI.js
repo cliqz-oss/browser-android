@@ -1,11 +1,15 @@
+
+
 var jsAPI = {
+  init: function () {
+  },
   search: function(e, location_enabled, latitude, longitude) {
-    CLIQZEnvironment.search(e, location_enabled, latitude, longitude);
+    CliqzUtils.search(e, location_enabled, latitude, longitude);
   },
   getCardUrl: function() {
     var NOT_SHAREABLE_SIGNAL = '-1';
-    if(CLIQZEnvironment.lastResults && CLIQZEnvironment.lastResults[CLIQZEnvironment.currentPage]) {
-      osAPI.shareCard(CLIQZEnvironment.lastResults[CLIQZEnvironment.currentPage].url || NOT_SHAREABLE_SIGNAL);
+    if(CLIQZ.UI.lastResults && CLIQZ.UI.lastResults[CLIQZ.UI.currentPage]) {
+      osAPI.shareCard(CLIQZ.UI.lastResults[CLIQZ.UI.currentPage].url || NOT_SHAREABLE_SIGNAL);
     } else {
       osAPI.shareCard(NOT_SHAREABLE_SIGNAL);
     }
@@ -23,7 +27,7 @@ var jsAPI = {
     }
   */
   resetState: function(cfg) {
-    CLIQZEnvironment.initHomepage();
+    CliqzUtils.initHomepage();
     var start = document.getElementById("resetState");
     var resetStateContent = document.getElementById("resetStateContent");
     CLIQZ.UI.hideResultsBox();
@@ -51,7 +55,7 @@ var jsAPI = {
     CLIQZ.UI && CLIQZ.UI.setTheme(prefs.incognito);
     for (var key in prefs) {
       if (prefs.hasOwnProperty(key)) {
-        CLIQZEnvironment.setPref(key, prefs[key]);
+        CliqzUtils.setPref(key, prefs[key]);
       }
     }
   },
@@ -61,20 +65,26 @@ var jsAPI = {
   clearFavorites: function() {
     History.clearFavorites();
   },
-  setDefaultSearchEngine: function(engine) {
-    CLIQZEnvironment.setDefaultSearchEngine(engine);
+  setDefaultSearchEngine: function(engine, url) {
+    if (url) { // temporary until iOS complies
+      engine = { name: engine, url: url};
+    }
+    CliqzUtils.setDefaultSearchEngine(engine);
     CLIQZ.UI.updateSearchCard(engine);
   },
   restoreBlockedTopSites: function () {
-    CLIQZEnvironment.getLocalStorage().setObject('blockedTopSites', []);
+    CliqzUtils.getLocalStorage().setObject('blockedTopSites', []);
   },
   onShow: function () {
     if (CLIQZ.UI) { // search view
       if (!CLIQZ.UI.isSearch()) { // freshtab
-        CLIQZEnvironment.initHomepage();
+        CliqzUtils.initHomepage();
       }
     } else { // history view
       History.update();
     }
+  },
+  onboardingSwipe: function () {
+    CLIQZ.UI.onboardingSwipe();
   }
 }

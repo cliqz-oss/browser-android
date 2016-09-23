@@ -1,17 +1,18 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.google.gms.google-services'
 apply from: 'cliqz.gradle'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
     defaultConfig {
-        targetSdkVersion 23
+        targetSdkVersion 24
         minSdkVersion 21
-        versionCode = 4
-        versionName = "1.0.0"
+        versionCode 8
+        versionName "1.0.1"
+
+        multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "boolean", "FULL_VERSION", "true"
@@ -26,6 +27,8 @@ android {
             shrinkResources false
             proguardFiles 'proguard-project.txt'
             buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA02"'
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
         }
 
         release {
@@ -60,17 +63,17 @@ android {
     productFlavors {
         standard {
             dimension "api"
-            versionCode = 5
+            versionCode 5
         }
         xwalk {
             dimension "api"
             minSdkVersion 16
-            versionCode = 1
+            versionCode 1
         }
         lookback {
             dimension "api"
             targetSdkVersion 21
-            versionCode = 9
+            versionCode 9
             applicationId "com.cliqz.browser.ut"
         }
         x86 {
@@ -78,18 +81,18 @@ android {
             ndk {
                 abiFilter "x86"
             }
-            versionCode = 5
+            versionCode 5
         }
         arm {
             dimension "abi"
             ndk {
                 abiFilter "armeabi-v7a"
             }
-            versionCode = 3
+            versionCode 3
         }
         fat {
             dimension "abi"
-            versionCode = 1
+            versionCode 1
         }
     }
 }
@@ -110,12 +113,9 @@ repositories {
 
 dependencies {
     // support libraries
-    compile 'com.android.support:palette-v7:23.4.0'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:support-annotations:23.4.0'
-
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+    xwalkCompile 'com.android.support:multidex:1.0.1'
     // Gson
     compile 'com.google.code.gson:gson:2.6.1'
     // html parsing fo reading mode
@@ -134,17 +134,19 @@ dependencies {
     // Anti-tracking
     standardCompile project(':antitracking')
     lookbackCompile project(':antitracking')
+    // Utils libraries
     compile project(':utils')
+    compile project(':android_utils')
+    // On-boarding
+    compile 'com.github.deano2390:MaterialShowcaseView:1.1.0@aar'
     // memory leak analysis
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     provided 'javax.annotation:jsr250-api:1.0'
-    // Google Play Services
-    compile "com.google.android.gms:play-services-gcm:8.3.0"
 
     // xwalk webview
-    xwalkCompile 'org.xwalk:xwalk_core_library:14.43.343.25'
+    xwalkCompile 'org.xwalk:xwalk_core_library:20.50.533.12'
     
     // AWS SNS SDK
     compile 'com.amazonaws:aws-android-sdk-sns:2.+'
@@ -160,13 +162,14 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
     // Forcing version
-    androidTestCompile 'com.android.support:support-annotations:23.4.0'
+    androidTestCompile 'com.android.support:support-annotations:24.2.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
     androidTestCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
 }
+
 
 preBuild << {
     android.applicationVariants.each { variant ->
@@ -176,3 +179,4 @@ preBuild << {
         variant.mergedFlavor.versionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
     }
 }
+

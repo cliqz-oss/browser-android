@@ -78,9 +78,9 @@
     <string name="action_webpage">Pagina Web</string>
     <string name="title_clear_history">Cancella la cronologia</string>
     <string name="title_clear_cookies">Cancella i cookies</string>
-    <string name="dialog_history">Vorresti cancellare tutta la cronologia?</string>
-    <string name="dialog_cookies">Vorresti cancellare tutti i cookies?</string>
-    <string name="dialog_favorites">Vorresti cancellare tutti i preferiti?</string>
+    <string name="dialog_history">Vorresti cancellare la cronologia?</string>
+    <string name="dialog_cookies">Vorresti cancellare i cookies?</string>
+    <string name="dialog_favorites">Vorresti cancellare i preferiti?</string>
     <string name="action_yes">Si</string>
     <string name="action_no">No</string>
     <string name="title_text_size">Dimensioni carattere</string>
@@ -237,7 +237,6 @@
     <string name="start_now_bang">Comincia ora!</string>
     <string name="tabs_in_drawer">Visualizza i tab nel cassetto laterale</string>
     <string name="block_adult_content">Blocca Contenuti Espliciti</string>
-    <string name="show_onboarding_tour">Mostra Tour</string>
     <string name="imprint">Informazioni legali</string>
     <string name="about_humanweb_url">https://cliqz.com/whycliqz/human-web</string>
     <string name="what_is_humanweb">Cos\'é Human Web</string>
@@ -256,13 +255,13 @@
     <string name="add_to_favourites">Aggiungi ai favoriti</string>
     <string name="save_link">Salva destinazione</string>
     <string name="news_notification">Notifica Notizie</string>
-    <string name="restore_top_sites">Resetta siti bloccati</string>
-    <string name="message_restore_top_sites">I siti precedentemente bloccati verrano visualizzati in home page.</string>
+    <string name="restore_top_sites">Ripristina i siti più visitati </string>
+    <string name="message_restore_top_sites"> Nella pagina iniziale vengono di nuovo mostrati i siti più visitati</string>
     <string name="download_successful">Download completato</string>
     <string name="download_failed">Download non riuscito</string>
     <string name="action_search_on_page">Cerca nella pagina</string>
     <string name="app_not_found">App non trovata</string>
-    <string name="settings_block_ads">Blocca Pubblicità</string>
+    <string name="settings_block_ads">Blocca Pubblicità(Beta)</string>
     <string name="optimized_block_ads">Consenti le pubblicità non inopportune</string>
     <string name="what_does_optimized_mean">Cosa significa \'non inopportune\'?</string>
     <string name="optimized_block_ads_description">La funzione anti-pubblicità di CLIQZ è ancora in fase Beta. La versione definitiva permetterà all’utente di scegliere fra le seguenti opzioni: consenti le pubblicità non inopportune, blocca tutta la pubblicità, consenti tutta la pubblicità.\nPer saperne di più: https://cliqz.com/whycliqz/adblocking</string>
@@ -286,4 +285,18 @@
     <string name="open_tabs">Tab aperti</string>
     <string name="overview">Panoramica</string>
     <string name="others">Altri</string>
+    <string name="download_started">Download Iniziato</string>
+    <string name="added_to_favorites">Aggiunto ai favoriti</string>
+    <string name="exit">Esci</string>
+    <string name="view">Apri</string>
+    <string name="tab_created">Tab creato</string>
+    <string name="home_title" >Siti più visitati e news</string>
+    <string name="showcase_search_message">Con CLIQZ hai tutto sott\'occhio! I migliori risultati per le tue ricerche appariranno subito nelle schede</string>
+    <string name="got_it">Capito</string>
+    <string name="show_onboarding_hints">Mostra suggerimenti</string>
+    <string name="showcase_antitracking_message">Il controllo è nelle tue mani: CLIQZ Anti-Tracking protegge la tua privacy</string>
+    <string name="showcace_search_title">Ricerca rapida</string>
+    <string name="upload_file_title">Carica file</string>
+    <string name="rate_us">Valuta CLIQZ Browser</string>
+    <string name="autocompletion_enabled">Abilita l\'autocompletamento</string>
 </resources>

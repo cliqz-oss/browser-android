@@ -1,15 +1,28 @@
-System.register("mobile-history/background", [], function (_export) {
-  "use strict";
+System.register('mobile-history/background', ['core/base/background'], function (_export) {
+  /* global jsAPI */
 
+  'use strict';
+
+  var background;
   return {
-    setters: [],
+    setters: [function (_coreBaseBackground) {
+      background = _coreBaseBackground['default'];
+    }],
     execute: function () {
-      _export("default", {
-        init: function init(settings) {},
+      _export('default', background({
+        enabled: function enabled() {
+          return true;
+        },
+        init: function init() {},
 
-        unload: function unload() {}
-      });
+        unload: function unload() {},
+
+        events: {
+          'mobile-browser:show': jsAPI.onShow,
+          'mobile-browser:clear-favorites': jsAPI.clearFavorites,
+          'mobile-browser:clear-history': jsAPI.clearHistory
+        }
+      }));
     }
   };
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vYmlsZS1oaXN0b3J5L2JhY2tncm91bmQuZXMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7O3lCQUFlO0FBQ2IsWUFBSSxFQUFBLGNBQUMsUUFBUSxFQUFFLEVBRWQ7O0FBRUQsY0FBTSxFQUFBLGtCQUFHLEVBRVI7T0FDRiIsImZpbGUiOiJtb2JpbGUtaGlzdG9yeS9iYWNrZ3JvdW5kLmVzIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGRlZmF1bHQge1xuICBpbml0KHNldHRpbmdzKSB7XG5cbiAgfSxcblxuICB1bmxvYWQoKSB7XG5cbiAgfVxufSJdfQ==

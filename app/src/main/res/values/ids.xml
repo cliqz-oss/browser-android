@@ -15,5 +15,6 @@
     <item name="download_youtube_video_menu_button" type="id"/>
     <item name="tracker_counter" type="id"/>
     <item name="anti_tracking_details" type="id"/>
+    <item name="quit_menu_button" type="id"/>
 
 </resources>

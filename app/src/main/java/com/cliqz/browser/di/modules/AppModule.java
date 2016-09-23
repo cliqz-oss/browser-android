@@ -6,7 +6,6 @@ import com.cliqz.antitracking.AntiTracking;
 import com.cliqz.antitracking.AntiTrackingSupport;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
 import com.google.gson.Gson;
@@ -85,11 +84,6 @@ public class AppModule {
     @Singleton
     public PasswordDatabase providesPasswordDatabase(Context context) {
         return new PasswordDatabase(context);
-    }
-
-    @Provides
-    public AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager, Context context) {
-        return new AwsSNSManager(preferenceManager, context);
     }
 
     @Provides

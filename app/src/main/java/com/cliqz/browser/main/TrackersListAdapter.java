@@ -13,6 +13,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
 
 import java.net.URL;
@@ -32,14 +33,16 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
     private final Context context;
     private final PopupWindow popup;
     private final Bus bus;
+    private final Telemetry telemetry;
 
     public TrackersListAdapter(ArrayList<TrackerDetailsModel> trackerDetails, boolean isIncognito,
-                               Context context, Bus bus, PopupWindow window) {
+                               Context context, Bus bus, PopupWindow window, Telemetry telemetry) {
         this.trackerDetails = trackerDetails;
         this.isIncognito = isIncognito;
         this.context = context;
         this.bus = bus;
         this.popup = window;
+        this.telemetry = telemetry;
     }
 
     @Override
@@ -61,6 +64,7 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
         holder.infoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                telemetry.sendAntiTrackingInfoSignal(position);
                 popup.dismiss();
                 final String companyName = details.companyName.replaceAll("\\s", "-");
                 final String url =

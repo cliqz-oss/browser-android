@@ -95,7 +95,7 @@ public class CliqzBridge extends Bridge {
                         if (url == null) {
                             continue;
                         }
-                        bridge.historyDatabase.setFavorites(url, favTime, isFavorite);
+                        bridge.historyDatabase.setFavorites(url, null, favTime, isFavorite);
                     }
                 }
             }

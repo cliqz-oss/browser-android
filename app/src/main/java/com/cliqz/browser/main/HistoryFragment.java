@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import com.cliqz.browser.utils.Telemetry;
 import com.cliqz.browser.webview.FavoritesWebView;
 import com.cliqz.browser.webview.HistoryWebView;
 
@@ -24,11 +25,13 @@ public class HistoryFragment extends FragmentWithBus {
     protected HistoryWebView mHistoryWebView;
 
     private boolean mJustCreated = false;
+    private long startTime;
+    boolean showFavorites = false;
 
     private void createWebView(Activity activity) {
         // Must use activity due to Crosswalk webview
         final Bundle args = getArguments();
-        final boolean showFavorites = args != null ? args.getBoolean(SHOW_FAVORITES_ONLY, false): false;
+        showFavorites = args != null ? args.getBoolean(SHOW_FAVORITES_ONLY, false): false;
         mHistoryWebView = showFavorites ? new FavoritesWebView(activity) : new HistoryWebView(activity);
         mHistoryWebView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -64,11 +67,12 @@ public class HistoryFragment extends FragmentWithBus {
     public void onStart() {
         super.onStart();
         telemetry.sendLayerChangeSignal("past");
-
-        final PreferenceManager.ClearQueriesOptions clear = preferenceManager.shouldClearQueries();
-        if (clear != PreferenceManager.ClearQueriesOptions.NO) {
-            mHistoryWebView.cleanupQueries(clear);
-            preferenceManager.setShouldClearQueries(PreferenceManager.ClearQueriesOptions.NO);
+        if( mHistoryWebView.isExtensionReady()) {
+            final PreferenceManager.ClearQueriesOptions clear = preferenceManager.shouldClearQueries();
+            if (clear != PreferenceManager.ClearQueriesOptions.NO) {
+                mHistoryWebView.cleanupQueries(clear);
+                preferenceManager.setShouldClearQueries(PreferenceManager.ClearQueriesOptions.NO);
+            }
         }
     }
 

@@ -128,11 +128,8 @@ public class SearchWebView extends BaseWebView {
             currentTabState.setLongitude(Float.MAX_VALUE);
             currentTabState.setLatitude(Float.MAX_VALUE);
         }
-        final String call = String.format(Locale.US,
-                "jsAPI.search('%1$s', %2$b, %3$.6f, %4$.6f)",
-                lowerQuery, hasLocation, lat, lon);
 
-        executeJS(call);
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_SEARCH, lowerQuery, hasLocation, lat, lon);
     }
 
     @Override
@@ -170,14 +167,11 @@ public class SearchWebView extends BaseWebView {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        final String call =
-                String.format(Locale.US, "jsAPI.setClientPreferences(%s);",
-                        preferences.toString());
-        executeJS(call);
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_NOTIFY_PREFERENCES, preferences);
 
         final boolean shouldRestoreTopSites = preferenceManager.getRestoreTopSites();
         if (shouldRestoreTopSites) {
-            evaluateJavascript("jsAPI.restoreBlockedTopSites()",null);
+            notifyEvent(ExtensionEvents.CLIQZ_EVENT_RESTORE_BLOCKED_TOPSITES);
             preferenceManager.setRestoreTopSites(false);
         }
     }
@@ -200,7 +194,7 @@ public class SearchWebView extends BaseWebView {
                     params.put("title", currentTabState.getTitle());
                     break;
             }
-            executeJS(String.format(Locale.US, "jsAPI.resetState(%s);", params.toString()));
+            notifyEvent(ExtensionEvents.CLIQZ_EVENT_RESET_STATE, params);
             bringToFront();
             currentTabState.setTimestamp(System.currentTimeMillis());
             currentTabState.setMode(CliqzBrowserState.Mode.SEARCH);
@@ -210,23 +204,12 @@ public class SearchWebView extends BaseWebView {
     }
 
     private void setDefaultSearchEngine() {
-        if (!isExtensionReady()) {
-            return;
-        }
-
-        final JSONObject param = new JSONObject();
         final SearchEngines engine = preferenceManager.getSearchChoice();
-        try {
-            param.put("name", engine.engineName);
-            param.put("url", engine.engineUrl);
-            executeJS(String.format(Locale.US, "jsAPI.setDefaultSearchEngine(%s)", param.toString()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_SET_SEARCH_ENGINE, engine.engineName, engine.engineUrl);
     }
 
     public void requestCardUrl() {
-        executeJS("jsAPI.getCardUrl()");
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_PUBLISH_CARD_URL);
     }
 
     //Disable scrolling the search web view

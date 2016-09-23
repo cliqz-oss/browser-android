@@ -1,1 +1,1 @@
-include ':app', ':tests_helper', ':oss', ':antitracking', ':antitracking-test', ':utils'
+include ':app', ':tests_helper', ':oss', ':antitracking', ':antitracking-test', ':utils', ':android_utils'

@@ -35,7 +35,6 @@ System.register("platform/webrequest", ["core/cliqz"], function (_export) {
                 var blockingResponse = fn(requestInfo);
 
                 if (blockingResponse && Object.keys(blockingResponse).length > 0) {
-                  blockingResponse['extras'] = extraInfo;
                   return blockingResponse;
                 }
               }

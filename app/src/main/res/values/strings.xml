@@ -79,9 +79,9 @@
     <string name="action_webpage">Webpage</string>
     <string name="title_clear_history">Clear History</string>
     <string name="title_clear_cookies">Clear Cookies</string>
-    <string name="dialog_history">Would you like to clear all browser history?</string>
-    <string name="dialog_cookies">Would you like to clear all browser cookies?</string>
-    <string name="dialog_favorites">Would you like to clear all favorites?</string>
+    <string name="dialog_history">Would you like to clear browser history?</string>
+    <string name="dialog_cookies">Would you like to clear browser cookies?</string>
+    <string name="dialog_favorites">Would you like to clear favorites?</string>
     <string name="action_yes">Yes</string>
     <string name="action_no">No</string>
     <string name="title_text_size">Text Size</string>
@@ -243,7 +243,7 @@
     <string name="start_now_bang">Start now!</string>
     <string name="next">Next</string>
     <string name="go">Go</string>
-    <string name="show_onboarding_tour">Show tour</string>
+    <string name="show_onboarding_hints">Show hints</string>
     <string name="onboarding" translatable="false">OnBoarding</string>
     <string name="block_adult_content">Block Explicit Content</string>
     <string name="imprint">Imprint</string>
@@ -267,8 +267,8 @@
     <string name="device_registered" translatable="false">Device Registered</string>
     <string name="error_registering" translatable="false">Error registering the device</string>
     <string name="news_notification">News Notification</string>
-    <string name="restore_top_sites">Restore blocked topsites</string>
-    <string name="message_restore_top_sites">Blocked topsites will be shown on the start page again.</string>
+    <string name="restore_top_sites">Restore most visited websites </string>
+    <string name="message_restore_top_sites">Start page shows most-visited websites again</string>
     <string name="descr_search_bar" translatable="false">Search Bar</string>
     <string name="action_show_tab_manager">Show Open Tabs</string>
     <string name="action_search_on_page">Search in page</string>
@@ -278,7 +278,7 @@
     <string name="download_successful">Download successful</string>
     <string name="download_failed">Download failed</string>
     <string name="app_not_found">No suitable app found</string>
-    <string name="settings_block_ads">Block Ads</string>
+    <string name="settings_block_ads">Block Ads(Beta)</string>
     <string name="optimized_block_ads">Fair Blocking</string>
     <string name="what_does_optimized_mean">What is \'fair\'?</string>
     <string name="optimized_block_ads_description">The CLIQZ Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads.\nMore https://cliqz.com/whycliqz/adblocking</string>
@@ -298,4 +298,18 @@
     <string name="help">Help</string>
     <string name="loading_screen">Top-News are being loaded</string>
     <string name="others">Others</string>
+    <string name="download_started">Download Started</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="exit">Exit</string>
+    <string name="view">View</string>
+    <string name="tab_created">Tab created</string>
+    <string name="home_title">Most visited sites and news</string>
+    <string name="got_it">Got it</string>
+    <string name="showcase_antitracking_message">You are in control: CLIQZ Anti-Tracking protects your privacy</string>
+    <string name="showcase_antitracking_title" translatable="false">Anti-Tracking</string>
+    <string name="showcase_search_message">Everything now. No detours</string>
+    <string name="showcace_search_title">Fast-search</string>
+    <string name="upload_file_title">Upload File Title</string>
+    <string name="rate_us">Rate CLIQZ Browser</string>
+    <string name="autocompletion_enabled">Enable Autocompletion</string>
 </resources>

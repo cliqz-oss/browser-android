@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.webview.CliqzBridge;
 
@@ -36,5 +37,11 @@ public class MainActivityModule {
     @Provides
     public TabsManager providesTabsManager() {
         return new TabsManager(activity, activity.getSupportFragmentManager());
+    }
+
+    @PerActivity
+    @Provides
+    public OnBoardingHelper providesOnBoardingHelper() {
+        return new OnBoardingHelper(activity);
     }
 }

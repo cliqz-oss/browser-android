@@ -11,6 +11,7 @@ import android.preference.Preference;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.utils.TelemetryKeys;
 
 public class HumanWebSettings extends BaseSettingsFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
@@ -20,10 +21,13 @@ public class HumanWebSettings extends BaseSettingsFragment
     private static final String[] KEYS = new String[] {
             WHAT_IS_IT_KEY, HUMANWEB_KEY
     };
+    private long startTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.HUMAN_WEB, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_humaweb);
 
@@ -41,6 +45,8 @@ public class HumanWebSettings extends BaseSettingsFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (HUMANWEB_KEY.equals(preference.getKey())) {
+            mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE, TelemetryKeys.HUMAN_WEB,
+                    !((Boolean) newValue));
             mPreferenceManager.setHumanWebEnabled((Boolean) newValue);
             return true;
         }
@@ -50,6 +56,7 @@ public class HumanWebSettings extends BaseSettingsFragment
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (WHAT_IS_IT_KEY.equals(preference.getKey())) {
+            mTelemetry.sendSettingsMenuSignal(TelemetryKeys.INFO, TelemetryKeys.HUMAN_WEB);
             final String url = getString(R.string.about_humanweb_url);
             final Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
@@ -58,5 +65,11 @@ public class HumanWebSettings extends BaseSettingsFragment
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.HUMAN_WEB, System.currentTimeMillis() - startTime);
     }
 }

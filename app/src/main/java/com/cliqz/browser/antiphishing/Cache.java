@@ -2,6 +2,7 @@ package com.cliqz.browser.antiphishing;
 
 import android.support.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ class Cache {
         if (!AntiPhishingUtils.checkMD5(md5)) { return; }
         final String[] md5parts = AntiPhishingUtils.splitMD5(md5);
         final CacheEntry entry = getOrCreateCacheEntry(md5parts[0]);
-        entry.blacklist.add(md5parts[1]);
+        addToList(entry.blacklist, md5parts[1]);
     }
 
     @VisibleForTesting
@@ -37,7 +38,13 @@ class Cache {
         if (!AntiPhishingUtils.checkMD5(md5)) { return; }
         final String[] md5parts = AntiPhishingUtils.splitMD5(md5);
         final CacheEntry entry = getOrCreateCacheEntry(md5parts[0]);
-        entry.whitelist.add(md5parts[1]);
+        addToList(entry.whitelist, md5parts[1]);
+    }
+
+    private void addToList(ArrayList<ArrayList<String>> list, String md5suffix) {
+        final ArrayList<String> entry = new ArrayList<>();
+        entry.add(md5suffix);
+        list.add(entry);
     }
 
     public Result check(String md5) {
@@ -46,11 +53,22 @@ class Cache {
         final CacheEntry entry = mCache.get(md5parts[0]);
         if (entry == null) {
             return Result.FAULT;
-        } else if (entry.blacklist.contains(md5parts[1])) {
-            return entry.whitelist.contains(md5parts[1]) ? Result.WHITELIST : Result.BLACKLIST;
+        } else if (checkIfListContains(entry.blacklist, md5parts[1])) {
+            return checkIfListContains(entry.whitelist, md5parts[1]) ?
+                    Result.WHITELIST : Result.BLACKLIST;
         } else {
-            return entry.whitelist.contains(md5parts[1]) ? Result.WHITELIST : Result.UNKNOWN;
+            return checkIfListContains(entry.whitelist, md5parts[1]) ?
+                    Result.WHITELIST : Result.UNKNOWN;
         }
+    }
+
+    private boolean checkIfListContains(ArrayList<ArrayList<String>> list, String md5Suffix) {
+        for (ArrayList<String> entry: list) {
+            if (entry.contains(md5Suffix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private CacheEntry getOrCreateCacheEntry(String md5prefix) {

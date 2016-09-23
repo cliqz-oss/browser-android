@@ -12,13 +12,11 @@ import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.webkit.WebView;
-import android.widget.CheckBox;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.utils.HistoryCleaner;
+import com.cliqz.browser.utils.TelemetryKeys;
 
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
@@ -47,15 +45,16 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
             cbhistoryexit, cbcookiesexit; //cbcookiesInkognito, cbwebstorageexit
     // private boolean mSystemBrowser;
     private Handler messageHandler;
+    private long startTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.PRIVACY, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_privacy);
-
         mActivity = getActivity();
-
         initPrefs();
     }
 
@@ -140,9 +139,11 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 //                clearCache();
 //                return true;
             case SETTINGS_CLEARHISTORY:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_HISTORY, TelemetryKeys.PRIVACY);
                 clearHistoryDialog();
                 return true;
             case SETTINGS_CLEARFAVORITES:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_FAVORITES, TelemetryKeys.PRIVACY);
                 clearFavoritesDialog();
                 return true;
 //            case SETTINGS_CLEARCOOKIES:
@@ -152,6 +153,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 //                clearWebStorage();
 //                return true;
             case SETTINGS_RESTORETOPSITES:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.RESTORE_TOPSITES, TelemetryKeys.PRIVACY);
                 restoreTopSitesDialog();
                 return true;
             default:
@@ -315,10 +317,14 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         // switch preferences
         switch (preference.getKey()) {
             case SETTINGS_LOCATION:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.LOCATION_ACCESS, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setLocationEnabled((Boolean) newValue);
                 cblocation.setChecked((Boolean) newValue);
                 return true;
             case SETTINGS_ENABLECOOKIES:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_COOKIES, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setCookiesEnabled((Boolean) newValue);
                 cbenablecookies.setChecked((Boolean) newValue);
                 return true;
@@ -327,18 +333,26 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 //                cbcookiesInkognito.setChecked((Boolean) newValue);
 //                return true;
             case SETTINGS_SAVEPASSWORD:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SAVE_PASSWORDS, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setSavePasswordsEnabled((Boolean) newValue);
                 cbsavepasswords.setChecked((Boolean) newValue);
                 return true;
             case SETTINGS_CACHEEXIT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_CACHE, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setClearCacheExit((Boolean) newValue);
                 cbcacheexit.setChecked((Boolean) newValue);
                 return true;
             case SETTINGS_HISTORYEXIT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_HISTORY, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setClearHistoryExitEnabled((Boolean) newValue);
                 cbhistoryexit.setChecked((Boolean) newValue);
                 return true;
             case SETTINGS_COOKIEEXIT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_COOKIES, TelemetryKeys.PRIVACY,
+                        (!(boolean)newValue));
                 mPreferenceManager.setClearCookiesExitEnabled((Boolean) newValue);
                 cbcookiesexit.setChecked((Boolean) newValue);
                 return true;
@@ -349,5 +363,11 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.PRIVACY, System.currentTimeMillis() - startTime);
     }
 }

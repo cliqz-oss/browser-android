@@ -7,7 +7,7 @@
                 android:orientation="horizontal">
 
     <FrameLayout
-        android:id="@+id/menu_history"
+        android:id="@+id/menu_overview"
         android:layout_width="48dp"
         android:layout_centerVertical="true"
         android:layout_height="48dp"
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/menu_history"
+        android:layout_toRightOf="@+id/menu_overview"
         android:layout_toLeftOf="@+id/overflow_menu"/>
 
     <FrameLayout

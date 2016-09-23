@@ -18,13 +18,21 @@ import android.widget.ListView;
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.utils.CustomChooserIntent;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class SettingsActivity extends ThemableSettingsActivity {
+
+    @Inject
+    Telemetry telemetry;
 
     private static class HeaderInfo {
         final String name;
@@ -41,6 +49,7 @@ public class SettingsActivity extends ThemableSettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BrowserApp.getAppComponent().inject(this);
         // this is a workaround for the Toolbar in PreferenceActitivty
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         LinearLayout content = (LinearLayout) root.getChildAt(0);
@@ -79,12 +88,14 @@ public class SettingsActivity extends ThemableSettingsActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final HeaderInfo info = fragments.get(position);
         if (info.id == R.id.imprint) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.IMPRINT, TelemetryKeys.MAIN);
             final Intent browserIntent = new Intent(this, MainActivity.class);
             browserIntent.setAction(Intent.ACTION_VIEW);
             browserIntent.setData(Uri.parse("https://cliqz.com/legal"));
             startActivity(browserIntent);
             finish();
         } else if (info.id == R.id.feedback) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
             final Uri to = Uri.parse(String.format("mailto:%s",
                     getString(R.string.feedback_at_cliqz_dot_com)));
             final Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -107,6 +118,8 @@ public class SettingsActivity extends ThemableSettingsActivity {
             Intent customChooserIntent = CustomChooserIntent.create(this.getPackageManager(),
                     intent, getString(R.string.contact_cliqz), blackList);
             startActivity(customChooserIntent);
+        } else if (info.id == R.id.rate_us) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.cliqz.browser")));
         } else {
             super.onListItemClick(l, v, position, id);
         }
@@ -123,4 +136,5 @@ public class SettingsActivity extends ThemableSettingsActivity {
         PermissionsManager.getInstance().notifyPermissionsChange(permissions, grantResults);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
 }

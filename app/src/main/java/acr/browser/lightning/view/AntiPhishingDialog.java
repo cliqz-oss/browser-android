@@ -6,16 +6,16 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
-import android.text.util.Linkify;
 import android.view.View;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.squareup.otto.Bus;
 
 import acr.browser.lightning.bus.BrowserEvents;
@@ -30,10 +30,12 @@ class AntiPhishingDialog extends AlertDialog {
 
     private final Bus eventBus;
     private String mUrl;
+    private Telemetry telemetry;
 
-    public AntiPhishingDialog(Context context,Bus eventBus) {
+    public AntiPhishingDialog(Context context, Bus eventBus, Telemetry telemetry) {
         super(context);
         this.eventBus = eventBus;
+        this.telemetry = telemetry;
         final Resources resources = context.getResources();
         setTitle(resources.getString(R.string.antiphishing_dialog_title));
         setButton(DialogInterface.BUTTON_POSITIVE,
@@ -49,7 +51,11 @@ class AntiPhishingDialog extends AlertDialog {
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
+                    telemetry.sendAntiPhisingSignal(TelemetryKeys.BACK);
                     eventBus.post(new Messages.BackPressed());
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    telemetry.sendAntiPhisingSignal(TelemetryKeys.CONTINUE);
                     break;
                 default:
                     break;
@@ -85,6 +91,7 @@ class AntiPhishingDialog extends AlertDialog {
 
     @Override
     public void show() {
+        telemetry.sendAntiPhisingShowSignal();
         super.show();
         TextView.class.cast(findViewById(android.R.id.message))
                 .setMovementMethod(LinkMovementMethod.getInstance());
@@ -98,6 +105,7 @@ class AntiPhishingDialog extends AlertDialog {
 
         @Override
         public void onClick(View widget) {
+            telemetry.sendAntiPhisingSignal(TelemetryKeys.INFO);
             eventBus.post(new BrowserEvents.OpenUrlInNewTab(getURL()));
             AntiPhishingDialog.this.dismiss();
         }

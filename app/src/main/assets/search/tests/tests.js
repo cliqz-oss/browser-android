@@ -119,7 +119,7 @@ describe('Search View', function() {
   });
 
   afterEach(function () {
-  	contentWindow.CLIQZEnvironment.getLocalStorage().clear();
+  	contentWindow.CliqzUtils.getLocalStorage().clear();
     fakeServer.restore();
     document.body.removeChild(testBox);
   });
@@ -170,11 +170,11 @@ describe('Search View', function() {
     });
 
     it("has one local result", function () {
-      expect($('.local')).to.have.length(1);
+      expect($('.cqz-local-result')).to.have.length(1);
     });
 
     it("renders local template with address and map", function () {
-      var address = $('.cqz-local-address')[0];
+      var address = $('.address__text')[0];
       expect(address).to.be.ok;
 
       var addressText = address.lastChild.wholeText;
@@ -183,7 +183,7 @@ describe('Search View', function() {
     });
 
     it("shows local data image", function () {
-      var img = $('.local-data-img')[0];
+      var img = $('.map__img')[0];
       expect(img).to.be.ok
       expect(img).to.have.property('style');
       expect(img.style).to.have.property('display').that.not.equal('none');
@@ -534,7 +534,7 @@ describe("Freshtab", function () {
   });
 
   afterEach(function () {
-    contentWindow.CLIQZEnvironment.getLocalStorage().clear();
+    contentWindow.CliqzUtils.getLocalStorage().clear();
     fakeServer.restore();
     document.body.removeChild(testBox);
   });
@@ -684,7 +684,7 @@ describe("Startup", function () {
   });
 
   afterEach(function () {
-    contentWindow.CLIQZEnvironment.getLocalStorage().clear();
+    contentWindow.CliqzUtils.getLocalStorage().clear();
     fakeServer.restore();
     document.body.removeChild(testBox);
   });
@@ -697,12 +697,11 @@ describe("Startup", function () {
       contentWindow.CliqzUtils.locale = {};
     });
 
-    it("should load default language if locale is not recognized", function (done) {
-      contentWindow.CliqzUtils.loadLocale('it-IT').then(function () {
-        expect(contentWindow.CliqzUtils.locale['it-IT']).to.be.not.ok;
-        expect(contentWindow.CliqzUtils.locale.default).to.be.ok;
-        done();
-      });
+    it("should load default language if locale is not recognized", function () {
+      contentWindow.CliqzUtils.loadLocale('it-IT');
+
+      expect(contentWindow.CliqzUtils.locale['it-IT']).to.be.not.ok;
+      expect(contentWindow.CliqzUtils.locale.default).to.be.ok;
     });
   });
-});//# sourceMappingURL=tests.map
+});

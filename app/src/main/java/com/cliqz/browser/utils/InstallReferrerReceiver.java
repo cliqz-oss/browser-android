@@ -61,7 +61,7 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
             Log.e(TAG, "Error decoding referrer", e);
             preferenceManager.setDistributionException(true);
         } finally {
-            telemetry.sendLifeCycleSignal(Telemetry.Action.INSTALL);
+            telemetry.sendLifeCycleSignal(TelemetryKeys.INSTALL);
         }
     }
 }

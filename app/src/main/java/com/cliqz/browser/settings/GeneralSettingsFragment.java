@@ -5,7 +5,6 @@ package com.cliqz.browser.settings;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -14,8 +13,8 @@ import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.OnBoardingActivity;
-import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.main.OnBoardingHelper;
 
 import acr.browser.lightning.constant.SearchEngines;
 
@@ -25,17 +24,20 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_SEARCHENGINE = "search";
     private static final String SETTINGS_SHOWTOUR = "onboarding";
     private static final String SETTINGS_ADULT_CONTENT = "cb_adult_content";
-    private static final String SETTINGS_NEWS_NOTIFICATION = "cb_news_notification";
+    private long startTime;
 
     private Activity mActivity;
 
     private static final int API = Build.VERSION.SDK_INT;
     private Preference searchengine, showTour;
-    private CheckBoxPreference cbNewNotification, cbImages, cbAdultContent;
+    private CheckBoxPreference cbImages;
+    private CheckBoxPreference cbAdultContent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.GENERAL, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_general);
         mActivity = getActivity();
@@ -45,13 +47,11 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     private void initPrefs() {
         searchengine = findPreference(SETTINGS_SEARCHENGINE);
         showTour = findPreference(SETTINGS_SHOWTOUR);
-        cbNewNotification = (CheckBoxPreference) findPreference(SETTINGS_NEWS_NOTIFICATION);
         cbImages = (CheckBoxPreference) findPreference(SETTINGS_IMAGES);
         cbAdultContent = (CheckBoxPreference) findPreference(SETTINGS_ADULT_CONTENT);
 
         searchengine.setOnPreferenceClickListener(this);
         showTour.setOnPreferenceClickListener(this);
-        cbNewNotification.setOnPreferenceChangeListener(this);
         cbImages.setOnPreferenceChangeListener(this);
         cbAdultContent.setOnPreferenceChangeListener(this);
 
@@ -62,7 +62,6 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
         final boolean imagesBool = mPreferenceManager.getBlockImagesEnabled();
         final boolean adultBool = mPreferenceManager.getBlockAdultContent();
 
-        cbNewNotification.setChecked(mPreferenceManager.getNewsNotificationEnabled());
         cbImages.setChecked(imagesBool);
         cbAdultContent.setChecked(adultBool);
     }
@@ -86,11 +85,18 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                mTelemetry.sendSettingsMenuSignal(engines[which].engineName, TelemetryKeys.SELECT_SE);
                 mPreferenceManager.setSearchChoice(engines[which]);
                 setSearchEngineSummary(engines[which]);
             }
         });
-        picker.setNeutralButton(getResources().getString(R.string.action_ok), null);
+        picker.setNeutralButton(getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CONFIRM, TelemetryKeys.SELECT_SE);
+            }
+        });
         picker.show();
     }
 
@@ -122,11 +128,13 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case SETTINGS_SEARCHENGINE:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SEARCH_ENGINE, TelemetryKeys.GENERAL);
                 searchDialog();
                 return true;
             case SETTINGS_SHOWTOUR:
-                Intent intent = new Intent(getActivity(), OnBoardingActivity.class);
-                startActivity(intent);
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SHOW_TOUR, TelemetryKeys.GENERAL);
+                OnBoardingHelper.forceShow(getActivity());
+                preference.setEnabled(false);
                 return true;
             default:
                 return false;
@@ -137,22 +145,26 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         // switch preferences
         switch (preference.getKey()) {
-            case SETTINGS_NEWS_NOTIFICATION:
-                mPreferenceManager.setNewsNotificationEnabled((Boolean) newValue);
-                cbNewNotification.setChecked((Boolean) newValue);
-                final String action = (Boolean) newValue ? Telemetry.Action.ENABLE : Telemetry.Action.DISABLE;
-                mTelemetry.sendNewsNotificationSignal(action);
-                 return true;
             case SETTINGS_IMAGES:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_IMAGES, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
                 mPreferenceManager.setBlockImagesEnabled((Boolean) newValue);
                 cbImages.setChecked((Boolean) newValue);
                 return true;
             case SETTINGS_ADULT_CONTENT:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_EXPLICIT, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
                 mPreferenceManager.setBlockAdultContent((Boolean) newValue);
                 cbAdultContent.setChecked((Boolean) newValue);
                 return true;
             default:
                 return false;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.GENERAL, System.currentTimeMillis() - startTime);
     }
 }

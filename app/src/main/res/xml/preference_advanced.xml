@@ -28,6 +28,9 @@
             android:key="proxy"
             android:title="@string/http_proxy" />
         <CheckBoxPreference
+            android:key="cb_autocompletion"
+            android:title="@string/autocompletion_enabled" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="cb_javascript"
             android:title="@string/java" />

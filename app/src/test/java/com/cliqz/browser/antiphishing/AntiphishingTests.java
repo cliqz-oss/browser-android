@@ -35,9 +35,11 @@ public class AntiphishingTests {
     private static final String PHISHING_PREFIX = PHISHING_MD5_PARTS[0];
     private static final String PHISHING_SUFFIX = PHISHING_MD5_PARTS[1];
     private static final String JSON_RESPONSE = "{\n" +
-            "  \"blacklist\": [\"" + PHISHING_SUFFIX + "\"], \n" +
+            "  \"blacklist\": [\n" +
+            "    [\"" + PHISHING_SUFFIX + "\", null]\n" +
+            "  ]," +
             "  \"whitelist\": [\n" +
-            "    \"d80806345d31fd78\"\n" +
+            "    [\"d80806345d31fd78\", null]\n" +
             "  ]\n" +
             "}";
 

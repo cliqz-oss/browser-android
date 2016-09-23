@@ -689,7 +689,7 @@
   color: #ccc; }
 
 .cqz-results .cqz-noresult-box .cqz-ez-title:after {
-  contet: '';
+  content: '';
   display: block;
   width: 230px;
   height: 1px;
@@ -1220,7 +1220,17 @@
   position: absolute;
   cursor: pointer; }
 
+.cqz-results .cliqz-history-hm {
+  font-size: 8px;
+  right: 20px;
+  top: -2px;
+  position: absolute;
+  cursor: pointer; }
+
 .cqz-results .cqz-result-h3 .cliqz-history-logo {
+  top: 3px; }
+
+.cqz-results .cqz-result-h3 .cliqz-history-hm {
   top: 3px; }
 
 /* ---------- From A to B ----------- */
@@ -2376,6 +2386,80 @@
   .cqz-popup .cqz-vod .layout_no_foot_node .cqz-rd-img,
   .cqz-popup .cqz-vod .rd_info_block {
     height: 200px; }
+  .cqz-popup .cqz-liveticker-table {
+    overflow: hidden;
+    position: relative;
+    top: -5px;
+    padding-bottom: 5px;
+    min-height: 90px;
+    padding-left: 30px; }
+    .cqz-popup .cqz-liveticker-table .cqz-vertical-title {
+      position: absolute;
+      top: calc(50% - 10px);
+      left: calc(-50% + 10px);
+      width: 100%;
+      height: 20px;
+      color: #fff;
+      text-align: center;
+      transform-origin: 50% 50% 0;
+      transform: rotate(-90deg);
+      background: #ccc;
+      z-index: 1; }
+    .cqz-popup .cqz-liveticker-table ul {
+      list-style: none;
+      padding: 0;
+      margin: 0; }
+      .cqz-popup .cqz-liveticker-table ul li {
+        margin: 0 0 7px; }
+        .cqz-popup .cqz-liveticker-table ul li:last-child {
+          margin: 0; }
+        .cqz-popup .cqz-liveticker-table ul li .cqz-game-date {
+          display: block;
+          padding-bottom: 2px;
+          margin-bottom: 6px;
+          font-size: 12px;
+          line-height: 1.3em;
+          color: #666;
+          border-bottom: 1px solid #ccc; }
+        .cqz-popup .cqz-liveticker-table ul li table {
+          width: 100%;
+          table-layout: fixed;
+          border: 0;
+          max-width: 700px; }
+          .cqz-popup .cqz-liveticker-table ul li table tr.cqz-live td {
+            color: #2b7f12;
+            vertical-align: middle; }
+            .cqz-popup .cqz-liveticker-table ul li table tr.cqz-live td.cqz-game-time span {
+              overflow: hidden;
+              display: block;
+              width: 8px;
+              height: 8px;
+              margin: 2px 0 0 9px;
+              text-indent: -777px;
+              border-radius: 50%;
+              background: #2b7f12; }
+          .cqz-popup .cqz-liveticker-table ul li table td {
+            cursor: pointer;
+            width: 50%;
+            font-size: 12px;
+            line-height: 1.2em;
+            color: #506bb8;
+            padding-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; }
+            .cqz-popup .cqz-liveticker-table ul li table td.cqz-game-time {
+              width: 50px;
+              color: #999; }
+            .cqz-popup .cqz-liveticker-table ul li table td.cqz-score {
+              width: 50px;
+              text-align: center; }
+            .cqz-popup .cqz-liveticker-table ul li table td:last-child {
+              text-align: right; }
+          .cqz-popup .cqz-liveticker-table ul li table tr:hover td {
+            background: #eee; }
+  .cqz-popup .cqz-liveticker .ez-liga-sponsor {
+    bottom: 13px; }
   .cqz-popup .cqz-message-bar {
     display: -moz-box;
     display: flex;
@@ -2471,4 +2555,51 @@
   color: #fff;
   background-color: #0066aa; }
 
-/*# sourceMappingURL=styles.css.map */
+.cqz-results .cqz-result-h3 .cliqz-history-logo {
+  top: 50%;
+  margin-top: -10px; }
+
+.cqz-results .cqz-history-result-item {
+  cursor: pointer;
+  position: relative;
+  margin: -2px 0 17px;
+  padding: 0 40px 0 0; }
+
+.cqz-results .cqz-history-with-cluster .cqz-history-result-item {
+  margin: -2px 0 9px; }
+
+.cqz-history-cluster {
+  margin: 0 !important;
+  list-style: none;
+  max-height: 18px;
+  overflow: hidden; }
+
+.cqz-history-cluster li {
+  display: inline-block;
+  margin-right: 5px; }
+
+.cqz-history-cluster li a {
+  text-decoration: none;
+  font-size: 12px;
+  color: #9594cc;
+  white-space: nowrap; }
+
+.cqz-history-cluster li a:hover {
+  text-decoration: none; }
+
+.cqz-history-cluster li a span {
+  overflow: hidden;
+  display: inline-block;
+  max-width: 120px;
+  text-overflow: ellipsis;
+  vertical-align: middle; }
+
+.cqz-history-cluster li a:hover span {
+  text-decoration: underline; }
+
+.cqz-history-cluster li.cqz-history-query,
+.cqz-history-cluster li.cqz-history-query a {
+  color: #999; }
+
+.cqz-history-cluster li.cqz-history-query a span {
+  max-width: 200px; }

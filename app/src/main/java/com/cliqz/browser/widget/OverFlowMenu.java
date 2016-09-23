@@ -20,14 +20,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
-import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -41,7 +43,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static android.view.View.MeasureSpec.*;
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.getMode;
 import static android.view.View.MeasureSpec.getSize;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
@@ -63,7 +66,8 @@ public class OverFlowMenu extends FrameLayout {
         SETTINGS(R.id.settings_menu_button, R.string.settings),
         CONTACT_CLIQZ(R.id.contact_cliqz_menu_button, R.string.contact_cliqz),
         SAVE_LINK(R.id.save_link_menu_button, R.string.save_link),
-        DOWNLOAD_YOUTUBE_VIDEO(R.id.download_youtube_video_menu_button, R.string.make_video_available_offline);
+        DOWNLOAD_YOUTUBE_VIDEO(R.id.download_youtube_video_menu_button, R.string.make_video_available_offline),
+        QUIT(R.id.quit_menu_button, R.string.exit);
 
         final int stringID;
         final int id;
@@ -84,16 +88,21 @@ public class OverFlowMenu extends FrameLayout {
             Entries.SEARCH_IN_PAGE,
             Entries.ADD_TO_FAVOURITES,
             Entries.SETTINGS,
-            Entries.CONTACT_CLIQZ
+            Entries.CONTACT_CLIQZ,
+            Entries.QUIT
     };
 
     private static final Entries[] INCOGNITO_ENTRIES = new Entries[] {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
+            Entries.COPY_LINK,
+            Entries.SAVE_LINK,
+            Entries.ADD_TO_FAVOURITES,
             Entries.SEARCH_IN_PAGE,
             Entries.SETTINGS,
-            Entries.CONTACT_CLIQZ
+            Entries.CONTACT_CLIQZ,
+            Entries.QUIT
     };
 
     private final Context context;
@@ -104,6 +113,7 @@ public class OverFlowMenu extends FrameLayout {
     private boolean mIsYoutubeVideo = false;
 
     private String mUrl;
+    private String mTitle;
 
     public View getAnchorView() {
         return mAnchorView;
@@ -121,6 +131,9 @@ public class OverFlowMenu extends FrameLayout {
 
     @Inject
     Bus bus;
+
+    @Inject
+    Telemetry telemetry;
 
     @Bind(R.id.action_share)
     ImageView actionShareButton;
@@ -269,6 +282,10 @@ public class OverFlowMenu extends FrameLayout {
 
     public void setUrl(String url) {
         this.mUrl = url;
+    }
+
+    public void setTitle(String title) {
+        this.mTitle = title;
     }
 
     public void setState(CliqzBrowserState state) {
@@ -428,31 +445,57 @@ public class OverFlowMenu extends FrameLayout {
             Log.e(TAG, "Entry id: " + tag.id);
             switch (tag) {
                 case COPY_LINK:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.COPY_LINK, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.CopyUrl());
+                    Toast.makeText(context, context.getString(R.string.message_link_copied),
+                            Toast.LENGTH_SHORT).show();
                     break;
                 case SETTINGS:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.GoToSettings());
                     break;
                 case CONTACT_CLIQZ:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.CONTACT_US, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.ContactCliqz());
                     break;
                 case NEW_INCOGNITO_TAB:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(true));
                     break;
                 case NEW_TAB:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(false));
                     break;
                 case SEARCH_IN_PAGE:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.PAGE_SEARCH, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.SearchInPage());
                     break;
                 case ADD_TO_FAVOURITES:
-                    bus.post(new Messages.AddToFavourites(mUrl));
+                    telemetry.sendMainMenuSignal(TelemetryKeys.ADD_FAVORITE, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                    bus.post(new Messages.AddToFavourites(mUrl, mTitle));
+                    Toast.makeText(context, context.getString(R.string.added_to_favorites),
+                            Toast.LENGTH_SHORT).show();
                     break;
                 case SAVE_LINK:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.SAVE_LINK, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.SaveLink());
                     break;
                 case DOWNLOAD_YOUTUBE_VIDEO:
+                    telemetry.sendVideoDownloadSignal(mIncognitoMode);
                     bus.post(new Messages.DownloadYoutubeVideo("download_page"));
+                    break;
+                case QUIT:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.QUIT, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                    bus.post(new Messages.Quit());
                     break;
                 default:
                     break;
@@ -463,18 +506,24 @@ public class OverFlowMenu extends FrameLayout {
 
     @OnClick(R.id.action_forward)
     void onForwardClicked() {
+        telemetry.sendMainMenuSignal(TelemetryKeys.FORWARD, isIncognitoMode(),
+                state.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.GoForward());
         this.dismiss();
     }
 
     @OnClick(R.id.action_refresh)
     void onRefreshClicked() {
+        telemetry.sendMainMenuSignal(TelemetryKeys.REFRESH, isIncognitoMode(),
+                state.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.ReloadPage());
         this.dismiss();
     }
 
     @OnClick(R.id.action_share)
     void onShareClicked() {
+        telemetry.sendMainMenuSignal(TelemetryKeys.SHARE, isIncognitoMode(),
+                state.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.ShareLink());
         this.dismiss();
     }

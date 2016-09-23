@@ -2,15 +2,10 @@ package com.cliqz.antitracking.test;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.cliqz.antitracking.AntiTracking;
-import com.cliqz.antitracking.AntiTrackingResponse;
 
 /**
  * @author Stefano Pacifici
@@ -30,16 +25,16 @@ public abstract class TestWebViewClient extends WebViewClient {
     @Override
     public final WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         final String url = request.getUrl().toString();
-        final AntiTrackingResponse response = handleRequest(view, request);
-        if (response.response == null) {
+        final WebResourceResponse response = handleRequest(view, request);
+        if (response == null) {
             messageQueue.onNewUrl(url);
         } else {
             messageQueue.onNewBlockedUrl(url);
         }
-        return response.response;
+        return response;
     }
 
-    public abstract AntiTrackingResponse handleRequest(WebView view, WebResourceRequest request);
+    public abstract WebResourceResponse handleRequest(WebView view, WebResourceRequest request);
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {

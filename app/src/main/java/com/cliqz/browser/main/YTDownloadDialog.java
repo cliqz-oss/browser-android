@@ -12,6 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.cliqz.browser.utils.Telemetry;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,16 +37,18 @@ class YTDownloadDialog {
     private final JSONArray urls;
     private final ListAdapter adapter;
     private final DialogInterface.OnClickListener clickListener;
+    private final Telemetry telemetry;
 
-    private YTDownloadDialog(Activity activity, JSONArray urls) {
+    private YTDownloadDialog(Activity activity, JSONArray urls, Telemetry telemetry) {
         this.activity = activity;
         this.urls = urls;
         this.adapter = new UrlsAdapter();
         this.clickListener = new UrlsOnClickListener();
+        this.telemetry = telemetry;
     }
 
-    public static void show(Activity activity, JSONArray urls) {
-        final YTDownloadDialog ytdialog = new YTDownloadDialog(activity, urls);
+    public static void show(Activity activity, JSONArray urls, Telemetry telemetry) {
+        final YTDownloadDialog ytdialog = new YTDownloadDialog(activity, urls, telemetry);
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setAdapter(ytdialog.adapter, ytdialog.clickListener).show();
     }
@@ -96,7 +100,7 @@ class YTDownloadDialog {
                 obj = new JSONObject();
                 Log.e(TAG, "Can't get the url at position " + which, e);
             }
-
+            telemetry.sendVideoDialogSignal(obj.optString("label", "NO LABEL").toLowerCase().replaceAll(" ","_"));
             dialog.dismiss();
             String urlStr = obj.optString("url", "");
             urlStr = Uri.decode(urlStr);

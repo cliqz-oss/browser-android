@@ -11,6 +11,7 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.utils.TelemetryKeys;
 
 /**
  * @author Stefano Pacifici
@@ -24,11 +25,13 @@ public class AdBlockSettings extends BaseSettingsFragment {
     private CheckBoxPreference mBlockAdsCheckbox;
     private CheckBoxPreference mOptimizedBlockAdsCheckbox;
     private Preference mWhatDoesOptimizedMean;
+    private long startTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        startTime = System.currentTimeMillis();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_ADS, TelemetryKeys.MAIN);
         addPreferencesFromResource(R.xml.preferences_block_ads);
 
         mBlockAdsCheckbox = (CheckBoxPreference) findPreference(SETTINGS_BLOCK_ADS);
@@ -52,10 +55,14 @@ public class AdBlockSettings extends BaseSettingsFragment {
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference == mBlockAdsCheckbox) {
-            final boolean enabled = ((Boolean) newValue).booleanValue();
+            mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE, TelemetryKeys.BLOCK_ADS,
+                    !((Boolean) newValue));
+            final boolean enabled = (Boolean) newValue;
             mPreferenceManager.setAdBlockEnabled(enabled);
         } else if (preference == mOptimizedBlockAdsCheckbox) {
-            final boolean enabled = ((Boolean) newValue).booleanValue();
+            mTelemetry.sendSettingsMenuSignal(TelemetryKeys.FAIR_BLOCKING, TelemetryKeys.BLOCK_ADS,
+                    !((Boolean) newValue));
+            final boolean enabled = (Boolean) newValue;
             mPreferenceManager.setOptimizedAdBlockEnabled(enabled);
         }
         updateUI();
@@ -65,6 +72,7 @@ public class AdBlockSettings extends BaseSettingsFragment {
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference == mWhatDoesOptimizedMean) {
+            mTelemetry.sendSettingsMenuSignal(TelemetryKeys.INFO, TelemetryKeys.BLOCK_ADS);
             final SpannableString dialogMessage = new SpannableString(getString(R.string.optimized_block_ads_description));
             Linkify.addLinks(dialogMessage, Linkify.ALL);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -84,5 +92,11 @@ public class AdBlockSettings extends BaseSettingsFragment {
             ((TextView)dialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         }
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_ADS, System.currentTimeMillis() - startTime);
     }
 }

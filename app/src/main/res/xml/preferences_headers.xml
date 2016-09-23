@@ -23,6 +23,9 @@
         android:title="@string/settings_about"
         android:summary="@string/settings_about_explain" />
     <header
+        android:title="@string/rate_us"
+        android:id="@+id/rate_us"/>
+    <header
         android:title="@string/imprint"
         android:id="@+id/imprint" />
     <header

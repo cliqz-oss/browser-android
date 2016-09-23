@@ -1,8 +1,8 @@
 package com.cliqz.browser.app;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +14,8 @@ import com.cliqz.browser.di.modules.AppModule;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.squareup.leakcanary.LeakCanary;
 
+import java.lang.reflect.Method;
+
 public class BrowserApp extends Application {
 
     private static Context sContext;
@@ -23,9 +25,26 @@ public class BrowserApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        installMultidex();
+
         LeakCanary.install(this);
         LookbackWrapper.init(this);
         buildDepencyGraph();
+    }
+
+    private void installMultidex() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return; // Nothing to do, multidex is supported natively by ART
+        }
+
+        try {
+            Class clazz = Class.forName("android.support.multidex.MultiDex");
+            Method method = clazz.getMethod("install", Context.class);
+            method.invoke(null, this);
+        } catch (Throwable e) {
+            // We must crash here, we can not recover from not finding the support library
+            throw new RuntimeException("Can't install multidex support", e);
+        }
     }
 
     @Override

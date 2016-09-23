@@ -16,6 +16,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.TabFragment;
 import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.utils.Telemetry;
 
 /**
  * Created by Ravjit on 25/07/16.
@@ -27,12 +28,14 @@ public class TabsOverviewAdapter extends RecyclerView.Adapter<TabsOverviewAdapte
     private final Context context;
     private final int layoutResourceId;
     private final TabsManager tabsManager;
+    private final Telemetry telemetry;
 
-    public TabsOverviewAdapter(Context context, int layoutResourceId, TabsManager tabsManager) {
+    public TabsOverviewAdapter(Context context, int layoutResourceId, TabsManager tabsManager, Telemetry telemetry) {
         this.defaultFavicon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_webpage);
         this.context = context;
         this.layoutResourceId = layoutResourceId;
         this.tabsManager = tabsManager;
+        this.telemetry = telemetry;
     }
 
     @Override
@@ -49,9 +52,8 @@ public class TabsOverviewAdapter extends RecyclerView.Adapter<TabsOverviewAdapte
             @Override
             public void onClick(View v) {
                 tabsManager.showTab(position);
-                //TODO restore this
-//                telemetry.sendTabOpenSignal(position, mFragmentsList.size(),
-//                        mFragmentsList.get(position).state.isIncognito());
+                telemetry.sendTabOpenSignal(position, tabsManager.getTabCount(),
+                        tabsManager.getTab(position).state.isIncognito());
             }
         });
         TabFragment tabFragment = tabsManager.getTab(position);
@@ -60,10 +62,10 @@ public class TabsOverviewAdapter extends RecyclerView.Adapter<TabsOverviewAdapte
         if (tabFragment.state.getMode() == CliqzBrowserState.Mode.SEARCH) {
             title = tabFragment.state.getQuery();
         } else {
-            title = tabFragment.getPageTitle();
+            title = tabFragment.state.getTitle();
         }
-        holder.title.setText(title.isEmpty() ? context.getString(R.string.home) : title);
-        holder.domain.setText(url.isEmpty() ? "Topsites" : url);
+        holder.title.setText(title.isEmpty() ? context.getString(R.string.home_title) : title);
+        holder.domain.setText(url.isEmpty() ? context.getString(R.string.action_new_tab) : url);
         final Bitmap favIcon = tabFragment.getFavicon();
         holder.icon.setImageBitmap(favIcon != null ? favIcon : defaultFavicon);
         if (tabFragment.state.isIncognito()) {
