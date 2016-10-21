@@ -40,6 +40,10 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 public class Telemetry {
 
+    // This tag is only used to quick filter the telemetry stuff on the console using this command:
+    // adb logcat '*:S TELEMETRY_DEBUG'
+    private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
+
     private static final int BATCH_SIZE = 50;
     private JSONArray mSignalCache = new JSONArray();
 
@@ -492,7 +496,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.OPEN_TABS);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
             signal.put(TelemetryKeys.TARGET, TelemetryKeys.NEW_TAB);
-            signal.put(TelemetryKeys.COUNT, count);
+            signal.put(TelemetryKeys.TAB_COUNT, count);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -652,7 +656,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
             signal.put(TelemetryKeys.TARGET, TelemetryKeys.OVERVIEW);
-            signal.put(TelemetryKeys.OPEN_TABS, tabCount);
+            signal.put(TelemetryKeys.OPEN_TAB_COUNT, tabCount);
             signal.put(TelemetryKeys.IS_FORGET, isIncognito);
             signal.put(TelemetryKeys.VIEW, mode == CliqzBrowserState.Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
         } catch (JSONException e) {
@@ -669,6 +673,21 @@ public class Telemetry {
             signal.put(TelemetryKeys.TARGET, TelemetryKeys.MAIN_MENU);
             signal.put(TelemetryKeys.IS_FORGET, isIncognito);
             signal.put(TelemetryKeys.VIEW, view);
+            timings.setOverFlowMenuStartTime();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendOverflowMenuHideSignal(boolean isIncognito, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.MAIN_MENU);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.HIDE);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.SHOW_DURATION, timings.getOverFlowMenuUseTime());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -724,6 +743,19 @@ public class Telemetry {
             signal.put(TelemetryKeys.TARGET, TelemetryKeys.ATTRACK);
             signal.put(TelemetryKeys.TRACKER_COUNT, trackerCount);
             signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+            timings.setAttrackStartTime();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendAntiTrackingHideSignal() {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.ATTRACK);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.HIDE);
+            signal.put(TelemetryKeys.SHOW_DURATION, timings.getAttrackTime());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -845,6 +877,45 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
+    public void sendKeyboardSinal(boolean isShown, boolean isIncognito, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.KEYBOARD);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, isShown ? TelemetryKeys.SHOW : TelemetryKeys.HIDE);
+            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendImageDialogSignal(String target, String view) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONTEXT_MENU);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
+    public void sendLinkDialogSignal(String target) {
+        JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONTEXT_MENU);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.LINK);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        saveSignal(signal, false);
+    }
+
     /**
      * Reset counter for the internet navigation signal.
      * Currently it is reset when the user clicks on a link from the search results(cards)
@@ -869,6 +940,9 @@ public class Telemetry {
     private synchronized void saveSignal(JSONObject signal, boolean forcePush) {
         addIdentifiers(signal);
         mSignalCache.put(signal);
+        if (BuildConfig.DEBUG) {
+            Log.v(TELEMETRY_TAG, signal.toString());
+        }
         if (forcePush || mSignalCache.length() > BATCH_SIZE) {
             final JSONArray cache = mSignalCache;
             mSignalCache = new JSONArray();

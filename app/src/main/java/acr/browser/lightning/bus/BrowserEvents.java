@@ -122,8 +122,10 @@ public final class BrowserEvents {
      */
     public static class CreateWindow {
         public final Message msg;
+        public final LightningView view;
 
-        public CreateWindow(final Message msg) {
+        public CreateWindow(final LightningView view, final Message msg) {
+            this.view = view;
             this.msg = msg;
         }
     }

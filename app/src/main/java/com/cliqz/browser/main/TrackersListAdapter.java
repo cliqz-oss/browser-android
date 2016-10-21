@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -16,33 +15,29 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
 
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.utils.UrlUtils;
 
 /**
  * Created by Ravjit on 02/08/16.
  */
 public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewHolder> {
 
-    private final ArrayList<TrackerDetailsModel> trackerDetails;
+    private ArrayList<TrackerDetailsModel> trackerDetails;
     private final boolean isIncognito;
     private final Context context;
     private final PopupWindow popup;
     private final Bus bus;
     private final Telemetry telemetry;
 
-    public TrackersListAdapter(ArrayList<TrackerDetailsModel> trackerDetails, boolean isIncognito,
-                               Context context, Bus bus, PopupWindow window, Telemetry telemetry) {
-        this.trackerDetails = trackerDetails;
+    public TrackersListAdapter(boolean isIncognito, AntiTrackingDialog dialog) {
+        this.trackerDetails = new ArrayList<>();
         this.isIncognito = isIncognito;
-        this.context = context;
-        this.bus = bus;
-        this.popup = window;
-        this.telemetry = telemetry;
+        this.context = dialog.activity;
+        this.bus = dialog.bus;
+        this.popup = dialog;
+        this.telemetry = dialog.telemetry;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final int textColor = isIncognito ? R.color.normal_tab_primary_color : R.color.incognito_tab_primary_color;
         final TrackerDetailsModel details = trackerDetails.get(position);
         holder.trackerName.setText(details.companyName);
@@ -64,6 +59,7 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
         holder.infoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final int position = holder.getAdapterPosition();
                 telemetry.sendAntiTrackingInfoSignal(position);
                 popup.dismiss();
                 final String companyName = details.companyName.replaceAll("\\s", "-");
@@ -92,5 +88,9 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
             trackerCount = (TextView) view.findViewById(R.id.tracker_count);
             infoImage = (ImageView) view.findViewById(R.id.info);
         }
+    }
+    public void updateList(ArrayList<TrackerDetailsModel> trackerDetails) {
+        this.trackerDetails = trackerDetails;
+        notifyDataSetChanged();
     }
 }

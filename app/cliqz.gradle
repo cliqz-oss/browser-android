@@ -1,5 +1,18 @@
+import com.cliqz.minibloomfilter.BloomFilter
+
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://jitpack.io'
+        }
+    }
+    dependencies {
+        classpath 'com.github.cliqz-oss:minibloomfilter:1.0'
+    }
+}
 
 def props = project.properties.withDefault { "" }
 
@@ -27,25 +40,19 @@ def extPath = file('../external/extension')
 def downloadFile = new File(extPath, '.download')
 def extZip = new File(extPath, 'extension_latest.zip')
 
-task downloadExtension {
-    onlyIf {
-        downloadFile.exists() && !extZip.exists()
+def createBloomFilter(File outputDir) {
+    def blackList = new File('app/blacklist.txt')
+    def lineCount = 0;
+    blackList.eachLine { line ->
+        lineCount++;
     }
-    doLast {
-    def url = 'https://s3.amazonaws.com/cdn.cliqz.com/mobile/extension_stable/extension_latest.zip'
-    def f = extZip.newOutputStream()
-    f << new URL(url).openStream()
-    f.close()
+    def bloomFilter = BloomFilter.create(lineCount, 0.00001)
+    blackList.eachLine { line ->
+        bloomFilter.put(line.substring(0, line.indexOf("\t")));
     }
-}
-
-task installExtension(type: Copy) {
-    onlyIf {
-        downloadFile.exists() && !file('../external/extension/build').exists();
+    new File(outputDir.absolutePath+"/bloomfilter.data").withObjectOutputStream { stream ->
+        stream.writeObject(bloomFilter)
     }
-    dependsOn downloadExtension
-    from zipTree(extZip)
-    into file(extPath)
 }
 
 def compileAdHostsList(File outputDir) {
@@ -73,8 +80,10 @@ afterEvaluate { project ->
                 compileAdHostsList(tazk.outputDir)
             }
         }
-        if (tazk.name =~ /assemble.*/) {
-            tazk.dependsOn installExtension
+        if (tazk.name =~ /merge.*Assets/ && !tazk.name.endsWith('TestAssets')) {
+            tazk << {
+                createBloomFilter(tazk.outputDir)
+            }
         }
     }
 }

@@ -25,6 +25,8 @@ public class Timings {
     private long mUrlBarFocusedTime;
     private long mNetworkStartTime;
     private long mPageStartTime;
+    private long mOverFlowMenuStartTime;
+    private long mAttrackStartTime;
 
     /**
      * Set the start time when the app is foreground
@@ -82,6 +84,13 @@ public class Timings {
         mUrlBarFocusedTime = getCurrentTime();
     }
 
+    public void setOverFlowMenuStartTime() {
+        mOverFlowMenuStartTime = getCurrentTime();
+    }
+
+    public void setAttrackStartTime() {
+        mAttrackStartTime = getCurrentTime();
+    }
     /**
      * @return the time for which the app was in foreground
      */
@@ -134,4 +143,11 @@ public class Timings {
         return mAppStopTime;
     }
 
+    public long getOverFlowMenuUseTime() {
+        return getCurrentTime() - mOverFlowMenuStartTime;
+    }
+
+    public long getAttrackTime() {
+        return getCurrentTime() - mAttrackStartTime;
+    }
 }

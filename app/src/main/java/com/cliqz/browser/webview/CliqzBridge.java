@@ -21,7 +21,8 @@ import acr.browser.lightning.database.HistoryDatabase;
  * @author Stefano Pacifici
  * @date 2015/11/09
  */
-public class CliqzBridge extends Bridge {
+public class
+CliqzBridge extends Bridge {
 
     private static final String TAG = CliqzBridge.class.getSimpleName();
 
@@ -178,9 +179,16 @@ public class CliqzBridge extends Bridge {
                 }
 
                 final BrowserActionTypes action = BrowserActionTypes.fromTypeString(typePar);
-                final Intent intent = action.getIntent(webView.getContext(), dataPar);
-                if (intent != null) {
-                    webView.getContext().startActivity(intent);
+                switch (action) {
+                    case map:
+                        bridge.bus.post(new CliqzMessages.OpenLink(dataPar));
+                        break;
+                    default:
+                        final Intent intent = action.getIntent(webView.getContext(), dataPar);
+                        if (intent != null) {
+                            webView.getContext().startActivity(intent);
+                        }
+                        break;
                 }
             }
         }),

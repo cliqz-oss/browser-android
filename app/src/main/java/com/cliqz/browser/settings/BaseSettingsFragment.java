@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.ProxyUtils;
 
 /**
  * @author Stefano Pacifici
@@ -23,8 +22,9 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
     @Inject
     PreferenceManager mPreferenceManager;
 
-    @Inject
-    ProxyUtils mProxyUtils;
+    // Removed as version 1.0.2r2
+    // @Inject
+    // ProxyUtils mProxyUtils;
 
     @Inject
     HistoryDatabase mHistoryDatabase;

@@ -2,6 +2,7 @@ package com.cliqz.browser.main;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -24,6 +25,82 @@ import acr.browser.lightning.view.LightningView;
  * Created by Ravjit on 21/07/16.
  */
 public class TabsManager {
+
+    public class Builder {
+        private boolean mWasCreated = false;
+        private boolean mForgetMode = false;
+        private TabFragment mFromTab = null;
+        private String mUrl = null;
+        private String mQuery = null;
+        private Message mMessage = null;
+
+        private Builder() {};
+
+        public Builder setForgetMode(boolean value) {
+            mForgetMode = value;
+            return this;
+        }
+
+        public Builder setOriginTab(TabFragment from) {
+            mFromTab = from;
+            return this;
+        }
+
+        public Builder setUrl(String url) {
+            mUrl = url;
+            return this;
+        }
+
+        public Builder setQuery(String query) {
+            mQuery = query;
+            return this;
+        }
+
+        public Builder setMessage(Message message) {
+            mMessage = message;
+            return this;
+        }
+
+        public int create() {
+            if (mWasCreated) {
+                throw new RuntimeException("Can't use the same builder twice");
+            }
+            mWasCreated = true;
+
+            final TabFragment newTab = new TabFragment();
+            final Bundle arguments = new Bundle();
+            arguments.putBoolean(Constants.KEY_IS_INCOGNITO, mForgetMode);
+            if (mUrl != null) {
+                arguments.putString(Constants.KEY_URL, mUrl);
+            }
+            if (mQuery != null) {
+                arguments.putString(Constants.KEY_QUERY, mQuery);
+            }
+            if (mMessage != null) {
+                arguments.putParcelable(Constants.KEY_NEW_TAB_MESSAGE, mMessage);
+            }
+            newTab.setArguments(arguments);
+            final int position;
+            final int foundPosition = mFromTab != null ? mFragmentsList.indexOf(mFromTab) : -1;
+            if (foundPosition < 0 || foundPosition >= mFragmentsList.size() - 1) {
+                position = mFragmentsList.size();
+                mFragmentsList.add(newTab);
+            } else {
+                position = foundPosition + 1;
+                mFragmentsList.add(position, newTab);
+            }
+            return position;
+        }
+
+        public int show() {
+            final int position = create();
+            if (position < 0 || position >= mFragmentsList.size()) {
+                return -1;
+            }
+            showTab(position);
+            return position;
+        }
+    }
 
     private final List<TabFragment> mFragmentsList = new ArrayList<>();
     private final FragmentManager mFragmentManager;
@@ -84,37 +161,12 @@ public class TabsManager {
     }
 
     /**
-     * Create a new Tab and add it to the TabsList
-     * @param bundle Arguments for the newly created Tab
-     * @param showImmediately If true the view is switched to the newly created tab
+     * Create a new {@link Builder}
+     *
+     * @return the new {@link Builder}
      */
-    public void addNewTab(@Nullable Bundle bundle, boolean showImmediately) {
-        final TabFragment newTab = new TabFragment();
-        newTab.setArguments(bundle);
-        final String url = bundle != null ? bundle.getString(Constants.KEY_URL) : null;
-        if (url != null && !url.isEmpty()) {
-            newTab.state.setUrl(bundle.getString(Constants.KEY_URL));
-            newTab.state.setTitle(bundle.getString(Constants.KEY_URL));
-            newTab.state.setMode(CliqzBrowserState.Mode.WEBPAGE);
-        }
-        mFragmentsList.add(newTab);
-        if (showImmediately) {
-            showTab(mFragmentsList.size()-1);
-        }
-    }
-
-    public void addNewTab(boolean isIncognito, boolean showImmediately) {
-        final Bundle args = new Bundle();
-        args.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
-        addNewTab(args, showImmediately);
-    }
-
-    public void addNewTab(Bundle args) {
-        addNewTab(args, true);
-    }
-
-    public void addNewTab(boolean isIncognito) {
-        addNewTab(isIncognito, true);
+    public Builder buildTab() {
+        return new Builder();
     }
 
     /**
@@ -128,22 +180,30 @@ public class TabsManager {
      * @param view a {@link LightningView} associate with the tab we want to close
      */
     public synchronized void closeTab(LightningView view) {
-        int position = -1;
+        int position = findTabFor(view);
         final int currentTab = getCurrentTabPosition();
-        for (int i = 0; i < mFragmentsList.size(); i++) {
-            final TabFragment tab = mFragmentsList.get(i);
-            if (tab != null && tab.mLightningView == view) {
-                position = i;
-                break;
-            }
-        }
-
         if (position > -1) {
             deleteTab(position);
             if (currentTab == position) {
                 showTab(getCurrentTabPosition());
             }
         }
+    }
+
+    /**
+     * Given a {@link LightningView} try to find it between the fragments list and return the index
+     *
+     * @param view the {@link LightningView} the user wants to search for
+     * @return the Tab index if we found a tab, -1 otherwise
+     */
+    public int findTabFor(LightningView view) {
+        for (int i = 0; i < mFragmentsList.size(); i++) {
+            final TabFragment tab = mFragmentsList.get(i);
+            if (tab != null && tab.mLightningView == view) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -165,11 +225,10 @@ public class TabsManager {
         }
         if (mFragmentsList.size() == 0) {
             currentVisibleTab = 0;
-            addNewTab(false, false);
-        } else if (currentVisibleTab == mFragmentsList.size()) {
+            buildTab().show();
+        } else {
             currentVisibleTab-=1;
         }
-        Log.d(Constants.TAG, "deleted tab");
     }
 
 

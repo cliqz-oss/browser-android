@@ -46,11 +46,11 @@ public class TabsOverviewAdapter extends RecyclerView.Adapter<TabsOverviewAdapte
     }
 
     @Override
-    public void onBindViewHolder(TabViewHolder holder, final int position) {
-        holder.layout.setTag(position);
+    public void onBindViewHolder(final TabViewHolder holder, int position) {
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final int position = holder.getAdapterPosition();
                 tabsManager.showTab(position);
                 telemetry.sendTabOpenSignal(position, tabsManager.getTabCount(),
                         tabsManager.getTab(position).state.isIncognito());

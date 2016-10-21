@@ -1,0 +1,17 @@
+***************
+*** 144,151 ****
+      releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+      androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+      provided 'javax.annotation:jsr250-api:1.0'
+-     // Google Play Services
+-     compile "com.google.android.gms:play-services-gcm:9.4.0"
+  
+      // xwalk webview
+      xwalkCompile 'org.xwalk:xwalk_core_library:20.50.533.12'
+--- 144,149 ----
+      releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+      androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+      provided 'javax.annotation:jsr250-api:1.0'
+  
+      // xwalk webview
+      xwalkCompile 'org.xwalk:xwalk_core_library:20.50.533.12'

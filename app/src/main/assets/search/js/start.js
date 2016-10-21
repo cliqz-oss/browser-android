@@ -1,3 +1,10 @@
+System.config({
+  defaultJSExtensions: true,
+  bundles: {
+    'app.js': ['core/startup.js']
+  }
+});
+
 window.XPCOMUtils = {
   defineLazyModuleGetter: function(){},
   generateQI: function(){},
@@ -19,30 +26,26 @@ window.Components = {
   ID: function(){}
 };
 
-window.CLIQZ = {};
 
-System.baseURL = './';
-
-Promise.all([
-  System.import("platform/environment"),
-  System.import("core/utils"),
-  System.import("core/storage"),
-  System.import("core/templates"),
-  System.import("core/events")
-]).then(function (modules) {
-  var environment = modules[0].default;
-  var utils = modules[1].default;
-  var Storage = modules[2].default;
-  var handlebars = modules[3].default;
+System.import("core/startup").then(function (startupModule) {
+  return Promise.all([
+    System.import("platform/environment"),
+    System.import("core/utils"),
+    System.import("core/storage"),
+    System.import("core/events"),
+    startupModule
+  ])
+}).then(function (modules) {
+  var environment = modules.shift().default;
+  var utils = modules.shift().default;
+  var Storage = modules.shift().default;
+  var events = modules.shift().default;
   environment.storage = new Storage();
   window.CLIQZEnvironment = environment;
   window.CliqzUtils = utils;
-  window.CliqzHandlebars = handlebars;
-  var events = modules[4].default;
   window.CliqzEvents  = events;
   utils.initPlatform(System);
-}).then(function () {
-  return System.import("core/startup");
+  return modules.shift();
 }).then(function (startupModule) {
   return startupModule.default(window, [
     "autocomplete",

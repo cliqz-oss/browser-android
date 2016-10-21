@@ -11,8 +11,6 @@ import com.cliqz.browser.utils.Telemetry;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
-import net.i2p.android.ui.I2PAndroidHelper;
-
 import org.json.JSONObject;
 
 import javax.inject.Singleton;
@@ -20,7 +18,6 @@ import javax.inject.Singleton;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.database.PasswordDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.ProxyUtils;
 import dagger.Module;
 import dagger.Provides;
 
@@ -58,16 +55,17 @@ public class AppModule {
         return new PreferenceManager(app);
     }
 
-    @Provides
-    public I2PAndroidHelper providesI2PAndroidHelper() {
-        return new I2PAndroidHelper(app.getApplicationContext());
-    }
+    // Removed as version 1.0.2r2, the ProxyUtils class was removed after version 9bf1786
+    // @Provides
+    // public I2PAndroidHelper providesI2PAndroidHelper() {
+    //     return new I2PAndroidHelper(app.getApplicationContext());
+    // }
 
-    @Provides
-    @Singleton
-    public ProxyUtils providesProxyUtils(PreferenceManager manager, I2PAndroidHelper helper) {
-        return new ProxyUtils(manager, helper);
-    }
+    // @Provides
+    // @Singleton
+    // public ProxyUtils providesProxyUtils(PreferenceManager manager, I2PAndroidHelper helper) {
+    //     return new ProxyUtils(manager, helper);
+    // }
 
     @Provides
     public Gson providesGson() {

@@ -6,6 +6,7 @@ import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.webview.CliqzBridge;
 
 import dagger.Module;
@@ -43,5 +44,11 @@ public class MainActivityModule {
     @Provides
     public OnBoardingHelper providesOnBoardingHelper() {
         return new OnBoardingHelper(activity);
+    }
+
+    @PerActivity
+    @Provides
+    public BloomFilterUtils providesBloomFilterUtils() {
+        return new BloomFilterUtils();
     }
 }

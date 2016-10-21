@@ -9,8 +9,8 @@ android {
     defaultConfig {
         targetSdkVersion 24
         minSdkVersion 21
-        versionCode 8
-        versionName "1.0.1"
+        versionCode 12
+        versionName "1.0.2"
 
         multiDexEnabled true
 
@@ -34,7 +34,7 @@ android {
         release {
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
-            shrinkResources true
+            shrinkResources false
             proguardFiles 'proguard-project.txt'
             buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
         }
@@ -113,8 +113,8 @@ repositories {
 
 dependencies {
     // support libraries
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
     xwalkCompile 'com.android.support:multidex:1.0.1'
     // Gson
     compile 'com.google.code.gson:gson:2.6.1'
@@ -128,9 +128,10 @@ dependencies {
     provided 'javax.annotation:jsr250-api:1.0'
     // view binding
     compile 'com.jakewharton:butterknife:7.0.1'
+    // Removed as version 1.0.2r2
     // proxy support
-    compile 'net.i2p.android:client:0.9'
-    compile 'info.guardianproject.netcipher:netcipher:1.2.+'
+    // compile 'net.i2p.android:client:0.9'
+    // compile 'info.guardianproject.netcipher:netcipher:1.2.+'
     // Anti-tracking
     standardCompile project(':antitracking')
     lookbackCompile project(':antitracking')
@@ -143,7 +144,8 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    provided 'javax.annotation:jsr250-api:1.0'
+    // Google Play Services
+    compile "com.google.android.gms:play-services-gcm:9.4.0"
 
     // xwalk webview
     xwalkCompile 'org.xwalk:xwalk_core_library:20.50.533.12'
@@ -157,12 +159,15 @@ dependencies {
     lookbackCompile 'com.squareup.okhttp:okhttp:2.6.0'
     lookbackCompile 'com.squareup.retrofit:retrofit:1.9.0'
 
+    // MiniBloomFilter
+    compile 'com.github.cliqz-oss:minibloomfilter:1.0'
+
     // Testing-only dependencies
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
     // Forcing version
-    androidTestCompile 'com.android.support:support-annotations:24.2.0'
+    androidTestCompile 'com.android.support:support-annotations:24.2.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'

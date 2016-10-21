@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -39,6 +40,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
+import acr.browser.lightning.preference.PreferenceManager;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -60,13 +62,15 @@ public class OverFlowMenu extends FrameLayout {
         ACTIONS(-1, -1),
         NEW_TAB(R.id.new_tab_menu_button, R.string.action_new_tab),
         NEW_INCOGNITO_TAB(R.id.new_incognito_tab_menu_button, R.string.action_incognito),
-        COPY_LINK(R.id.copy_link_menu_button, R.string.action_copy),
+        // Removed on version 1.0.2r2, restore if needed
+        // COPY_LINK(R.id.copy_link_menu_button, R.string.action_copy),
         ADD_TO_FAVOURITES(R.id.add_to_favourites_menu_button, R.string.add_to_favourites),
         SEARCH_IN_PAGE(R.id.search_on_page_menu_button, R.string.action_search_on_page),
         SETTINGS(R.id.settings_menu_button, R.string.settings),
-        CONTACT_CLIQZ(R.id.contact_cliqz_menu_button, R.string.contact_cliqz),
-        SAVE_LINK(R.id.save_link_menu_button, R.string.save_link),
+        // Removed on version 1.0.2r2, restore if needed
+        // SAVE_LINK(R.id.save_link_menu_button, R.string.save_link),
         DOWNLOAD_YOUTUBE_VIDEO(R.id.download_youtube_video_menu_button, R.string.make_video_available_offline),
+        REQUEST_DESKTOP_SITE(R.id.request_desktop_site, R.string.request_desktop_site),
         QUIT(R.id.quit_menu_button, R.string.exit);
 
         final int stringID;
@@ -82,13 +86,14 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
-            Entries.COPY_LINK,
-            Entries.SAVE_LINK,
+            // Removed on version 1.0.2r2, restore if needed
+            // Entries.COPY_LINK,
+            //Entries.SAVE_LINK,
             Entries.DOWNLOAD_YOUTUBE_VIDEO,
             Entries.SEARCH_IN_PAGE,
             Entries.ADD_TO_FAVOURITES,
             Entries.SETTINGS,
-            Entries.CONTACT_CLIQZ,
+            Entries.REQUEST_DESKTOP_SITE,
             Entries.QUIT
     };
 
@@ -96,12 +101,13 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
-            Entries.COPY_LINK,
-            Entries.SAVE_LINK,
+            // Removed on version 1.0.2r2, restore if needed
+            // Entries.COPY_LINK,
+            // Entries.SAVE_LINK,
             Entries.ADD_TO_FAVOURITES,
             Entries.SEARCH_IN_PAGE,
             Entries.SETTINGS,
-            Entries.CONTACT_CLIQZ,
+            Entries.REQUEST_DESKTOP_SITE,
             Entries.QUIT
     };
 
@@ -109,6 +115,7 @@ public class OverFlowMenu extends FrameLayout {
     private final OverFlowMenuAdapter overFlowMenuAdapter;
     private boolean mCanGoForward = false;
     private boolean mIncognitoMode = false;
+    private boolean mDesktopSiteEnabled = false;
 
     private boolean mIsYoutubeVideo = false;
 
@@ -134,6 +141,9 @@ public class OverFlowMenu extends FrameLayout {
 
     @Inject
     Telemetry telemetry;
+
+    @Inject
+    PreferenceManager preferenceManager;
 
     @Bind(R.id.action_share)
     ImageView actionShareButton;
@@ -202,6 +212,13 @@ public class OverFlowMenu extends FrameLayout {
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        telemetry.sendOverflowMenuHideSignal(isIncognitoMode(),
+                state.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+    }
+
     private int measureListViewContent(int maxWidth, int maxHeight) {
         final View firstRow = overFlowMenuAdapter.getView(0, null, listView);
         final View otherRow = overFlowMenuAdapter.getView(1, null, listView);
@@ -259,6 +276,10 @@ public class OverFlowMenu extends FrameLayout {
         return mIsYoutubeVideo;
     }
 
+    public void setDesktopSiteEnabled(boolean isEnabled) {
+        mDesktopSiteEnabled = isEnabled;
+    }
+
     public void setIsYoutubeVideo(boolean value) {
         this.mIsYoutubeVideo = value;
         prepareEntries();
@@ -272,9 +293,11 @@ public class OverFlowMenu extends FrameLayout {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             entries.remove(Entries.SEARCH_IN_PAGE);
         }
-        if (mIsYoutubeVideo) {
-            entries.remove(Entries.SAVE_LINK);
-        } else {
+        // Removed on version 1.0.2r2, restore if needed
+        // if (mIsYoutubeVideo) {
+        //    entries.remove(Entries.SAVE_LINK);
+        // } else {
+        if (!mIsYoutubeVideo) {
             entries.remove(Entries.DOWNLOAD_YOUTUBE_VIDEO);
         }
         mEntries = entries.toArray(new Entries[entries.size()]);
@@ -292,12 +315,6 @@ public class OverFlowMenu extends FrameLayout {
         this.state = state;
     }
     private class OverFlowMenuAdapter extends BaseAdapter {
-
-        // private String[] menuItems;
-
-//        public OverFlowMenuAdapter() {
-//            menuItems = context.getResources().getStringArray(R.array.overflow_menu);
-//        }
 
         @Override
         public int getCount() {
@@ -338,17 +355,23 @@ public class OverFlowMenu extends FrameLayout {
         public boolean isEnabled(int position) {
             final Entries entry = mEntries[position];
             final boolean isAddToFavourites = entry == Entries.ADD_TO_FAVOURITES;
-            final boolean isCopyLink = entry == Entries.COPY_LINK;
-            final boolean isSaveLinkOrDownloadYoutube = entry == Entries.SAVE_LINK ||
-                    entry == Entries.DOWNLOAD_YOUTUBE_VIDEO;
+            // Removed on version 1.0.2r2, restore if needed
+            // final boolean isCopyLink = entry == Entries.COPY_LINK;
+            // final boolean isSaveLinkOrDownloadYoutube = entry == Entries.SAVE_LINK ||
+            //         entry == Entries.DOWNLOAD_YOUTUBE_VIDEO;
+            final boolean isDownloadYoutube = entry == Entries.DOWNLOAD_YOUTUBE_VIDEO;
             final boolean hasValidId = !mUrl.isEmpty() && mUrl != null;
             final boolean isShowingWebPage = state.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
 
-            return (!isAddToFavourites && !isCopyLink && !isSaveLinkOrDownloadYoutube && !isSearchInPage) ||
+            // Removed on version 1.0.2r2, restore if needed
+            // return (!isAddToFavourites && !isCopyLink && !isSaveLinkOrDownloadYoutube && !isSearchInPage) ||
+            return (!isAddToFavourites && !isDownloadYoutube && !isSearchInPage) ||
                     (isAddToFavourites && hasValidId && isShowingWebPage) ||
-                    (isCopyLink && isShowingWebPage) ||
-                    (isSaveLinkOrDownloadYoutube && isShowingWebPage) ||
+                    // Removed on version 1.0.2r2, restore if needed
+                    // (isCopyLink && isShowingWebPage) ||
+                    // (isSaveLinkOrDownloadYoutube && isShowingWebPage) ||
+                    (isDownloadYoutube && isShowingWebPage) ||
                     (isSearchInPage && isShowingWebPage);
         }
 
@@ -373,6 +396,8 @@ public class OverFlowMenu extends FrameLayout {
                     } else {
                         setButtonEnabled(actionForwardButton);
                     }
+                } else if (mEntries[position] == Entries.REQUEST_DESKTOP_SITE) {
+                    view = inflater.inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
                 } else {
                     view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
                 }
@@ -380,9 +405,17 @@ public class OverFlowMenu extends FrameLayout {
 
             if(mEntries[position] == Entries.ACTIONS) {
                 view.setTag(mEntries[position]);
+            } else if (mEntries[position] == Entries.REQUEST_DESKTOP_SITE) {
+                final Entries entry = mEntries[position];
+                final CheckedTextView option = getCheckedTextView(view);
+                option.setText(entry.stringID);
+                option.setChecked(mDesktopSiteEnabled);
+                view.setTag(entry);
+                view.setId(entry.id);
+                option.setTextColor(ContextCompat.getColor(context, R.color.black));
             } else {
                 final Entries entry = mEntries[position];
-                TextView option = getEntryTextView(view);
+                final TextView option = getEntryTextView(view);
                 option.setText(entry.stringID);
                 view.setTag(entry);
                 view.setId(entry.id);
@@ -400,6 +433,16 @@ public class OverFlowMenu extends FrameLayout {
                 result = (TextView) view;
             } else {
                 result = (TextView) view.findViewById(android.R.id.text1);
+            }
+            return result;
+        }
+
+        private CheckedTextView getCheckedTextView(final View view) {
+            final CheckedTextView result;
+            if (view instanceof CheckedTextView) {
+                result = (CheckedTextView) view;
+            } else {
+                result = (CheckedTextView) view.findViewById(android.R.id.text1);
             }
             return result;
         }
@@ -444,22 +487,23 @@ public class OverFlowMenu extends FrameLayout {
             final Entries tag = (Entries)view.getTag();
             Log.e(TAG, "Entry id: " + tag.id);
             switch (tag) {
-                case COPY_LINK:
+                // Removed on version 1.0.2r2, restore if needed
+                /* case COPY_LINK:
                     telemetry.sendMainMenuSignal(TelemetryKeys.COPY_LINK, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.CopyUrl());
                     Toast.makeText(context, context.getString(R.string.message_link_copied),
                             Toast.LENGTH_SHORT).show();
                     break;
+                case SAVE_LINK:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.SAVE_LINK, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                    bus.post(new Messages.SaveLink());
+                    break; */
                 case SETTINGS:
                     telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.GoToSettings());
-                    break;
-                case CONTACT_CLIQZ:
-                    telemetry.sendMainMenuSignal(TelemetryKeys.CONTACT_US, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
-                    bus.post(new Messages.ContactCliqz());
                     break;
                 case NEW_INCOGNITO_TAB:
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, isIncognitoMode(),
@@ -483,14 +527,13 @@ public class OverFlowMenu extends FrameLayout {
                     Toast.makeText(context, context.getString(R.string.added_to_favorites),
                             Toast.LENGTH_SHORT).show();
                     break;
-                case SAVE_LINK:
-                    telemetry.sendMainMenuSignal(TelemetryKeys.SAVE_LINK, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
-                    bus.post(new Messages.SaveLink());
-                    break;
                 case DOWNLOAD_YOUTUBE_VIDEO:
                     telemetry.sendVideoDownloadSignal(mIncognitoMode);
                     bus.post(new Messages.DownloadYoutubeVideo("download_page"));
+                    break;
+                case REQUEST_DESKTOP_SITE:
+                    mDesktopSiteEnabled = !mDesktopSiteEnabled;
+                    bus.post(new Messages.ChangeUserAgent(mDesktopSiteEnabled));
                     break;
                 case QUIT:
                     telemetry.sendMainMenuSignal(TelemetryKeys.QUIT, isIncognitoMode(),
@@ -527,25 +570,4 @@ public class OverFlowMenu extends FrameLayout {
         bus.post(new Messages.ShareLink());
         this.dismiss();
     }
-
-    /* @Override
-    public void show() {
-        super.show();
-        ViewParent v = this.getListView();
-        while (v != null) {
-            Log.e(TAG, dump(v));
-            v = v.getParent();
-        }
-    }
-
-    private static String dump(ViewParent viewParent) {
-        int id = -1;
-        try {
-            id = ((View) viewParent).getId();
-        } catch (ClassCastException e) {
-
-        }
-
-        return String.format("%s (%d) [%d]", viewParent.getClass().getCanonicalName(), id, viewParent.hashCode());
-    } */
 }

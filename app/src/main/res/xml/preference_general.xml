@@ -13,14 +13,17 @@
            <!--android:defaultValue="false"-->
            <!--android:key="cb_ads"-->
            <!--android:title="@string/block_ads" />-->
-    <CheckBoxPreference
+    <!--<CheckBoxPreference
         android:defaultValue="false"
         android:key="cb_images"
-        android:title="@string/block"/>
+        android:title="@string/block"/>-->
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="cb_adult_content"
         android:title="@string/block_adult_content"/>
+    <CheckBoxPreference
+        android:key="cb_autocompletion"
+        android:title="@string/autocompletion_enabled" />
     <Preference
         android:key="search"
         android:title="@string/complementary_search_engine"/>

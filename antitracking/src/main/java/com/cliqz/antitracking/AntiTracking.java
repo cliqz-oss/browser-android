@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 /**
  * Created by sammacbeth on 18/05/16.
@@ -50,7 +51,23 @@ public class AntiTracking {
     private final static String ADBLOCK_PREF_NAME = "cliqz-adb";
     private final static boolean ADBLOCK_ABTEST_DEFAULT = true;
     private final static int ADBLOCK_PREF_DEFAULT = 1;
-    
+
+    private static final Pattern RE_JS = Pattern.compile("\\.js($|\\|?)",   Pattern.CASE_INSENSITIVE);
+    private static final Pattern RE_CSS = Pattern.compile("\\.css($|\\|?)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RE_IMAGE = Pattern.compile("\\.(?:gif|png|jpe?g|bmp|ico)($|\\|?)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RE_FONT = Pattern.compile("\\.(?:ttf|woff)($|\\|?)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RE_HTML = Pattern.compile("\\.html?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern RE_JSON = Pattern.compile("\\.json($|\\|?)",   Pattern.CASE_INSENSITIVE);
+
+    private static final int NUM_OTHER = 1;
+    private static final int NUM_SCRIPT = 2;
+    private static final int NUM_IMAGE = 3;
+    private static final int NUM_STYLESHEET = 4;
+    private static final int NUM_DOCUMENT = 6;
+    private static final int NUM_SUBDOCUMENT = 7;
+    private static final int NUM_XMLHTTPREQUEST = 11;
+    private static final int NUM_FONT = 14;
+
     private boolean mEnabled;
     private boolean mAdblockEnabled = true;
 
@@ -104,15 +121,12 @@ public class AntiTracking {
                             Pair<Uri, WeakReference<WebView>> tuple = tabs.get(windowId);
                             // if the webview has been garbage collected, the WeakReference.get method
                             // will return null
-                            if (tuple != null && tuple.second.get() != null) {
-                                return true;
-                            }
-                            return false;
+                            return tuple != null && tuple.second.get() != null;
                         }
                     }, "_nativeIsWindowActive");
 
                     // load config file
-                    InputStream stream = null;
+                    InputStream stream;
                     try {
                         stream = context.getAssets().open("v8/config/cliqz.json");
                         BufferedReader srcReader = new BufferedReader(new InputStreamReader(stream));
@@ -128,7 +142,7 @@ public class AntiTracking {
                     }
 
                     // create legacy CliqzUtils global
-                    runtime.executeVoidScript("var CliqzUtils = {}; System.import(\"core/utils\").then(function(mod) { CliqzUtils = mod.default; });");
+                    runtime.executeVoidScript("var CliqzUtils = {}; System.import(\"core/utils\").then(function(mod) { CliqzUtils = mod.default; }).catch(function(e) { logDebug(e, 'xxx') });");
 
                     // pref config
                     setPref(runtime, "antiTrackTest", support.isAntiTrackTestEnabled());
@@ -217,7 +231,7 @@ public class AntiTracking {
         // save urls for tab - no action for main document requests
         if ( isMainDocument ) {
             final int tabId = view.hashCode();
-            tabs.put(tabId, Pair.create(requestUrl, new WeakReference<WebView>(view)));
+            tabs.put(tabId, Pair.create(requestUrl, new WeakReference<>(view)));
 
             // clean up dead tabs
             for (Iterator<Map.Entry<Integer, Pair<Uri, WeakReference<WebView>>>> it = tabs.entrySet().iterator(); it.hasNext();) {
@@ -249,12 +263,23 @@ public class AntiTracking {
                     requestInfo.add("isPrivate", false);
                     requestInfo.add("originUrl", isMainDocument ? requestUrl.toString() : tabs.get(view.hashCode()).first.toString());
 
-                    // simple content type detection
-                    int contentPolicyType = 11; // default is XMLHttpRequest
+                    final String headersAccept = request.getRequestHeaders().get("Accept");
+
+                    final int contentPolicyType;
                     if (isMainDocument) {
-                        contentPolicyType = 6;
-                    } else if (requestUrl.toString().endsWith(".js")) {
-                        contentPolicyType = 2;
+                        contentPolicyType = NUM_DOCUMENT;
+                    } else if (headersAccept != null) {
+                        if (headersAccept.contains("text/css")) {
+                            contentPolicyType = NUM_STYLESHEET;
+                        } else if (headersAccept.contains("image/*") || headersAccept.contains("image/webp")) {
+                            contentPolicyType = NUM_IMAGE;
+                        } else if (headersAccept.contains("text/html")) {
+                            contentPolicyType = NUM_SUBDOCUMENT;
+                        } else {
+                            contentPolicyType = guessContentPolicyTypeFromUrl(requestUrl.toString());
+                        }
+                    } else {
+                        contentPolicyType = guessContentPolicyTypeFromUrl(requestUrl.toString());
                     }
 
                     requestInfo.add("type", contentPolicyType);
@@ -330,13 +355,31 @@ public class AntiTracking {
         return null;
     }
 
+    private static int guessContentPolicyTypeFromUrl(final String url) {
+        if (RE_JSON.matcher(url).find()) {
+            return NUM_OTHER;
+        } else if (RE_JS.matcher(url).find()) {
+            return NUM_SCRIPT;
+        } else if (RE_CSS.matcher(url).find()) {
+            return NUM_STYLESHEET;
+        } else if (RE_IMAGE.matcher(url).find()) {
+            return NUM_IMAGE;
+        } else if (RE_FONT.matcher(url).find()) {
+            return NUM_FONT;
+        } else if (RE_HTML.matcher(url).find()) {
+            return NUM_SUBDOCUMENT;
+        } else {
+            return NUM_XMLHTTPREQUEST;
+        }
+    }
+
     public WebResourceResponse shouldInterceptRequest(final WebView view, Uri url) {
         // from old API level
         return null;
     }
 
-    WebResourceResponse modifyRequest(WebResourceRequest request, String newUrlString, Map<String, String> modifyHeaders) {
-        HttpURLConnection connection = null;
+    private WebResourceResponse modifyRequest(WebResourceRequest request, String newUrlString, Map<String, String> modifyHeaders) {
+        HttpURLConnection connection;
         try {
             URL newUrl = new URL(newUrlString);
             connection = (HttpURLConnection) newUrl.openConnection();
@@ -373,7 +416,7 @@ public class AntiTracking {
         }
     }
 
-    WebResourceResponse blockRequest() {
+    private WebResourceResponse blockRequest() {
         return new WebResourceResponse("text/html", "UTF-8", StreamUtils.createEmptyStream());
     }
 

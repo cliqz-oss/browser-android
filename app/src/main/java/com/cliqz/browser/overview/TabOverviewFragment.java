@@ -53,7 +53,7 @@ public class TabOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 telemetry.sendNewTabSignal(tabsManager.getTabCount()+1);
-                tabsManager.addNewTab(null);
+                tabsManager.buildTab().show();
             }
         });
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

@@ -57,8 +57,6 @@ public final class Messages {
 
     public static class ShareLink {}
 
-    public static class ContactCliqz {}
-
     public static class CopyUrl {}
 
     public static class GoForward {}
@@ -150,5 +148,26 @@ public final class Messages {
         public UpdateTabCounter(int count) {
             this.count = count;
         }
+    }
+
+    /**
+     * Change the user agent of the webview
+     */
+    public static class ChangeUserAgent {
+        public final boolean isDesktopSiteEnabled;
+
+        /**
+         * Change the user agent of the webview
+         * @param isDesktopSiteEnabled true if the useragent is of desktop, false if it is mobile useragent
+         */
+        public ChangeUserAgent(boolean isDesktopSiteEnabled) {
+            this.isDesktopSiteEnabled = isDesktopSiteEnabled;
+        }
+    }
+
+    public static class SwitchToForget {
+    }
+
+    public static class SwitchToNormalTab {
     }
 }

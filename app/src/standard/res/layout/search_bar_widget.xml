@@ -15,7 +15,9 @@
 
         <com.cliqz.browser.widget.AutocompleteEditText
             android:id="@+id/search_edit_text"
-            style="@style/editTextNormal"
+            android:background="#ffffff"
+            android:textColor="#333333"
+            android:textSize="15sp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:drawableRight="@drawable/ic_action_delete"
@@ -35,7 +37,9 @@
 
         <TextView
             android:id="@+id/title_bar"
-            style="@style/editTextNormal"
+            android:background="#ffffff"
+            android:textColor="#333333"
+            android:textSize="15sp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:drawableRight="@drawable/ic_action_delete"

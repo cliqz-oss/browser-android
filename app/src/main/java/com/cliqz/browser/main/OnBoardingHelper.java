@@ -83,7 +83,7 @@ public class OnBoardingHelper {
     }
 
     public boolean isOnboardingCompleted() {
-        return manager.getBoolean(Names.SHOULD_SHOW_ONBOARDING.preferenceName, true);
+        return !manager.getBoolean(Names.SHOULD_SHOW_ONBOARDING.preferenceName, true);
     }
 
     public boolean conditionallyShowOnBoarding(final Callable<Void> callback) {

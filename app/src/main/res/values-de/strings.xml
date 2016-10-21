@@ -250,7 +250,7 @@
     <string name="deleting_in_progress_message">Löschen</string>
     <string name="add_to_favourites">Zu Favoriten hinzufügen</string>
     <string name="save_link">Link speichern</string>
-    <string name="news_notification">Schlagzeilen Benachrichtigungen</string>
+    <string name="news_notification">Eilmeldungen</string>
     <string name="restore_top_sites">Meist-besuchte Seiten wiederherstellen</string>
     <string name="message_restore_top_sites">Startseite zeigt wieder deine meist-besuchten Seiten</string>
     <string name="download_successful">Download erfolgreich</string>
@@ -262,7 +262,7 @@
     <string name="what_does_optimized_mean">Was bedeutet \'Faires\'?</string>
     <string name="optimized_block_ads_description">Der Werbeblocker von CLIQZ ist noch in der Entwicklung (Beta). Die Wahlmöglichkeiten der fertigen Version werden sein: Faire Werbung zulassen (Voreinstellung), jegliche Werbung blockieren, jegliche Werbung akzeptieren.\nMehr https://cliqz.com/whycliqz/adblocking</string>
     <string name="action_show_tab_manager">Tab Manager</string>
-    <string name="make_video_available_offline">Offline verfügbar machen</string>
+    <string name="make_video_available_offline">Video offline ansehen</string>
     <string name="dialog_youtube_video">Was möchten Sie mit diesem Video tun?</string>
     <string name="overview">Überblick</string>
     <string name="open_tabs">Offene Tabs</string>
@@ -283,7 +283,7 @@
     <string name="others">Andere</string>
     <string name="download_started">Download gestartet</string>
     <string name="added_to_favorites">Zu Favoriten hinzugefügt</string>
-    <string name="exit">Verlassen</string>
+    <string name="exit">Beenden</string>
     <string name="view">Zeige</string>
     <string name="tab_created">Tab erstellt</string>
     <string name="home_title" >Meist-besuchte Seiten und Nachrichten</string>
@@ -294,4 +294,5 @@
     <string name="upload_file_title">Datei hochladen</string>
     <string name="rate_us">CLIQZ Browser bewerten</string>
     <string name="autocompletion_enabled">Auto-Vervollständigung aktivieren</string>
+    <string name="request_desktop_site">Desktop-Version</string>
 </resources>

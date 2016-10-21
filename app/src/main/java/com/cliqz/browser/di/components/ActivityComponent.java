@@ -2,6 +2,7 @@ package com.cliqz.browser.di.components;
 
 import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.di.modules.MainActivityModule;
+import com.cliqz.browser.main.AntiTrackingDialog;
 import com.cliqz.browser.main.FragmentWithBus;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.OnBoardingHelper;
@@ -13,7 +14,6 @@ import com.cliqz.browser.webview.Bridge;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.squareup.otto.Bus;
 
-import acr.browser.lightning.utils.ProxyUtils;
 import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import dagger.Subcomponent;
@@ -41,7 +41,8 @@ public interface ActivityComponent {
 
     Bus getBus();
 
-    void inject(ProxyUtils proxyUtils);
+    // Removed as version 1.0.2r2
+    // void inject(ProxyUtils proxyUtils);
 
     void inject(CliqzWebView cliqzWebView);
 
@@ -50,4 +51,6 @@ public interface ActivityComponent {
     void inject(TabOverviewFragment tabOverviewFragment);
 
     void inject(OnBoardingHelper onBoardingHelper);
+
+    void inject(AntiTrackingDialog antiTrackingDialog);
 }

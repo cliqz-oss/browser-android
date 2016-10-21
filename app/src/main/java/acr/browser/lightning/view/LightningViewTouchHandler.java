@@ -49,55 +49,12 @@ class LightningViewTouchHandler {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (view == null)
-                return false;
-
-            if (!view.hasFocus()) {
-                view.requestFocus();
-            }
-            mAction = motionEvent.getAction() & MotionEvent.ACTION_MASK;
-            mY = motionEvent.getY();
-            if (mAction == MotionEvent.ACTION_DOWN) {
-                mLocation = mY;
-                mLightningViewScrollPositionY = ((WebView) view).getScrollY();
-                lightningView.clicked = true;
-            } else if (mAction == MotionEvent.ACTION_POINTER_UP && motionEvent.getPointerCount() == 2) {
-                int pointerIndex = motionEvent.getActionIndex(); //index of the finger lifted
-                int lastPointerIndex = pointerIndex ^ 1; //index of the last finger, it is always 0 or 1
-                mLocation = motionEvent.getY(lastPointerIndex); //update the current location of the finger
-            } else if (mAction == MotionEvent.ACTION_UP) {
-                final float distance = (mY - mLocation);
-                final float scrollY = view.getScrollY();
-                // Do not perform the following actions if the webview didn't scroll vertically
-                if (distance > SCROLL_UP_THRESHOLD && scrollY < SCROLL_UP_THRESHOLD &&
-                        mLightningViewScrollPositionY != scrollY) {
-                    lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
-                } else if (distance < -SCROLL_UP_THRESHOLD &&
-                        mLightningViewScrollPositionY != scrollY) {
-                    lightningView.eventBus.post(new BrowserEvents.HideToolBar());
-                }
-                mLocation = 0;
-            }
             gestureDetector.onTouchEvent(motionEvent);
             return false;
         }
     }
 
     private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            final float webViewScrollPositionY = lightningView.getWebView().getScrollY();
-
-            int power = (int) (velocityY * 100 / maxFling);
-            // Do not perform the following actions if the webview didn't scroll vertically
-            if (power < -10 && mLightningViewScrollPositionY != webViewScrollPositionY) {
-                lightningView.eventBus.post(new BrowserEvents.HideToolBar());
-            } else if (power > 15 && mLightningViewScrollPositionY != webViewScrollPositionY) {
-                lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
-            }
-            return super.onFling(e1, e2, velocityX, velocityY);
-        }
 
         /**
          * Without this, onLongPress is not called when user is zooming using

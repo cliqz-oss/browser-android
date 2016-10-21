@@ -20,7 +20,6 @@ public class BrowserApp extends Application {
 
     private static Context sContext;
     private static AppComponent sAppComponent;
-    private static Message sNewTabMessage;
 
     @Override
     public void onCreate() {
@@ -68,21 +67,6 @@ public class BrowserApp extends Application {
 
     protected AppModule createAppModule() {
         return new AppModule(this);
-    }
-
-    // TODO: This is an hack to make new tab creation to work please remove asap
-    public static void pushNewTabMessage(Message msg) {
-        sNewTabMessage = msg;
-    }
-
-    public static Message popNewTabMessage() {
-        final Message result = sNewTabMessage;
-        sNewTabMessage = null;
-        return result;
-    }
-
-    public static boolean hasNewTabMessage() {
-        return sNewTabMessage != null;
     }
 
     /**

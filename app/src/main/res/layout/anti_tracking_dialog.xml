@@ -16,9 +16,8 @@
         android:textStyle="bold" />
 
     <ImageView
-        android:layout_width="74dp"
+        android:layout_width="match_parent"
         android:layout_height="88dp"
-        android:scaleType="fitXY"
         android:layout_gravity="center"
         android:padding="10dp"
         android:src="@drawable/shield_green" />
@@ -42,36 +41,37 @@
         android:textSize="18sp" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
-
-        <TextView
-            android:id="@+id/companies_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:text="@string/antitracking_tracking_companies"
-            android:textColor="@color/black"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/counter_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="@string/antitracking_datapoints_count"
-            android:textColor="@color/black"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/anti_tracking_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/companies_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@string/antitracking_tracking_companies"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/counter_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="@string/antitracking_datapoints_count"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <View
             android:id="@+id/upperLine"
@@ -94,19 +94,19 @@
             android:layout_width="match_parent"
             android:padding="10dp"
             android:background="#333333" />
-
-        <Button
-            android:id="@+id/help"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_rectangle_bg"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/help"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:textSize="14sp" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/help"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_rectangle_bg"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/help"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:textSize="14sp" />
 </LinearLayout>

@@ -9,8 +9,10 @@ import android.os.Looper;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.support.design.widget.AppBarLayout;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,9 +30,9 @@ import com.cliqz.browser.R;
 public abstract class BaseFragment extends FragmentWithBus {
 
     protected ViewGroup mContentContainer;
-    private Toolbar mToolbar;
+    protected Toolbar mToolbar;
     private View mCustomToolbarView;
-    protected FrameLayout mStatusBar;
+    protected AppBarLayout mStatusBar;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final static int KEYBOARD_ANIMATION_DELAY = 200;
 
@@ -53,7 +55,7 @@ public abstract class BaseFragment extends FragmentWithBus {
         }
 
         final View view = localInflater.inflate(R.layout.fragment_base, container, false);
-        mStatusBar = (FrameLayout) view.findViewById(R.id.statusbar);
+        mStatusBar = (AppBarLayout) view.findViewById(R.id.statusbar);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             mStatusBar.setPadding(0, 0, 0, 0);
         }
@@ -89,6 +91,9 @@ public abstract class BaseFragment extends FragmentWithBus {
         }, KEYBOARD_ANIMATION_DELAY);
     }
 
+    protected void showToolbar() {
+        mStatusBar.setExpanded(true, true);
+    }
 
     /**
      * Should return the content view of the children (of this class) fragments

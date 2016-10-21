@@ -154,6 +154,7 @@ public final class TelemetryKeys {
     public static final String TOOLBAR = "toolbar";
     public static final String OVERVIEW = "overview";
     public static final String OPEN_TABS = "open_tabs";
+    public static final String OPEN_TAB_COUNT = "open_tab_count";
     public static final String IS_FORGET = "is_forget";
     public static final String CARDS = "cards";
     public static final String WEB = "web";
@@ -193,4 +194,8 @@ public final class TelemetryKeys {
     public static final String SHOW_COUNT = "show_count";
     public static final String ENABLE_AUTOCOMPLETE = "enable_autocomplete";
     public static final String VERSION_OS = "version_os";
+    public static final String KEYBOARD = "keyboard";
+    public static final String CONTEXT_MENU = "context_menu";
+    public static final String COPY = "copy";
+    public static final String SAVE = "save";
 }

@@ -380,7 +380,7 @@ public class PreferenceManager {
         return mPrefs.getString(Name.ARN_ENDPOINT, null);
     }
 
-    public boolean isAutocompletionEnebled() {
+    public boolean getAutocompletionEnabled() {
         return mPrefs.getBoolean(Name.AUTO_COMPLETION_ENABLED, true);
     }
 
@@ -673,4 +673,5 @@ public class PreferenceManager {
     public void setAutocompletionEnabled(boolean value) {
         putBoolean(Name.AUTO_COMPLETION_ENABLED, value);
     }
+
 }

@@ -33,6 +33,7 @@ public class AutocompleteEditText extends EditText {
     private final ArrayList<TextWatcher> mListeners = new ArrayList<>();
     private boolean mIsAutocompleting;
     private boolean mDeleting = false;
+    private final int clearIconWidth;
 
     // private AutocompleteService mAutocompleteService;
 
@@ -57,6 +58,7 @@ public class AutocompleteEditText extends EditText {
         setImeOptions(imeOptions);
         mIsAutocompleting = false;
         mIsAutocompleted = false;
+        clearIconWidth = getCompoundDrawables()[2].getIntrinsicWidth();
         BrowserApp.getAppComponent().inject(this);
     }
 

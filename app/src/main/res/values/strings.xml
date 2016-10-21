@@ -266,7 +266,7 @@
     <string name="save_link">Save Link</string>
     <string name="device_registered" translatable="false">Device Registered</string>
     <string name="error_registering" translatable="false">Error registering the device</string>
-    <string name="news_notification">News Notification</string>
+    <string name="news_notification">News Notifications</string>
     <string name="restore_top_sites">Restore most visited websites </string>
     <string name="message_restore_top_sites">Start page shows most-visited websites again</string>
     <string name="descr_search_bar" translatable="false">Search Bar</string>
@@ -282,7 +282,7 @@
     <string name="optimized_block_ads">Fair Blocking</string>
     <string name="what_does_optimized_mean">What is \'fair\'?</string>
     <string name="optimized_block_ads_description">The CLIQZ Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads.\nMore https://cliqz.com/whycliqz/adblocking</string>
-    <string name="make_video_available_offline">Make available offline</string>
+    <string name="make_video_available_offline">View video offline</string>
     <string name="dialog_youtube_video">What would you like to do with this video?</string>
     <string name="overview">Overview</string>
     <string name="open_tabs">Open Tabs</string>
@@ -312,4 +312,5 @@
     <string name="upload_file_title">Upload File Title</string>
     <string name="rate_us">Rate CLIQZ Browser</string>
     <string name="autocompletion_enabled">Enable Autocompletion</string>
+    <string name="request_desktop_site">Desktop Site</string>
 </resources>

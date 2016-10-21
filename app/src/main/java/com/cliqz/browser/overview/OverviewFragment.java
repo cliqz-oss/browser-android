@@ -74,7 +74,10 @@ public class OverviewFragment extends Fragment {
                 } else {
                     currentPage = TelemetryKeys.FAVORITES;
                 }
-                telemetry.sendPagerChangeSignal(currentPage);
+                if (telemetry != null) {
+                    // Apparently it happens that telemetry here is null
+                    telemetry.sendPagerChangeSignal(currentPage);
+                }
             }
 
             @Override
@@ -105,11 +108,11 @@ public class OverviewFragment extends Fragment {
         switch (id) {
             case R.id.action_new_tab:
                 telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, false, TelemetryKeys.OVERVIEW);
-                tabsManager.addNewTab(false);
+                tabsManager.buildTab().show();
                 return true;
             case R.id.action_new_forget_tab:
                 telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, false, TelemetryKeys.OVERVIEW);
-                tabsManager.addNewTab(true);
+                tabsManager.buildTab().setForgetMode(true).show();
                 return true;
             case R.id.action_settings:
                 telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, false, TelemetryKeys.OVERVIEW);

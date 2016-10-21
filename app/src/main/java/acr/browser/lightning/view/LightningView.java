@@ -34,11 +34,10 @@ import android.webkit.WebView;
 import com.cliqz.antitracking.AntiTracking;
 import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.TrackerDetailsModel;
-import com.cliqz.browser.main.TrackersListAdapter;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
@@ -65,9 +64,6 @@ import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
 import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.ProxyUtils;
-import acr.browser.lightning.utils.ThemeUtils;
-import acr.browser.lightning.utils.Utils;
 
 public class LightningView {
 
@@ -78,10 +74,8 @@ public class LightningView {
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
-    final boolean mIsIncognitoTab;
+    private boolean mIsIncognitoTab;
     final Activity activity;
-    private static String mHomepage;
-    private static String mDefaultUserAgent;
     private final Paint mPaint = new Paint();
     private boolean isForegroundTab;
     private boolean mInvertPage = false;
@@ -89,6 +83,7 @@ public class LightningView {
     private static final int API = android.os.Build.VERSION.SDK_INT;
     private final String mId;
     boolean clicked = false;
+    private boolean mIsAutoForgetTab;
 
     /**
      * This prevent history point creation when navigating back and forward. It's used by {@link
@@ -117,7 +112,7 @@ public class LightningView {
     PreferenceManager preferences;
 
     @Inject
-    LightningDialogBuilder bookmarksDialogBuilder;
+    LightningDialogBuilder dialogBuilder;
 
     @Inject
     AntiTracking attrack;
@@ -128,14 +123,18 @@ public class LightningView {
     @Inject
     Telemetry telemetry;
 
-    @Inject
-    ProxyUtils proxyUtils;
+    // Removed as version 1.0.2r2
+    // @Inject
+    // ProxyUtils proxyUtils;
 
     @Inject
     PasswordManager passwordManager;
 
     @Inject
     AntiPhishing antiPhishing;
+
+    @Inject
+    BloomFilterUtils bloomFilterUtils;
 
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
@@ -172,48 +171,7 @@ public class LightningView {
         mWebView.setWebViewClient(new LightningWebClient(activity, this));
         mWebView.setDownloadListener(new LightningDownloadListener(activity));
         LightningViewTouchHandler.attachTouchListener(this);
-        mDefaultUserAgent = mWebView.getSettings().getUserAgentString();
         initializeSettings(mWebView.getSettings(), activity);
-//        mUrl = "about:blank";
-//        mWebView.loadUrl(mUrl);
-    }
-
-//    public void loadHomepage() {
-//        if (mWebView == null) {
-//            return;
-//        }
-//        if (mHomepage.startsWith("about:home")) {
-//            mWebView.loadUrl(StartPage.getHomepage(activity), mRequestHeaders);
-//        } else if (mHomepage.startsWith("about:bookmarks")) {
-//            loadBookmarkpage();
-//        } else {
-//            mWebView.loadUrl(mHomepage, mRequestHeaders);
-//        }
-//    }
-
-    /**
-     * Load the HTML bookmarks page in this view
-     */
-    public void loadBookmarkpage() {
-        if (mWebView == null)
-            return;
-        Bitmap folderIcon = ThemeUtils.getThemedBitmap(activity, R.drawable.ic_folder, false);
-        FileOutputStream outputStream = null;
-        File image = new File(activity.getCacheDir(), "folder.png");
-        try {
-            outputStream = new FileOutputStream(image);
-            folderIcon.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            folderIcon.recycle();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            Utils.close(outputStream);
-        }
-        File bookmarkWebPage = new File(activity.getFilesDir(), Constants.BOOKMARKS_FILENAME);
-
-        // BrowserApp.getAppComponent().getBookmarkPage().buildBookmarkPage(null);
-        mWebView.loadUrl(Constants.FILE + bookmarkWebPage, mRequestHeaders);
-
     }
 
     /**
@@ -221,7 +179,7 @@ public class LightningView {
      *
      * @param settings the WebSettings object to use, you can pass in null
      *                 if you don't have a reference to them
-     * @param context  the context in which the WebView was created
+     * @param context  the activity in which the WebView was created
      */
     @SuppressLint("NewApi")
     public synchronized void initializePreferences(@Nullable WebSettings settings, Context context) {
@@ -231,11 +189,13 @@ public class LightningView {
             settings = mWebView.getSettings();
         }
 
-        settings.setDefaultTextEncodingName(preferences.getTextEncoding());
+        // Removed as version 1.0.2r2, restore if needed
+        // settings.setDefaultTextEncodingName(preferences.getTextEncoding());
+        settings.setDefaultTextEncodingName("UTF-8");
+
         //This should be replaced with regular preferences
         attrack.setEnabled(true);
         attrack.setAdblockEnabled(preferences.getAdBlockEnabled());
-        mHomepage = preferences.getHomepage();
         setColorMode(preferences.getRenderingMode());
 
         if (preferences.getDoNotTrackEnabled()) {
@@ -276,20 +236,22 @@ public class LightningView {
             }
         }
 
-        setUserAgent(context, preferences.getUserAgentChoice());
+        // Removed as version 1.0.2r2, restore if needed
+        // setUserAgent(context, preferences.getUserAgentChoice());
+        // settings.setUserAgentString(WebSettings.getDefaultUserAgent(activity));
 
         if (API <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             //noinspection deprecation
             settings.setSavePassword(false);
         }
-
-        if (preferences.getJavaScriptEnabled()) {
+        // Removed as version 1.0.2r2, restore if needed
+        // if (preferences.getJavaScriptEnabled()) {
             settings.setJavaScriptEnabled(true);
             settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        } else {
-            settings.setJavaScriptEnabled(false);
-            settings.setJavaScriptCanOpenWindowsAutomatically(false);
-        }
+        // } else {
+        //     settings.setJavaScriptEnabled(false);
+        //     settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        // }
 
         if (preferences.getTextReflowEnabled()) {
             settings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
@@ -306,7 +268,8 @@ public class LightningView {
             settings.setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
         }
 
-        settings.setBlockNetworkImage(preferences.getBlockImagesEnabled());
+        // This was disabled for version 1.0.2r2, please restore if needed needed
+        // settings.setBlockNetworkImage(preferences.getBlockImagesEnabled());
         if (!mIsIncognitoTab) {
             settings.setSupportMultipleWindows(preferences.getPopupsEnabled());
         } else {
@@ -400,40 +363,44 @@ public class LightningView {
     public void toggleDesktopUA(@NonNull Context context) {
         if (mWebView == null)
             return;
-        if (!mToggleDesktop)
+        if (!mToggleDesktop) {
             mWebView.getSettings().setUserAgentString(Constants.DESKTOP_USER_AGENT);
-        else
-            setUserAgent(context, preferences.getUserAgentChoice());
+        } else {
+            // Removed as version 1.0.2r2, restore if needed
+            // setUserAgent(context, preferences.getUserAgentChoice());
+            mWebView.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(context));
+        }
         mToggleDesktop = !mToggleDesktop;
     }
 
-    @SuppressLint("NewApi")
-    private void setUserAgent(Context context, int choice) {
-        if (mWebView == null) return;
-        WebSettings settings = mWebView.getSettings();
-        switch (choice) {
-            case 1:
-                if (API >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    settings.setUserAgentString(WebSettings.getDefaultUserAgent(context));
-                } else {
-                    settings.setUserAgentString(mDefaultUserAgent);
-                }
-                break;
-            case 2:
-                settings.setUserAgentString(Constants.DESKTOP_USER_AGENT);
-                break;
-            case 3:
-                settings.setUserAgentString(Constants.MOBILE_USER_AGENT);
-                break;
-            case 4:
-                String ua = preferences.getUserAgentString(mDefaultUserAgent);
-                if (ua == null || ua.isEmpty()) {
-                    ua = " ";
-                }
-                settings.setUserAgentString(ua);
-                break;
-        }
-    }
+    // Removed as version 1.0.2r2, restore if needed
+    //    @SuppressLint("NewApi")
+    //    private void setUserAgent(Context context, int choice) {
+    //        if (mWebView == null) return;
+    //        WebSettings settings = mWebView.getSettings();
+    //        switch (choice) {
+    //            case 1:
+    //                if (API >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    //                    settings.setUserAgentString(WebSettings.getDefaultUserAgent(context));
+    //                } else {
+    //                    settings.setUserAgentString(mDefaultUserAgent);
+    //                }
+    //                break;
+    //            case 2:
+    //                settings.setUserAgentString(Constants.DESKTOP_USER_AGENT);
+    //                break;
+    //            case 3:
+    //                settings.setUserAgentString(Constants.MOBILE_USER_AGENT);
+    //                break;
+    //            case 4:
+    //                String ua = preferences.getUserAgentString(mDefaultUserAgent);
+    //                if (ua == null || ua.isEmpty()) {
+    //                    ua = " ";
+    //                }
+    //                settings.setUserAgentString(ua);
+    //                break;
+    //        }
+    //    }
 
     @NonNull
     protected Map<String, String> getRequestHeaders() {
@@ -569,11 +536,11 @@ public class LightningView {
     }
 
     public synchronized void reload() {
+        // Removed as version 1.0.2r2
         // Check if configured proxy is available
-        if (!isProxyReady()) {
-            return;
-        }
-
+        // if (!isProxyReady()) {
+        //     return;
+        // }
         if (mWebView != null) {
             isHistoryItemCreationEnabled = false;
             mWebView.reload();
@@ -685,24 +652,24 @@ public class LightningView {
      */
     private void longClickPage(final String url) {
         final WebView.HitTestResult result = mWebView.getHitTestResult();
-        if (url != null) {
-            if (result != null) {
-                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    bookmarksDialogBuilder.showLongPressImageDialog(activity, url, getUserAgent());
+            if (url != null) {
+                if (result != null) {
+                    if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                    dialogBuilder.showLongPressImageDialog(url, getUserAgent());
+                    } else {
+                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
+                    }
                 } else {
-                    bookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
+                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
                 }
-            } else {
-                bookmarksDialogBuilder.showLongPressLinkDialog(activity, url, getUserAgent());
+            } else if (result != null && result.getExtra() != null) {
+                final String newUrl = result.getExtra();
+                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                dialogBuilder.showLongPressImageDialog(newUrl, getUserAgent());
+                } else {
+                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
+                }
             }
-        } else if (result != null && result.getExtra() != null) {
-            final String newUrl = result.getExtra();
-            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                bookmarksDialogBuilder.showLongPressImageDialog(activity, newUrl, getUserAgent());
-            } else {
-                bookmarksDialogBuilder.showLongPressLinkDialog(activity, newUrl, getUserAgent());
-            }
-        }
     }
 
     public boolean canGoBack() {
@@ -723,11 +690,11 @@ public class LightningView {
     }
 
     public synchronized void loadUrl(String url) {
+        // Removed as version 1.0.2r2
         // Check if configured proxy is available
-        if (!isProxyReady()) {
-            return;
-        }
-
+        // if (!isProxyReady()) {
+        //     return;
+        // }
             mWebView.loadUrl(url, mRequestHeaders);
     }
 
@@ -754,17 +721,34 @@ public class LightningView {
         return mId;
     }
 
-    boolean isProxyReady() {
-        switch (proxyUtils.getProxyState()) {
-            case I2P_NOT_RUNNING:
-                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_not_running));
-                return false;
-            case I2P_TUNNELS_NOT_READY:
-                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_tunnels_not_ready));
-                return false;
-            default:
-                return true;
-        }
+    // Removed as version 1.0.2r2
+    //    boolean isProxyReady() {
+    //        switch (proxyUtils.getProxyState()) {
+    //            case I2P_NOT_RUNNING:
+    //                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_not_running));
+    //                return false;
+    //            case I2P_TUNNELS_NOT_READY:
+    //                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_tunnels_not_ready));
+    //                return false;
+    //            default:
+    //                return true;
+    //        }
+    //    }
+
+    public boolean isIncognitoTab() {
+        return mIsIncognitoTab;
+    }
+
+    public void setIsIncognitoTab(boolean isIncognitoTab) {
+        this.mIsIncognitoTab = isIncognitoTab;
+    }
+
+    public boolean isAutoForgetTab() {
+        return mIsAutoForgetTab;
+    }
+
+    public void setIsAutoForgetTab(boolean isAutoForgetTab) {
+        this.mIsAutoForgetTab = isAutoForgetTab;
     }
 
     static class WebViewHandler extends Handler {
@@ -882,9 +866,10 @@ public class LightningView {
             return trackerDetails;
         } catch (JSONException e) {
             Log.e(TAG, "Can't parse json from antitracking module", e);
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Null webView", e);
+        }
             return trackerDetails;
         }
-    }
-
 
 }

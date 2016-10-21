@@ -26,10 +26,14 @@ import com.cliqz.browser.utils.TelemetryKeys;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 public class SettingsActivity extends ThemableSettingsActivity {
+
+    private static final String feedbackUrlEn = "https://cliqz.com/en/support";
+    private static final String feedbackUrlDe = "https://cliqz.com/de/support";
 
     @Inject
     Telemetry telemetry;
@@ -96,28 +100,13 @@ public class SettingsActivity extends ThemableSettingsActivity {
             finish();
         } else if (info.id == R.id.feedback) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
-            final Uri to = Uri.parse(String.format("mailto:%s",
-                    getString(R.string.feedback_at_cliqz_dot_com)));
-            final Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(to);
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_mail_subject));
-            intent.putExtra(Intent.EXTRA_TEXT, new StringBuilder()
-                    .append("\n")
-                    .append("Feedback für CLIQZ for Android (")
-                    .append(BuildConfig.VERSION_NAME)
-                    .append("), auf ")
-                    .append(Build.MODEL)
-                    .append(" (")
-                    .append(Build.VERSION.SDK_INT)
-                    .append(")")
-                    .toString()
-            );
-            //List of apps(package names) not to be shown in the chooser
-            final ArrayList<String> blackList = new ArrayList<>();
-            blackList.add("paypal");
-            Intent customChooserIntent = CustomChooserIntent.create(this.getPackageManager(),
-                    intent, getString(R.string.contact_cliqz), blackList);
-            startActivity(customChooserIntent);
+            final String feedbackUrl = Locale.getDefault().getLanguage().equals("de") ?
+                    feedbackUrlDe : feedbackUrlEn;
+            final Intent browserIntent = new Intent(this, MainActivity.class);
+            browserIntent.setAction(Intent.ACTION_VIEW);
+            browserIntent.setData(Uri.parse(feedbackUrl));
+            startActivity(browserIntent);
+            finish();
         } else if (info.id == R.id.rate_us) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.cliqz.browser")));
         } else {

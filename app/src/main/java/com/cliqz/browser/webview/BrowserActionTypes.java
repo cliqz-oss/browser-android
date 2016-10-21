@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.cliqz.browser.main.MainActivity;
+
 /**
  * An enumeration of action that the {@link SearchWebView} can invoke
  *
@@ -36,7 +38,10 @@ public enum BrowserActionTypes {
         @Override
         public Intent create(Context context, String data) {
             if (data != null || !data.isEmpty()) {
-                return new Intent(Intent.ACTION_VIEW, Uri.parse(data));
+                final Intent intent = new Intent(context, MainActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(data));
+                return intent;
             }
             return null;
         }

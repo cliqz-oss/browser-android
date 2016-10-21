@@ -58,7 +58,6 @@ import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.ProxyUtils;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
 
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     static final String TAB_FRAGMENT_TAG = "tab_fragment";
     private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
-    private Bundle firstTabArgs;
+    private TabsManager.Builder firstTabBuilder;
     private OverviewFragment mOverViewFragment;
     private boolean askedGPSPermission = false;
     private CustomViewHandler mCustomViewHandler;
@@ -116,8 +115,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Inject
     GCMRegistrationBroadcastReceiver gcmReceiver;
 
-    @Inject
-    ProxyUtils proxyUtils;
+    // Removed as version 1.0.2r2
+    // @Inject
+    // ProxyUtils proxyUtils;
 
     @Inject
     OnBoardingHelper onBoardingHelper;
@@ -148,20 +148,17 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         // Ignore intent if we are being recreated
         final Intent intent = savedInstanceState == null ? getIntent() : null;
         final String url;
-        final boolean message;
         final String query;
         final boolean isNotificationClicked;
         final boolean isIncognito;
         if (intent != null) {
             final Bundle bundle = intent.getExtras();
             isIncognito = bundle != null ? bundle.getBoolean(Constants.KEY_IS_INCOGNITO) : false;
-            message = BrowserApp.hasNewTabMessage();
             url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
             query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
             isNotificationClicked = bundle != null ? bundle.getBoolean(Constants.NOTIFICATION_CLICKED) : false;
         } else {
             url = null;
-            message = false;
             query = null;
             isNotificationClicked = false;
             isIncognito = false;
@@ -169,17 +166,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if(isNotificationClicked) {
             telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
         }
-        firstTabArgs = new Bundle();
-        firstTabArgs.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
+        firstTabBuilder = tabsManager.buildTab();
+        firstTabBuilder.setForgetMode(isIncognito);
         if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
             setIntent(null);
-            firstTabArgs.putString(Constants.KEY_URL, url);
-        } else if (message) {
-            setIntent(null);
-            firstTabArgs.putBoolean(Constants.KEY_NEW_TAB_MESSAGE, true);
+            firstTabBuilder.setUrl(url);
         } else if (query != null) {
             setIntent(null);
-            firstTabArgs.putString(Constants.KEY_QUERY, query);
+            firstTabBuilder.setQuery(query);
         }
 
         final boolean onBoardingShown =
@@ -216,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
-        tabsManager.addNewTab(firstTabArgs);
+        firstTabBuilder.show();
     }
 
     @Override
@@ -226,6 +220,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             bus.post(new BrowserEvents.ShowToolBar());
         }
+        // Just share the new configuration on the bus
+        bus.post(newConfig);
     }
 
     @Override
@@ -267,13 +263,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             locationCache.stop();
         }
 
-        proxyUtils.updateProxySettings(this);
+        // Removed as version 1.0.2r2
+        // proxyUtils.updateProxySettings(this);
 
         //Asks for permission if GPS is not enabled on the device.
         // Note: Will ask for permission even if location is enabled, but not using GPS
         if(!locationCache.isGPSEnabled()
                 && !preferenceManager.getNeverAskGPSPermission()
-                && preferenceManager.getOnBoardingComplete()
+                && onBoardingHelper.isOnboardingCompleted()
                 && preferenceManager.getLocationEnabled()
                 && !askedGPSPermission) {
             askedGPSPermission = true;
@@ -293,18 +290,15 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final String url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
         final String query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
         final boolean isNotificationClicked = bundle != null ? bundle.getBoolean(Constants.NOTIFICATION_CLICKED) : false;
-        final Bundle args = new Bundle();
-        args.putBoolean(Constants.KEY_IS_INCOGNITO, false);
+        final TabsManager.Builder builder = tabsManager.buildTab();
         if(url != null && Patterns.WEB_URL.matcher(url).matches()) {
-            args.putString(Constants.KEY_URL, url);
+            builder.setUrl(url);
         }
-        if (query != null) {
-            args.putString(Constants.KEY_QUERY, query);
-        }
+        builder.setQuery(query);
         if(isNotificationClicked) {
             telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
         }
-        tabsManager.addNewTab(args);
+        builder.show();
     }
 
     private void showGPSPermissionDialog() {
@@ -420,9 +414,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void createWindow(BrowserEvents.CreateWindow event) {
-        createTab(event.msg, tabsManager.getCurrentTab().state.isIncognito());
-//        // TODO: Temporary workaround, we want to open a new activity!
-//        bus.post(new CliqzMessages.OpenLink(event.url));
+        final int tabPosition = tabsManager.findTabFor(event.view);
+        final TabFragment fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
+        final TabsManager.Builder builder = tabsManager.buildTab();
+        if (fromTab != null) {
+            builder.setOriginTab(fromTab).setForgetMode(fromTab.state.isIncognito());
+        }
+        builder.setMessage(event.msg).show();
     }
 
     @Subscribe
@@ -441,20 +439,20 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     private void createTab(Message msg, boolean isIncognito) {
-        final Bundle args = new Bundle();
-        args.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
-        args.putBoolean(Constants.KEY_NEW_TAB_MESSAGE, true);
-        BrowserApp.pushNewTabMessage(msg);
-        tabsManager.addNewTab(args);
+        tabsManager.buildTab().setForgetMode(isIncognito).setMessage(msg).show();
     }
 
     private void createTab(String url, boolean isIncognito, boolean showImmediately) {
-        final Bundle args = new Bundle();
-        args.putBoolean(Constants.KEY_IS_INCOGNITO, isIncognito);
+        final TabsManager.Builder builder = tabsManager.buildTab();
+        builder.setForgetMode(isIncognito);
         if(url != null && Patterns.WEB_URL.matcher(url).matches()) {
-            args.putString(Constants.KEY_URL, url);
+            builder.setUrl(url);
         }
-        tabsManager.addNewTab(args, showImmediately);
+        if (showImmediately) {
+            builder.show();
+        } else {
+            builder.create();
+        }
     }
 
     @Subscribe
@@ -498,6 +496,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
         final String query = event.query;
+        tabsManager.getCurrentTab().state.setQuery(event.query);
         if (event.query != null) {
             fm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                 @Override
@@ -531,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             tabsManager.deleteTab(tabsManager.getCurrentTabPosition());
             final int currentPos = tabsManager.getCurrentTabPosition();
             if (currentPos != -1) {
-                tabsManager.showTab(tabsManager.getCurrentTabPosition());
+                tabsManager.showTab(currentPos);
             }
         } else {
             finish();
@@ -540,7 +539,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void quit(Messages.Quit event) {
-        finish();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAndRemoveTask();
+        } else {
+            finish();
+        }
     }
 
     // returns screen that is visible

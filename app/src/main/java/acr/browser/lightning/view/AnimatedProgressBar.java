@@ -52,7 +52,7 @@ public class AnimatedProgressBar extends LinearLayout {
     /**
      * Initialize the AnimatedProgressBar
      *
-     * @param context is the context passed by the constructor
+     * @param context is the activity passed by the constructor
      * @param attrs   is the attribute set passed by the constructor
      */
     private void init(final Context context, AttributeSet attrs) {

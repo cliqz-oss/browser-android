@@ -117,7 +117,7 @@ class LightningChromeClient extends WebChromeClient {
         eventBus.post(new BrowserEvents.TabsChanged());
         if (url != null
                 && !url.startsWith("cliqz://")
-                && !lightningView.mIsIncognitoTab
+                && !lightningView.isIncognitoTab()
                 && !url.equals(mLastUrl)) {
             lightningView.addItemToHistory(title, url);
             mLastUrl = url;
@@ -176,7 +176,7 @@ class LightningChromeClient extends WebChromeClient {
     @Override
     public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture,
                                   Message resultMsg) {
-        eventBus.post(new BrowserEvents.CreateWindow(resultMsg));
+        eventBus.post(new BrowserEvents.CreateWindow(lightningView, resultMsg));
         return true;
     }
 

@@ -6,9 +6,9 @@ System.register("platform/platform", [], function (_export) {
     execute: function () {
       _export("default", {
         isMobile: true,
-        isFirefox: false
+        isFirefox: false,
+        platformName: "mobile"
       });
     }
   };
 });
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBsYXRmb3JtLmVzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozt5QkFBZTtBQUNiLGdCQUFRLEVBQUUsSUFBSTtBQUNkLGlCQUFTLEVBQUUsS0FBSztPQUNqQiIsImZpbGUiOiJwbGF0Zm9ybS5lcyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBkZWZhdWx0IHtcbiAgaXNNb2JpbGU6IHRydWUsXG4gIGlzRmlyZWZveDogZmFsc2UsXG59O1xuIl19

@@ -21,7 +21,7 @@ public final class Constants {
     public static final boolean FULL_VERSION = BuildConfig.FULL_VERSION;
 
     public static final String DESKTOP_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36";
-    public static final String MOBILE_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 4.4; en-us; Nexus 4 Build/JOP24G) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
+    public static final String MOBILE_USER_AGENT = "Mozilla/5.0 (Linux; Android 6.0.1; SM-G920V Build/MMB29K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.36";
     public static final String YAHOO_SEARCH = "https://search.yahoo.com/search?p=";
     public static final String GOOGLE_SEARCH = "https://www.google.com/search?client=com.cliqz.browser&ie=UTF-8&oe=UTF-8&q=";
     public static final String BING_SEARCH = "https://www.bing.com/search?q=";

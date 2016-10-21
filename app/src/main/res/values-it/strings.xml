@@ -266,7 +266,7 @@
     <string name="what_does_optimized_mean">Cosa significa \'non inopportune\'?</string>
     <string name="optimized_block_ads_description">La funzione anti-pubblicità di CLIQZ è ancora in fase Beta. La versione definitiva permetterà all’utente di scegliere fra le seguenti opzioni: consenti le pubblicità non inopportune, blocca tutta la pubblicità, consenti tutta la pubblicità.\nPer saperne di più: https://cliqz.com/whycliqz/adblocking</string>
     <string name="action_show_tab_manager">Tab Manager</string>
-    <string name="make_video_available_offline">Rendi disponibile offline</string>
+    <string name="make_video_available_offline">Guarda il video offline</string>
     <string name="dialog_youtube_video">Che cosa vorresti fare con questo video?</string>
     <string name="close_in_page_search">Chiudi ricerca nella pagina</string>
     <string name="in_page_search_next_result">Prossimo risultato nella pagina</string>
@@ -299,4 +299,5 @@
     <string name="upload_file_title">Carica file</string>
     <string name="rate_us">Valuta CLIQZ Browser</string>
     <string name="autocompletion_enabled">Abilita l\'autocompletamento</string>
+    <string name="request_desktop_site">Modalità Desktop</string>
 </resources>

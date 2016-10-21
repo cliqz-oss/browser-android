@@ -5,13 +5,17 @@ import android.text.TextWatcher;
 import android.view.View;
 
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
+import com.cliqz.browser.utils.TelemetryKeys;
 import com.cliqz.browser.webview.SearchWebView;
+import com.cliqz.browser.widget.SearchBar;
+
+import acr.browser.lightning.view.TrampolineConstants;
 
 /**
  * @author Stefano Pacifici
  * @date 2015/11/24
  */
-class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
+class TabFragmentListener implements SearchBar.Listener {
     private final TabFragment fragment;
     private int queryLength;
 
@@ -21,8 +25,7 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
 
     private TabFragmentListener(TabFragment fragment) {
         this.fragment = fragment;
-        fragment.mAutocompleteEditText.setOnFocusChangeListener(this);
-        fragment.mAutocompleteEditText.addTextChangedListener(this);
+        fragment.searchBar.setListener(this);
     }
 
     @Override
@@ -33,9 +36,6 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
             fragment.hideKeyboard();
             if(mode == Mode.WEBPAGE) {
                 fragment.searchBar.showTitleBar();
-                if (fragment.antiTrackingDetails != null) {
-                    fragment.antiTrackingDetails.setVisibility(View.VISIBLE);
-                }
             }
         } else {
             fragment.bus.post(new Messages.AdjustPan());
@@ -56,7 +56,7 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (!fragment.mAutocompleteEditText.hasFocus()) {
+        if (!fragment.searchBar.hasFocus()) {
             return;
         }
 
@@ -68,8 +68,8 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
 
         final String q = s.toString();
         final SearchWebView searchWebView = fragment.mSearchWebView;
-        final boolean shouldSend = ((start + count) != before) ||
-                !q.equalsIgnoreCase(fragment.lastQuery);
+        final boolean shouldSend = (((start + count) != before) ||
+                !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
         if (searchWebView != null && shouldSend) {
             fragment.lastQuery = q;
             searchWebView.onQueryChanged(q);
@@ -82,4 +82,34 @@ class TabFragmentListener implements View.OnFocusChangeListener, TextWatcher {
             fragment.timings.setLastTypedTime();
         }
     }
+
+    @Override
+    public void onTitleClicked(SearchBar searchBar) {
+        final String url = fragment.mLightningView.getUrl();
+        if (url != null && url.toLowerCase().startsWith(TrampolineConstants.CLIQZ_SCHEME)) {
+            searchBar.setSearchText("");
+        } else {
+            searchBar.setSearchText(url);
+        }
+        fragment.mShowWebPageAgain = true;
+    }
+
+    @Override
+    public void onStopClicked() {
+        fragment.mLightningView.getWebView().stopLoading();
+    }
+
+    @Override
+    public void onQueryCleared(SearchBar searchBar) {
+        fragment.telemetry.sendCLearUrlBarSignal(fragment.isIncognito,
+                searchBar.getSearchText().length(),
+                fragment.state.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+    }
+
+    @Override
+    public void onKeyboardOpen() {
+        fragment.telemetry.sendKeyboardSinal(true, fragment.isIncognito,
+                fragment.state.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+    }
+
 }

@@ -33,12 +33,15 @@ import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.Messages;
 
 import java.io.ByteArrayInputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
+import com.cliqz.browser.utils.BloomFilterUtils;
 import acr.browser.lightning.utils.UrlUtils;
 
 /**
@@ -53,7 +56,6 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     private final LightningView lightningView;
     private String mLastUrl = "";
     private final AntiPhishingDialog antiPhishingDialog;
-
     LightningWebClient(Context context, LightningView lightningView) {
         this.context = context;
         this.lightningView = lightningView;
@@ -172,7 +174,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
         }
 
-        if (!lightningView.mIsIncognitoTab && lightningView.preferences.getSavePasswordsEnabled()) {
+        if (!lightningView.isIncognitoTab() && lightningView.preferences.getSavePasswordsEnabled()) {
             //Inject javascript to check for id and pass fields in the page
             lightningView.passwordManager.injectJavascript(view);
         }
@@ -182,6 +184,17 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        try {
+            final String regex = "^((w|m)[a-zA-Z0-9-]{0,}\\.)";
+            final String domain = new URL(url).getHost().replaceFirst(regex,"");
+            if (!lightningView.isIncognitoTab() && lightningView.bloomFilterUtils.contains(domain)) {
+                lightningView.eventBus.post(new Messages.SwitchToForget());
+            } else if (lightningView.isAutoForgetTab() && !lightningView.bloomFilterUtils.contains(domain)) {
+                lightningView.eventBus.post(new Messages.SwitchToNormalTab());
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         if (!mLastUrl.equals(url)) {
             lightningView.historyId = -1;
             mLastUrl = url;
@@ -364,13 +377,14 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         final Uri uri = Uri.parse(url);
         final String scheme = uri.getScheme();
+        // Removed as version 1.0.2r2
         // Check if configured proxy is available
-        if (!lightningView.isProxyReady()) {
-            // User has been notified
-            return true;
-        }
+        // if (!lightningView.isProxyReady()) {
+        //     // User has been notified
+        //     return true;
+        // }
 
-        if (lightningView.mIsIncognitoTab) {
+        if (lightningView.isIncognitoTab()) {
             return super.shouldOverrideUrlLoading(view, url);
         }
 

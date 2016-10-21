@@ -20,18 +20,20 @@ import acr.browser.lightning.constant.SearchEngines;
 
 public class GeneralSettingsFragment extends BaseSettingsFragment {
 
-    private static final String SETTINGS_IMAGES = "cb_images";
+    // private static final String SETTINGS_IMAGES = "cb_images";
     private static final String SETTINGS_SEARCHENGINE = "search";
     private static final String SETTINGS_SHOWTOUR = "onboarding";
     private static final String SETTINGS_ADULT_CONTENT = "cb_adult_content";
+    private static final String SETTINGS_AUTO_COMPLETION = "cb_autocompletion";
     private long startTime;
 
     private Activity mActivity;
 
     private static final int API = Build.VERSION.SDK_INT;
     private Preference searchengine, showTour;
-    private CheckBoxPreference cbImages;
+    // private CheckBoxPreference cbImages;
     private CheckBoxPreference cbAdultContent;
+    private CheckBoxPreference cbAutoCompletion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,13 +49,15 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     private void initPrefs() {
         searchengine = findPreference(SETTINGS_SEARCHENGINE);
         showTour = findPreference(SETTINGS_SHOWTOUR);
-        cbImages = (CheckBoxPreference) findPreference(SETTINGS_IMAGES);
+        // cbImages = (CheckBoxPreference) findPreference(SETTINGS_IMAGES);
         cbAdultContent = (CheckBoxPreference) findPreference(SETTINGS_ADULT_CONTENT);
+        cbAutoCompletion = (CheckBoxPreference) findPreference(SETTINGS_AUTO_COMPLETION);
 
         searchengine.setOnPreferenceClickListener(this);
         showTour.setOnPreferenceClickListener(this);
-        cbImages.setOnPreferenceChangeListener(this);
+        // cbImages.setOnPreferenceChangeListener(this);
         cbAdultContent.setOnPreferenceChangeListener(this);
+        cbAutoCompletion.setOnPreferenceChangeListener(this);
 
         if (API >= 19) {
             mPreferenceManager.setFlashSupport(0);
@@ -61,9 +65,10 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
 
         final boolean imagesBool = mPreferenceManager.getBlockImagesEnabled();
         final boolean adultBool = mPreferenceManager.getBlockAdultContent();
-
-        cbImages.setChecked(imagesBool);
+        final boolean autocompleteBool = mPreferenceManager.getAutocompletionEnabled();
+        // cbImages.setChecked(imagesBool);
         cbAdultContent.setChecked(adultBool);
+        cbAutoCompletion.setChecked(autocompleteBool);
     }
 
     private void searchDialog() {
@@ -145,17 +150,23 @@ public class GeneralSettingsFragment extends BaseSettingsFragment {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         // switch preferences
         switch (preference.getKey()) {
-            case SETTINGS_IMAGES:
+            /* case SETTINGS_IMAGES:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_IMAGES, TelemetryKeys.GENERAL,
                         !((Boolean) newValue));
                 mPreferenceManager.setBlockImagesEnabled((Boolean) newValue);
                 cbImages.setChecked((Boolean) newValue);
-                return true;
+                return true; */
             case SETTINGS_ADULT_CONTENT:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_EXPLICIT, TelemetryKeys.GENERAL,
                         !((Boolean) newValue));
                 mPreferenceManager.setBlockAdultContent((Boolean) newValue);
                 cbAdultContent.setChecked((Boolean) newValue);
+                return true;
+            case SETTINGS_AUTO_COMPLETION:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_AUTOCOMPLETE, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
+                mPreferenceManager.setAutocompletionEnabled((Boolean) newValue);
+                cbAutoCompletion.setChecked((Boolean) newValue);
                 return true;
             default:
                 return false;

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Debug;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.CliqzBrowserState;
@@ -13,9 +14,6 @@ import com.cliqz.browser.main.CliqzBrowserState;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Locale;
-
-import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.constant.SearchEngines;
 
 /**
@@ -150,6 +148,11 @@ public class SearchWebView extends BaseWebView {
 
     @Override
     public void bringToFront() {
+        final ViewGroup container = (ViewGroup) getParent();
+        //return if the view is already on top
+        if (container.getChildAt(container.getChildCount()-1).getId() == getId()) {
+            return;
+        }
         super.bringToFront();
         isVisible();
     }
