@@ -93,6 +93,7 @@ public class SearchWebView extends BaseWebView {
     void extensionReady() {
         super.extensionReady();
         setDefaultSearchEngine();
+        initExtensionPreferences();
         telemetry.sendStartingSignals("cards", "cold");
         // We are not sure this is called in onResume, especially if we were
         /*if (shouldShowHomePage()) {
@@ -166,12 +167,14 @@ public class SearchWebView extends BaseWebView {
         try {
             preferences.put("adultContentFilter",
                     preferenceManager.getBlockAdultContent() ? "moderate" : "liberal");
-            preferences.put("incognito", currentTabState.isIncognito() );
+            preferences.put("incognito", currentTabState != null && currentTabState.isIncognito());
+            preferences.put("backend_country", preferenceManager.getCountryChoice().countryCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         notifyEvent(ExtensionEvents.CLIQZ_EVENT_NOTIFY_PREFERENCES, preferences);
-
+        //TODO: need to discuss the problem in detail here. just a quick fix for now
+        notifyEvent(ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS);
         final boolean shouldRestoreTopSites = preferenceManager.getRestoreTopSites();
         if (shouldRestoreTopSites) {
             notifyEvent(ExtensionEvents.CLIQZ_EVENT_RESTORE_BLOCKED_TOPSITES);

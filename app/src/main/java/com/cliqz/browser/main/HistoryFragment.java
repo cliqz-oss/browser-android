@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
-import com.cliqz.browser.utils.Telemetry;
 import com.cliqz.browser.webview.FavoritesWebView;
 import com.cliqz.browser.webview.HistoryWebView;
 
@@ -55,11 +54,6 @@ public class HistoryFragment extends FragmentWithBus {
         super.onResume();
         if (mHistoryWebView != null) {
             mHistoryWebView.onResume();
-            if (!mJustCreated) {
-                //mHistoryWebView.fourceUpdateHistory();
-                mHistoryWebView.isVisible();
-            }
-            mJustCreated = false;
         }
     }
 
@@ -76,9 +70,11 @@ public class HistoryFragment extends FragmentWithBus {
         }
     }
 
-//    @Subscribe
-//    public void onNotifyQuery(CliqzMessages.NotifyQuery event) {
-//        bus.post(new Messages.GoToSearch(event.query));
-//    }
-
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mHistoryWebView != null) {
+            mHistoryWebView.isVisible();
+        }
+    }
 }

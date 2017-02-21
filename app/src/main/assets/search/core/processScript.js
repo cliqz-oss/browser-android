@@ -3,7 +3,8 @@
 /* globals addEventListener, content */
 // CLIQZ pages communication channel
 var { classes: Cc, interfaces: Ci, utils: Cu } = Components;
-
+Cu.import("resource://gre/modules/Console.jsm")
+Cu.import('resource://gre/modules/XPCOMUtils.jsm');
 Cu.import('resource://gre/modules/Services.jsm');
 
 Services.scriptloader.loadSubScript("chrome://cliqz/content/core/content-scripts.js");
@@ -15,7 +16,8 @@ if (config.modules.indexOf('adblocker') > -1) {
 }
 
 var whitelist = [
-  "chrome://cliqz/"
+  "chrome://cliqz/",
+  "resource://cliqz/"
 ].concat(config.settings.frameScriptWhitelist);
 
 /**
@@ -74,6 +76,7 @@ function getContextHTML(ev) {
 
 function onDOMWindowCreated(ev) {
   var window = ev.target.defaultView;
+
   var currentURL = function(){return window.location.href};
 
   var windowId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
@@ -131,6 +134,7 @@ function onDOMWindowCreated(ev) {
       type: "response",
       response: msg.data.response,
       action: msg.data.action,
+      module: msg.data.module,
       requestId: msg.data.requestId,
     }), "*");
   }
@@ -157,6 +161,9 @@ function onDOMWindowCreated(ev) {
   }
 
   var fns = {
+    postMessage: function (message) {
+      window.postMessage(message, "*");
+    },
     getHTML: function () {
       return window.document.documentElement.outerHTML;
     },
@@ -202,9 +209,18 @@ function onDOMWindowCreated(ev) {
       return;
     }
 
-    if ( msg.data.url !== currentURL() &&
-      // TEMP: Human web decodes the URI for internal storage
-      (msg.data.action == "getHTML" && msg.data.url !== decodeURIComponent(currentURL()))) {
+    var matchesCurrentUrl = msg.data.url === currentURL();
+   // wild card for cliqz URLS
+   if(msg.data.url.indexOf('resource://cliqz') === 0){
+     if(currentURL().indexOf(msg.data.url) === 0){
+       matchesCurrentUrl = true;
+     }
+   }
+    var isGetHTML = msg.data.action === 'getHTML';
+    // TEMP: Human web decodes the URI for internal storage
+    var isCurrentUrlBis = msg.data.url === decodeURIComponent(currentURL());
+
+    if (!matchesCurrentUrl || (isGetHTML && !isCurrentUrlBis)) {
       return;
     }
 
@@ -250,7 +266,7 @@ function onDOMWindowCreated(ev) {
     send({
       windowId: windowId,
       payload: {
-        module: "human-web",
+        module: "core",
         action: "recordMouseDown",
         args: [
           {
@@ -388,8 +404,7 @@ var DocumentManager = {
     Services.obs.removeObserver(this, "document-element-inserted");
   },
 
-  observe: function(subject, topic, data) {
-    let document = subject;
+  observe: function(document, topic, data) {
     let window = document && document.defaultView;
     if (!document || !document.location || !window) {
       return;

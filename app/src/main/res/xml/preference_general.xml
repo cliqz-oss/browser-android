@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="cb_drawertabs"
-        android:title="@string/tabs_in_drawer" /> -->
-    <!-- CheckBoxPreference
+    <CheckBoxPreference
         android:defaultValue="true"
         android:key="cb_news_notification"
-        android:title="@string/news_notification" / -->
-    <!--<CheckBoxPreference-->
-           <!--android:defaultValue="false"-->
-           <!--android:key="cb_ads"-->
-           <!--android:title="@string/block_ads" />-->
-    <!--<CheckBoxPreference
-        android:defaultValue="false"
-        android:key="cb_images"
-        android:title="@string/block"/>-->
+        android:title="@string/news_notification" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="cb_adult_content"
@@ -25,14 +12,15 @@
         android:key="cb_autocompletion"
         android:title="@string/autocompletion_enabled" />
     <Preference
+        android:key="regional_settings"
+        android:title="@string/regional_settings"/>
+    <Preference
+        android:key="download_location"
+        android:title="@string/title_download_location" />
+    <Preference
         android:key="search"
         android:title="@string/complementary_search_engine"/>
     <Preference
         android:key="onboarding"
         android:title="@string/show_onboarding_hints" />
-    <!-- <Preference
-        android:key="import_browser_bookmark"
-        android:title="@string/importbookmarks"
-        android:summary="@string/recommended" /> -->
-
 </PreferenceScreen>

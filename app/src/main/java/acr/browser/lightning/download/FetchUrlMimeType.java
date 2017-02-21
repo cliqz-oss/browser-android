@@ -35,10 +35,6 @@ import acr.browser.lightning.bus.BrowserEvents;
  */
 class FetchUrlMimeType extends Thread {
 
-    private final Activity mActivity;
-
-    private final DownloadManager.Request mRequest;
-
     private final String mUri;
 
     private final String mCookies;
@@ -47,10 +43,11 @@ class FetchUrlMimeType extends Thread {
 
     private final boolean mIsYouTubeVideo;
 
-    public FetchUrlMimeType(Activity activity, DownloadManager.Request request, String uri,
+    private final Activity mActivity;
+
+    public FetchUrlMimeType(Activity activity, String uri,
                             String cookies, String userAgent, boolean isYouTubeVideo) {
         mActivity = activity;
-        mRequest = request;
         mUri = uri;
         mCookies = cookies;
         mUserAgent = userAgent;
@@ -61,8 +58,6 @@ class FetchUrlMimeType extends Thread {
     public void run() {
         // User agent is likely to be null, though the AndroidHttpClient
         // seems ok with that.
-        final ActivityComponent component = BrowserApp.getActivityComponent(mActivity);
-        final Bus eventBus = component != null ? component.getBus() : new Bus();
         String mimeType = null;
         String contentDisposition = null;
         HttpURLConnection connection = null;
@@ -99,33 +94,26 @@ class FetchUrlMimeType extends Thread {
                 connection.disconnect();
         }
 
-        String filename = "";
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("text/plain")
                     || mimeType.equalsIgnoreCase("application/octet-stream")) {
-                String newMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                         MimeTypeMap.getFileExtensionFromUrl(mUri));
-                if (newMimeType != null) {
-                    mRequest.setMimeType(newMimeType);
-                }
             }
-            filename = URLUtil.guessFileName(mUri, contentDisposition, mimeType);
-            mRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+        }
+
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
         }
 
         // Start the download
-        DownloadManager manager = (DownloadManager) mActivity
-                .getSystemService(Context.DOWNLOAD_SERVICE);
-        final long downloadId = manager.enqueue(mRequest);
         Handler handler = new Handler(Looper.getMainLooper());
-        final String file = filename;
+        final String disposition = contentDisposition;
+        final String type = mimeType;
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if (mIsYouTubeVideo) {
-                    eventBus.post(new Messages.SaveId(downloadId));
-                }
-                eventBus.post(new BrowserEvents.ShowSnackBarMessage(mActivity.getString(R.string.download_pending) + ' ' + file));
+                DownloadHandler.onDownloadStart(mActivity, mUri, mUserAgent, disposition, type, mIsYouTubeVideo);
             }
         });
     }

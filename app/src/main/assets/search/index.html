@@ -3,19 +3,18 @@
    <head>
       <title>developer tool</title>
 
-      <link href="mobile-ui/styles/style.css" rel="stylesheet" type="text/css">
 
+      <link href="mobile-ui/styles/style.css" rel="stylesheet" type="text/css">
       <script src="bower_components/core.js/client/core.min.js"></script>
-      <script src="bower_components/mathjs/dist/math.min.js"></script>
       <script src="bower_components/handlebars/handlebars.js"></script>
-      <script src="bower_components/jquery/dist/jquery.js"></script>
-       <script src="bower_components/hammerjs/hammer.js"></script>
+      <script src="bower_components/hammerjs/hammer.js"></script>
+      <script src="bower_components/whatwg-fetch/fetch.js"></script>
       <script src="bower_components/system.js/dist/system.js"></script>
       <script src="js/libs/ios-orientationchange-fix.js"></script>
       <script>window.CLIQZ = {}</script>
       <script src="js/osAPI.js"></script>
       <script src="js/jsAPI.js"></script>
-      <script src="js/libs/viewpager.js"></script>
+      <script src="app.js"></script>
       <meta charset='utf-8'>
       <meta id="viewport-tag" name="viewport" content="height=device-height, width=device-width,minimum-scale=1.0001, user-scalable=no"/>
    </head>
@@ -27,17 +26,13 @@
       <div id="reconnecting" class="reconnecting-layer">
       </div>
 
-      <div id="incognito">This is incognito</div>
+      <div id="incognito">
+      </div>
 
       <!-- Starting Stuff -->
       <div id="startingpoint">
 
           <div id="topSites">
-          </div>
-
-          <div id="resetState" style="display:none">
-
-            <div id="resetStateContent"></div>
           </div>
 
           <div id="topNews">

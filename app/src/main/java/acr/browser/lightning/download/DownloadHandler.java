@@ -13,8 +13,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
@@ -136,30 +136,15 @@ public class DownloadHandler {
     /* package */
     private static void onDownloadStartNoStream(final Activity activity, String url, String userAgent,
                                                 String contentDisposition, String mimetype, final boolean isYouTubeVideo) {
+
+        if (mimetype == null || mimetype.isEmpty()) {
+            new FetchUrlMimeType(activity, url, contentDisposition, mimetype, isYouTubeVideo).start();
+            return;
+        }
+
         final ActivityComponent component = BrowserApp.getActivityComponent(activity);
         final Bus eventBus = component != null ? component.getBus() : new Bus();
         final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
-
-        // Check to see if we have an SDCard
-        String status = Environment.getExternalStorageState();
-        if (!status.equals(Environment.MEDIA_MOUNTED)) {
-            int title;
-            String msg;
-
-            // Check to see if the SDCard is busy, same as the music app
-            if (status.equals(Environment.MEDIA_SHARED)) {
-                msg = activity.getString(R.string.download_sdcard_busy_dlg_msg);
-                title = R.string.download_sdcard_busy_dlg_title;
-            } else {
-                msg = activity.getString(R.string.download_no_sdcard_dlg_msg);
-                title = R.string.download_no_sdcard_dlg_title;
-            }
-
-            new AlertDialog.Builder(activity).setTitle(title)
-                    .setIcon(android.R.drawable.ic_dialog_alert).setMessage(msg)
-                    .setPositiveButton(R.string.action_ok, null).show();
-            return;
-        }
 
         // java.net.URI is a lot stricter than KURL so we have to encode some
         // extra characters. Fix for b 2538060 and b 1634719
@@ -190,16 +175,16 @@ public class DownloadHandler {
         // depending on mimetype?
 
         // Removed as version 1.0.2r2, restore if needed
-        //        String location = BrowserApp.getAppComponent().getPreferenceManager().getDownloadDirectory();
-        //        Uri downloadFolder;
-        //        if (location != null) {
-        //            location = addNecessarySlashes(location);
-        //            downloadFolder = Uri.parse(location);
-        //        } else {
-        final String location = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
-        final Uri downloadFolder = Uri.parse(location);
-        //            BrowserApp.getAppComponent().getPreferenceManager().setDownloadDirectory(location);
-        //        }
+        String location = BrowserApp.getAppComponent().getPreferenceManager().getDownloadDirectory();
+        final Uri downloadFolder;
+        if (location != null) {
+            location = addNecessarySlashes(location);
+            downloadFolder = Uri.parse(location);
+        } else {
+            location = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
+            downloadFolder = Uri.parse(location);
+            BrowserApp.getAppComponent().getPreferenceManager().setDownloadDirectory(location);
+        }
 
         File dir = new File(downloadFolder.getPath());
         if (!dir.isDirectory() && !dir.mkdirs()) {
@@ -223,39 +208,33 @@ public class DownloadHandler {
         String cookies = CookieManager.getInstance().getCookie(url);
         request.addRequestHeader(COOKIE_REQUEST_HEADER, cookies);
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        if (mimetype == null) {
-            if (TextUtils.isEmpty(addressString)) {
-                return;
-            }
-            // We must have long pressed on a link or image to download it. We
-            // are not sure of the mimetype in this case, so do a head request
-            new FetchUrlMimeType(activity, request, addressString, cookies, userAgent, isYouTubeVideo).start();
-        } else {
-            final DownloadManager manager = (DownloadManager) activity
-                    .getSystemService(Context.DOWNLOAD_SERVICE);
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        final long downloadId = manager.enqueue(request);
-                        if (isYouTubeVideo) {
-                            eventBus.post(new Messages.SaveId(downloadId));
-                        }
-                    } catch (IllegalArgumentException e) {
-                        // Probably got a bad URL or something
-                        e.printStackTrace();
-                        eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.cannot_download));
-                    } catch (SecurityException e) {
-                        // TODO write a download utility that downloads files rather than rely on the system
-                        // because the system can only handle Environment.getExternal... as a path
-                        eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_location_download));
-                    }
-                }
-            }.start();
-            eventBus.post(new BrowserEvents.ShowSnackBarMessage(
-                    activity.getString(R.string.download_pending) + ' ' + filename));
-        }
 
+        final DownloadManager manager = (DownloadManager) activity
+                .getSystemService(Context.DOWNLOAD_SERVICE);
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final long downloadId = manager.enqueue(request);
+                    if (isYouTubeVideo) {
+                        eventBus.post(new Messages.SaveId(downloadId));
+                    }
+                } catch (IllegalArgumentException e) {
+                    // Probably got a bad URL or something
+                    e.printStackTrace();
+                    eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.cannot_download));
+                } catch (SecurityException e) {
+                    // TODO write a download utility that downloads files rather than rely on the system
+                    // because the system can only handle Environment.getExternal... as a path
+                    eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_location_download));
+                }
+            }
+        };
+        handler.post(runnable);
+        eventBus.post(new BrowserEvents.ShowSnackBarMessage(
+                activity.getString(R.string.download_pending) + ' ' + filename));
     }
 
     private static final String sFileName = "test";

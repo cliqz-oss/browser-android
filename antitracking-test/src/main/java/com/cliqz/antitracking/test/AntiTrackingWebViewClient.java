@@ -1,15 +1,17 @@
 package com.cliqz.antitracking.test;
 
 import android.content.Context;
-import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
-import com.cliqz.antitracking.AntiTracking;
-import com.cliqz.antitracking.AntiTrackingSupport;
+import com.cliqz.jsengine.AntiTracking;
+import com.cliqz.jsengine.Engine;
+import com.cliqz.jsengine.v8.JSApiException;
 
 import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Stefano Pacifici
@@ -19,41 +21,24 @@ public class AntiTrackingWebViewClient extends TestWebViewClient {
 
     private static final String TAG = AntiTrackingWebViewClient.class.getSimpleName();
 
+    private final Engine engine;
     private final AntiTracking antiTracking;
 
     public AntiTrackingWebViewClient(MessageQueue messageQueue, Context context) {
         super(messageQueue);
-        antiTracking = new AntiTracking(context, new AntiTrackingSupport() {
-            @Override
-            public void sendSignal(JSONObject obj) {
-                Log.i(TAG, obj.toString());
-            }
-
-            @Override
-            public boolean isAntiTrackTestEnabled() {
-                return true;
-            }
-
-            @Override
-            public boolean isForceBlockEnabled() {
-                return true;
-            }
-
-            @Override
-            public boolean isBloomFilterEnabled() {
-                return true;
-            }
-
-            @Override
-            public String getDefaultAction() {
-                return "placeholder";
-            }
-        });
-        antiTracking.setEnabled(true);
+        try {
+            engine = new Engine(context, true);
+            antiTracking = new AntiTracking(engine);
+            engine.startup(antiTracking.getDefaultPrefs());
+            antiTracking.setEnabled(true);
+            antiTracking.setForceBlockEnabled(true);
+        } catch(JSApiException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public WebResourceResponse handleRequest(WebView view, WebResourceRequest request) {
-        return antiTracking.shouldInterceptRequest(view, request);
+        return engine.webRequest.shouldInterceptRequest(view, request);
     }
 }

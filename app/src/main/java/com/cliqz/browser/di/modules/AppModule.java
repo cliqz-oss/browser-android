@@ -2,16 +2,20 @@ package com.cliqz.browser.di.modules;
 
 import android.content.Context;
 
-import com.cliqz.antitracking.AntiTracking;
-import com.cliqz.antitracking.AntiTrackingSupport;
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.jsengine.Adblocker;
+import com.cliqz.jsengine.AntiTracking;
+import com.cliqz.jsengine.Engine;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
-import org.json.JSONObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -55,18 +59,6 @@ public class AppModule {
         return new PreferenceManager(app);
     }
 
-    // Removed as version 1.0.2r2, the ProxyUtils class was removed after version 9bf1786
-    // @Provides
-    // public I2PAndroidHelper providesI2PAndroidHelper() {
-    //     return new I2PAndroidHelper(app.getApplicationContext());
-    // }
-
-    // @Provides
-    // @Singleton
-    // public ProxyUtils providesProxyUtils(PreferenceManager manager, I2PAndroidHelper helper) {
-    //     return new ProxyUtils(manager, helper);
-    // }
-
     @Provides
     public Gson providesGson() {
         return new Gson();
@@ -85,6 +77,11 @@ public class AppModule {
     }
 
     @Provides
+    public AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager, Context context) {
+        return new AwsSNSManager(preferenceManager, context);
+    }
+
+    @Provides
     @Singleton
     Bus provideBus() {
         return new Bus();
@@ -94,37 +91,38 @@ public class AppModule {
     @Singleton
     public AntiPhishing provideAntiPhishing() {
         return new AntiPhishing();
-	}
+    }
 
     @Provides
     @Singleton
-    public AntiTracking provideAntiTracking(Context context, final Telemetry telemetry) {
-        return new AntiTracking(context, new AntiTrackingSupport() {
-            @Override
-            public void sendSignal(JSONObject obj) {
-                telemetry.saveExtSignal(obj);
+    public Engine provideJSEngine(Context context, final PreferenceManager prefs) {
+        try {
+            final Engine engine = new Engine(context, false);
+            final Map<String, Object> defaultPrefs = new LinkedHashMap<>();
+            defaultPrefs.putAll(AntiTracking.getDefaultPrefs());
+            defaultPrefs.putAll(Adblocker.getDefaultPrefs(prefs.getAdBlockEnabled()));
+            if (BuildConfig.DEBUG) {
+                defaultPrefs.putAll(Engine.getDebugPrefs());
             }
+            engine.startup(defaultPrefs);
+            // force set force block pref to upgrade old profiles
+            engine.setPref("attrackForceBlock", true);
+            return engine;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            @Override
-            public boolean isAntiTrackTestEnabled() {
-                return true;
-            }
+    @Provides
+    @Singleton
+    public AntiTracking provideAntiTracking(Engine engine) {
+        return new AntiTracking(engine);
+    }
 
-            @Override
-            public boolean isForceBlockEnabled() {
-                return false;
-            }
-
-            @Override
-            public boolean isBloomFilterEnabled() {
-                return true;
-            }
-
-            @Override
-            public String getDefaultAction() {
-                return "placeholder";
-            }
-        });
+    @Provides
+    @Singleton
+    public Adblocker provideAdblocker(Engine engine) {
+        return new Adblocker(engine);
     }
 
 }

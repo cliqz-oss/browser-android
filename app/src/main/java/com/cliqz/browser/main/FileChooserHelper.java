@@ -131,16 +131,9 @@ public class FileChooserHelper {
                 intent = null;
             }
         } else {
-            final StringBuilder builder = new StringBuilder();
-            String divider = "";
-            for (String accType: acceptTypes) {
-                builder.append(divider);
-                builder.append(accType.toLowerCase());
-                divider = "|";
-            }
             intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType(builder.toString());
+            intent.setType("*/*");
         }
 
         if (intent != null) {

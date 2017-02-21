@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.cliqz.browser.BuildConfig;
+import com.cliqz.browser.CliqzConfig;
 
 import java.lang.reflect.Method;
 
@@ -22,7 +23,7 @@ public class LookbackWrapper {
     private static Method sStopRecording = null;
 
     public static void init(Application application) {
-        invoke(sInitMethod, application, BuildConfig.LOOKBACK_SDK_TOKEN);
+        invoke(sInitMethod, application, CliqzConfig.LOOKBACK_SDK_TOKEN);
     }
 
     public static void show(Context context, String userId) {
@@ -44,8 +45,8 @@ public class LookbackWrapper {
     }
 
     static {
-        if (BuildConfig.LOOKBACK_SDK_TOKEN != null &&
-                !BuildConfig.LOOKBACK_SDK_TOKEN.isEmpty() &&
+        if (CliqzConfig.LOOKBACK_SDK_TOKEN != null &&
+                !CliqzConfig.LOOKBACK_SDK_TOKEN.isEmpty() &&
                 "lookback".contentEquals(BuildConfig.FLAVOR_api)) {
             try {
                 sLookbackClazz = Class.forName("io.lookback.sdk.Lookback");

@@ -13,8 +13,8 @@ import javax.inject.Inject;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
 
-import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_HISTORY;
 import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_FAVORITES;
+import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_HISTORY;
 
 /**
  * Helper to clean history. If deleteFavorites is False, it will delete all history(and queries)

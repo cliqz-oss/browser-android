@@ -113,7 +113,7 @@ public class OnBoardingHelper {
     public boolean conditionallyShowAntiTrackingDescription() {
         return showShowcase(Names.SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION.preferenceName,
                             R.string.showcase_antitracking_title,R.string.showcase_antitracking_message,
-                            R.id.anti_tracking_details);
+                            R.id.control_center);
     }
 
     public boolean conditionallyShowSearchDescription() {

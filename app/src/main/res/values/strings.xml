@@ -212,8 +212,7 @@
         <string name="dark_theme">Dark Theme</string>
         <string name="tabs">Tabs</string>
     <string name="enable_orbot">Enable Orbot</string>
-    <string name="cliqz_app_name" translatable="false">CLIQZ Browser</string>
-    <string name="contact_cliqz">Contact CLIQZ</string>
+    <string name="cliqz_app_name">CLIQZ Browser</string>
     <string name="feedback_at_cliqz_dot_com" translatable="false">feedback@cliqz.com</string>
     <string name="feedback_mail_subject" translatable="false">[ANDROID] CLIQZ Browser </string>
     <string name="about_version_format" translatable="false">%1$s</string>
@@ -249,8 +248,8 @@
     <string name="imprint">Imprint</string>
     <string name="what_is_humanweb">What is Human Web?</string>
     <string name="enable_human_web">Enable Human Web</string>
-    <string name="humanweb" translatable="false">Human Web</string>
-    <string name="about_humanweb_url">https://cliqz.com/whycliqz/human-web</string>
+    <string name="humanweb">Human Web</string>
+    <string name="about_humanweb_url">https://cliqz.com/en/whycliqz/human-web</string>
     <string name="share_link">Share using</string>
     <string name="shared_using">Shared with CLIQZ for Android</string>
     <string name="dont_show_again">Don\'t show again</string>
@@ -261,15 +260,15 @@
     <string name="clear_history">Clear History</string>
     <string name="clear_favorites">Clear favorites</string>
     <string name="also_clear_queries">Delete queries</string>
-    <string name="deleting_in_progress_message">Deleting...</string>
+    <string name="deleting_in_progress_message">Deleting&#8230;</string>
     <string name="add_to_favourites">Add to favorites</string>
     <string name="save_link">Save Link</string>
     <string name="device_registered" translatable="false">Device Registered</string>
     <string name="error_registering" translatable="false">Error registering the device</string>
-    <string name="news_notification">News Notifications</string>
+    <string name="news_notification">Push Notifications</string>
     <string name="restore_top_sites">Restore most visited websites </string>
     <string name="message_restore_top_sites">Start page shows most-visited websites again</string>
-    <string name="descr_search_bar" translatable="false">Search Bar</string>
+    <string name="descr_search_bar">Search Bar</string>
     <string name="action_show_tab_manager">Show Open Tabs</string>
     <string name="action_search_on_page">Search in page</string>
     <string name="in_page_search_next_result">In-page search next result</string>
@@ -292,7 +291,9 @@
     <string name="antiphishing_walk_away">Back to safe site</string>
     <string name="antiphishing_ignore_danger">Continue despite warning</string>
     <string name="antitracking_header">Your data is protected</string>
+    <string name="antitracking_header_disabled">Your data is not protected</string>
     <string name="antitracking_datapoints">Private data points have been removed</string>
+    <string name="antitracking_datapoints_disabled">Anti-Tracking is turned off for this website</string>
     <string name="antitracking_tracking_companies">Tracking companies</string>
     <string name="antitracking_datapoints_count">Private data points</string>
     <string name="help">Help</string>
@@ -313,4 +314,39 @@
     <string name="rate_us">Rate CLIQZ Browser</string>
     <string name="autocompletion_enabled">Enable Autocompletion</string>
     <string name="request_desktop_site">Desktop Site</string>
+    <string name="contact_cliqz">FAQs &amp; Support</string>
+    <string name="control_center_header_antitracking" translatable="false">Anti-Tracking</string>
+    <string name="control_center_header_adblocking">Ad-Blocking</string>
+    <string name="control_center_header_antiphishing" translatable="false">Anti-Phishing</string>
+    <string name="adblocking_header">You surf the web without ads</string>
+    <string name="adblocking_header_disabled">You surf the web with ads</string>
+    <string name="adblocking_ads_blocked">Ads have been blocked</string>
+    <string name="adblocking_ads_blocked_disabled">Ad-Blocking is turned off for this website</string>
+    <string name="adblocking_companies">Companies</string>
+    <string name="adblocking_ad_counts">Ads</string>
+    <string name="antiphishing_header">You are safe</string>
+    <string name="antiphishing_text">No suspicious activities detected</string>
+    <string name="antiphishing_desc">Anti-Phishing technology identifies and blocks potentially deceptive websites that try to get your passwords or account data before you visit the site.</string>
+    <string name="learn_more"><u>Learn more</u></string>
+    <string name="switched_to_forget" >Automatic Forget Tab enabled</string>
+    <string name="summary_adblock_data">Please note: CLIQZ Browser has to download some data packages first, before the ad-blocker works efficiently. For this, the app must be connected to Wi-Fi.</string>
+    <string name="extension_version" translatable="false">Extension Version</string>
+    <string name="tips_and_tricks">Get the best out of CLIQZ</string>
+    <string name="open_link_new_tab">Open link in new tab</string>
+    <string name="open_link_forget_tab">Open link in forget tab</string>
+    <string name="open_image_new_tab">Open image in new tab</string>
+    <string name="open_image_forget_tab">Open image in forget tab</string>
+    <string name="download_image">Download image</string>
+    <string name="update">Update</string>
+    <string name="ad_blocker_disabled_header">Ads are shown</string>
+    <string name="attrack_disabled_header">Your data is not protected</string>
+    <string name="attrack_disabled">Anti-tracking is turned off</string>
+    <string name="activate">Activate</string>
+    <string name="update_webview_msg">Your system is not up-to-date. To browse securely, please update Android System WebView.</string>
+    <string name="ad_blocker_disabled">Ad-Blocking is turned off</string>
+    <string name="regional_settings">Search results for</string>
+    <string name="germany">Germany</string>
+    <string name="france">France</string>
+    <string name="usa">United States</string>
+    <string name="report_site" >Report Website</string>
 </resources>

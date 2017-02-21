@@ -16,6 +16,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -31,30 +32,26 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 
-import com.cliqz.antitracking.AntiTracking;
-import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
-import com.cliqz.browser.main.TrackerDetailsModel;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.jsengine.Adblocker;
+import com.cliqz.jsengine.AntiTracking;
+import com.cliqz.jsengine.Engine;
 import com.squareup.otto.Bus;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -79,10 +76,8 @@ public class LightningView {
     private final Paint mPaint = new Paint();
     private boolean isForegroundTab;
     private boolean mInvertPage = false;
-    private boolean mToggleDesktop = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
     private final String mId;
-    boolean clicked = false;
     private boolean mIsAutoForgetTab;
 
     /**
@@ -115,8 +110,12 @@ public class LightningView {
     LightningDialogBuilder dialogBuilder;
 
     @Inject
+    Engine jsengine;
+    @Inject
     AntiTracking attrack;
-
+    @Inject
+    Adblocker adblocker;
+    
     @Inject
     HistoryDatabase historyDatabase;
 
@@ -192,10 +191,6 @@ public class LightningView {
         // Removed as version 1.0.2r2, restore if needed
         // settings.setDefaultTextEncodingName(preferences.getTextEncoding());
         settings.setDefaultTextEncodingName("UTF-8");
-
-        //This should be replaced with regular preferences
-        attrack.setEnabled(true);
-        attrack.setAdblockEnabled(preferences.getAdBlockEnabled());
         setColorMode(preferences.getRenderingMode());
 
         if (preferences.getDoNotTrackEnabled()) {
@@ -246,8 +241,8 @@ public class LightningView {
         }
         // Removed as version 1.0.2r2, restore if needed
         // if (preferences.getJavaScriptEnabled()) {
-            settings.setJavaScriptEnabled(true);
-            settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
         // } else {
         //     settings.setJavaScriptEnabled(false);
         //     settings.setJavaScriptCanOpenWindowsAutomatically(false);
@@ -301,6 +296,15 @@ public class LightningView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, false);
         }
+
+        // update jsengine module states.
+        try {
+            attrack.setEnabled(preferences.isAttrackEnabled());
+            adblocker.setEnabled(preferences.getAdBlockEnabled());
+        } catch (ExecutionException e) {
+            Log.w(TAG, "error updating jsengine state", e);
+        }
+
     }
 
     /**
@@ -360,47 +364,9 @@ public class LightningView {
         }
     }
 
-    public void toggleDesktopUA(@NonNull Context context) {
-        if (mWebView == null)
-            return;
-        if (!mToggleDesktop) {
-            mWebView.getSettings().setUserAgentString(Constants.DESKTOP_USER_AGENT);
-        } else {
-            // Removed as version 1.0.2r2, restore if needed
-            // setUserAgent(context, preferences.getUserAgentChoice());
-            mWebView.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(context));
-        }
-        mToggleDesktop = !mToggleDesktop;
+    public void restoreState(Bundle bundle) {
+        mWebView.restoreState(bundle);
     }
-
-    // Removed as version 1.0.2r2, restore if needed
-    //    @SuppressLint("NewApi")
-    //    private void setUserAgent(Context context, int choice) {
-    //        if (mWebView == null) return;
-    //        WebSettings settings = mWebView.getSettings();
-    //        switch (choice) {
-    //            case 1:
-    //                if (API >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-    //                    settings.setUserAgentString(WebSettings.getDefaultUserAgent(context));
-    //                } else {
-    //                    settings.setUserAgentString(mDefaultUserAgent);
-    //                }
-    //                break;
-    //            case 2:
-    //                settings.setUserAgentString(Constants.DESKTOP_USER_AGENT);
-    //                break;
-    //            case 3:
-    //                settings.setUserAgentString(Constants.MOBILE_USER_AGENT);
-    //                break;
-    //            case 4:
-    //                String ua = preferences.getUserAgentString(mDefaultUserAgent);
-    //                if (ua == null || ua.isEmpty()) {
-    //                    ua = " ";
-    //                }
-    //                settings.setUserAgentString(ua);
-    //                break;
-    //        }
-    //    }
 
     @NonNull
     protected Map<String, String> getRequestHeaders() {
@@ -513,7 +479,7 @@ public class LightningView {
 
     public synchronized void pauseTimers() {
         if (mWebView != null) {
-           // mWebView.onPause();
+            // mWebView.onPause();
         }
     }
 
@@ -652,24 +618,25 @@ public class LightningView {
      */
     private void longClickPage(final String url) {
         final WebView.HitTestResult result = mWebView.getHitTestResult();
-            if (url != null) {
-                if (result != null) {
-                    if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    dialogBuilder.showLongPressImageDialog(url, getUserAgent());
-                    } else {
-                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-                    }
-                } else {
-                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-                }
-            } else if (result != null && result.getExtra() != null) {
-                final String newUrl = result.getExtra();
+        if (url != null) {
+            if (result != null) {
                 if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(newUrl, getUserAgent());
+                    final String imageUrl = result.getExtra();
+                    dialogBuilder.showLongPressImageDialog(url, imageUrl, getUserAgent());
                 } else {
-                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
+                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
                 }
+            } else {
+                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
             }
+        } else if (result != null && result.getExtra() != null) {
+            final String newUrl = result.getExtra();
+            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                dialogBuilder.showLongPressImageDialog(url, newUrl, getUserAgent());
+            } else {
+                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
+            }
+        }
     }
 
     public boolean canGoBack() {
@@ -695,7 +662,7 @@ public class LightningView {
         // if (!isProxyReady()) {
         //     return;
         // }
-            mWebView.loadUrl(url, mRequestHeaders);
+        mWebView.loadUrl(url, mRequestHeaders);
     }
 
     public synchronized void invalidate() {
@@ -751,6 +718,18 @@ public class LightningView {
         this.mIsAutoForgetTab = isAutoForgetTab;
     }
 
+    public void enableAdBlock() {
+        try {
+            adblocker.setEnabled(true);
+        } catch (ExecutionException e) {
+            Log.w(TAG, "error updating jsengine state", e);
+        }
+    }
+
+    public void enableAttrack() throws ExecutionException {
+            attrack.setEnabled(true);
+    }
+
     static class WebViewHandler extends Handler {
 
         private WeakReference<LightningView> mReference;
@@ -780,7 +759,7 @@ public class LightningView {
         final int scrollY = mWebView.getScrollY();
         mWebView.scrollTo(0, 0);
         final int width = mWebView.getWidth();
-        final int height = width /3 * 4;
+        final int height = width / 3 * 4;
         final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(bitmap);
         mWebView.draw(canvas);
@@ -814,7 +793,7 @@ public class LightningView {
             @Override
             public void run() {
                 try {
-                   LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
+                    LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
                 } catch (IllegalStateException e) {
                     Log.e(Constants.TAG, "IllegalStateException in updateHistory", e);
                 } catch (NullPointerException e) {
@@ -828,48 +807,5 @@ public class LightningView {
             new Thread(update).start();
         }
     }
-
-    /**
-     * Gets a JSONObject containing info about the trackers from the Antitracking module and processes
-     * it and returns an ArrayList of Trackers
-     * @return ArrayList of TrackerDetailsModel objects. TrackerDetailsModel has the name of the trackers and no of
-     * data points blocked for each tracker
-     * This method is not called in the xwalk build variant
-     */
-    public @NonNull ArrayList<TrackerDetailsModel> getTrackerDetails() {
-        final ArrayList<TrackerDetailsModel> trackerDetails = new ArrayList<>();
-        try {
-            final JSONObject jsonObject = attrack.getTabBlockingInfo(mWebView.hashCode());
-            final JSONArray companies = jsonObject.getJSONObject("companies").names();
-            if (companies == null) {
-                return trackerDetails;
-            }
-            for (int i = 0; i < companies.length(); i++) {
-                final String key = companies.getString(i);
-                final JSONArray domains = jsonObject.getJSONObject("companies").getJSONArray(key);
-                int trackersCount = 0;
-                for (int j = 0; j < domains.length(); j++) {
-                    final JSONObject trackers = jsonObject.getJSONObject("trackers").getJSONObject(domains.optString(j));
-                    trackersCount += trackers.optInt("bad_qs",0) + trackers.optInt("adblock_block",0);
-                }
-                if (trackersCount > 0) {
-                    trackerDetails.add(new TrackerDetailsModel(key, trackersCount));
-                }
-            }
-            Collections.sort(trackerDetails, new Comparator<TrackerDetailsModel>() {
-                @Override
-                public int compare(TrackerDetailsModel lhs, TrackerDetailsModel rhs) {
-                    final int count = rhs.trackerCount - lhs.trackerCount;
-                    return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
-                }
-            });
-            return trackerDetails;
-        } catch (JSONException e) {
-            Log.e(TAG, "Can't parse json from antitracking module", e);
-        } catch (NullPointerException e) {
-            Log.d(TAG, "Null webView", e);
-        }
-            return trackerDetails;
-        }
 
 }

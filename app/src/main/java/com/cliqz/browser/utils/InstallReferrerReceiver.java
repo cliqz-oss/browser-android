@@ -57,7 +57,7 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
             if (parameters.containsKey(KEY_ADVERT_ID)) {
                 preferenceManager.setAdvertID(parameters.get(KEY_ADVERT_ID));
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (Throwable e) {
             Log.e(TAG, "Error decoding referrer", e);
             preferenceManager.setDistributionException(true);
         } finally {

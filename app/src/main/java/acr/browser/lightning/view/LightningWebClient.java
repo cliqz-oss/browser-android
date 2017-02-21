@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -41,7 +42,6 @@ import java.util.List;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
-import com.cliqz.browser.utils.BloomFilterUtils;
 import acr.browser.lightning.utils.UrlUtils;
 
 /**
@@ -66,9 +66,18 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         WebResourceResponse response = handleUrl(view, request.getUrl());
+        if (response != null) {
+            return response;
+        }
+        response = lightningView.jsengine.webRequest.shouldInterceptRequest(view, request);
         if (response == null) {
-            response = lightningView.attrack.shouldInterceptRequest(view, request);
-            if (response != null) {
+            return null;
+        }
+
+        final String reason = response.getReasonPhrase();
+
+        if (reason != null) {
+            if (reason.contains("ATTRACK")) {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
@@ -76,17 +85,15 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                     }
                 });
             }
+            return response;
         }
-        return response;
+        return null;
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         final Uri uri = Uri.parse(url);
         WebResourceResponse response = handleUrl(view, uri);
-        if (response == null) {
-            response = lightningView.attrack.shouldInterceptRequest(view, Uri.parse(url));
-        }
         return response;
     }
 
@@ -184,6 +191,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        @DrawableRes final int controlCenterIcon = lightningView.attrack.isWhitelisted(Uri.parse(url).getHost())
+                ? R.drawable.ic_cc_orange : R.drawable.ic_cc_green;
+        lightningView.eventBus.post(new Messages.UpdateControlCenterIcon(controlCenterIcon));
         try {
             final String regex = "^((w|m)[a-zA-Z0-9-]{0,}\\.)";
             final String domain = new URL(url).getHost().replaceFirst(regex,"");
@@ -321,6 +331,15 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     public void onReceivedSslError(WebView view, @NonNull final SslErrorHandler handler, SslError error) {
         List<Integer> errorCodeMessageCodes = getAllSslErrorMessageCodes(error);
 
+        final String webViewUrl = view.getUrl();
+        final String errorUrl = error.getUrl();
+
+        if (webViewUrl != null && !webViewUrl.equals(errorUrl)) {
+            // Alwasy cancel requests to third party with invalid certificates
+            handler.cancel();
+            return;
+        }
+
         StringBuilder stringBuilder = new StringBuilder();
         for (Integer messageCode : errorCodeMessageCodes) {
             stringBuilder.append(" - ").append(context.getString(messageCode)).append('\n');
@@ -427,8 +446,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         }
         // CLIQZ! We do not want to open external app from our browser, so we return false here
         // boolean startActivityForUrl = mIntentUtils.startActivityForUrl(view, url);
-        if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO) && lightningView.clicked) {
-            lightningView.clicked = false;
+        if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
             lightningView.telemetry.sendNavigationSignal(url.length());
         }
         // return startActivityForUrl;

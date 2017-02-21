@@ -68,10 +68,12 @@ public class TabsOverviewAdapter extends RecyclerView.Adapter<TabsOverviewAdapte
         holder.domain.setText(url.isEmpty() ? context.getString(R.string.action_new_tab) : url);
         final Bitmap favIcon = tabFragment.getFavicon();
         holder.icon.setImageBitmap(favIcon != null ? favIcon : defaultFavicon);
-        if (tabFragment.state.isIncognito()) {
-            holder.layout.setBackgroundColor(ContextCompat.getColor(context, R.color.incognito_tab_primary_color));
-            holder.title.setTextColor(ContextCompat.getColor(context, R.color.normal_tab_primary_color));
-        }
+        final int backgroundColor = tabFragment.state.isIncognito() ?
+                R.color.incognito_tab_primary_color : R.color.white;
+        final int textColor = tabFragment.state.isIncognito() ?
+                R.color.white : R.color.incognito_tab_primary_color;
+        holder.layout.setBackgroundColor(ContextCompat.getColor(context, backgroundColor));
+        holder.title.setTextColor(ContextCompat.getColor(context, textColor));
 //        if (position == tabsManager.getCurrentTabPosition()) {
 //            holder.layout.setBackgroundColor(ContextCompat.getColor(context, R.color.gray_list_bg));
 //        } else {

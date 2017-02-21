@@ -5,6 +5,5 @@
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/normal_tab_primary_color"/>
+    android:background="@color/normal_tab_primary_color" />
 

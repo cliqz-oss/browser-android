@@ -13,7 +13,6 @@ var osAPI = {
     } else {
       osAPI.OS.postMessage = MockOS.postMessage;
     }
-    osAPI.isReady();
   },
   /**
     function: searchHistory
@@ -40,12 +39,10 @@ var osAPI = {
       action: "getHistoryItems",
       callback: callback
     };
-    if (start && count) {
-      message.data = {
-        start: start,
-        count: count
-      };
-    }
+    message.data = {
+      offset: start,
+      limit: count
+    };
     osAPI.OS.postMessage(message);
   },
   /**
@@ -57,6 +54,16 @@ var osAPI = {
     var message = {
       action: "getFavorites",
       callback: callback
+    };
+    osAPI.OS.postMessage(message);
+  },
+  /**
+    function: freshtabReady
+    description: informs OS that freshtab is loaded
+  */
+  freshtabReady: function() {
+    var message = {
+      action: "freshtabReady"
     };
     osAPI.OS.postMessage(message);
   },

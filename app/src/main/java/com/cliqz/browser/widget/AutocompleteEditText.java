@@ -1,5 +1,6 @@
 package com.cliqz.browser.widget;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Editable;
@@ -31,17 +32,17 @@ public class AutocompleteEditText extends EditText {
     Telemetry mTelemetry;
 
     private final ArrayList<TextWatcher> mListeners = new ArrayList<>();
-    private boolean mIsAutocompleting;
-    private boolean mDeleting = false;
-    private final int clearIconWidth;
+    private volatile boolean mIsAutocompleting;
+    private volatile boolean mDeleting = false;
 
     // private AutocompleteService mAutocompleteService;
 
     private boolean mIsAutocompleted;
-    private boolean mIsTyping = false;
+    private volatile boolean mIsTyping = false;
     private boolean mIsAutocompletionEnabled = true;
 
     private AutocompleteRunnable autocompleteRunnable = null;
+    private String mQuery = "";
 
     public AutocompleteEditText(Context context) {
         this(context, null);
@@ -58,7 +59,6 @@ public class AutocompleteEditText extends EditText {
         setImeOptions(imeOptions);
         mIsAutocompleting = false;
         mIsAutocompleted = false;
-        clearIconWidth = getCompoundDrawables()[2].getIntrinsicWidth();
         BrowserApp.getAppComponent().inject(this);
     }
 
@@ -91,7 +91,7 @@ public class AutocompleteEditText extends EditText {
     }
 
     public String getQuery() {
-        return getText().toString().substring(0, getSelectionStart());
+        return mQuery;
     }
 
     public void setAutocompleteText(CharSequence text) {
@@ -153,6 +153,7 @@ public class AutocompleteEditText extends EditText {
             for (TextWatcher watcher: mListeners) {
                 watcher.afterTextChanged(s);
             }
+            mQuery = s.toString();
             mIsTyping = false;
         }
     }
@@ -163,7 +164,13 @@ public class AutocompleteEditText extends EditText {
                 .getSystemService(getContext().CLIPBOARD_SERVICE);
         switch (id){
             case android.R.id.paste:
-                mTelemetry.sendPasteSignal(clipboard.getPrimaryClip().getItemAt(0).getText().length());
+                final ClipData primaryClip = clipboard.getPrimaryClip();
+                final ClipData.Item item =
+                        (primaryClip != null && primaryClip.getItemCount() > 0) ?
+                        primaryClip.getItemAt(0) : null;
+                final CharSequence text = item != null ? item.getText() : null;
+                final int textLength = text != null ? text.length() : 0;
+                mTelemetry.sendPasteSignal(textLength);
                 break;
         }
         return super.onTextContextMenuItem(id);
@@ -188,11 +195,10 @@ public class AutocompleteEditText extends EditText {
             if (mDeleting || mIsTyping || mCancelled) {
                 return;
             }
-            final String currentText = getText().toString();
             mIsAutocompleting = true;
-            if (completion.startsWith(currentText) && !completion.equals(currentText)) {
+            if (completion.startsWith(mQuery) && !completion.equals(mQuery)) {
                 mIsAutocompleted = true;
-                final int selectionBegin = currentText.length();
+                final int selectionBegin = mQuery.length();
                 final int selectionEnd = completion.length();
                 try {
                     setTextKeepState(completion);

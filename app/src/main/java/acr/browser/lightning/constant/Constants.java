@@ -29,7 +29,7 @@ public final class Constants {
     public static final String ECOSIA_SEARCH = "https://www.ecosia.org/search?q=";
     public static final String DUCK_LITE_SEARCH = "https://duckduckgo.com/lite/?t=com.cliqz.browser&q=";
     public static final String STARTPAGE_MOBILE_SEARCH = "https://startpage.com/do/m/mobilesearch?language=english&query=";
-    public static final String STARTPAGE_SEARCH = "https://startpage.com/do/search?language=english&query=";
+    public static final String STARTPAGE_SEARCH = "https://startpage.com/do/search?query=";
     public static final String ASK_SEARCH = "http://www.ask.com/web?qsrc=0&o=0&l=dir&qo=lightningBrowser&q=";
     public static final String HOMEPAGE = "file:///android_asset/homepage/index.html";
     public static final String INCOGNITO_HOMEPAGE = "file:///android_asset/incognito/index.html";
@@ -84,4 +84,12 @@ public final class Constants {
 
     public static final String NOTIFICATION_CLICKED = "notification_clicked";
 
+    //Keys for persistent tabs
+    public static final String SAVED_STATE_BUNDLE = "tab_state_bundle";
+    public static final String SAVED_URL = "url_tab_";
+    public static final String SAVED_TITLE = "title_tab_";
+    public static final String SAVED_STATES = "saved_states";
+    public static final String BUNDLE_PREFIX = "bundle_";
+
+    public static final String CONTROL_CENTER = "control_center";
 }

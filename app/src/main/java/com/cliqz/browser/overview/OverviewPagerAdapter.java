@@ -6,7 +6,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Pair;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;

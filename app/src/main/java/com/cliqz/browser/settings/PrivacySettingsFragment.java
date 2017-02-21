@@ -34,6 +34,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_HISTORYEXIT = "clear_history_exit";
     private static final String SETTINGS_COOKIEEXIT = "clear_cookies_exit";
     private static final String SETTINGS_RESTORETOPSITES = "restore_top_sites";
+    private static final String SETTINGS_ATTRACK = "attrack";
     // private static final String SETTINGS_CLEARCACHE = "clear_cache";
     // private static final String SETTINGS_CLEARCOOKIES = "clear_cookies";
     // private static final String SETTINGS_CLEARWEBSTORAGE = "clear_webstorage";
@@ -41,7 +42,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 
     private static final int API = Build.VERSION.SDK_INT;
     private Activity mActivity;
-    private CheckBoxPreference cblocation, cbenablecookies, cbsavepasswords, cbcacheexit,
+    private CheckBoxPreference cbattrack, cblocation, cbenablecookies, cbsavepasswords, cbcacheexit,
             cbhistoryexit, cbcookiesexit; //cbcookiesInkognito, cbwebstorageexit
     // private boolean mSystemBrowser;
     private Handler messageHandler;
@@ -68,6 +69,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         // Preference clearcookies = findPreference(SETTINGS_CLEARCOOKIES);
         // Preference clearwebstorage = findPreference(SETTINGS_CLEARWEBSTORAGE);
 
+        cbattrack = (CheckBoxPreference) findPreference(SETTINGS_ATTRACK);
         cblocation = (CheckBoxPreference) findPreference(SETTINGS_LOCATION);
         cbenablecookies = (CheckBoxPreference) findPreference(SETTINGS_ENABLECOOKIES);
         // cbcookiesInkognito = (CheckBoxPreference) findPreference(SETTINGS_COOKIESINKOGNITO);
@@ -82,6 +84,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         // clearcookies.setOnPreferenceClickListener(this);
         // clearwebstorage.setOnPreferenceClickListener(this);
 
+        cbattrack.setOnPreferenceChangeListener(this);
         cblocation.setOnPreferenceChangeListener(this);
         cbenablecookies.setOnPreferenceChangeListener(this);
         // cbcookiesInkognito.setOnPreferenceChangeListener(this);
@@ -91,6 +94,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
         cbcookiesexit.setOnPreferenceChangeListener(this);
         // cbwebstorageexit.setOnPreferenceChangeListener(this);
 
+        cbattrack.setChecked(mPreferenceManager.isAttrackEnabled());
         cblocation.setChecked(mPreferenceManager.getLocationEnabled());
         cbenablecookies.setChecked(mPreferenceManager.getCookiesEnabled());
         // cbcookiesInkognito.setChecked(mPreferenceManager.getIncognitoCookiesEnabled());
@@ -316,6 +320,10 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         // switch preferences
         switch (preference.getKey()) {
+            case SETTINGS_ATTRACK:
+                mPreferenceManager.setAttrackEnabled((Boolean) newValue);
+                cbattrack.setChecked((Boolean) newValue);
+                return true;
             case SETTINGS_LOCATION:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.LOCATION_ACCESS, TelemetryKeys.PRIVACY,
                         (!(boolean)newValue));

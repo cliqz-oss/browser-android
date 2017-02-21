@@ -17,6 +17,7 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     private int mCounter = 1;
 
     private static final String SETTINGS_VERSION = "pref_version";
+    private static final String EXTENSION_VERSION = "pref_ext_ver";
     private static final String AMAZON_ARN = "pref_arn";
     private static final String CONTACT = "pref_contact";
     private long startTime;
@@ -42,6 +43,9 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
         } else {
             getPreferenceScreen().removePreference(arn);
         }
+
+        Preference extVersion = findPreference(EXTENSION_VERSION);
+        extVersion.setSummary(BuildConfig.CLIQZ_EXT_VERSION);
     }
 
     private String getVersion() {

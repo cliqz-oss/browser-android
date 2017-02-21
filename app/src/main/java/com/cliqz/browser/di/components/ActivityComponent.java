@@ -1,8 +1,11 @@
 package com.cliqz.browser.di.components;
 
+import com.cliqz.browser.controlcenter.AdBlockingFragment;
+import com.cliqz.browser.controlcenter.AntiPhishingFragment;
+import com.cliqz.browser.controlcenter.AntiTrackingFragment;
+import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.di.annotations.PerActivity;
 import com.cliqz.browser.di.modules.MainActivityModule;
-import com.cliqz.browser.main.AntiTrackingDialog;
 import com.cliqz.browser.main.FragmentWithBus;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.OnBoardingHelper;
@@ -52,5 +55,11 @@ public interface ActivityComponent {
 
     void inject(OnBoardingHelper onBoardingHelper);
 
-    void inject(AntiTrackingDialog antiTrackingDialog);
+    void inject(AntiTrackingFragment antiTrackingFragment);
+
+    void inject(AdBlockingFragment adBlockingFragment);
+
+    void inject(AntiPhishingFragment antiPhishingFragment);
+
+    void inject(ControlCenterDialog controlCenterDialog);
 }

@@ -30,10 +30,14 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import javax.inject.Inject;
+
 public class SettingsActivity extends ThemableSettingsActivity {
 
     private static final String feedbackUrlEn = "https://cliqz.com/en/support";
     private static final String feedbackUrlDe = "https://cliqz.com/de/support";
+    private static final String reportUrlEn = "https://cliqz.com/en/report-url";
+    private static final String reportUrlDe = "https://cliqz.com/report-url";
 
     @Inject
     Telemetry telemetry;
@@ -93,25 +97,32 @@ public class SettingsActivity extends ThemableSettingsActivity {
         final HeaderInfo info = fragments.get(position);
         if (info.id == R.id.imprint) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.IMPRINT, TelemetryKeys.MAIN);
-            final Intent browserIntent = new Intent(this, MainActivity.class);
-            browserIntent.setAction(Intent.ACTION_VIEW);
-            browserIntent.setData(Uri.parse("https://cliqz.com/legal"));
-            startActivity(browserIntent);
-            finish();
+            openUrl("https://cliqz.com/legal");
         } else if (info.id == R.id.feedback) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
             final String feedbackUrl = Locale.getDefault().getLanguage().equals("de") ?
                     feedbackUrlDe : feedbackUrlEn;
-            final Intent browserIntent = new Intent(this, MainActivity.class);
-            browserIntent.setAction(Intent.ACTION_VIEW);
-            browserIntent.setData(Uri.parse(feedbackUrl));
-            startActivity(browserIntent);
-            finish();
+            openUrl(feedbackUrl);
         } else if (info.id == R.id.rate_us) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.cliqz.browser")));
+        } else if (info.id == R.id.tips_and_tricks) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.TIPS_AND_TRICKS, TelemetryKeys.MAIN);
+            openUrl("https://cliqz.com/tips-android");
+        } else if (info.id == R.id.report_site) {
+            final String reportUrl = Locale.getDefault().getLanguage().equals("de") ?
+                    reportUrlDe : reportUrlEn;
+            openUrl(reportUrl);
         } else {
             super.onListItemClick(l, v, position, id);
         }
+    }
+
+    private void openUrl(String url) {
+        final Intent browserIntent = new Intent(this, MainActivity.class);
+        browserIntent.setAction(Intent.ACTION_VIEW);
+        browserIntent.setData(Uri.parse(url));
+        startActivity(browserIntent);
+        finish();
     }
 
     @Override

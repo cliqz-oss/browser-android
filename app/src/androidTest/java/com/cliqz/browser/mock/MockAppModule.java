@@ -1,5 +1,7 @@
 package com.cliqz.browser.mock;
 
+import android.content.Context;
+
 import com.cliqz.browser.di.modules.AppModule;
 
 import javax.inject.Singleton;
@@ -16,6 +18,9 @@ public class MockAppModule extends AppModule {
 
     private final MockBrowserApp app;
 
+    public Context provideContext() {
+        return app.getApplicationContext();}
+
     protected MockAppModule(MockBrowserApp app) {
         super(app);
         this.app = app;
@@ -28,4 +33,5 @@ public class MockAppModule extends AppModule {
         final MockPreferenceManager mockedPreferenceManager = new MockPreferenceManager(app);
         return mockedPreferenceManager;
     }
+
 }

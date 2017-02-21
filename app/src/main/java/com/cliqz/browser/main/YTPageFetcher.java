@@ -6,13 +6,12 @@ import com.cliqz.browser.webview.SearchWebView;
 import com.cliqz.utils.StringUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+
+import acr.browser.lightning.utils.Utils;
 
 /**
  * @author Stefano Pacifici
@@ -47,7 +46,7 @@ final class YTPageFetcher {
                     final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.addRequestProperty("User-Agent", USER_AGENT);
                     if (connection.getResponseCode() == 200) {
-                        final String response = readResponse(connection.getInputStream());
+                        final String response = Utils.readResponse(connection.getInputStream());
                         callScriptWithResponse(StringUtils.escapeHTML(response));
                     }
                     connection.disconnect();
@@ -69,18 +68,4 @@ final class YTPageFetcher {
         });
     }
 
-    private String readResponse(InputStream inputStream) {
-        final StringBuilder builder = new StringBuilder("");
-        final char[] buffer = new char[1024];
-        final Reader reader = new InputStreamReader(inputStream);
-        try {
-            for (int read = reader.read(buffer); read > -1; read = reader.read(buffer)) {
-                builder.append(buffer, 0, read);
-            }
-            reader.close();
-        } catch (IOException e) {
-            Log.e(TAG, "Can't read from connection", e);
-        }
-        return builder.toString();
-    }
 }

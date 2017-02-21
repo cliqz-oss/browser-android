@@ -21,8 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +57,6 @@ public class Telemetry {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private String currentNetwork, currentLayer;
-    private String mExtensionVersion;
     private Context context;
     private int batteryLevel, forwardStep, backStep, urlLength, previousPage;
     private boolean isFirstNetworkSignal = true;
@@ -73,7 +70,6 @@ public class Telemetry {
         batteryLevel = -1;
         context.registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         context.registerReceiver(mNetworkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        mExtensionVersion = getExtensionVersion();
     }
 
     /**
@@ -297,7 +293,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.ENVIRONMENT);
             signal.put(TelemetryKeys.DEVICE, Build.MODEL);
             signal.put(TelemetryKeys.LANGUAGE, getLanguage());
-            signal.put(TelemetryKeys.VERSION, mExtensionVersion);
+            signal.put(TelemetryKeys.VERSION, BuildConfig.CLIQZ_EXT_VERSION);
             signal.put(TelemetryKeys.VERSION_DIST, BuildConfig.VERSION_NAME);
             signal.put(TelemetryKeys.VERSION_HOST, BuildConfig.LIGHTNING_VERSION_NAME);
             signal.put(TelemetryKeys.VERSION_OS, Build.VERSION.SDK_INT);
@@ -306,6 +302,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.HISTORY_URLS, historySize);
             signal.put(TelemetryKeys.NEWS_NOTIFICATION, mPreferenceManager.getNewsNotificationEnabled());
             signal.put(TelemetryKeys.DISTRIBUTION, mPreferenceManager.getDistribution());
+            signal.put(TelemetryKeys.PREFS, getPrefsJSON());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -319,6 +316,26 @@ public class Telemetry {
             e.printStackTrace();
         }
         saveSignal(signal, false);
+    }
+
+    private JSONObject getPrefsJSON() {
+        JSONObject prefsJson = new JSONObject();
+        try {
+            prefsJson.put(TelemetryKeys.BLOCK_EXPLICIT, mPreferenceManager.getBlockAdultContent());
+            prefsJson.put(TelemetryKeys.LOCATION_ACCESS, mPreferenceManager.getLocationEnabled());
+            prefsJson.put(TelemetryKeys.ENABLE_COOKIES, mPreferenceManager.getCookiesEnabled());
+            prefsJson.put(TelemetryKeys.SAVE_PASSWORDS, mPreferenceManager.getSavePasswordsEnabled());
+            prefsJson.put(TelemetryKeys.CLEAR_CACHE, mPreferenceManager.getClearCacheExit());
+            prefsJson.put(TelemetryKeys.CLEAR_HISTORY, mPreferenceManager.getClearHistoryExitEnabled());
+            prefsJson.put(TelemetryKeys.CLEAR_COOKIES, mPreferenceManager.getClearCookiesExitEnabled());
+            prefsJson.put(TelemetryKeys.ENABLE_AUTOCOMPLETE, mPreferenceManager.getAutocompletionEnabled());
+            prefsJson.put(TelemetryKeys.HUMAN_WEB, mPreferenceManager.getHumanWebEnabled());
+            prefsJson.put(TelemetryKeys.BLOCK_ADS, mPreferenceManager.getAdBlockEnabled());
+            prefsJson.put(TelemetryKeys.CONFIG_LOCATION, mPreferenceManager.getLastKnownLocation());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return prefsJson;
     }
 
     //Send a telemetry signal of the network state, when the app closes and when the network changes
@@ -475,7 +492,7 @@ public class Telemetry {
      * Send telemetry signal when user receives, opens, enables, disables or dismisses news notification
      * @param action type of signal
      */
-    public void sendNewsNotificationSignal(String action) {
+    public void sendNewsNotificationSignal(String action, boolean force) {
         JSONObject signal = new JSONObject();
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.NEWS_NOTIFICATION);
@@ -483,7 +500,7 @@ public class Telemetry {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        saveSignal(signal, false);
+        saveSignal(signal, force);
     }
 
     /**
@@ -923,7 +940,7 @@ public class Telemetry {
      */
     public void resetNavigationVariables(int urlLength) {
         timings.setPageStartTime();
-        forwardStep = 1;
+        forwardStep = 0;
         this.urlLength = urlLength;
     }
 
@@ -1096,25 +1113,6 @@ public class Telemetry {
             return pidMemoryInfo.getTotalPss() / 1024;
         }
         return -1;
-    }
-
-    private String getExtensionVersion() {
-        String extensionVersion = "";
-        try {
-            final InputStream inputStream = context.getAssets().open("search/cliqz.json");
-            final byte[] buffer = new byte[inputStream.available()];
-            inputStream.read(buffer);
-            inputStream.close();
-            final String contents = new String(buffer, "UTF-8");
-            final JSONObject jsonObject = new JSONObject(contents);
-            extensionVersion = jsonObject.getString("EXTENSION_VERSION");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-            return extensionVersion;
-        }
     }
 
     //receiver listening to changes in battery levels

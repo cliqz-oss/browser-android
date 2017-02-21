@@ -28,8 +28,14 @@
         android:title="@string/rate_us"
         android:id="@+id/rate_us"/>
     <header
+        android:title="@string/report_site"
+        android:id="@+id/report_site"/>
+    <header
         android:title="@string/imprint"
         android:id="@+id/imprint" />
+    <header
+        android:title="@string/tips_and_tricks"
+        android:id="@+id/tips_and_tricks" />
     <header
         android:title="@string/contact_cliqz"
         android:id="@+id/feedback" />

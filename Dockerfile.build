@@ -1,0 +1,19 @@
+FROM ubuntu:16.04
+MAINTAINER Stefano Pacifici <stefano@cliqz.com>
+ENV ANDROID_HOME /home/jenkins/android_home
+ENV GRADLE_USER_HOME /home/jenkins/gradle_home
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y openjdk-8-jdk && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    groupadd jenkins --gid 1000 && \
+    useradd --create-home --shell /bin/bash jenkins --uid 1000 --gid 1000 && \
+    su -s /bin/bash -c 'mkdir -p $ANDROID_HOME; \
+        mkdir -p $GRADLE_USER_HOME; \
+        mkdir -p $ANDROID_HOME/licenses; \
+        mkdir -p $HOME/.android; \
+        echo -n 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license; \
+        echo -n 84831b9409646a918e30573bab4c9c91346d8abd > $ANDROID_HOME/licenses/android-sdk-preview-license' jenkins
+# docker run -u jenkins -v `pwd`:/home/jenkins/src -ti <IMAGE_ID> /bin/bash
+# Run gradle twice

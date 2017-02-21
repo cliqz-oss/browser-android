@@ -1,6 +1,5 @@
 package com.cliqz.browser.widget;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -13,16 +12,14 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
 
 import acr.browser.lightning.utils.ThemeUtils;
-import acr.browser.lightning.view.TrampolineConstants;
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by Ravjit on 07/12/15.
@@ -55,8 +52,8 @@ public class SearchBar extends FrameLayout {
     TextView trackerCounter;
 
     @Nullable
-    @Bind(R.id.anti_tracking_details)
-    LinearLayout antiTrackingDetails;
+    @Bind(R.id.control_center)
+    RelativeLayout antiTrackingDetails;
 
     private final int clearIconWidth;
     private final int clearIconHeight;
@@ -84,6 +81,10 @@ public class SearchBar extends FrameLayout {
         final ListenerWrapper wrapper = new ListenerWrapper();
         searchEditText.addTextChangedListener(wrapper);
         searchEditText.setOnFocusChangeListener(wrapper);
+        if (trackerCounter != null) {
+            trackerCounter.setFocusable(false);
+            trackerCounter.setFocusableInTouchMode(false);
+        }
     }
 
     public void setListener(@Nullable Listener listener) {
@@ -121,6 +122,7 @@ public class SearchBar extends FrameLayout {
     public void showSearchEditText() {
         searchEditText.setVisibility(VISIBLE);
         titleBar.setVisibility(GONE);
+        setAntiTrackingDetailsVisibility(GONE);
         switchIcon(true);
     }
 
@@ -175,8 +177,9 @@ public class SearchBar extends FrameLayout {
 
         final View visibleView = titleBar.getVisibility() == VISIBLE ? titleBar : searchEditText;
         final boolean isIconClicked = event.getX() > (visibleView.getWidth() - visibleView.getPaddingRight()) - clearIconWidth;
-        if (isIconClicked) {
+        if (isIconClicked && visibleView == searchEditText) {
             switch (currentIcon) {
+
                 case ICON_STATE_CLEAR:
                     showSearchEditText();
                     searchEditText.setText("");
@@ -236,7 +239,8 @@ public class SearchBar extends FrameLayout {
             default:
                 icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
         }
-        titleBar.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null);
+        //temporary solution. Should we remove it completely or re-introduce it later; to be decided
+        titleBar.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
     }
 
     /**

@@ -37,19 +37,35 @@ import android.webkit.URLUtil;
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.download.DownloadHandler;
+import acr.browser.lightning.preference.PreferenceManager;
+
+import static acr.browser.lightning.download.DownloadHandler.DEFAULT_DOWNLOAD_PATH;
+import static acr.browser.lightning.download.DownloadHandler.addNecessarySlashes;
 
 public final class Utils {
+
+    private static final String TAG = Utils.class.getSimpleName();
 
     public static void downloadFile(final Activity activity, final String url,
                                     final String userAgent, final String contentDisposition, final boolean isYouTubeVideo) {
@@ -100,6 +116,7 @@ public final class Utils {
 
     /**
      * Display a Snackbar with a message
+     *
      * @param resource String resource of the message to be displayed
      */
     public static void showSnackbar(@NonNull Activity activity, @StringRes int resource) {
@@ -112,6 +129,7 @@ public final class Utils {
 
     /**
      * Display a Snackbar with a message
+     *
      * @param message Message to be displayed
      */
     public static void showSnackbar(@NonNull Activity activity, String message) {
@@ -124,8 +142,9 @@ public final class Utils {
 
     /**
      * Display a SnackBar with a message and a action button
-     * @param message Message to be displayed
-     * @param action Name of the action
+     *
+     * @param message       Message to be displayed
+     * @param action        Name of the action
      * @param eventListener Implementation of the OnClickListener for the action
      */
     public static void showSnackbar(@NonNull Activity activity, String message, String action,
@@ -396,4 +415,110 @@ public final class Utils {
         isSystemBrowserPresent = new Boolean(browserFlag);
         return browserFlag;
     }
+
+    /**
+     * Decodes a base64 image data and writes it to a image file
+     *
+     * @param url Url or string with the base64 data
+     */
+    public static void writeBase64ToStorage(final Activity activity, final String url) {
+        String downloadLocation = BrowserApp.getAppComponent().getPreferenceManager().getDownloadDirectory();
+        if (downloadLocation != null) {
+            downloadLocation = addNecessarySlashes(downloadLocation);
+        } else {
+            downloadLocation = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
+            BrowserApp.getAppComponent().getPreferenceManager().setDownloadDirectory(downloadLocation);
+        }
+        final String base64ImageData = url.replace("data:image/jpeg;base64,", "");
+        FileOutputStream fos;
+        try {
+            if (base64ImageData != null) {
+                final File outputFile = new File(downloadLocation, findValidFileName("image")+".jpg");
+                if (!outputFile.exists()) {
+                    outputFile.createNewFile();
+                }
+                fos = new FileOutputStream(outputFile);
+                byte[] decodedString = android.util.Base64.decode(base64ImageData, android.util.Base64.DEFAULT);
+                fos.write(decodedString);
+                fos.flush();
+                fos.close();
+                //Below code is necessary to make the file visible in Downloads/Photos app
+                final Uri contentUri = Uri.fromFile(outputFile);
+                final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                mediaScanIntent.setData(contentUri);
+                activity.sendBroadcast(mediaScanIntent);
+                //Code to show Download successful Snackbar
+                final View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setDataAndType(contentUri, "image/jpeg");
+                        activity.startActivity(intent);
+                    }
+                };
+                Utils.showSnackbar(activity, activity.getString(R.string.download_successful),
+                        activity.getString(R.string.action_open), onClickListener);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //recursive function to find a unique file name for the new download
+    private static String findValidFileName(String suggestedFileName) {
+        final String downloadLocation = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
+        final File outputFile = new File(downloadLocation, suggestedFileName+".jpg");
+        if (outputFile.exists()) {
+            if (suggestedFileName.equals("image")) {
+                return findValidFileName(suggestedFileName+"1");
+            } else {
+                final int suffixNum = Integer.parseInt(suggestedFileName.substring(suggestedFileName.length()-1));
+                return findValidFileName(suggestedFileName.replace(Integer.toString(suffixNum),
+                        Integer.toString(suffixNum+1)));
+            }
+        } else {
+            return suggestedFileName;
+        }
+    }
+
+    public static void updateUserLocation(final PreferenceManager preferenceManager) {
+        final String locationUrl = "https://newbeta.cliqz.com/api/v1/config";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final URL url = new URL(locationUrl);
+                    final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    if (connection.getResponseCode() == 200) {
+                        final String response = readResponse(connection.getInputStream());
+                        final JSONObject responseJSON = new JSONObject(response);
+                        final String location = responseJSON.optString("location", "de");
+                        preferenceManager.setLastKnownLocation(location);
+                    }
+                    connection.disconnect();
+                } catch (IOException e) {
+                    Log.e(TAG, "IOEXception");
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing the response");
+                }
+            }
+        }).start();
+    }
+
+    public static String readResponse(InputStream inputStream) {
+        final StringBuilder builder = new StringBuilder("");
+        final char[] buffer = new char[1024];
+        final Reader reader = new InputStreamReader(inputStream);
+        try {
+            for (int read = reader.read(buffer); read > -1; read = reader.read(buffer)) {
+                builder.append(buffer, 0, read);
+            }
+            reader.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Can't read from connection", e);
+        }
+        return builder.toString();
+    }
+
 }

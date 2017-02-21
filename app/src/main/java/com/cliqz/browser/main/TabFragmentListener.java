@@ -1,11 +1,11 @@
 package com.cliqz.browser.main;
 
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.webview.ExtensionEvents;
 import com.cliqz.browser.webview.SearchWebView;
 import com.cliqz.browser.widget.SearchBar;
 
@@ -36,16 +36,21 @@ class TabFragmentListener implements SearchBar.Listener {
             fragment.hideKeyboard();
             if(mode == Mode.WEBPAGE) {
                 fragment.searchBar.showTitleBar();
+                if (fragment.antiTrackingDetails != null) {
+                    fragment.antiTrackingDetails.setVisibility(View.VISIBLE);
+                }
             }
         } else {
             fragment.bus.post(new Messages.AdjustPan());
             fragment.timings.setUrlBarFocusedTime();
-            // TODO: The next two lines should be in a method
             fragment.mSearchWebView.bringToFront();
+            fragment.disableUrlBarScrolling();
+            fragment.mSearchWebView.onQueryChanged("");
             fragment.inPageSearchBar.setVisibility(View.GONE);
             fragment.findInPage("");
             fragment.state.setMode(CliqzBrowserState.Mode.SEARCH);
             fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(), mode == Mode.SEARCH ? "cards" : "web");
+            fragment.mSearchWebView.notifyEvent(ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS);
         }
     }
 

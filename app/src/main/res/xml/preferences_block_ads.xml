@@ -12,4 +12,7 @@
     <Preference
         android:key="what_does_optimized_mean"
         android:title="@string/what_does_optimized_mean"/>
+    <Preference
+        android:key="need_to_download_data"
+        android:summary="@string/summary_adblock_data" />
 </PreferenceScreen>

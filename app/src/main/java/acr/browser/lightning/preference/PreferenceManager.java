@@ -3,6 +3,10 @@ package acr.browser.lightning.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.cliqz.browser.main.Countries;
+
+import java.util.Locale;
+
 import javax.inject.Singleton;
 
 import acr.browser.lightning.constant.Constants;
@@ -97,9 +101,15 @@ public class PreferenceManager {
         public static final String REFERRER_URL = "referrer_url";
         public static final String DISTRIBUTION = "distribution";
         public static final String DISTRIBUTION_EXCEPTION = "distribution_exception";
+        public static final String COUNTRY = "country";
+        public static final String SHOULD_SHOW_ONBOARDING = "should_show_onboarding";
+        public static final String SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION = "should_show_anti_tracking_description";
+        public static final String SHOULD_SHOW_SEARCH_DESCRIPTION = "should_show_search_description";
+        public static final String ATTRACK_ENABLED = "attrack_enabled";
 
         // TODO: Temporary fix for faulty autocompletion
         public static final String AUTO_COMPLETION_ENABLED = "auto_completion_enabled";
+        public static final String LAST_KNOWN_LOCATION = "last_known_location";
     }
 
     private final SharedPreferences mPrefs;
@@ -113,6 +123,7 @@ public class PreferenceManager {
     /**
      * Is adblocking enabled?
      * !!! As Richard asked on 2016/08/22 we should not enable adblocker by default !!!
+     *
      * @return true if adblocking is enabled, false otherwise
      */
     public boolean getAdBlockEnabled() {
@@ -304,7 +315,7 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.DO_NOT_TRACK, false);
     }
 
-    public boolean getRemoveIdentifyingHeadersEnabled(){
+    public boolean getRemoveIdentifyingHeadersEnabled() {
         return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, false);
     }
 
@@ -374,6 +385,7 @@ public class PreferenceManager {
 
     /**
      * AWS ARN Enpoint for push notification
+     *
      * @return The stored ARN endpoint or null if we don't have one
      */
     public String getARNEndpoint() {
@@ -383,6 +395,24 @@ public class PreferenceManager {
     public boolean getAutocompletionEnabled() {
         return mPrefs.getBoolean(Name.AUTO_COMPLETION_ENABLED, true);
     }
+
+    public String getLastKnownLocation() {
+        return mPrefs.getString(Name.LAST_KNOWN_LOCATION, "de");
+    }
+
+    public Countries getCountryChoice() {
+        final Countries country = Countries.safeValueOf(mPrefs.getString(Name.COUNTRY, getDefaultCountry()));
+        return country;
+    }
+
+    public boolean getShouldShowSearchDescription() {
+        return mPrefs.getBoolean(Name.SHOULD_SHOW_SEARCH_DESCRIPTION, true);
+    }
+
+    public boolean isAttrackEnabled() {
+        return mPrefs.getBoolean(Name.ATTRACK_ENABLED, true);
+    }
+
 
     private void putBoolean(String name, boolean value) {
         mPrefs.edit().putBoolean(name, value).apply();
@@ -400,7 +430,7 @@ public class PreferenceManager {
         mPrefs.edit().putLong(name, value).apply();
     }
 
-    public void setRemoveIdentifyingHeadersEnabled(boolean enabled){
+    public void setRemoveIdentifyingHeadersEnabled(boolean enabled) {
         putBoolean(Name.IDENTIFYING_HEADERS, enabled);
     }
 
@@ -604,7 +634,7 @@ public class PreferenceManager {
     }
 
     public void setTelemetrySequence(int telemetrySequence) {
-        telemetrySequence = (telemetrySequence+1) % 2147483647;
+        telemetrySequence = (telemetrySequence + 1) % 2147483647;
         putInt(Name.TELEMETRY_SEQUENCE, telemetrySequence);
     }
 
@@ -674,4 +704,25 @@ public class PreferenceManager {
         putBoolean(Name.AUTO_COMPLETION_ENABLED, value);
     }
 
+    public void setAttrackEnabled(boolean value) {
+        putBoolean(Name.ATTRACK_ENABLED, value);
+	}
+
+    public void setLastKnownLocation(String location) {
+        putString(Name.LAST_KNOWN_LOCATION, location);
+    }
+
+    public void setCountryChoice(Countries choice) {
+        putString(Name.COUNTRY, choice.name());
+    }
+
+    private String getDefaultCountry() {
+        final String deviceCountry = Locale.getDefault().getCountry().toLowerCase();
+        for (Countries country : Countries.values()) {
+            if (country.countryCode.equals(deviceCountry)) {
+                return country.name();
+            }
+        }
+        return Countries.germany.name();
+    }
 }

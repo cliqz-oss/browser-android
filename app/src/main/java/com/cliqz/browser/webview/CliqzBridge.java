@@ -111,10 +111,10 @@ CliqzBridge extends Bridge {
                     return;
                 }
 
-                final int start = jsonObject.optInt("start", 0);
-                final int end = jsonObject.optInt("end", bridge.historyDatabase.getHistoryItemsCount());
+                final int offset = jsonObject.optInt("offset", 0);
+                final int limit = jsonObject.optInt("limit", bridge.historyDatabase.getHistoryItemsCount());
 
-                final JsonArray items = bridge.historyDatabase.getHistoryItems(start, end);
+                final JsonArray items = bridge.historyDatabase.getHistoryItems(offset, limit);
                 final String callbackCode = buildItemsCallback(callback, "", items);
                 bridge.executeJavascript(String.format("%s(%s)", callback,items.toString()));
             }
@@ -144,9 +144,18 @@ CliqzBridge extends Bridge {
         isReady(new IAction() {
             @Override
             public void execute(Bridge bridge, Object data, String callback) {
-                bridge.bus.post(new Messages.HideLoadingScreen());
                 bridge.getWebView().extensionReady();
                 bridge.executeJavascript(String.format(Locale.US,  "%s(-1)", callback));
+            }
+        }),
+
+        /**
+         * Remove the loading screen
+         */
+        freshtabReady(new IAction() {
+            @Override
+            public void execute(Bridge bridge, Object data, String callback) {
+                // TODO Find a solution for this
             }
         }),
 

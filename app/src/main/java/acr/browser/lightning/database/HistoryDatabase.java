@@ -279,17 +279,13 @@ public class HistoryDatabase extends SQLiteOpenHelper {
         return timestamp;
     }
 
-    public synchronized JsonArray getHistoryItems(final int start, final int end) {
+    public synchronized JsonArray getHistoryItems(final int offset, final int limit) {
         final JsonArray results = new JsonArray();
-        if (start >= end) {
-            return results;
-        }
         final SQLiteDatabase db = dbHandler.getDatabase();
-        final int limit = end - start;
         final Cursor cursor =
                 db.rawQuery(res.getString(R.string.get_history_query_v5), new String[]{
                         Integer.toString(limit),
-                        Integer.toString(start)
+                        Integer.toString(offset)
                 });
         if (cursor.moveToFirst()) {
             final int idIndex = cursor.getColumnIndex(HistoryTable.ID);

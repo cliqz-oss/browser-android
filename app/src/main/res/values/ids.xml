@@ -19,4 +19,6 @@
     <item name="search_web_view" type="id"/>
     <item name="cliqz_web_view" type="id"/>
     <item name="request_desktop_site" type="id" />
+    <item name="control_center" type="id"/>
+    <item name="cc_icon" type="id"/>
 </resources>

@@ -3,7 +3,6 @@ package com.cliqz.browser.app;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -11,6 +10,7 @@ import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.di.components.AppComponent;
 import com.cliqz.browser.di.components.DaggerAppComponent;
 import com.cliqz.browser.di.modules.AppModule;
+import com.cliqz.browser.utils.FacebookWrapper;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -25,6 +25,9 @@ public class BrowserApp extends Application {
     public void onCreate() {
         super.onCreate();
         installMultidex();
+
+        // Initialize the SDK before executing any other operations
+        FacebookWrapper.initialize(this);
 
         LeakCanary.install(this);
         LookbackWrapper.init(this);

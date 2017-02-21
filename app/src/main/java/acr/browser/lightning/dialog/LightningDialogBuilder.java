@@ -23,7 +23,7 @@ import acr.browser.lightning.utils.Utils;
 
 /**
  * TODO Rename this class it doesn't build dialogs only for bookmarks
- *
+ * <p>
  * Created by Stefano Pacifici on 02/09/15, based on Anthony C. Restaino's code.
  */
 public class LightningDialogBuilder {
@@ -49,47 +49,70 @@ public class LightningDialogBuilder {
     }
 
     // TODO There should be a way in which we do not need an activity reference to dowload a file
-    public void showLongPressImageDialog(@NonNull final String url,
-                                          @NonNull final String userAgent) {
-        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
+    public void showLongPressImageDialog(final String linkUrl, @NonNull final String imageUrl,
+                                         @NonNull final String userAgent) {
+        telemetry.sendLongPressSignal(TelemetryKeys.IMAGE);
+        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(imageUrl);
         telemetry.sendLongPressSignal(isYoutubeVideo ? TelemetryKeys.VIDEO : TelemetryKeys.IMAGE);
-        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        telemetry.sendImageDialogSignal(TelemetryKeys.NEW_TAB,
-                                isYoutubeVideo ? TelemetryKeys.VIDEO : TelemetryKeys.IMAGE);
-                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(url));
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        telemetry.sendImageDialogSignal(TelemetryKeys.OPEN,
-                                isYoutubeVideo ? TelemetryKeys.VIDEO : TelemetryKeys.IMAGE);
-                        eventBus.post(new BrowserEvents.OpenUrlInCurrentTab(url));
-                        break;
-                    case DialogInterface.BUTTON_NEUTRAL:
-                        telemetry.sendImageDialogSignal(TelemetryKeys.DOWNLOAD,
-                                isYoutubeVideo ? TelemetryKeys.VIDEO : TelemetryKeys.IMAGE);
-                        Utils.downloadFile(activity, url, userAgent, "attachment", false);
-                        break;
-                }
-            }
+
+        final CharSequence[] linkAndImageOptions = new CharSequence[]{
+                activity.getString(R.string.action_copy),
+                activity.getString(R.string.download_image),
+                activity.getString(R.string.open_image_new_tab),
+                activity.getString(R.string.open_image_forget_tab),
+                activity.getString(R.string.open_link_new_tab),
+                activity.getString(R.string.open_link_forget_tab)
+        };
+        final CharSequence[] imageOptions = new CharSequence[]{
+                activity.getString(R.string.action_copy),
+                activity.getString(R.string.download_image),
+                activity.getString(R.string.open_image_new_tab),
+                activity.getString(R.string.open_image_forget_tab)
         };
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(url.replace(Constants.HTTP, ""))
-                .setCancelable(true)
-                .setMessage(isYoutubeVideo ? R.string.dialog_youtube_video : R.string.dialog_image)
-                .setPositiveButton(R.string.action_new_tab, dialogClickListener)
-                .setNegativeButton(R.string.action_open, dialogClickListener)
-                .setNeutralButton(R.string.action_download, dialogClickListener)
-                .show();
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        dialogBuilder.setTitle(linkUrl == null ? imageUrl : linkUrl)
+                .setItems(linkUrl == null || linkUrl.equals(imageUrl) ? imageOptions : linkAndImageOptions,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                switch (which) {
+                                    case 0:
+                                        final ClipboardManager clipboardManager = (ClipboardManager)
+                                                activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                                        final ClipData clipData = ClipData.newPlainText("url",
+                                                linkUrl == null ? imageUrl : linkUrl);
+                                        clipboardManager.setPrimaryClip(clipData);
+                                        break;
+                                    case 1:
+                                        if (imageUrl.startsWith("data:image/jpeg;base64,")) {
+                                            Utils.writeBase64ToStorage(activity, imageUrl);
+                                        } else {
+                                            Utils.downloadFile(activity, imageUrl, userAgent, "attachment", false);
+                                        }
+                                        break;
+                                    case 2:
+                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, false));
+                                        break;
+                                    case 3:
+                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, true));
+                                        break;
+                                    case 4:
+                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, false));
+                                        break;
+                                    case 5:
+                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, true));
+                                        break;
+                                }
+                            }
+                        });
+        dialogBuilder.show();
     }
 
     public void showLongPressLinkDialog(final String url, final String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.LINK);
         final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
-        final CharSequence[] mOptions = new CharSequence[] {
+        final CharSequence[] mOptions = new CharSequence[]{
                 activity.getString(R.string.action_copy),
                 activity.getString(R.string.open_in_new_tab),
                 activity.getString(R.string.open_in_incognito_tab),

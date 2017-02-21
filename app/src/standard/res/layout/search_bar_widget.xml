@@ -51,34 +51,37 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/anti_tracking_details"
+    <RelativeLayout
+        android:id="@+id/control_center"
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_weight="0"
-        android:background="#2CBA84"
-        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:elevation="2dp"
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="16dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="5dp"
-            android:layout_gravity="center"
+            android:id="@+id/cc_icon"
+            android:layout_width="26dp"
+            android:layout_height="20dp"
+            android:paddingLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:scaleType="fitXY"
-            android:src="@drawable/shield" />
+            android:src="@drawable/ic_cc_green" />
 
         <TextView
             android:id="@+id/tracker_counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
             android:paddingRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:text="0"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:focusable="false" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

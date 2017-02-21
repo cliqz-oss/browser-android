@@ -15,7 +15,8 @@ public enum SearchEngines {
     // duckDuckGoLite("DuckDuckGoLite", Constants.DUCK_LITE_SEARCH, "file:///android_asset/duckduckgo.png"),
     // baidu("Baidu", Constants.BAIDU_SEARCH, "file:///android_asset/baidu.png"),
     // yandex("Yandex", Constants.YANDEX_SEARCH, "file:///android_asset/yandex.png");
-    ecosia("Ecosia", Constants.ECOSIA_SEARCH, "file:///android_asset/ecosia.png");
+    ecosia("Ecosia", Constants.ECOSIA_SEARCH, "file:///android_asset/ecosia.png"),
+    startpage("StartPage", Constants.STARTPAGE_SEARCH, "file:///android_asset/startpage.png");
 
     public static SearchEngines safeValueOf(String value) {
         try {

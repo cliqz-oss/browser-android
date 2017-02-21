@@ -1,6 +1,5 @@
 package com.cliqz.browser.main;
 
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -8,10 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.controlcenter.AntiTrackingFragment;
 import com.cliqz.browser.utils.Telemetry;
 import com.squareup.otto.Bus;
 
@@ -26,18 +26,14 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
 
     private ArrayList<TrackerDetailsModel> trackerDetails;
     private final boolean isIncognito;
-    private final Context context;
-    private final PopupWindow popup;
     private final Bus bus;
     private final Telemetry telemetry;
 
-    public TrackersListAdapter(boolean isIncognito, AntiTrackingDialog dialog) {
+    public TrackersListAdapter(boolean isIncognito, AntiTrackingFragment antiTrackingFragment) {
         this.trackerDetails = new ArrayList<>();
         this.isIncognito = isIncognito;
-        this.context = dialog.activity;
-        this.bus = dialog.bus;
-        this.popup = dialog;
-        this.telemetry = dialog.telemetry;
+        this.bus = antiTrackingFragment.bus;
+        this.telemetry = antiTrackingFragment.telemetry;
     }
 
     @Override
@@ -53,15 +49,15 @@ public class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapte
         final TrackerDetailsModel details = trackerDetails.get(position);
         holder.trackerName.setText(details.companyName);
         holder.trackerCount.setText(Integer.toString(trackerDetails.get(position).trackerCount));
-        holder.trackerName.setTextColor(ContextCompat.getColor(context, textColor));
-        holder.trackerCount.setTextColor(ContextCompat.getColor(context, textColor));
-        holder.infoImage.getDrawable().setColorFilter(ContextCompat.getColor(context, textColor), PorterDuff.Mode.SRC_ATOP);
+        holder.trackerName.setTextColor(ContextCompat.getColor(BrowserApp.getAppContext(), textColor));
+        holder.trackerCount.setTextColor(ContextCompat.getColor(BrowserApp.getAppContext(), textColor));
+        holder.infoImage.getDrawable().setColorFilter(ContextCompat.getColor(BrowserApp.getAppContext(), textColor), PorterDuff.Mode.SRC_ATOP);
         holder.infoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final int position = holder.getAdapterPosition();
                 telemetry.sendAntiTrackingInfoSignal(position);
-                popup.dismiss();
+                bus.post(new Messages.DismissControlCenter());
                 final String companyName = details.companyName.replaceAll("\\s", "-");
                 final String url =
                         String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);

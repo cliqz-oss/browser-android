@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -23,6 +24,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -58,6 +60,7 @@ import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
+import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
 
@@ -69,16 +72,16 @@ import acr.browser.lightning.utils.WebUtils;
  */
 public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
 
-    private final static String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
+    private static final String OVERVIEW_FRAGMENT_TAG = "overview_fragment";
+    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
+    protected static final String TAB_FRAGMENT_TAG = "tab_fragment";
+    private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
 
     private ActivityComponent mActivityComponent;
 
-    private static final String OVERVIEW_FRAGMENT_TAG = "overview_fragment";
-    static final String TAB_FRAGMENT_TAG = "tab_fragment";
-    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     private TabsManager.Builder firstTabBuilder;
     private OverviewFragment mOverViewFragment;
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityComponent = BrowserApp.getAppComponent().plus(new MainActivityModule(this));
+        mActivityComponent = BrowserApp.getAppComponent().plus(createActivityModule());
         mActivityComponent.inject(this);
         bus.register(this);
         // TODO reintroduce savedInstanceState logic
@@ -142,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 //        }
 
 //        mFreshTabFragment = new FreshTabFragment();
+        boolean isRestored = false;
+        if (savedInstanceState != null) {
+            tabsManager.restoreTabs(savedInstanceState);
+            isRestored = true;
+        }
         searchWebView = new SearchWebView(this);
         searchWebView.setBackgroundColor(ContextCompat.getColor(this, R.color.normal_tab_primary_color));
         mOverViewFragment = new OverviewFragment();
@@ -163,17 +171,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             isNotificationClicked = false;
             isIncognito = false;
         }
-        if(isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
+        if (isNotificationClicked) {
+            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK, false);
         }
-        firstTabBuilder = tabsManager.buildTab();
-        firstTabBuilder.setForgetMode(isIncognito);
-        if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
-            setIntent(null);
-            firstTabBuilder.setUrl(url);
-        } else if (query != null) {
-            setIntent(null);
-            firstTabBuilder.setQuery(query);
+        if (!isRestored || url != null || query != null) {
+            firstTabBuilder = tabsManager.buildTab();
+            firstTabBuilder.setForgetMode(isIncognito);
+            if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
+                setIntent(null);
+                firstTabBuilder.setUrl(url);
+            } else if (query != null) {
+                setIntent(null);
+                firstTabBuilder.setQuery(query);
+            }
         }
 
         final boolean onBoardingShown =
@@ -202,15 +212,45 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final int previousVersionCode = preferenceManager.getVersionCode();
         if (previousVersionCode == 0) {
             preferenceManager.setVersionCode(BuildConfig.VERSION_CODE);
-        } else if(currentVersionCode > previousVersionCode) {
+        } else if (currentVersionCode > previousVersionCode) {
             preferenceManager.setVersionCode(currentVersionCode);
             telemetry.sendLifeCycleSignal(TelemetryKeys.UPDATE);
         }
+
+        if (shouldUpdateWebview()) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.update_webview_msg)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id="+WEBVIEW_PACKAGE_NAME)));
+                            finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        Utils.updateUserLocation(preferenceManager);
+
+    }
+
+    protected MainActivityModule createActivityModule() {
+        return new MainActivityModule(this);
     }
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
-        firstTabBuilder.show();
+        if (firstTabBuilder != null) {
+            firstTabBuilder.show();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(Constants.SAVED_STATES, tabsManager.saveState());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -228,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     protected void onResumeFragments() {
         super.onResumeFragments();
         final String name = getCurrentVisibleFragmentName();
-        if(!name.isEmpty() && !mIsColdStart) {
+        if (!name.isEmpty() && !mIsColdStart) {
             telemetry.sendStartingSignals(name, "warm");
         }
         mIsColdStart = false;
@@ -243,8 +283,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final String name = getCurrentVisibleFragmentName();
         timings.setAppStartTime();
         //Ask for "Dangerous Permissions" on runtime
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if(preferenceManager.getLocationEnabled()
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (preferenceManager.getLocationEnabled()
                     && onBoardingHelper.isOnboardingCompleted()
                     && !askedGPSPermission
                     && checkSelfPermission(LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
@@ -268,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         //Asks for permission if GPS is not enabled on the device.
         // Note: Will ask for permission even if location is enabled, but not using GPS
-        if(!locationCache.isGPSEnabled()
+        if (!locationCache.isGPSEnabled()
                 && !preferenceManager.getNeverAskGPSPermission()
                 && onBoardingHelper.isOnboardingCompleted()
                 && preferenceManager.getLocationEnabled()
@@ -291,12 +331,17 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final String query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
         final boolean isNotificationClicked = bundle != null ? bundle.getBoolean(Constants.NOTIFICATION_CLICKED) : false;
         final TabsManager.Builder builder = tabsManager.buildTab();
-        if(url != null && Patterns.WEB_URL.matcher(url).matches()) {
+        if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
             builder.setUrl(url);
+        } else if (url != null) {
+            final String guessedUrl = UrlUtils.smartUrlFilter(url, false, null);
+            if (guessedUrl != null) {
+                builder.setUrl(url);
+            }
         }
         builder.setQuery(query);
-        if(isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK);
+        if (isNotificationClicked) {
+            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK, false);
         }
         builder.show();
     }
@@ -359,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         tabsManager.pauseAllTabs();
         String context = getCurrentVisibleFragmentName();
         timings.setAppStopTime();
-        if(!context.isEmpty()) {
+        if (!context.isEmpty()) {
             telemetry.sendClosingSignals(TelemetryKeys.CLOSE, context);
         }
         locationCache.stop();
@@ -377,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         super.onDestroy();
         bus.unregister(this);
         String context = getCurrentVisibleFragmentName();
-        if(!context.isEmpty()) {
+        if (!context.isEmpty()) {
             telemetry.sendClosingSignals(TelemetryKeys.KILL, context);
         }
     }
@@ -445,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private void createTab(String url, boolean isIncognito, boolean showImmediately) {
         final TabsManager.Builder builder = tabsManager.buildTab();
         builder.setForgetMode(isIncognito);
-        if(url != null && Patterns.WEB_URL.matcher(url).matches()) {
+        if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
             builder.setUrl(url);
         }
         if (showImmediately) {
@@ -471,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             mCustomViewHandler = null;
         }
     }
+
     @Subscribe
     public void goToOverView(Messages.GoToOverview event) {
         telemetry.resetBackNavigationVariables(-1);
@@ -489,7 +535,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-//    @Subscribe
+    //    @Subscribe
 //    public void goToSearch(Messages.GoToSearch event) {
     @Subscribe
     public void onQueryNotified(final CliqzMessages.NotifyQuery event) {
@@ -552,12 +598,34 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final TabFragment currentTab = tabsManager.getCurrentTab();
         if (mOverViewFragment != null && mOverViewFragment.isVisible()) {
             name = "past";
-        } else if (currentTab != null){
+        } else if (currentTab != null) {
             name = currentTab.state.getMode() == CliqzBrowserState.Mode.SEARCH ? "cards" : "web";
         } else {
             name = "cards";
         }
         return name;
+    }
+
+    private boolean shouldUpdateWebview() {
+        //Only need to check for android 5 and 6
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ||
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return false;
+        }
+        final PackageManager packageManager = getPackageManager();
+        try {
+            final PackageInfo packageInfo = packageManager.getPackageInfo(WEBVIEW_PACKAGE_NAME, 0);
+            final String versionName = packageInfo.versionName;
+            final int versionNumber = Integer.parseInt(versionName.substring(0,2));
+            if (versionNumber < BuildConfig.MINIMUM_WEBVIEW_VERSION) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Package Android System WebView is not found");
+            return false;
+        }
     }
 
     private final BroadcastReceiver onComplete = new BroadcastReceiver() {
@@ -605,7 +673,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final int id = item.getItemId();
-        switch(id) {
+        switch (id) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -633,4 +701,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     public ActivityComponent getActivityComponent() {
         return mActivityComponent;
     }
+
+    public SearchWebView getSearchWebView() {
+        return searchWebView;
+    }
+
 }

@@ -54,4 +54,8 @@
     <color name="showcase_background_color">#f22d3e50</color>
     <color name="showcase_title_color">#fff</color>
     <color name="showcase_message_color">#fff</color>
+
+    <color name="security_enabled">#2EBA85</color>
+    <color name="security_disabled">#F5C03E</color>
+    <color name="security_global_disbaled">#9B9B9B</color>
 </resources>

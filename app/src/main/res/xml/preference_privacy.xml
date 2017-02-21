@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="attrack"
+            android:title="@string/showcase_antitracking_title"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="location"
@@ -17,7 +20,6 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="password"
-            android:summary="@string/recommended"
             android:title="@string/password" />
         <Preference
             android:key="clear_history"

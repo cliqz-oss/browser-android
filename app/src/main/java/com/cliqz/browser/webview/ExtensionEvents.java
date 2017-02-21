@@ -18,4 +18,5 @@ public final class ExtensionEvents {
     public static final String CLIQZ_EVENT_CLEAR_FAVORITES = "mobile-browser:clear-favorites";
     public static final String CLIQZ_EVENT_CLEAR_HISTORY = "mobile-browser:clear-history";
     public static final String CLIQZ_EVENT_PERFORM_SHOWCASE_CARD_SWIPE = "mobile-browser:showcase-swipe-card";
+    public static final String CLIQZ_EVENT_URL_BAR_FOCUS = "mobile-browser:urlbar-focus";
 }

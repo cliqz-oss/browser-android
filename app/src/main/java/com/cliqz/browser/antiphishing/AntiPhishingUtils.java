@@ -3,9 +3,6 @@ package com.cliqz.browser.antiphishing;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 /**
  * @author Stefano Pacifici
  * @date 2016/07/11
