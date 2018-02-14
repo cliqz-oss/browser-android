@@ -1,54 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar_container"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_gravity="center_vertical"
+    android:background="@color/fresh_tab_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/overflow_menu"
+        android:layout_width="@dimen/toolbar_menu_item_w"
+        android:layout_height="@dimen/toolbar_menu_item_h"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/toolbar_padding"
+        android:layout_marginEnd="@dimen/toolbar_padding"
+        android:background="?attr/actionBarItemBackground">
+
+        <ImageView
+            android:id="@+id/overflow_menu_icon"
+            android:layout_width="@dimen/toolbar_menu_icon_w"
+            android:layout_height="@dimen/toolbar_menu_icon_h"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_menu_overflow"
+            android:tint="?android:attr/textColorPrimary"/>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/menu_overview"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/toolbar_menu_item_w"
+        android:layout_height="@dimen/toolbar_menu_item_h"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/overflow_menu"
+        android:layout_toStartOf="@id/overflow_menu"
         android:background="?attr/actionBarItemBackground">
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/open_tabs_count"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="@dimen/toolbar_menu_icon_w"
+            android:layout_height="@dimen/toolbar_menu_icon_h"
             android:layout_gravity="center"
             android:background="@drawable/tab_counter"
+            app:backgroundTint="?android:attr/textColorPrimary"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold" />
     </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/yt_download_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_toLeftOf="@id/menu_overview"
+        android:layout_toStartOf="@id/menu_overview"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_file_download"
+        android:background="@color/transparent"
+        android:visibility="gone"/>
+    
+    <ImageButton
+        android:id="@+id/reader_mode_button"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_toLeftOf="@id/yt_download_icon"
+        android:layout_toStartOf="@id/yt_download_icon"
+        app:srcCompat="@drawable/ic_reader_mode_off"
+        android:background="@color/transparent"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:visibility="gone"/>
 
     <com.cliqz.browser.widget.SearchBar
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@+id/overflow_menu"
-        android:layout_toRightOf="@+id/menu_overview" />
-
-    <FrameLayout
-        android:id="@+id/overflow_menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:background="?attr/actionBarItemBackground">
-
-        <ImageView
-            android:id="@+id/overflow_menu_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_menu_overflow" />
-    </FrameLayout>
+        android:layout_toLeftOf="@id/reader_mode_button"
+        android:layout_toStartOf="@id/reader_mode_button"
+        android:paddingLeft="@dimen/toolbar_padding"
+        android:paddingRight="@dimen/toolbar_padding" />
 
 </RelativeLayout>

@@ -3,10 +3,10 @@ package acr.browser.lightning.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 
 import com.cliqz.browser.R;
 
-import acr.browser.lightning.utils.ThemeUtils;
 import acr.browser.lightning.utils.Utils;
 
 /**
@@ -56,8 +56,9 @@ class LightningViewTitle {
         }
     }
 
+    @NonNull
     public String getTitle() {
-        return mTitle;
+        return mTitle != null ? mTitle : "";
     }
 
     public Bitmap getFavicon() {

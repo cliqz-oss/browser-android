@@ -9,15 +9,17 @@
 package com.cliqz.browser.filechooser;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,7 +29,6 @@ import android.widget.TextView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
-import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 
 import java.io.File;
@@ -41,8 +42,6 @@ public class FileChooserDialog implements View.OnClickListener {
     private final Activity activity;
     private ListView list;
     private TextView title;
-    private Button cancelButton;
-    private Button okButton;
 
     private Dialog dialog;
     private File currentPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -78,12 +77,12 @@ public class FileChooserDialog implements View.OnClickListener {
         this.activity = activity;
         this.currentPath = path.getAbsoluteFile();
         dialog = new Dialog(activity);
-        final View content =
+        @SuppressLint("InflateParams") final View content =
                 LayoutInflater.from(activity).inflate(R.layout.file_chooser_layout, null);
         list = (ListView) content.findViewById(android.R.id.list);
         title = (TextView) content.findViewById(android.R.id.title);
-        cancelButton = (Button) content.findViewById(android.R.id.button1);
-        okButton = (Button) content.findViewById(android.R.id.button2);
+        final Button cancelButton = (Button) content.findViewById(android.R.id.button1);
+        final Button okButton = (Button) content.findViewById(android.R.id.button2);
 
         okButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
@@ -102,16 +101,14 @@ public class FileChooserDialog implements View.OnClickListener {
             }
         });
         dialog.setContentView(content);
-        dialog.getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        final Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        }
 
         if (sFolderDrawable == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                sFolderDrawable = activity.getDrawable(R.drawable.ic_folder);
-            } else {
-                sFolderDrawable = activity.getResources().getDrawable(R.drawable.ic_folder);
-            }
+                sFolderDrawable = ContextCompat.getDrawable(activity, R.drawable.ic_folder);
             // This is due the fact that activity.getDrawable(...) can either throw an exception or
-            // return null
             if (sFolderDrawable != null) {
                 sFolderDrawable.setBounds(0, 0, sFolderDrawable.getIntrinsicWidth(), sFolderDrawable.getIntrinsicHeight());
             }
@@ -120,7 +117,6 @@ public class FileChooserDialog implements View.OnClickListener {
 
     public void showDialog() {
         PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 new PermissionsResultAction() {
                     @Override
                     public void onGranted() {
@@ -132,8 +128,7 @@ public class FileChooserDialog implements View.OnClickListener {
                     public void onDenied(String permission) {
 
                     }
-                }
-        );
+                }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
 

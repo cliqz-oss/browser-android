@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/controlCenterBackground"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/trackers_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:padding="10dp"
+        android:textColor="@color/attrack_header_color"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/blocked_or_activ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/trackers_count"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="10dp"
+        android:text="@string/blocked"
+        android:textColor="@color/toolbar_icon_color_normal"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/website_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/blocked_or_activ"
+        android:layout_centerHorizontal="true"
+        android:textSize="12sp"
+        android:singleLine="true"/>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/donut"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:id="@+id/whitelist_button_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_below="@id/donut"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="50dp"
+        android:background="@drawable/trust_website_wrapper_bg"
+        android:padding="10dp">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/attrack_shield"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            app:srcCompat="@drawable/ic_shield"
+            android:layout_gravity="center_vertical"/>
+
+        <Button
+            android:id="@+id/whitelist_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="Trust Site"
+            android:background="#00ffffff"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/antiphishing_text"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="11sp"
+        android:textColor="#333333"/>
+
+</RelativeLayout>

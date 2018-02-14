@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/incognito_tab_primary_color">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="49dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/forget_tab_icon" />
+
+        <TextView
+            android:text="@string/incognito_tab_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/incognito_title"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/toolbar_icon_color_incognito"
+            android:textSize="18sp"
+            android:textStyle="normal|bold"
+            android:paddingBottom="15dp" />
+
+        <TextView
+            android:text="@string/incognito_tab_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/incognito_desc"
+            android:gravity="center_horizontal"
+            tools:layout_marginTop="15dp"
+            android:textColor="@color/toolbar_icon_color_incognito" />
+    </LinearLayout>
+</RelativeLayout>

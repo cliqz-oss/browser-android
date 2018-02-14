@@ -3,46 +3,26 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/tools"
     android:background="@color/white"
-    android:elevation="2dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="right"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/in_page_search_bar"
-        android:background="@color/background_material_light">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_expand"
-            android:id="@+id/in_page_search_down_button"
-            android:contentDescription="@string/in_page_search_next_result"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_collapse"
-            android:id="@+id/in_page_search_up_button"
-            android:contentDescription="@string/in_page_search_prev_result"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_delete"
-            android:id="@+id/in_page_search_cancel_button"
-            android:contentDescription="@string/close_in_page_search"/>
-    </LinearLayout>
+    android:elevation="2dp"
+    app:ignore="NamespaceTypo">
 
     <FrameLayout
+        android:id="@+id/local_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/local_container"
-        android:layout_above="@id/in_page_search_bar"
         android:layout_alignParentTop="true">
 
         <include layout="@layout/onboarding_helper" />
         <!-- include layout="@layout/loading_screen" android:id="@+id/loading_screen" / -->
+
+        <WebView
+            android:id="@+id/reader_mode_webview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="56dp"
+            android:background="@color/white" />
 
     </FrameLayout>
 
@@ -50,9 +30,9 @@
         android:id="@+id/progress_view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_alignParentTop="true"
         custom:backgroundColor="#00000000"
         custom:bidirectionalAnimate="false"
-        custom:progressColor="?attr/colorAccent"
-        android:layout_alignParentTop="true"/>
+        custom:progressColor="@color/primary_color" />
 
 </RelativeLayout>

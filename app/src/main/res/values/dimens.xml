@@ -1,13 +1,34 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="navigation_width">260dp</dimen>
-    <dimen name="search_bar_height">48dp</dimen>
-    <dimen name="abc_action_button_min_width_overflow_material">48dp</dimen>
-    <dimen name="browser_menu_horizontal_margin">10dp</dimen>
-    <dimen name="browser_menu_vertical_margin">10dp</dimen>
+    <dimen tools:override="true" name="abc_action_button_min_width_overflow_material">48dp</dimen>
     <dimen name="app_defaultsize_w">632.0dp</dimen>
     <dimen name="app_defaultsize_h">598.0dp</dimen>
     <dimen name="app_minimumsize_w">632.0dp</dimen>
     <dimen name="app_minimumsize_h">598.0dp</dimen>
+    <dimen name="search_edit_text_h">56.0dp</dimen>
+    <dimen name="toolbar_menu_item_h">36.0dp</dimen>
+    <dimen name="toolbar_menu_item_w">36.0dp</dimen>
+    <dimen name="toolbar_menu_icon_h">24.0dp</dimen>
+    <dimen name="toolbar_menu_icon_w">24.0dp</dimen>
+    <dimen name="toolbar_padding">12.0dp</dimen>
+    <dimen name="control_center_layout_w">50.0dp</dimen>
+    <dimen name="title_bar_h">32dp</dimen>
+    <dimen name="fallback_logo_text_size">80sp</dimen>
+    <dimen name="tab_icon_size">100dp</dimen>
+    <dimen name="favorites_side_margins">20dp</dimen>
+    <dimen name="favorites_top_margins">5dp</dimen>
+    <dimen name="overview_placeholder_icon_h">50.0dp</dimen>
+    <dimen name="overview_placeholder_icon_w">50.0dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_no_fav_size">16sp</dimen>
+    <dimen name="on_boarding_title">30.0sp</dimen>
+    <dimen name="on_boarding_content">20.0sp</dimen>
+    <dimen name="on_boarding_dismiss">22.0sp</dimen>
+    <dimen name="freshtab_icons_size">50dp</dimen>
+    <!--generic dimensions in accordance with the material design guidelines-->
+    <dimen name="minimum_clickable_width">48dp</dimen>
+    <dimen name="minimum_clickable_height">48dp</dimen>
+    <dimen name="icon_width">24dp</dimen>
+    <dimen name="icon_height">24dp</dimen>
 </resources>

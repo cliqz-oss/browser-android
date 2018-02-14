@@ -7,19 +7,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.widget.Toast;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.abtesting.AvailableTests;
+import com.cliqz.browser.telemetry.TelemetryKeys;
 
 public class AboutSettingsFragment extends BaseSettingsFragment {
 
-    private int mCounter = 1;
+    private int mAppVerCounter = 1;
+    private int mExtVerCounter = 1;
 
     private static final String SETTINGS_VERSION = "pref_version";
     private static final String EXTENSION_VERSION = "pref_ext_ver";
     private static final String AMAZON_ARN = "pref_arn";
-    private static final String CONTACT = "pref_contact";
     private long startTime;
 
     @Override
@@ -30,7 +32,7 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preference_about);
 
-        Preference version = findPreference(SETTINGS_VERSION);
+        final Preference version = findPreference(SETTINGS_VERSION);
         version.setSummary(getVersion());
         version.setOnPreferenceClickListener(versionClickListener);
 
@@ -44,8 +46,9 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
             getPreferenceScreen().removePreference(arn);
         }
 
-        Preference extVersion = findPreference(EXTENSION_VERSION);
+        final Preference extVersion = findPreference(EXTENSION_VERSION);
         extVersion.setSummary(BuildConfig.CLIQZ_EXT_VERSION);
+        extVersion.setOnPreferenceClickListener(extensionClickListener);
     }
 
     private String getVersion() {
@@ -57,14 +60,31 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
             new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    if (mCounter < 10) {
-                        mCounter++;
+                    if (mAppVerCounter < 10) {
+                        mAppVerCounter++;
                         return false;
                     } else {
                         final Intent intent = new Intent(Intent.ACTION_VIEW,
                                 Uri.parse("http://i.imgur.com/4lpVkTS.gif"));
                         getActivity().startActivity(intent);
-                        mCounter = 0;
+                        mAppVerCounter = 0;
+                        return true;
+                    }
+                }
+            };
+
+    private final Preference.OnPreferenceClickListener extensionClickListener =
+            new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (mExtVerCounter < 10) {
+                        mExtVerCounter++;
+                        return false;
+                    } else {
+                        for (AvailableTests test: AvailableTests.values()) {
+                            mPreferenceManager.setABTestPreference(test.preferenceName, true);
+                        }
+                        Toast.makeText(getActivity(), "All features activated", Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 }

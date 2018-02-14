@@ -29,20 +29,6 @@ public class WebUtils {
         WebStorage.getInstance().deleteAllData();
     }
 
-    /* public static void clearHistory(@NonNull Context context) {
-        BrowserApp.getAppComponent().getHistoryDatabase().deleteHistory();
-        WebViewDatabase m = WebViewDatabase.getInstance(context);
-        m.clearFormData();
-        m.clearHttpAuthUsernamePassword();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            //noinspection deprecation
-            m.clearUsernamePassword();
-            //noinspection deprecation
-            WebIconDatabase.getInstance().removeAllIcons();
-        }
-        Utils.trimCache(context);
-    } */
-
     public static void clearCache(Context context) {
         final WebView webView = new WebView(context);
         webView.clearCache(true);

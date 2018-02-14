@@ -1,45 +1,43 @@
 package com.cliqz.browser.main;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcel;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.utils.Telemetry;
-import com.squareup.otto.Bus;
+import com.cliqz.browser.utils.RelativelySafeUniqueId;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.utils.WebViewPersister;
+import com.cliqz.nove.Bus;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.view.LightningView;
 
 /**
- * @author Ravjit Singh
+ * @author Ravjit Uppal
+ * @author Stefano Pacifici
  */
 public class TabsManager {
 
+    @SuppressWarnings("WeakerAccess")
     public class Builder {
         private boolean mWasCreated = false;
         private boolean mForgetMode = false;
+        @SuppressWarnings("unused")
         private TabFragment mFromTab = null;
         private String mUrl = null;
         private String mQuery = null;
         private Message mMessage = null;
-        private Bundle mSavedState = null;
+        private String mId = null;
+        private String mTitle = "";
+        private boolean mRestore = false;
 
         private Builder() {}
 
@@ -48,7 +46,6 @@ public class TabsManager {
             return this;
         }
 
-        @SuppressWarnings("WeakerAccess")
         public Builder setOriginTab(TabFragment from) {
             mFromTab = from;
             return this;
@@ -69,8 +66,18 @@ public class TabsManager {
             return this;
         }
 
-        public Builder setState(Bundle bundle) {
-            mSavedState = bundle;
+        public Builder setId(String id) {
+            mId = id;
+            return this;
+        }
+
+        public Builder setTitle(String title) {
+            mTitle = title != null ? title : "";
+            return this;
+        }
+
+        public Builder setRestore(@SuppressWarnings("SameParameterValue") boolean restore) {
+            this.mRestore = restore;
             return this;
         }
 
@@ -82,29 +89,29 @@ public class TabsManager {
 
             final TabFragment newTab = new TabFragment();
             final Bundle arguments = new Bundle();
-            arguments.putBoolean(Constants.KEY_IS_INCOGNITO, mForgetMode);
+            arguments.putBoolean(MainActivity.EXTRA_IS_PRIVATE, mForgetMode);
             if (mUrl != null) {
-                arguments.putString(Constants.KEY_URL, mUrl);
+                arguments.putString(TabFragment.KEY_URL, mUrl);
             }
             if (mQuery != null) {
-                arguments.putString(Constants.KEY_QUERY, mQuery);
+                arguments.putString(TabFragment.KEY_QUERY, mQuery);
             }
             if (mMessage != null) {
-                arguments.putParcelable(Constants.KEY_NEW_TAB_MESSAGE, mMessage);
+                arguments.putParcelable(TabFragment.KEY_NEW_TAB_MESSAGE, mMessage);
             }
-            if (mSavedState != null) {
-                arguments.putBundle(Constants.SAVED_STATE_BUNDLE, mSavedState);
+
+            if (mId == null) {
+                mId = RelativelySafeUniqueId.createNewUniqueId();
+            }
+            arguments.putString(TabFragment.KEY_TAB_ID, mId);
+            arguments.putBoolean(TabFragment.KEY_FORCE_RESTORE, mRestore);
+
+            if (mTitle != null) {
+                arguments.putString(TabFragment.KEY_TITLE, mTitle);
             }
             newTab.setArguments(arguments);
-            final int position;
-            final int foundPosition = mFromTab != null ? mFragmentsList.indexOf(mFromTab) : -1;
-            if (foundPosition < 0 || foundPosition >= mFragmentsList.size() - 1) {
-                position = mFragmentsList.size();
-                mFragmentsList.add(newTab);
-            } else {
-                position = foundPosition + 1;
-                mFragmentsList.add(position, newTab);
-            }
+            final int position = mFragmentsList.size();
+            mFragmentsList.add(newTab);
             return position;
         }
 
@@ -120,7 +127,7 @@ public class TabsManager {
 
     private final List<TabFragment> mFragmentsList = new ArrayList<>();
     private final FragmentManager mFragmentManager;
-    private Context mContext;
+    private int currentVisibleTab = -1;
 
     @Inject
     Telemetry telemetry;
@@ -128,9 +135,11 @@ public class TabsManager {
     @Inject
     Bus bus;
 
-    public TabsManager(Context context, FragmentManager fragmentManager) {
+    @Inject
+    WebViewPersister persister;
+
+    public TabsManager(FragmentManager fragmentManager) {
         mFragmentManager = fragmentManager;
-        mContext = context;
         BrowserApp.getAppComponent().inject(this);
     }
 
@@ -145,17 +154,18 @@ public class TabsManager {
      * @return The position of the currently visible Tab
      */
     public int getCurrentTabPosition() {
-        return 0;
+        return currentVisibleTab;
     }
 
     /**
      * @return The instance of currently visible Tab
      */
+    @Nullable
     public TabFragment getCurrentTab() {
-        if (mFragmentsList.isEmpty()) {
+        if (getCurrentTabPosition() == -1) {
             return null;
         } else {
-            return mFragmentsList.get(0);
+            return mFragmentsList.get(getCurrentTabPosition());
         }
     }
 
@@ -171,15 +181,13 @@ public class TabsManager {
      *
      * @param position Position of the tab to switch to
      */
-    public synchronized void showTab(int position) {
-        if (position < 0 || position >= mFragmentsList.size()) {
-            return;
-        }
-        final TabFragment tab = mFragmentsList.remove(position);
-        mFragmentsList.add(0, tab);
+    public void showTab(int position) {
+        final TabFragment tab = mFragmentsList.get(position);
         mFragmentManager.beginTransaction()
                 .replace(R.id.content_frame, tab, MainActivity.TAB_FRAGMENT_TAG)
                 .commit();
+        currentVisibleTab = position;
+        persister.visit(tab.getTabId());
     }
 
     /**
@@ -203,6 +211,7 @@ public class TabsManager {
      */
     synchronized void closeTab(LightningView view) {
         int position = findTabFor(view);
+        // We have also to delete the persisted state for the tab
         final int currentTab = getCurrentTabPosition();
         if (position > -1) {
             deleteTab(position);
@@ -234,31 +243,48 @@ public class TabsManager {
      * @param position Position of the Tab to be deleted
      */
     public synchronized void deleteTab(int position) {
-        if (position < 0 || position >= mFragmentsList.size()) {
+        if (position >= mFragmentsList.size()) {
             return;
         }
 
-        TabFragment reference = mFragmentsList.remove(position);
+        TabFragment reference = mFragmentsList.get(position);
         if (reference == null) {
             return;
         }
+        mFragmentsList.remove(position);
+        persister.remove(reference.getTabId());
         if (reference.mLightningView != null) {
+            reference.mLightningView.stopLoading();
             reference.mLightningView.onDestroy();
         }
         if (mFragmentsList.size() == 0) {
+            currentVisibleTab = 0;
             buildTab().show();
+        } else {
+            currentVisibleTab = currentVisibleTab > 0 ? currentVisibleTab - 1 : 0;
         }
     }
 
+    /**
+     * Handles closing all tabs from the 3-dots menu
+     */
+    public void deleteAllTabs() {
+        for (TabFragment fragment : mFragmentsList) {
+            if (fragment.mLightningView != null) {
+                fragment.mLightningView.stopLoading();
+                fragment.mLightningView.onDestroy();
+            }
+            persister.remove(fragment.getTabId());
+        }
+
+        mFragmentsList.clear();
+        currentVisibleTab = 0;
+        buildTab().show();
+    }
 
     void pauseAllTabs() {
         if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
             return;
-        }
-        //Any webview is enough. Calling pauseTimers() on any one webview will pause timers of all webviews
-        final WebView firstWebview = mFragmentsList.get(0).mLightningView.getWebView();
-        if (firstWebview != null) {
-            firstWebview.pauseTimers();
         }
         for (TabFragment tabFragment : mFragmentsList) {
             if (tabFragment.mLightningView == null) {
@@ -275,11 +301,6 @@ public class TabsManager {
         if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
             return;
         }
-        //Any webview is enough. Calling resumeTimers() on any one webview will resume timers of all webviews
-        final WebView firstWebview = mFragmentsList.get(0).mLightningView.getWebView();
-        if (firstWebview != null) {
-            firstWebview.resumeTimers();
-        }
         for (TabFragment tabFragment : mFragmentsList) {
             if (tabFragment.mLightningView == null) {
                 continue;
@@ -291,104 +312,39 @@ public class TabsManager {
         }
     }
 
-    void setShouldReset(boolean shouldReset) {
-        for (TabFragment tabFragment : mFragmentsList) {
-            tabFragment.state.setShouldReset(shouldReset);
-        }
+    /**
+     * Delete all the stored tabs data, use this one if you do not want to create a new empty tab.
+     */
+    void clearTabsData() {
+        persister.clearTabsData();
     }
 
-    ArrayList<Bundle> saveState() {
-        final ArrayList<Bundle> states = new ArrayList<>();
-        for (int i = 0; i < getTabCount(); i++) {
-            final Bundle bundle = new Bundle();
-            final Bundle saveState = new Bundle();
-            final TabFragment tab = getTab(i);
-            final WebView webView = tab.mLightningView != null ? tab.mLightningView.getWebView() : null;
-            if (webView != null) {
-                webView.saveState(saveState);
-                writeBundleToStorage(saveState, Constants.BUNDLE_PREFIX+i);
-                bundle.putString(Constants.SAVED_STATE_BUNDLE, Constants.BUNDLE_PREFIX+i);
-            } else if (tab.getArguments().getBundle(Constants.SAVED_STATE_BUNDLE) != null) {
-                //case for saving the state of a tab which had a backforward list but was never shown.
-                // It's saved state exists in the bundle
-                writeBundleToStorage(tab.getArguments().getBundle(Constants.SAVED_STATE_BUNDLE),
-                        Constants.BUNDLE_PREFIX+i);
-                bundle.putString(Constants.SAVED_STATE_BUNDLE, Constants.BUNDLE_PREFIX+i);
-            }
-            bundle.putString(Constants.SAVED_URL, tab.state.getUrl());
-            bundle.putString(Constants.SAVED_TITLE, tab.state.getTitle());
-            bundle.putBoolean(Constants.KEY_IS_INCOGNITO, tab.state.isIncognito());
-            states.add(bundle);
+    boolean restoreTabs() {
+        final List<Bundle> storedTabs = persister.loadTabsMetaData();
+        long lastVisited = 0;
+        for (final Bundle bundle: storedTabs) {
+            lastVisited = Math.max(lastVisited, bundle.getLong(TabBundleKeys.LAST_VISIT, 0L));
         }
-        return states;
-    }
-
-    void restoreTabs(Bundle savedInstanceState) {
-        final ArrayList<Bundle> states = savedInstanceState.getParcelableArrayList(Constants.SAVED_STATES);
-        if (states == null || states.isEmpty()) {
-            return;
-        }
-        for (int i = 0; i < states.size(); i++) {
-            final Bundle bundle = states.get(i);
-            final Bundle savedState = readBundleFromStorage(bundle.getString(Constants.SAVED_STATE_BUNDLE));
-            final String url = bundle.getString(Constants.SAVED_URL);
-            final Builder tabBuilder = buildTab().setState(savedState)
-                    .setForgetMode(bundle.getBoolean(Constants.KEY_IS_INCOGNITO))
+        for (final Bundle bundle: storedTabs) {
+            // final Bundle savedState = readBundleFromStorage(bundle.getString(TabFragment.SAVED_STATE_BUNDLE));
+            final boolean isIncognito = bundle.getBoolean(TabBundleKeys.IS_INCOGNITO);
+            final String title = bundle.getString(TabBundleKeys.TITLE);
+            final String id = bundle.getString(TabBundleKeys.ID);
+            final String url = bundle.getString(TabBundleKeys.URL);
+            final Builder tabBuilder = buildTab()
+                    .setForgetMode(isIncognito)
+                    .setRestore(true)
+                    .setId(id)
+                    .setTitle(title)
                     .setUrl(url);
-            final int position;
-            if (i == 0) {
-                position = tabBuilder.show();
+            final long visitTime = bundle.getLong(TabBundleKeys.LAST_VISIT, 0L);
+            if (lastVisited == visitTime) {
+                tabBuilder.show();
             } else {
-                position = tabBuilder.create();
+                tabBuilder.create();
             }
-            getTab(position).state.setUrl(url);
-            getTab(position).state.setTitle(bundle.getString(Constants.SAVED_TITLE));
         }
+        return !storedTabs.isEmpty();
     }
-
-    private void writeBundleToStorage(final Bundle bundle, final @NonNull String name) {
-        final File outputFile = new File(mContext.getFilesDir(), name);
-        try {
-            final FileOutputStream outputStream = new FileOutputStream(outputFile);
-            final Parcel parcel = Parcel.obtain();
-            parcel.writeBundle(bundle);
-            outputStream.write(parcel.marshall());
-            outputStream.flush();
-            parcel.recycle();
-            outputStream.close();
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Unable to write bundle to storage");
-        }
-    }
-
-    private Bundle readBundleFromStorage(final String name) {
-        if (name == null) {
-            return null;
-        }
-        final File inputFile = new File(mContext.getFilesDir(), name);
-        try {
-            final FileInputStream inputStream = new FileInputStream(inputFile);
-            final Parcel parcel = Parcel.obtain();
-            final byte[] data = new byte[(int) inputStream.getChannel().size()];
-            //noinspection ResultOfMethodCallIgnored
-            inputStream.read(data, 0, data.length);
-            parcel.unmarshall(data, 0, data.length);
-            parcel.setDataPosition(0);
-            Bundle out = parcel.readBundle(ClassLoader.getSystemClassLoader());
-            out.putAll(out);
-            parcel.recycle();
-            inputStream.close();
-            return out;
-        } catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "Unable to read bundle from storage");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //noinspection ResultOfMethodCallIgnored
-            inputFile.delete();
-        }
-        return null;
-    }
-
 }
 

@@ -1,6 +1,7 @@
 package acr.browser.lightning.view;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.Resources;
@@ -9,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
@@ -20,23 +20,16 @@ import android.webkit.WebView;
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
-import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.Messages;
-import com.squareup.otto.Bus;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.cliqz.nove.Bus;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
-import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.UrlUtils;
-import acr.browser.lightning.utils.Utils;
 
 /**
- * @author Stefano Pacifici based on Anthony C. Restaino code
- * @date 2015/09/21
+ * @author Anthony C. Restaino
+ * @author Stefano Pacifici
  */
 class LightningChromeClient extends WebChromeClient {
 
@@ -49,6 +42,7 @@ class LightningChromeClient extends WebChromeClient {
     // These fields are used to avoid multiple history point creation when we receive multiple
     // titles for the same web page
     private String mLastUrl = null;
+    private String mLastTitle = null;
 
     LightningChromeClient(Activity activity, LightningView lightningView) {
         super();
@@ -68,59 +62,32 @@ class LightningChromeClient extends WebChromeClient {
     public void onReceivedIcon(WebView view, Bitmap icon) {
         lightningView.mTitle.setFavicon(icon);
         //TODO it's probably irrelevant now
-        eventBus.post(new BrowserEvents.TabsChanged());
-        eventBus.post(new Messages.UpdateTabsOverview());
-        cacheFavicon(view.getUrl(), icon);
-    }
-
-    /**
-     * Naive caching of the favicon according to the domain name of the URL
-     *
-     * @param icon the icon to cache
-     */
-    private static void cacheFavicon(final String url, final Bitmap icon) {
-        if (icon == null) return;
-        final Uri uri = Uri.parse(url);
-        if (uri.getHost() == null) {
-            return;
+        eventBus.post(new Messages.UpdateFavIcon());
+        if (lightningView.lightingViewListenerListener != null) {
+            lightningView.lightingViewListenerListener.onFavIconLoaded(icon);
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String hash = String.valueOf(uri.getHost().hashCode());
-                Log.d(Constants.TAG, "Caching icon for " + uri.getHost());
-                FileOutputStream fos = null;
-                try {
-                    File image = new File(BrowserApp.getAppContext().getCacheDir(), hash + ".png");
-                    fos = new FileOutputStream(image);
-                    icon.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                    fos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    Utils.close(fos);
-                }
-            }
-        }).start();
     }
-
 
     @Override
     public void onReceivedTitle(WebView view, String title) {
         final String url = view != null ? view.getUrl() : null;
         if (title != null && !title.isEmpty() &&
-                !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
+                !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url) && !lightningView.isUrlSSLError()) {
             lightningView.mTitle.setTitle(title);
             eventBus.post(new Messages.UpdateTitle());
-            eventBus.post(new Messages.UpdateTabsOverview());
         }
-        eventBus.post(new BrowserEvents.TabsChanged());
         if (url != null
                 && !url.startsWith("cliqz://")
-                && !lightningView.isIncognitoTab()
-                && !url.equals(mLastUrl)) {
-            lightningView.addItemToHistory(title, url);
-            mLastUrl = url;
+                && !lightningView.isIncognitoTab()) {
+            if (!url.equals(mLastUrl)) {
+                lightningView.addItemToHistory(title, url);
+                mLastUrl = url;
+                mLastTitle = title;
+            } else if (title != null && !title.isEmpty() && !title.equals(mLastTitle)) {
+                // urlView is the same but the titleView changed
+                lightningView.updateHistoryItemTitle(title);
+                mLastTitle = title;
+            }
         }
         lightningView.isHistoryItemCreationEnabled = true;
         if (UrlUtils.isYoutubeVideo(url)) {
@@ -128,12 +95,13 @@ class LightningChromeClient extends WebChromeClient {
         } else {
             eventBus.post(new Messages.SetVideoUrls(null));
         }
+        lightningView.setUrlSSLError(false);
     }
 
     @Override
     public void onGeolocationPermissionsShowPrompt(final String origin,
                                                    final GeolocationPermissions.Callback callback) {
-        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, PERMISSIONS, new PermissionsResultAction() {
+        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
             @Override
             public void onGranted() {
                 final boolean remember = true;
@@ -169,7 +137,7 @@ class LightningChromeClient extends WebChromeClient {
             public void onDenied(String permission) {
                 //TODO show message and/or turn off setting
             }
-        });
+        }, PERMISSIONS);
     }
 
 
@@ -229,6 +197,7 @@ class LightningChromeClient extends WebChromeClient {
      * @return A view that should be used to display the state
      * of a video's loading progress.
      */
+    @SuppressLint("InflateParams")
     @Override
     public View getVideoLoadingProgressView() {
         LayoutInflater inflater = LayoutInflater.from(activity);

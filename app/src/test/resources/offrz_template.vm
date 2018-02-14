@@ -1,0 +1,94 @@
+[
+   {
+      "trigger_uid":"59f1f676bace8b578cf0160d",
+      "campaign_id":"",
+      "parent_trigger_ids":[
+         "mobile-root"
+      ],
+      "trigger_id":"AudibleMobile_V1",
+      "version":1,
+      "validity":[
+         $start,
+         $end
+      ],
+      "paused":false,
+      "ttl":3600,
+      "condition":[
+         "$and",
+         [
+            [
+               "$if_pref",
+               [
+                  "config_location",
+                  "de"
+               ]
+            ],
+            [
+               "$not",
+               [
+                  [
+                     "$offer_added",
+                     [
+                        "AudibleMobile_V1",
+                        1.21e+06
+                     ]
+                  ]
+               ]
+            ]
+         ]
+      ],
+      "actions":[
+         [
+            "$log",
+            [
+               "trigger AudibleHub_TG1_O1_V1 fired"
+            ]
+         ],
+         [
+            "$show_offer",
+            [
+               "#url",
+               {
+                  "campaign_id":"AudibleHub",
+                  "display_id":"AudibleMobile_V1_D",
+                  "filter_info":{
+                     "eval_expression":"generic_comparator('offer_removed','l_u_ts','\u003e=',172800) \u0026\u0026 (generic_comparator('offer_closed','l_u_ts','\u003e=',172800) || generic_comparator('offer_closed','counter','\u003c=',1)) \u0026\u0026 generic_comparator('offer_closed','counter','\u003c=',2) \u0026\u0026 generic_comparator('offer_closed','l_u_ts','\u003e=',900) \u0026\u0026  ( generic_comparator('offer_dsp_session','l_u_ts','\u003e=',172800)  ||  generic_comparator('offer_dsp_session','counter','\u003c=',2) ) \u0026\u0026 generic_comparator('offer_ca_action','l_u_ts','\u003e=',28800) \u0026\u0026 generic_comparator('offer_dsp_session','l_u_ts','\u003e=',300)"
+                  },
+                  "offer_id":"AudibleMobile_V1",
+                  "rs_dest":[
+                     "offers-cc",
+                     "offers-cc-tooltip"
+                  ],
+                  "rule_info":{
+                     "display_time_secs":120,
+                     "type":"exact_match",
+                     "url":[
+
+                     ]
+                  },
+                  "ui_info":{
+                     "styles":{
+                        "call-to-action-bg-color":"#e741",
+                        "call-to-action-color":"#fff"
+                     },
+                     "template_data":{
+                        "call_to_action":{
+                           "target":"",
+                           "text":"Zum Angebot",
+                           "url":"http://www.audible.de/myoffrz"
+                        },
+                        "code":"MYOFFRZ17",
+                        "conditions":"Das Angebot gilt nur für Neukunden, nur im Rahmen der Aktion und ist nur einmal pro Person einlösbar.",
+                        "desc":"Nur für kurze Zeit - Code eingeben, zwei Hörbücher aussuchen und anhören",
+                        "logo_url":"https://cdn.cliqz.com/extension/offers/audibleDE_Logo.png",
+                        "title":"Audible - 2 Hörbücher kostenlos",
+                        "voucher_classes":""
+                     },
+                     "template_name":"ticket_template"
+                  }
+               }
+            ]
+         ]
+      ]
+   }
+]

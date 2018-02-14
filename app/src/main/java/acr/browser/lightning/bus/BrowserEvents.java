@@ -12,24 +12,12 @@ import android.webkit.WebChromeClient.FileChooserParams;
 import acr.browser.lightning.view.LightningView;
 
 /**
- * Created by Stefano Pacifici on 26/08/15.
+ * @author Stefano Pacifici
  */
 public final class BrowserEvents {
 
     private BrowserEvents() {
         // No instances
-    }
-
-    /**
-     * Notify the BookmarksFragment and TabsFragment that the user pressed the back button
-     */
-    public static class UserPressedBack {
-    }
-
-    /**
-     * Notify that the user closed or opened a tab
-     */
-    public static class TabsChanged {
     }
 
     /**
@@ -68,15 +56,23 @@ public final class BrowserEvents {
     public final static class OpenUrlInNewTab {
         public final String url;
         public final boolean isIncognito;
+        public final boolean showImmediately;
 
         public OpenUrlInNewTab(final String url) {
             this.url = url;
             this.isIncognito = false;
+            this.showImmediately = false;
         }
 
         public OpenUrlInNewTab(final String url, boolean isIncognito) {
             this.url = url;
             this.isIncognito = isIncognito;
+            this.showImmediately = false;
+        }
+        public OpenUrlInNewTab(final String url, boolean isIncognito, boolean showImmediately) {
+            this.url = url;
+            this.isIncognito = isIncognito;
+            this.showImmediately = showImmediately;
         }
     }
 
@@ -87,17 +83,11 @@ public final class BrowserEvents {
     }
 
     /**
-     * Notify the browser to hide the Action Bar
-     */
-    public static class HideToolBar {
-    }
-
-    /**
      * Notify the browser to update the URL in the URL bar
      */
     public static class UpdateUrl {
         public final String url;
-        public final Boolean isShortUrl;
+        final Boolean isShortUrl;
 
         public UpdateUrl(final String url, final Boolean isShortUrl) {
             this.url = url;
@@ -184,7 +174,7 @@ public final class BrowserEvents {
     public static class ShowCustomView {
         public final View view;
         public final WebChromeClient.CustomViewCallback callback;
-        public final Integer requestedOrientation;
+        final Integer requestedOrientation;
 
         public ShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
             this.view = view;

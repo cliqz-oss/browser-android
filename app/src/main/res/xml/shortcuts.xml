@@ -1,0 +1,22 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="25">
+    <shortcut
+        android:shortcutId="top_news"
+        android:enabled="true"
+        android:icon="@drawable/ic_news_shortcut"
+        android:shortcutShortLabel="@string/top_news">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="cliqz://NEWS_SHORTCUT_INTENT" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="last_site"
+        android:enabled="true"
+        android:icon="@drawable/ic_last_site_shortcut"
+        android:shortcutShortLabel="@string/last_site">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="cliqz://LAST_SITE_SHORTCUT_INTENT"/>
+    </shortcut>
+</shortcuts>

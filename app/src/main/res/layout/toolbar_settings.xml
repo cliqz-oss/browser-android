@@ -12,6 +12,7 @@
         android:background="?toolbarSettingsBackground"
         android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
+        android:theme="@style/Widget.Cliqz.ActionBar"
         custom:contentInsetEnd="0dp"
         custom:contentInsetStart="0dp" />
 

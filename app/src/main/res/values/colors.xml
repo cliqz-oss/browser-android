@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="black">#ff000000</color>
+    <color name="black">#000000</color>
     <color name="gray_dark">#222222</color>
     <color name="gray_medium">#cdcdcd</color>
     <color name="white">#ffffff</color>
     <color name="gray_list_bg">#0d000000</color>
 
-    <color name="primary_color">#E0E0E0</color>
-    <color name="secondary_color">#4D000000</color>
-    <color name="accent_color">#0073EF</color>
+    <color name="primary_color">#00aef0</color>
+    <color name="secondary_color">#4d000000</color>
+    <color name="accent_color">#00aef0</color>
 
+
+    <color name="text_color_primary">@color/white</color>
     <color name="drawer_background">#ffffff</color>
     <color name="drawer_background_dark">#424242</color>
 
+    <color name="primary_color_settings">#E0E0E0</color>
     <color name="secondary_color_settings">#9C9C9C</color>
     <color name="secondary_color_settings_dark">#2E2E2E</color>
 
@@ -33,9 +36,6 @@
     <color name="icon_light_theme">#FFFFFFFF</color>
     <color name="icon_dark_theme">#FF000000</color>
 
-    <color name="error_red">#F44336</color>
-    <color name="onboarding_background">#5DB0EA</color>
-
     <color name="incognito_tab_primary_color">#4A4A4A</color>
     <color name="normal_tab_primary_color">#e8e8e8</color>
     <color name="history_primary_color">#F87140</color>
@@ -53,9 +53,42 @@
 
     <color name="showcase_background_color">#f22d3e50</color>
     <color name="showcase_title_color">#fff</color>
-    <color name="showcase_message_color">#fff</color>
+    <color name="showcase_message_color">#ABB2BA</color>
 
     <color name="security_enabled">#2EBA85</color>
     <color name="security_disabled">#F5C03E</color>
     <color name="security_global_disbaled">#9B9B9B</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_laser">#ffcc0000</color>
+    <color name="possible_result_points">#c0ffbd21</color>
+
+    <color name="topsites_background">#40000000</color>
+    <color name="onboarding_background">#b8dfee</color>
+    <color name="query_suggestion_bg">#eeeeee</color>
+    <color name="default_tab_bg">#00AEF0</color>
+    <color name="advertising">#CB55CD</color>
+    <color name="analytics">#87D7EF</color>
+    <color name="comments">#43B7C5</color>
+    <color name="customer_interaction">#FDC257</color>
+    <color name="video_player">#EF671E</color>
+    <color name="adult_content">#ECAFC2</color>
+    <color name="essential">#FC9734</color>
+    <color name="social_media">#388EE8</color>
+    <color name="whitelist_website">#A2CF79</color>
+    <color name="unknown">#1b1b1b</color>
+    <color name="misc">#9b9b9b</color>
+    <color name="hosting">#A3CAF8</color>
+    <color name="attrack_header_color">#00AEF0</color>
+    <color name="control_center_green">#A2CF79</color>
+    <color name="attrack_red_1">#F25A68</color>
+    <color name="attrack_red_2">#F57B86</color>
+    <color name="attrack_red_3">#F79CA4</color>
+    <color name="attrack_red_4">#FBCDD1</color>
+    <color name="text_highlight_color">#ade1f5</color>
+    <color name="fresh_tab_background">#E7ECEE</color>
+    <color name="fresh_tab_incognito_background">#1B1B1B</color>
+    <color name="fresh_tab_placeholder_color">#DBE1E4</color>
+    <color name="text_hint_color_press">#89000000</color>
+    <color name="text_hint_color_default">#60000000</color>
 </resources>

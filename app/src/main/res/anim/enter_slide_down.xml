@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shareInterpolator="false">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:shareInterpolator="false"
+    tools:ignore="UnusedResources">
     <translate
         android:duration="@integer/state_animation_duration"
         android:fromYDelta="-100%"

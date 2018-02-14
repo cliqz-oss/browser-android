@@ -13,7 +13,6 @@ import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -22,9 +21,8 @@ import acr.browser.lightning.utils.Utils;
 
 /**
  * @author Stefano Pacifici
- * @date 2016/09/12
  */
-public class FileChooserHelper {
+class FileChooserHelper {
 
     private static final String TAG = FileChooserHelper.class.getSimpleName();
 
@@ -32,6 +30,8 @@ public class FileChooserHelper {
     private Class mCallbackType = null;
 
     private final WeakReference<MainActivity> mainActivityWeakReference;
+    // Store temporary picture path
+    private File mPhotoFile;
 
     FileChooserHelper(MainActivity mainActivity) {
         mainActivityWeakReference = new WeakReference<>(mainActivity);
@@ -85,20 +85,21 @@ public class FileChooserHelper {
         permissionsArray = permissions.toArray(permissionsArray);
         PermissionsManager
                 .getInstance()
-                .requestPermissionsIfNecessaryForResult(mainActivity, permissionsArray, action);
+                .requestPermissionsIfNecessaryForResult(mainActivity, action, permissionsArray);
     }
 
     private void resetCallback(boolean callIt) {
         final ValueCallback callback = mCallback;
         mCallback = null;
         mCallbackType = null;
+        mPhotoFile = null;
         if (callback != null && callIt) {
             //noinspection unchecked
             callback.onReceiveValue(null);
         }
     }
 
-    private void showIntentChooser(String title, String[] acceptTypes, boolean captureEnabled) {
+    private void showIntentChooser(String title, boolean captureEnabled) {
         final MainActivity mainActivity = mainActivityWeakReference.get();
         final ValueCallback callback = mCallback;
         if (mainActivity == null) {
@@ -106,28 +107,20 @@ public class FileChooserHelper {
             return;
         }
 
-        final Intent intent;
+        Intent intent;
         if (captureEnabled) {
-            final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(mainActivity.getPackageManager()) != null) {
+            try {
+                final Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(mainActivity.getPackageManager()) == null) {
+                    throw new Exception("No camera intent");
+                }
                 // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = Utils.createImageFile();
-                    takePictureIntent.putExtra("PhotoPath", photoFile.toURI());
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
-                    Log.e(TAG, "Unable to create Image File", ex);
-                }
-
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile.toURI());
-                    intent = takePictureIntent;
-                } else {
-                    intent = null;
-                }
-            } else {
+                mPhotoFile = Utils.createImageFile();
+                takePictureIntent.putExtra("PhotoPath", Uri.fromFile(mPhotoFile));
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+                intent = takePictureIntent;
+            } catch (Exception e) {
+                Log.e(TAG, "Can't capture pictures", e);
                 intent = null;
             }
         } else {
@@ -146,27 +139,35 @@ public class FileChooserHelper {
         }
     }
 
-    public void notifyResultCancel() {
+    void notifyResultCancel() {
        resetCallback(true);
     }
 
-    public void notifyResultOk(Intent data) {
+    void notifyResultOk(Intent data) {
         final ValueCallback callback = mCallback;
-        final Class callbackType = mCallbackType;
-        final Uri result = data == null ? null : data.getData();
-        if (callback != null) {
-            if (callbackType == Uri.class) {
-                //noinspection unchecked
-                callback.onReceiveValue(result);
-            } else if (callbackType == Uri[].class) {
-                //noinspection unchecked
-                callback.onReceiveValue(new Uri[] { result });
-            } else {
-                //noinspection unchecked
-                callback.onReceiveValue(null);
-            }
-            mCallback = null;
+        if (callback == null) {
+            return;
         }
+        final Class callbackType = mCallbackType;
+        final Uri result;
+        if (mPhotoFile != null) {
+            result = Uri.fromFile(mPhotoFile);
+        } else if (data != null) {
+           result = data.getData();
+        } else {
+            return;
+        }
+        if (callbackType == Uri.class) {
+            //noinspection unchecked
+            callback.onReceiveValue(result);
+        } else if (callbackType == Uri[].class && result != null) {
+            //noinspection unchecked
+            callback.onReceiveValue(new Uri[] { result });
+        } else {
+            //noinspection unchecked
+            callback.onReceiveValue(null);
+        }
+        resetCallback(false);
     }
 
     class PermissionsAction extends PermissionsResultAction {
@@ -174,7 +175,7 @@ public class FileChooserHelper {
         final boolean captureEnabled;
         final String title;
 
-        public PermissionsAction(String title, String[] acceptTypes, boolean captureEnabled) {
+        PermissionsAction(String title, String[] acceptTypes, boolean captureEnabled) {
             this.acceptTypes = acceptTypes;
             this.captureEnabled = captureEnabled;
             this.title = title;
@@ -182,7 +183,7 @@ public class FileChooserHelper {
 
         @Override
         public void onGranted() {
-            showIntentChooser(title, acceptTypes, captureEnabled);
+            showIntentChooser(title, captureEnabled);
         }
 
         @Override

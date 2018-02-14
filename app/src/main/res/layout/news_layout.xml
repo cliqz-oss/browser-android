@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/news_list_divider"
+    android:paddingBottom="10dp"
+    android:paddingEnd="5dp"
+    android:paddingStart="5dp"
+    android:paddingTop="10dp">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/icon_view"
+        android:layout_width="@dimen/freshtab_icons_size"
+        android:layout_height="@dimen/freshtab_icons_size"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        app:roundWithOverlayColor="@color/white"
+        app:roundedCornerRadius="5dp"
+        app:srcCompat="@color/secondary_color_settings"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/url_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/icon_view"
+        android:layout_toEndOf="@id/icon_view"
+        android:layout_toRightOf="@id/icon_view"
+        android:maxLines="1"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:textColor="@color/gray_medium"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/title_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/icon_view"
+        android:layout_toEndOf="@id/icon_view"
+        android:layout_toRightOf="@id/icon_view"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:textColor="@color/black"
+        android:textSize="12sp" />
+
+</RelativeLayout>

@@ -3,30 +3,23 @@
     <header
         android:fragment="com.cliqz.browser.settings.GeneralSettingsFragment"
         android:title="@string/settings_general" />
-    <!-- <header
-        android:fragment="com.cliqz.browser.fragment.DisplaySettingsFragment"
-        android:title="@string/settings_display" /> -->
     <header
         android:fragment="com.cliqz.browser.settings.PrivacySettingsFragment"
         android:title="@string/settings_privacy" />
-    <!--
-    Removed as 1.0.2r2, restore if needed. The AdvancedSettingsFragment was removed after 9bf1786.
-    <header
-        android:fragment="com.cliqz.browser.settings.AdvancedSettingsFragment"
-        android:title="@string/settings_advanced" /> -->
     <header
         android:fragment="com.cliqz.browser.settings.HumanWebSettings"
         android:title="@string/humanweb" />
     <header
         android:fragment="com.cliqz.browser.settings.AdBlockSettings"
-        android:title="@string/settings_block_ads" />
+        android:title="@string/settings_block_ads"
+        android:id="@+id/ad_block"/>
     <header
         android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
         android:title="@string/settings_about"
         android:summary="@string/settings_about_explain" />
     <header
         android:title="@string/rate_us"
-        android:id="@+id/rate_us"/>
+        android:id="@+id/rate_us" />
     <header
         android:title="@string/report_site"
         android:id="@+id/report_site"/>
@@ -37,7 +30,9 @@
         android:title="@string/tips_and_tricks"
         android:id="@+id/tips_and_tricks" />
     <header
+        android:title="@string/myoffrz_settings_header"
+        android:id="@+id/myoffrz" />
+    <header
         android:title="@string/contact_cliqz"
         android:id="@+id/feedback" />
-
 </preference-headers>

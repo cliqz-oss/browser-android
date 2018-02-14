@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright 2014 A.C.R. Development -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:icon="@mipmap/ic_launcher"/>
+</manifest>

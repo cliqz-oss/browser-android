@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:constantSize="true">
+    <item android:state_checked="false"
+        android:state_enabled="true"
+        android:drawable="@drawable/ic_star_hollow" />
+    <item android:state_checked="false"
+        android:state_enabled="false"
+        android:drawable="@drawable/ic_star_hollow_disabled" />
+    <item android:state_checked="true"
+        android:state_enabled="true"
+        android:drawable="@drawable/ic_star" />
+    <item android:state_checked="true"
+        android:state_enabled="false"
+        android:drawable="@drawable/ic_star_hollow_disabled" />
+</selector>

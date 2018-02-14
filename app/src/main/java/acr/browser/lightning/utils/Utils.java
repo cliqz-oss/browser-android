@@ -28,6 +28,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -38,7 +39,11 @@ import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,12 +54,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.download.DownloadHandler;
@@ -69,8 +77,7 @@ public final class Utils {
 
     public static void downloadFile(final Activity activity, final String url,
                                     final String userAgent, final String contentDisposition, final boolean isYouTubeVideo) {
-        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsResultAction() {
+        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
             @Override
             public void onGranted() {
                 String fileName = URLUtil.guessFileName(url, null, null);
@@ -84,8 +91,7 @@ public final class Utils {
             public void onDenied(String permission) {
                 // TODO Show Message
             }
-        });
-
+        }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     public static Intent newEmailIntent(String address, String subject,
@@ -124,7 +130,7 @@ public final class Utils {
         if (view == null) {
             return;
         }
-        Snackbar.make(view, resource, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, resource, Snackbar.LENGTH_LONG).show();
     }
 
     /**
@@ -137,7 +143,7 @@ public final class Utils {
         if (view == null) {
             return;
         }
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
     /**
@@ -153,7 +159,7 @@ public final class Utils {
         if (view == null) {
             return;
         }
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG)
                 .setAction(action, eventListener)
                 .show();
     }
@@ -433,7 +439,7 @@ public final class Utils {
         FileOutputStream fos;
         try {
             if (base64ImageData != null) {
-                final File outputFile = new File(downloadLocation, findValidFileName("image")+".jpg");
+                final File outputFile = new File(downloadLocation, findValidFileName("image") + ".jpg");
                 if (!outputFile.exists()) {
                     outputFile.createNewFile();
                 }
@@ -443,7 +449,13 @@ public final class Utils {
                 fos.flush();
                 fos.close();
                 //Below code is necessary to make the file visible in Downloads/Photos app
-                final Uri contentUri = Uri.fromFile(outputFile);
+                final Uri contentUri;
+                if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    contentUri = FileProvider.getUriForFile(activity,
+                            activity.getApplicationContext().getPackageName() + ".provider", outputFile);
+                } else {
+                    contentUri = Uri.fromFile(outputFile);
+                }
                 final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 mediaScanIntent.setData(contentUri);
                 activity.sendBroadcast(mediaScanIntent);
@@ -454,6 +466,7 @@ public final class Utils {
                         final Intent intent = new Intent();
                         intent.setAction(Intent.ACTION_VIEW);
                         intent.setDataAndType(contentUri, "image/jpeg");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         activity.startActivity(intent);
                     }
                 };
@@ -468,14 +481,14 @@ public final class Utils {
     //recursive function to find a unique file name for the new download
     private static String findValidFileName(String suggestedFileName) {
         final String downloadLocation = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
-        final File outputFile = new File(downloadLocation, suggestedFileName+".jpg");
+        final File outputFile = new File(downloadLocation, suggestedFileName + ".jpg");
         if (outputFile.exists()) {
             if (suggestedFileName.equals("image")) {
-                return findValidFileName(suggestedFileName+"1");
+                return findValidFileName(suggestedFileName + "1");
             } else {
-                final int suffixNum = Integer.parseInt(suggestedFileName.substring(suggestedFileName.length()-1));
+                final int suffixNum = Integer.parseInt(suggestedFileName.substring(suggestedFileName.length() - 1));
                 return findValidFileName(suggestedFileName.replace(Integer.toString(suffixNum),
-                        Integer.toString(suffixNum+1)));
+                        Integer.toString(suffixNum + 1)));
             }
         } else {
             return suggestedFileName;
@@ -519,6 +532,83 @@ public final class Utils {
             Log.e(TAG, "Can't read from connection", e);
         }
         return builder.toString();
+    }
+
+    public static String getPostDataString(JSONObject params) throws UnsupportedEncodingException, JSONException {
+        final StringBuilder result = new StringBuilder();
+        boolean first = true;
+        final Iterator<String> itr = params.keys();
+        while (itr.hasNext()) {
+            final String key = itr.next();
+            final Object value = params.get(key);
+            if (first) {
+                first = false;
+            } else {
+                result.append("&");
+            }
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
+        return result.toString();
+    }
+
+
+    // @TODO Moaz use ReadableMap instead of converting JSON
+    public static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
+        JSONObject object = new JSONObject();
+        ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+        while (iterator.hasNextKey()) {
+            String key = iterator.nextKey();
+            switch (readableMap.getType(key)) {
+                case Null:
+                    object.put(key, JSONObject.NULL);
+                    break;
+                case Boolean:
+                    object.put(key, readableMap.getBoolean(key));
+                    break;
+                case Number:
+                    object.put(key, readableMap.getDouble(key));
+                    break;
+                case String:
+                    object.put(key, readableMap.getString(key));
+                    break;
+                case Map:
+                    object.put(key, convertMapToJson(readableMap.getMap(key)));
+                    break;
+                case Array:
+                    object.put(key, convertArrayToJson(readableMap.getArray(key)));
+                    break;
+            }
+        }
+        return object;
+    }
+
+    // @TODO Moaz use ReadableArray instead of converting JSON
+    public static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < readableArray.size(); i++) {
+            switch (readableArray.getType(i)) {
+                case Null:
+                    break;
+                case Boolean:
+                    array.put(readableArray.getBoolean(i));
+                    break;
+                case Number:
+                    array.put(readableArray.getDouble(i));
+                    break;
+                case String:
+                    array.put(readableArray.getString(i));
+                    break;
+                case Map:
+                    array.put(convertMapToJson(readableArray.getMap(i)));
+                    break;
+                case Array:
+                    array.put(convertArrayToJson(readableArray.getArray(i)));
+                    break;
+            }
+        }
+        return array;
     }
 
 }

@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eeffffff"
-    android:padding="15dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="15dp"
+    android:background="?attr/controlCenterBackground">
 
     <TextView
         android:id="@+id/phishing_header"
@@ -14,16 +15,17 @@
         android:paddingTop="15dp"
         android:paddingBottom="5dp"
         android:text="@string/antiphishing_header"
-        android:textColor="#2CBA84"
+        android:textColor="?attr/colorPrimary"
         android:textSize="22sp"
         android:textStyle="bold" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/anti_phising_icon"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/phishing_header"
         android:padding="10dp"
-        android:src="@drawable/ic_anti_phishing"
+        app:srcCompat="@drawable/ic_anti_phishing"
+        android:tint="?attr/colorPrimary"
         android:scaleType="fitXY"
         android:layout_width="65dp"
         android:layout_height="80dp" />
@@ -36,28 +38,28 @@
         android:layout_below="@+id/anti_phising_icon"
         android:paddingBottom="10dp"
         android:text="@string/antiphishing_text"
-        android:textColor="#2CBA84"
+        android:textColor="?attr/colorPrimary"
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/phishing_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:textColor="?attr/textColorPrimary"
         android:layout_below="@+id/text_safe"
         android:padding="20dp"
         android:text="@string/antiphishing_desc"
-        android:textColor="#000000"
         android:textSize="16sp" />
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/button_ok"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
-        android:background="@drawable/rounded_rectangle_bg"
+        android:background="@drawable/rounded_rectangle_bg_white"
+        app:backgroundTint="?attr/colorPrimary"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:text="@string/action_ok"
@@ -70,6 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_alignParentBottom="true"
+        android:textColor="?attr/textColorPrimary"
         android:paddingTop="15dp"
         android:text="@string/learn_more"
         android:textSize="12sp"

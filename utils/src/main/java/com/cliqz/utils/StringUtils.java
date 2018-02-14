@@ -4,7 +4,6 @@ import java.security.MessageDigest;
 
 /**
  * @author Stefano Pacifici
- * @date 2016/07/28
  */
 public final class StringUtils {
 
@@ -70,8 +69,42 @@ public final class StringUtils {
         return builder.toString();
     }
 
+    public static String encodeURLProperly(String url) {
+        if (url == null) {
+            return null;
+        }
+        try {
+            final WebAddress webAddress = new WebAddress(url);
+            final String path = webAddress.getPath();
+            final StringBuilder builder = new StringBuilder();
+            // hello/world\this|is a"test
+            for (char c: path.toCharArray()) {
+                switch (c) {
+                    case '[':
+                        builder.append("%5B");
+                        break;
+                    case ']':
+                        builder.append("%5D");
+                        break;
+                    case '|':
+                        builder.append("%7C");
+                        break;
+                    case ' ':
+                        builder.append("%20");
+                        break;
+                    default:
+                        builder.append(c);
+                }
+            }
+            webAddress.setPath(builder.toString());
+            return webAddress.toString();
+        } catch (WebAddress.ParseException e) {
+            return null;
+        }
+    }
+
     public static class MD5Exception extends Exception {
-        public MD5Exception(Throwable cause) {
+        MD5Exception(Throwable cause) {
             super("Can't calculate MD5 string", cause);
         }
     }

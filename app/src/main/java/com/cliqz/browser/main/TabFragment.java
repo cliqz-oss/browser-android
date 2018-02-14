@@ -1,59 +1,86 @@
 package com.cliqz.browser.main;
 
-import android.app.ActivityManager;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.media.Image;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
+import android.util.Log;
 import android.util.Patterns;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
+import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
-import com.cliqz.browser.di.components.ActivityComponent;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.main.Messages.ControlCenterStatus;
+import com.cliqz.browser.main.search.SearchView;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
+import com.cliqz.browser.utils.EnableNotificationDialog;
+import com.cliqz.browser.utils.RelativelySafeUniqueId;
+import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.webview.ExtensionEvents;
-import com.cliqz.browser.webview.SearchWebView;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
-import com.squareup.otto.Subscribe;
+import com.cliqz.nove.Subscribe;
+import com.cliqz.utils.ActivityUtils;
+import com.cliqz.utils.FragmentUtilsV4;
+import com.cliqz.utils.NoInstanceException;
+import com.cliqz.utils.StreamUtils;
+import com.cliqz.utils.ViewUtils;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import javax.inject.Inject;
 
@@ -71,42 +98,56 @@ import butterknife.OnEditorAction;
 
 /**
  * @author Stefano Pacifici
- * @date 2015/11/23
+ * @author Moaz Mohamed
  */
-public class TabFragment extends BaseFragment {
+public class TabFragment extends BaseFragment implements LightningView.LightingViewListener {
 
+    @SuppressWarnings("unused")
     private static final String TAG = TabFragment.class.getSimpleName();
-    private static final String NAVIGATION_STATE_KEY = TAG + ".NAVIGATION_STATE";
-    private int currentIcon;
+
+    public static final String KEY_URL = "cliqz_url_key";
+    public static final String KEY_QUERY = "query";
+    public static final String KEY_NEW_TAB_MESSAGE = "new_tab_message";
+    public static final String KEY_TAB_ID = "tab_id";
+    public static final String KEY_TITLE = "tab_title";
+    public static final String KEY_FORCE_RESTORE = "tab_force_restore";
+
+    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private OverFlowMenu mOverFlowMenu = null;
-    protected boolean isIncognito = false;
-    private String mInitialUrl = null;
+    protected boolean mIsIncognito = false;
+    private String mInitialUrl = null; // Initial url coming from outside the browser
+    // Coming from history (or favorite) this is needed due to the url load delay introduced
+    // for mitigating the multi process WebView on Android 8
+    private String mOverviewUrl = null;
+    // indicate that we should not load the mInitialUrl because we are restoring a persisted tab
+    private boolean mShouldRestore = false;
     private String mSearchEngine;
     private Message newTabMessage = null;
     private String mExternalQuery = null;
-    private Bundle mSavedState = null;
     // TODO: @Ravjit this should not be public (avoid public members)
     public final CliqzBrowserState state = new CliqzBrowserState();
     protected boolean isHomePageShown = false;
     private JSONArray videoUrls = null;
     private int mTrackerCount = 0;
     String lastQuery = "";
-    private static String mDefaultUserAgent;
+    private String mId;
 
-    SearchWebView mSearchWebView = null;
     protected LightningView mLightningView = null;
     private String mDelayedUrl = null;
 
     // A flag used to handle back button on old phones
     protected boolean mShowWebPageAgain = false;
     private boolean mRequestDesktopSite = false;
-    private boolean mFreshTabReady = false;
-
-    // @Bind(R.id.loading_screen)
-    // View loadingScreen;
+    private boolean mIsReaderModeOn = false;
 
     @Bind(R.id.local_container)
     FrameLayout localContainer;
+
+    @Inject
+    SearchView searchView;
+
+    @Inject
+    SubscriptionsManager subscriptionsManager;
 
     @Bind(R.id.progress_view)
     AnimatedProgressBar progressBar;
@@ -123,33 +164,64 @@ public class TabFragment extends BaseFragment {
     @Bind(R.id.in_page_search_bar)
     View inPageSearchBar;
 
+    @Bind(R.id.yt_download_icon)
+    ImageButton ytDownloadIcon;
+
     @Nullable
     @Bind(R.id.control_center)
     RelativeLayout antiTrackingDetails;
 
     @Bind(R.id.open_tabs_count)
-    TextView openTabsCounter;
+    AppCompatTextView openTabsCounter;
 
     @Bind(R.id.toolbar_container)
     RelativeLayout toolBarContainer;
 
+    @Bind(R.id.quick_access_bar)
+    QuickAccessBar quickAccessBar;
+
+    @Bind(R.id.reader_mode_button)
+    ImageButton readerModeButton;
+
+    @Bind(R.id.reader_mode_webview)
+    WebView readerModeWebview;
+
     @Inject
     OnBoardingHelper onBoardingHelper;
 
+    @Inject
+    QueryManager queryManager;
+
     @Nullable
     @Bind(R.id.cc_icon)
-    ImageView ccIcon;
+    AppCompatImageView ccIcon;
+
+    @NonNull
+    public final String getTabId() {
+        return mId;
+    }
+
+    public TabFragment() {
+        super();
+        // This must be not null
+        mId = RelativelySafeUniqueId.createNewUniqueId();
+    }
 
     @Override
     public void setArguments(Bundle args) {
-        newTabMessage = args.getParcelable(Constants.KEY_NEW_TAB_MESSAGE);
+        newTabMessage = args.getParcelable(KEY_NEW_TAB_MESSAGE);
         // Remove asap the message from the bundle
-        args.remove(Constants.KEY_NEW_TAB_MESSAGE);
-        final String url = args != null ? args.getString(Constants.KEY_URL) : null;
-        final boolean incognito = args != null && args.getBoolean(Constants.KEY_IS_INCOGNITO, false);
+        args.remove(KEY_NEW_TAB_MESSAGE);
+        mId = args.getString(KEY_TAB_ID);
+
+        @SuppressWarnings("ConstantConditions")
+        final String url = args.getString(KEY_URL);
+        final String title = args.getString(KEY_TITLE);
+        @SuppressWarnings("ConstantConditions")
+        final boolean incognito = args.getBoolean(MainActivity.EXTRA_IS_PRIVATE, false);
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
-            state.setTitle(url);
+            state.setTitle(title != null ? title : url);
             state.setMode(CliqzBrowserState.Mode.WEBPAGE);
             state.setIncognito(incognito);
         }
@@ -166,15 +238,35 @@ public class TabFragment extends BaseFragment {
     }
 
     private void parseArguments(Bundle arguments) {
-        isIncognito = arguments.getBoolean(Constants.KEY_IS_INCOGNITO, false);
-        mInitialUrl = arguments.getString(Constants.KEY_URL, null);
-        mExternalQuery = arguments.getString(Constants.KEY_QUERY);
-        mSavedState = arguments.getBundle(Constants.SAVED_STATE_BUNDLE);
+        mIsIncognito = arguments.getBoolean(MainActivity.EXTRA_IS_PRIVATE, false);
+        mInitialUrl = arguments.getString(KEY_URL);
+        mShouldRestore = arguments.getBoolean(KEY_FORCE_RESTORE);
+        final String mInitialTitle = arguments.getString(KEY_TITLE);
+        mExternalQuery = arguments.getString(KEY_QUERY);
+        if (mInitialUrl != null) {
+            state.setUrl(mInitialUrl);
+        }
+        if (mInitialTitle != null) {
+            state.setTitle(mInitialTitle);
+        }
         // We need to remove the key, otherwise the url/query/msg gets reloaded for each resume
-        arguments.remove(Constants.KEY_URL);
-        arguments.remove(Constants.KEY_NEW_TAB_MESSAGE);
-        arguments.remove(Constants.KEY_QUERY);
-        arguments.remove(Constants.SAVED_STATE_BUNDLE);
+        arguments.remove(KEY_URL);
+        arguments.remove(KEY_NEW_TAB_MESSAGE);
+        arguments.remove(KEY_QUERY);
+        arguments.remove(KEY_TAB_ID);
+        arguments.remove(KEY_FORCE_RESTORE);
+    }
+
+    // Use this to get which view is visible between home, cards or web
+    @NonNull
+    String getTelemetryView() {
+        if (state.getMode() == Mode.WEBPAGE) {
+            return TelemetryKeys.WEB;
+        } else if (searchView.isFreshTabVisible()) {
+            return TelemetryKeys.HOME;
+        } else {
+            return TelemetryKeys.CARDS;
+        }
     }
 
     @Override
@@ -182,133 +274,124 @@ public class TabFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        openTabsCounter.setText(Integer.toString(((MainActivity) getActivity()).tabsManager.getTabCount()));
-        final int iconColor = isIncognito ? R.color.toolbar_icon_color_incognito : R.color.toolbar_icon_color_normal;
-        openTabsCounter.getBackground().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
-        overflowMenuIcon.getDrawable().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
-        openTabsCounter.setTextColor(ContextCompat.getColor(getContext(), iconColor));
+        searchBar.setSearchEditText(searchEditText);
+        searchBar.setProgressBar(progressBar);
+        final MainActivity mainActivity = (MainActivity) getActivity();
+        final int tabCount = mainActivity != null ? mainActivity.tabsManager.getTabCount() : 1;
+        openTabsCounter.setText(Integer.toString(tabCount));
+        updateUI();
         inPageSearchBar.setVisibility(View.GONE);
-        state.setIncognito(isIncognito);
-        searchBar.setStyle(isIncognito);
+        state.setIncognito(mIsIncognito);
+        searchBar.setStyle(mIsIncognito);
         //openTabsCounter.setBa
-        if (mSearchWebView == null || mLightningView == null) {
+        if (searchView == null || mLightningView == null) {
             // Must use activity due to Crosswalk webview
-            mSearchWebView = ((MainActivity) getActivity()).searchWebView;
-            mLightningView = new LightningView(getActivity()/*, mUrl */, isIncognito, "1");
-            if (mSavedState != null) {
-                mLightningView.restoreState(mSavedState);
-                state.setMode(Mode.WEBPAGE);
-                mSavedState = null;
-                //ignore the initial url if savedState exists
-                mInitialUrl = null;
-            }
-            mSearchWebView.setLayoutParams(
-                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        } else {
-            final WebView webView = mLightningView.getWebView();
-            ((ViewGroup) webView.getParent()).removeView(webView);
+            searchView = ((MainActivity) getActivity()).searchView;
+            final String id = mId != null ? mId : RelativelySafeUniqueId.createNewUniqueId();
+            mLightningView = new LightningView(getActivity(), mIsIncognito, id);
+            mLightningView.setListener(this);
         }
 
         TabFragmentListener.create(this);
         final WebView webView = mLightningView.getWebView();
-        webView.setId(R.id.right_drawer_list);
-        if (savedInstanceState != null) {
-            final Bundle webViewOutState = savedInstanceState.getBundle(NAVIGATION_STATE_KEY);
-            if (webViewOutState != null) {
-                webView.restoreState(webViewOutState);
+        if (webView != null) {
+            webView.setId(R.id.browser_view);
+            ViewUtils.safelyAddView(localContainer, webView);
+            if (webView.getVisibility() == View.VISIBLE &&
+                    UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
+                fetchYoutubeVideo(null);
             }
         }
-        if (mSearchWebView.getParent() != null) {
-            ((ViewGroup) mSearchWebView.getParent()).removeView(mSearchWebView);
-        }
-        mSearchWebView.setCurrentTabState(state);
-        webView.setId(R.id.cliqz_web_view);
-        mSearchWebView.setId(R.id.search_web_view);
-        localContainer.addView(webView);
-        localContainer.addView(mSearchWebView);
-        mSearchWebView.initExtensionPreferences();
+        searchView.setCurrentTabState(state);
+        ViewUtils.safelyAddView(localContainer, searchView);
         searchBar.setTrackerCount(mTrackerCount);
-        mDefaultUserAgent = mLightningView.getWebView().getSettings().getUserAgentString();
+        quickAccessBar.setSearchTextView(searchEditText);
+        quickAccessBar.hide();
+        //way to handle links in the readermode article
+        readerModeWebview.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                toggleReaderMode();
+                mLightningView.loadUrl(url);
+                return true;
+            }
+        });
+        onPageFinished(null);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        final ActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        //noinspection ConstantConditions
+        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
         if (component != null) {
             component.inject(this);
+            component.inject(quickAccessBar);
         }
-        telemetry.sendLayerChangeSignal("present");
         if (mDelayedUrl != null) {
             openLink(mDelayedUrl, true, true);
             mDelayedUrl = null;
-        } else if (!mSearchWebView.isExtensionReady()) {
-            mSearchWebView.setVisibility(View.INVISIBLE);
-            mLightningView.getWebView().setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        final WebView webView = mLightningView != null ? mLightningView.getWebView() : null;
-        if (webView != null) {
-            final Bundle webViewOutState = new Bundle();
-            webView.saveState(webViewOutState);
-            outState.putBundle(NAVIGATION_STATE_KEY, webViewOutState);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        final boolean extReady;
-        if (mSearchWebView != null) {
-            mSearchWebView.onResume();
-            extReady = mSearchWebView.isExtensionReady();
-            mSearchWebView.setVisibility(View.VISIBLE);
-            // mSearchWebView.setVisibility(extReady ? View.VISIBLE : View.INVISIBLE);
-            // loadingScreen.setVisibility(mFreshTabReady ? View.GONE : View.VISIBLE);
-
-        } else {
-            // By definition, if mSearchWebView is null the extension can't be ready
-            extReady = false;
+        if (searchView != null) {
+            searchView.onResume();
+            searchView.setVisibility(View.VISIBLE);
         }
         final WebView webView;
         if (mLightningView != null) {
             mLightningView.onResume();
             mLightningView.resumeTimers();
             webView = mLightningView.getWebView();
-            webView.setVisibility(View.VISIBLE);
-            // webView.setVisibility(extReady ? View.VISIBLE : View.INVISIBLE);
         } else {
             webView = null;
+        }
+        if (webView != null) {
+            webView.setVisibility(View.VISIBLE);
         }
 
         searchBar.setIsAutocompletionEnabled(preferenceManager.getAutocompletionEnabled());
 
-        if (state.shouldReset()) {
-            isHomePageShown = true;
-            searchBar.showSearchEditText();
-            searchBar.setSearchText("");
-            mSearchWebView.showHomepage();
-            state.setShouldReset(false);
-            return;
-        }
-        if (state.getMode() == Mode.SEARCH) {
-            mSearchWebView.performSearch(state.getQuery());
-        } else if (state.getMode() == Mode.WEBPAGE) {
+        if (state.getMode() == Mode.WEBPAGE) {
             bringWebViewToFront();
+        } else {
+            searchView.bringToFront();
+            //update topsites and news whenever app resumes or comes back from settings
+            searchView.freshtab.updateFreshTab();
         }
+
+        // Workaround for Oreo multi-process WebView, we can not anymore call openLink(...)
+        // directly from the OverviewFragment.
+        final String oreoUrl;
+        final boolean oreoShouldReset;
+        if (mOverviewUrl != null) {
+            oreoUrl = mOverviewUrl;
+            oreoShouldReset = false;
+        } else if (mInitialUrl != null)  {
+            oreoUrl = mInitialUrl;
+            oreoShouldReset = true;
+        } else {
+            oreoUrl = null;
+            oreoShouldReset = false;
+        }
+        mOverviewUrl = null;
+        mInitialUrl = null;
         // The code below shouldn't be executed if app is reset
-        if (mInitialUrl != null && !mInitialUrl.isEmpty()) {
+        if (mShouldRestore) {
             state.setMode(Mode.WEBPAGE);
-            bus.post(new CliqzMessages.OpenLink(mInitialUrl, true));
-            mInitialUrl = null;
+            bringWebViewToFront();
+            mShouldRestore = false;
+        } else if (oreoUrl != null && !oreoUrl.isEmpty()) {
+            state.setMode(Mode.WEBPAGE);
+            bus.post(new CliqzMessages.OpenLink(oreoUrl, oreoShouldReset));
         } else if (newTabMessage != null && webView != null && newTabMessage.obj != null) {
             final WebView.WebViewTransport transport = (WebView.WebViewTransport) newTabMessage.obj;
             transport.setWebView(webView);
@@ -321,12 +404,11 @@ public class TabFragment extends BaseFragment {
         } else {
             // final boolean reset = System.currentTimeMillis() - state.getTimestamp() >= Constants.HOME_RESET_DELAY;
             final String lightningUrl = mLightningView.getUrl();
-            final boolean mustShowSearch = lightningUrl == null || // Should never happens but just in case
-                    lightningUrl.isEmpty();//  || // The url is empty
+            final String query = state.getQuery();
+            final boolean mustShowSearch = lightningUrl.isEmpty() && query != null && !query.isEmpty();
             if (mustShowSearch) {
                 state.setMode(Mode.SEARCH);
             }
-            final String query = state.getQuery();
             if (state.getMode() == Mode.SEARCH) {
                 //showToolBar(null);
                 delayedPostOnBus(new Messages.ShowSearch(query));
@@ -334,38 +416,20 @@ public class TabFragment extends BaseFragment {
                 mLightningView.getWebView().bringToFront();
                 enableUrlBarScrolling();
                 searchBar.showTitleBar();
+                searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
                 searchBar.setTitle(mLightningView.getTitle());
                 searchBar.switchIcon(false);
             }
         }
-        if (!preferenceManager.isAttrackEnabled()) {
-            ccIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_cc_gray));
+        if(!preferenceManager.isAttrackEnabled() || mLightningView.isUrlWhiteListed()){
+            updateControlIcon(new Messages.UpdateControlCenterIcon(ControlCenterStatus.DISABLED));
+        }else if(preferenceManager.isAttrackEnabled() && !mLightningView.isUrlWhiteListed()){
+            updateControlIcon(new Messages.UpdateControlCenterIcon(ControlCenterStatus.ENABLED));
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mSearchWebView != null) {
-            //mSearchWebView.onPause();
-        }
-        if (mLightningView != null) {
-            mLightningView.onPause();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        mLightningView.pauseTimers();
-        //should we do this? if tab isn't opened for 30mins it gets reset
-        //state.setTimestamp(System.currentTimeMillis());
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        queryManager.setForgetMode(mIsIncognito);
+        mIsReaderModeOn = false;
+        readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
     }
 
     @Override
@@ -380,8 +444,8 @@ public class TabFragment extends BaseFragment {
 
     @Override
     protected int getFragmentTheme() {
-        if (isIncognito) {
-            return R.style.Theme_Cliqz_Present_Incognito;
+        if (mIsIncognito) {
+            return R.style.Theme_LightTheme_Incognito;
         } else {
             return R.style.Theme_Cliqz_Overview;
         }
@@ -395,31 +459,37 @@ public class TabFragment extends BaseFragment {
 
     @OnClick(R.id.menu_overview)
     void historyClicked() {
-        hideKeyboard();
+        hideKeyboard(null);
         telemetry.sendOverViewSignal(Integer.parseInt(openTabsCounter.getText().toString()),
-                isIncognito, state.getMode());
+                mIsIncognito, getTelemetryView());
         delayedPostOnBus(new Messages.GoToOverview());
     }
 
     @OnClick(R.id.overflow_menu)
     void menuClicked() {
-        telemetry.sendOverflowMenuSignal(isIncognito, state.getMode() == Mode.SEARCH ? "cards" : "web");
+        telemetry.sendOverflowMenuSignal(mIsIncognito, getTelemetryView());
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();
         } else {
-            final String url = mLightningView != null ? mLightningView.getUrl() : "";
+            final String url = mLightningView.getUrl();
             mOverFlowMenu = new OverFlowMenu(getActivity());
             mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
             mOverFlowMenu.setAnchorView(overflowMenuButton);
-            mOverFlowMenu.setIncognitoMode(isIncognito);
-            mOverFlowMenu.setUrl(mLightningView.getUrl());
+            mOverFlowMenu.setIncognitoMode(mIsIncognito);
+            mOverFlowMenu.setUrl(url);
+            mOverFlowMenu.setFavorite(historyDatabase.isFavorite(url));
             mOverFlowMenu.setTitle(mLightningView.getTitle());
-            mOverFlowMenu.setIsYoutubeVideo(videoUrls != null && videoUrls.length() > 0);
             mOverFlowMenu.setState(state);
+            mOverFlowMenu.setIsFreshTabVisible(searchView.isFreshTabVisible());
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
-            hideKeyboard();
+            hideKeyboard(null);
         }
+    }
+
+    @Subscribe
+    void onOpenMenuMessage(Messages.OnOpenMenuButton event) {
+        menuClicked();
     }
 
     @OnClick(R.id.in_page_search_cancel_button)
@@ -439,15 +509,56 @@ public class TabFragment extends BaseFragment {
     }
 
     // TODO @Ravjit, the dialog should disappear if you pause the app
-    @Nullable
     @OnClick(R.id.control_center)
     void showControlCenter() {
+        final WebView webView = mLightningView.getWebView();
+        if (webView == null) {
+            return;
+        }
         final ControlCenterDialog controlCenterDialog = ControlCenterDialog
-                .create(mStatusBar, mLightningView.getWebView().hashCode(), mLightningView.getUrl());
+                .create(mStatusBar, mIsIncognito, webView.hashCode(), mLightningView.getUrl());
         controlCenterDialog.show(getChildFragmentManager(), Constants.CONTROL_CENTER);
-        telemetry.sendAntiTrackingOpenSignal(isIncognito, mTrackerCount);
+        telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
     }
 
+    @OnClick(R.id.yt_download_icon)
+    void showYTDownloadDialog() {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            telemetry.sendYTIconClickedSignal(mIsIncognito);
+            final ConnectivityManager connectivityManager =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo activeNetwork = connectivityManager != null ?
+                    connectivityManager.getActiveNetworkInfo() : null;
+            if (activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI &&
+                    preferenceManager.shouldLimitDataUsage()) {
+                NoWiFiDialog.show(getContext(), bus);
+                return;
+            }
+            if (videoUrls != null) {
+                YTDownloadDialog.show((MainActivity) getActivity(), videoUrls, telemetry);
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
+        }
+    }
+
+    @OnClick(R.id.reader_mode_button)
+    void toggleReaderMode() {
+        if (!mIsReaderModeOn) {
+            mIsReaderModeOn = true;
+            readerModeButton.setImageResource(R.drawable.ic_reader_mode_on);
+            readerModeWebview.setVisibility(View.VISIBLE);
+            readerModeWebview.bringToFront();
+            readerModeWebview.scrollTo(0,0);
+        } else {
+            mIsReaderModeOn = false;
+            readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
+            readerModeWebview.setVisibility(View.GONE);
+        }
+    }
+
+    @SuppressWarnings("UnusedParameters")
     @OnEditorAction(R.id.search_edit_text)
     boolean onEditorAction(EditText editText, int actionId, KeyEvent keyEvent) {
         // Navigate to autocomplete url or search otherwise
@@ -474,8 +585,8 @@ public class TabFragment extends BaseFragment {
                 if (!onBoardingHelper.conditionallyShowSearchDescription()) {
                     bus.post(event);
                 } else {
-                    hideKeyboard();
-                    mSearchWebView.notifyEvent(ExtensionEvents.CLIQZ_EVENT_PERFORM_SHOWCASE_CARD_SWIPE);
+                    hideKeyboard(null);
+                    searchView.notifySearchWebViewEvent(ExtensionEvents.CLIQZ_EVENT_PERFORM_SHOWCASE_CARD_SWIPE);
                 }
                 return true;
             }
@@ -484,44 +595,59 @@ public class TabFragment extends BaseFragment {
     }
 
     // Hide the keyboard, used also in SearchFragmentListener
-    void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-        telemetry.sendKeyboardSinal(false, isIncognito,
-                state.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+    @Subscribe
+    void hideKeyboard(CliqzMessages.HideKeyboard event) {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            InputMethodManager imm = (InputMethodManager) context
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm == null) {
+                return;
+            }
+            imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+            final View set = searchBar.getSearchEditText();
+            // This if avoids calling searchBar.showTitleBar() multiple times and sending the same
+            // telemetry signals multiple times
+            if (set != null && imm.isActive(set)) {
+                searchBar.showTitleBar();
+                final String view = getTelemetryView();
+                telemetry.sendKeyboardSignal(false, mIsIncognito, getTelemetryView());
+                telemetry.sendQuickAccessBarSignal(TelemetryKeys.HIDE, null, view);
+                quickAccessBar.hide();
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
+        }
     }
 
     private void shareText(String text) {
         final String footer = getString(R.string.shared_using);
         final Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, new StringBuilder()
-                .append(text)
-                .append("\n")
-                .append(footer)
-                .toString()
-        );
+        intent.putExtra(Intent.EXTRA_TEXT, text + "\n" + footer);
         startActivity(Intent.createChooser(intent, getString(R.string.share_link)));
     }
 
     @Subscribe
     public void updateProgress(BrowserEvents.UpdateProgress event) {
-        progressBar.setProgress(event.progress);
+        searchBar.setProgress(event.progress);
         if (state.getMode() == Mode.SEARCH) {
             return;
         }
         if (!mLightningView.getUrl().contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
             if (event.progress == 100) {
                 searchBar.switchIcon(false);
-                //Readjust the layout in cases when height of content is not more than the
+                // Re-adjust the layout in cases when height of content is not more than the
                 // visible content height + toolbar height
                 final AppBarLayout.LayoutParams params =
                         (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-                if (mLightningView.getWebView().getContentHeight() <= mLightningView.getWebView().getHeight()) {
-                    disableUrlBarScrolling();
-                } else if (params.getScrollFlags() == 0) {
-                    enableUrlBarScrolling();
+                final WebView webView = mLightningView.getWebView();
+                if (webView != null) {
+                    if (webView.getContentHeight() <= webView.getHeight()) {
+                        disableUrlBarScrolling();
+                    } else if (params.getScrollFlags() == 0) {
+                        enableUrlBarScrolling();
+                    }
                 }
                 searchBar.switchIcon(true);
             }
@@ -543,20 +669,35 @@ public class TabFragment extends BaseFragment {
 
     private void bringWebViewToFront() {
         final WebView webView = mLightningView.getWebView();
+        if (webView == null) {
+            return;
+        }
         searchBar.showTitleBar();
+        searchBar.showProgressBar();
+        searchBar.setTitle(webView.getTitle());
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-        mLightningView.getWebView().bringToFront();
+        webView.bringToFront();
         enableUrlBarScrolling();
         state.setMode(Mode.WEBPAGE);
-    }
-
-    private void setAntiTrackingDetailsVisibility(int visibility) {
-        if (antiTrackingDetails != null) {
-            antiTrackingDetails.setVisibility(visibility);
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            toolBarContainer.setBackgroundColor(ContextCompat.getColor(context,
+                    mIsIncognito ? R.color.incognito_tab_primary_color : R.color.primary_color));
+            overflowMenuIcon.setColorFilter(ContextCompat.getColor(context, R.color.white),
+                    PorterDuff.Mode.SRC_IN);
+            openTabsCounter
+                    .getBackground()
+                    .setColorFilter(ContextCompat.getColor(context, R.color.white),
+                            PorterDuff.Mode.SRC_IN);
+            openTabsCounter.setTextColor(ContextCompat.getColor(context, R.color.white));
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
         }
     }
+
     @Subscribe
     public void openLink(CliqzMessages.OpenLink event) {
+        queryManager.addLatestQueryToDatabase();
         openLink(event.url, event.reset, false);
         mShowWebPageAgain = false;
     }
@@ -568,27 +709,82 @@ public class TabFragment extends BaseFragment {
 
     @Subscribe
     public void searchOnPage(BrowserEvents.SearchInPage event) {
-        final Context context = getContext();
-        final AlertDialog.Builder finder = new AlertDialog.Builder(context);
-        finder.setTitle(getResources().getString(R.string.action_find));
-        final EditText getHome = new EditText(context);
-        getHome.setHint(getResources().getString(R.string.search_hint));
-        finder.setView(getHome);
-        finder.setPositiveButton(getResources().getString(R.string.search_hint),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String query = getHome.getText().toString();
-                        if (!query.isEmpty()) {
-                            inPageSearchBar.setVisibility(View.VISIBLE);
-                            mLightningView.findInPage(query);
-                        }
-                    }
-                });
-        finder.show();
+        SearchInPageDialog.show(getContext(), inPageSearchBar, mLightningView);
+    }
+
+    @Subscribe
+    public void askLocationPermission(Messages.AskForLocationPermission event) {
+        //first check if android 6 has necessary permission
+        try {
+            final Activity activity = FragmentUtilsV4.getActivity(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    activity.checkSelfPermission(LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
+                final String[] permissions = {LOCATION_PERMISSION};
+                activity.requestPermissions(permissions, Constants.LOCATION_PERMISSION);
+            } else {
+                showRequestLocationAccessDialog();
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null activity", e);
+        }
+    }
+
+    @Subscribe
+    public void onPageFinished(CliqzMessages.OnPageFinished event) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                final InputStream inputStream = getResources().openRawResource(R.raw.readability);
+                final String script = StreamUtils.readTextStream(inputStream);
+                inputStream.close();
+                final WebView webView = mLightningView.getWebView();
+                if (webView != null) {
+                    webView.evaluateJavascript(script, readabilityCallBack);
+                } else {
+                    Log.w(TAG, "Null WebView found in onPageFinished");
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Problem reading the file readability.js", e);
+            }
+        }
+    }
+
+    private ValueCallback<String> readabilityCallBack = new ValueCallback<String>() {
+        @Override
+        public void onReceiveValue(String s) {
+            if (s == null) {
+                return;
+            }
+            try {
+                final String decodedResponse = URLDecoder.decode(s, "UTF-8");
+                //removing extra quotation marks at the start
+                final String jsonString = decodedResponse.substring(1,decodedResponse.length()-1);
+                final JSONObject jsonObject = new JSONObject(jsonString);
+                final String readerModeText = jsonObject.optString("content", "");
+                final String readerModeTitle = jsonObject.optString("title", "");
+                if (readerModeText != null && !readerModeText.isEmpty()) {
+                    readerModeButton.setVisibility(View.VISIBLE);
+                    readerModeWebview.loadDataWithBaseURL("",
+                            getFormattedHtml(readerModeTitle, readerModeText),
+                            "text/html", "UTF-8", "");
+                }
+            } catch (JSONException e) {
+                Log.i(TAG,"error reading the json object", e);
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG,"error decoding the response from readability.js", e);
+            }
+        }
+    };
+
+    //This function adds the title to the page content and resizes the images to fit the screen
+    private String getFormattedHtml(String title, String bodyHTML) {
+        final String head = "<head><style>img{max-width: 100%; height: auto;}</style></head>";
+        final String titleHTML = "<h2>" + title + "</h2>";
+        return "<html>" + head + "<body>" +
+                titleHTML + bodyHTML + "</body></html>";
     }
 
     public void openLink(String eventUrl, boolean reset, boolean fromHistory) {
+
         //if Request Desktop site is enabled, remove "m." if it is a mobile url
         if (mRequestDesktopSite && (eventUrl.startsWith("m.") || eventUrl.contains("/m."))) {
             eventUrl = eventUrl.replaceFirst("m.", "");
@@ -619,6 +815,8 @@ public class TabFragment extends BaseFragment {
         mLightningView.loadUrl(url);
         searchBar.setTitle(eventUrl);
         bringWebViewToFront();
+        quickAccessBar.hide();
+        telemetry.sendQuickAccessBarSignal(TelemetryKeys.HIDE, null, getTelemetryView());
     }
 
     /**
@@ -628,20 +826,21 @@ public class TabFragment extends BaseFragment {
      */
     public void searchQuery(String query) {
         searchBar.showSearchEditText();
-        mSearchWebView.bringToFront();
+        searchView.bringToFront();
         disableUrlBarScrolling();
         inPageSearchBar.setVisibility(View.GONE);
         mLightningView.findInPage("");
         searchBar.requestSearchFocus();
         if (query != null) {
             searchBar.setSearchText(query);
-            searchBar.setSearchSelection(query.length());
+            searchBar.setCursorPosition(query.length());
         }
         state.setMode(Mode.SEARCH);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     @Subscribe
     public void onBackPressed(Messages.BackPressed event) {
         // Due to webview bug (history manipulation doesn't work) we have to handle the back in a
@@ -654,58 +853,48 @@ public class TabFragment extends BaseFragment {
         }
     }
 
-    /* @Subscribe
-    public void hideLoadingScreen(Messages.HideLoadingScreen event) {
-        mFreshTabReady = true;
-        if (loadingScreen != null) {
-            loadingScreen.setVisibility(View.GONE);
-            mSearchWebView.setVisibility(View.VISIBLE);
-            mLightningView.getWebView().setVisibility(View.VISIBLE);
-            searchBar.requestSearchFocus();
-            searchBar.showKeyBoard();
-        }
-    } */
-
     private void onBackPressedV16() {
-        final String url = mLightningView != null ? mLightningView.getUrl() : "";
         final Mode mode = state.getMode();
-        if (onBoardingHelper.close()) {
-            return;
-        } else if (hideOverFlowMenu()) {
-            return;
-        } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
-            telemetry.backPressed = true;
-            telemetry.showingCards = false;
-            mLightningView.goBack();
-            mShowWebPageAgain = false;
-        } else if (mode == Mode.SEARCH && mShowWebPageAgain) {
-            bringWebViewToFront();
-        } else {
-            bus.post(new BrowserEvents.CloseTab());
+        if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
+            if (readerModeWebview.getVisibility() == View.VISIBLE) {
+                toggleReaderMode();
+            } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
+                telemetry.backPressed = true;
+                telemetry.showingCards = false;
+                mLightningView.goBack();
+                mShowWebPageAgain = false;
+            } else if (mode == Mode.SEARCH && mShowWebPageAgain) {
+                bringWebViewToFront();
+            } else {
+                bus.post(new BrowserEvents.CloseTab());
+            }
         }
     }
 
     private void onBackPressedV21() {
         final String url = mLightningView != null ? mLightningView.getUrl() : "";
         final Mode mode = state.getMode();
-        if (onBoardingHelper.close()) {
-            return;
-        } else if (hideOverFlowMenu()) {
-            return;
-        } else if (mode == Mode.SEARCH &&
-                !"".equals(url) &&
-                !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
-            bringWebViewToFront();
-        } else if (mLightningView.canGoBack()) {
-            // In any case the trampoline will be current page predecessor
-            if (mode == Mode.SEARCH) {
+        if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
+            if (mIsReaderModeOn) {
+                toggleReaderMode();
+            } else if (mode == Mode.SEARCH &&
+                    !"".equals(url) &&
+                    !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
                 bringWebViewToFront();
+                if (UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
+                    fetchYoutubeVideo(null);
+                }
+            } else if (mLightningView.canGoBack()) {
+                // In any case the trampoline will be current page predecessor
+                if (mode == Mode.SEARCH) {
+                    bringWebViewToFront();
+                }
+                telemetry.backPressed = true;
+                telemetry.showingCards = mode == Mode.SEARCH;
+                mLightningView.goBack();
+            } else {
+                bus.post(new BrowserEvents.CloseTab());
             }
-            telemetry.backPressed = true;
-            telemetry.showingCards = mode == Mode.SEARCH;
-            mLightningView.goBack();
-        } else {
-            bus.post(new BrowserEvents.CloseTab());
         }
     }
 
@@ -741,67 +930,93 @@ public class TabFragment extends BaseFragment {
 
     @Subscribe
     public void reloadPage(Messages.ReloadPage event) {
-        mLightningView.getWebView().reload();
+        final WebView webView = mLightningView.getWebView();
+        if (webView != null) {
+            webView.reload();
+        }
     }
 
     @Subscribe
     public void shareLink(Messages.ShareLink event) {
         if (state.getMode() == Mode.SEARCH) {
-            mSearchWebView.requestCardUrl();
+            searchView.requestCardUrl();
         } else {
             final String url = mLightningView.getUrl();
             shareText(url);
-            telemetry.sendShareSignal("web");
+            telemetry.sendShareSignal(TelemetryKeys.WEB);
         }
     }
 
     @Subscribe
     public void shareCard(Messages.ShareCard event) {
-        final String url = event.url;
-        if (url.equals("-1")) {
-            Toast.makeText(getContext(), getString(R.string.not_shareable), Toast.LENGTH_SHORT).show();
-        } else {
-            shareText(url);
-            telemetry.sendShareSignal("cards");
-        }
+        new ShareCardHelper(getActivity(), localContainer, event.cardDetails);
+        telemetry.sendShareSignal(TelemetryKeys.CARDS);
+
     }
 
     @Subscribe
     public void copyUrl(Messages.CopyUrl event) {
         if (mLightningView.getWebView() != null) {
-            final ClipboardManager clipboard = (ClipboardManager) getContext()
-                    .getSystemService(Context.CLIPBOARD_SERVICE);
-            final ClipData clip = ClipData.newPlainText("link", mLightningView.getUrl());
-            clipboard.setPrimaryClip(clip);
+            putInClipboard(R.string.message_url_copied, mLightningView.getUrl(), "link");
         }
     }
 
     @Subscribe
     public void saveLink(Messages.SaveLink event) {
-        Utils.downloadFile(getActivity(), mLightningView.getUrl(),
-                mLightningView.getWebView().getSettings().getUserAgentString(), "attachment", false);
+        final WebView webView = mLightningView.getWebView();
+        final WebSettings settings = webView != null ? webView.getSettings() : null;
+        final String userAgent = settings != null ? settings.getUserAgentString() : null;
+        Utils.downloadFile(getActivity(), mLightningView.getUrl(), userAgent, "attachment", false);
     }
 
     @Subscribe
     public void copyData(CliqzMessages.CopyData event) {
-        final String message = getResources().getString(R.string.message_text_copied);
-        final ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-        final ClipData clip = ClipData.newPlainText("result", event.data);
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        putInClipboard(R.string.message_text_copied, event.data, "result");
+    }
+
+    private void putInClipboard(@SuppressWarnings("unused") @StringRes int message,
+                                @NonNull String data, @NonNull String label) {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            final ClipboardManager clipboard = (ClipboardManager) context
+                    .getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                final ClipData clip = ClipData.newPlainText(label, data);
+                clipboard.setPrimaryClip(clip);
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
+        }
+    }
+
+    @Subscribe
+    public void callNumber(CliqzMessages.CallNumber event) {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            final BrowserActionTypes action = BrowserActionTypes.phoneNumber;
+            Intent callIntent = action.getIntent(context, event.number);
+            if (callIntent != null) {
+                context.startActivity(callIntent);
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
+        }
     }
 
     @Subscribe
     public void setYoutubeUrls(Messages.SetVideoUrls event) {
         videoUrls = event.urls;
         if (videoUrls == null) {
+            hideYTIcon();
             return;
         }
         if (videoUrls.length() == 0) {
             telemetry.sendVideoPageSignal(false);
+            hideYTIcon();
         } else {
             telemetry.sendVideoPageSignal(true);
+            showYTIcon();
+            onBoardingHelper.conditionallyShowYouTubeDescription();
         }
     }
 
@@ -810,39 +1025,53 @@ public class TabFragment extends BaseFragment {
         videoUrls = null;
         // To fetch the videos url we have to run the ytdownloader.getUrls script that is bundled
         // with the extension
-        final String url =
-                event.videoPageUrl != null ? event.videoPageUrl : mLightningView.getUrl();
-        YTPageFetcher.asyncGetYoutubeVideoUrls(mSearchWebView, url);
+        searchView.fetchYouTubeUrls(mLightningView.getUrl());
     }
 
     @Subscribe
     public void downloadYoutubeVideo(Messages.DownloadYoutubeVideo event) {
         if (videoUrls != null) {
-            YTDownloadDialog.show(getActivity(), videoUrls, telemetry);
+            YTDownloadDialog.show((MainActivity) getActivity(), videoUrls, telemetry);
+            preferenceManager.setShouldShowYouTubeDescription(false);
         }
     }
 
-    @Subscribe
-    public void updateTrackerCount(Messages.UpdateTrackerCount event) {
+    @Override
+    public void increaseAntiTrackingCounter() {
         mTrackerCount++;
         // Quick fix for Ad-Block loading problems (attrack.isWhitelist(...) timeout)
         if (mTrackerCount == 1) {
-            bus.post(new Messages.UpdateControlCenterIcon(R.drawable.ic_cc_green));
+            bus.post(new Messages.UpdateControlCenterIcon(ControlCenterStatus.ENABLED));
         }
         searchBar.setTrackerCount(mTrackerCount);
         if (mTrackerCount > 0 && onBoardingHelper.conditionallyShowAntiTrackingDescription()) {
-            hideKeyboard();
+            hideKeyboard(null);
         }
         bus.post(new Messages.UpdateAntiTrackingList(mTrackerCount));
         bus.post(new Messages.UpdateAdBlockingList());
+    }
+
+    @Override
+    public void onFavIconLoaded(Bitmap favicon) {
+        state.setFavIcon(favicon);
+    }
+
+    //Hack to update the counter in the url bar to match with that in the CC when user opens CC
+    @Subscribe
+    public void updateTrackerCountHack(Messages.ForceUpdateTrackerCount event) {
+        mTrackerCount = event.trackerCount;
+        searchBar.setTrackerCount(event.trackerCount);
     }
 
     @Subscribe
     public void resetTrackerCount(Messages.ResetTrackerCount event) {
         mTrackerCount = 0;
         searchBar.setTrackerCount(mTrackerCount);
+        readerModeWebview.setVisibility(View.GONE);
+        readerModeButton.setVisibility(View.GONE);
     }
 
+    @SuppressLint("SetTextI18n")
     @Subscribe
     public void updateTabCounter(Messages.UpdateTabCounter event) {
         openTabsCounter.setText(Integer.toString(event.count));
@@ -850,20 +1079,12 @@ public class TabFragment extends BaseFragment {
 
     @Subscribe
     public void updateUserAgent(Messages.ChangeUserAgent event) {
-        if (mLightningView != null && mLightningView.getWebView() != null
-                && mLightningView.getWebView().getSettings() != null) {
-            mLightningView.getWebView().getSettings()
-                    .setUserAgentString(event.isDesktopSiteEnabled ?
-                            Constants.DESKTOP_USER_AGENT : mDefaultUserAgent);
-        }
-        if (event.isDesktopSiteEnabled
-                && mLightningView.getWebView() != null
-                && mLightningView.getWebView().getUrl() != null
-                && (mLightningView.getWebView().getUrl().startsWith("m.")
-                || mLightningView.getWebView().getUrl().contains("/m."))) {
-            mLightningView.getWebView().loadUrl(mLightningView.getWebView().getUrl().replaceFirst("m.", ""));
-        } else {
-            mLightningView.getWebView().reload();
+        if (mLightningView != null) {
+            if (event.isDesktopSiteEnabled) {
+                mLightningView.setDesktopUserAgent();
+            } else {
+                mLightningView.setMobileUserAgent();
+            }
         }
         mRequestDesktopSite = event.isDesktopSiteEnabled;
     }
@@ -876,56 +1097,49 @@ public class TabFragment extends BaseFragment {
     }
 
     void updateTitle() {
+        if (state.getMode() == Mode.SEARCH) {
+            return;
+        }
         final String title = mLightningView.getTitle();
         searchBar.setTitle(title);
         state.setTitle(title);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final int taskBarColor = isIncognito ? R.color.incognito_tab_primary_color : R.color.normal_tab_primary_color;
-            final Bitmap appIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            final ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription(
-                    title, appIcon, ContextCompat.getColor(getContext(), taskBarColor));
-            getActivity().setTaskDescription(taskDescription);
+        final Activity activity = getActivity();
+        if (activity != null) {
+            ActivityUtils.setTaskDescription(activity, title,
+                    R.color.primary_color_dark, R.mipmap.ic_launcher);
         }
     }
 
     private void setSearchEngine() {
-        mSearchEngine = preferenceManager.getSearchChoice().engineUrl;
+        mSearchEngine = getString(preferenceManager.getSearchChoice().engineUrl);
     }
 
-    @Nullable
-    public Bitmap getFavicon() {
-        return mLightningView != null ? mLightningView.getFavicon() : null;
-    }
-
-    public void findInPage(String query) {
+    public void resetFindInPage() {
         if (mLightningView != null) {
-            mLightningView.findInPage(query);
+            mLightningView.findInPage("");
         }
-    }
-
-    public String getPageTitle() {
-        return mLightningView != null ? mLightningView.getTitle() : "";
     }
 
     @Subscribe
     public void switchToForgetMode(Messages.SwitchToForget event) {
         Toast.makeText(getContext(), getString(R.string.switched_to_forget), Toast.LENGTH_SHORT).show();
-        isIncognito = true;
+        mIsIncognito = true;
         state.setIncognito(true);
         mLightningView.setIsIncognitoTab(true);
         mLightningView.setIsAutoForgetTab(true);
         updateUI();
-        mSearchWebView.initExtensionPreferences();
+        searchView.initExtensionPreferences();
+        queryManager.setForgetMode(true);
     }
 
     @Subscribe
     public void switchToNormalMode(Messages.SwitchToNormalTab event) {
-        isIncognito = false;
+        mIsIncognito = false;
         state.setIncognito(false);
         mLightningView.setIsIncognitoTab(false);
         mLightningView.setIsAutoForgetTab(false);
         updateUI();
-        mSearchWebView.initExtensionPreferences();
+        searchView.initExtensionPreferences();
     }
 
     @Subscribe
@@ -935,12 +1149,16 @@ public class TabFragment extends BaseFragment {
 
     @Subscribe
     public void updateControlIcon(Messages.UpdateControlCenterIcon event) {
-        if (ccIcon != null) {
-            if (!preferenceManager.isAttrackEnabled()) {
-                event.icon = R.drawable.ic_cc_gray;
-            }
-            ccIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), event.icon));
+        if (ccIcon == null) {
+            return;
         }
+        final ControlCenterStatus status;
+        if (!preferenceManager.isAttrackEnabled()) {
+            status = ControlCenterStatus.DISABLED;
+        } else {
+            status = event.status;
+        }
+        ccIcon.setImageLevel(status.ordinal());
     }
 
     @Subscribe
@@ -950,29 +1168,157 @@ public class TabFragment extends BaseFragment {
         mLightningView.reload();
     }
 
+
     @Subscribe
-    public void enableAdBlock(Messages.EnableAttrack event) {
+    public void enableAttrack(Messages.EnableAttrack event) {
+        preferenceManager.setAttrackEnabled(true);
+        mLightningView.enableAttrack();
+        mLightningView.reload();
+    }
+
+    @Subscribe
+    public void updateFavIcon(Messages.UpdateFavIcon event) {
+        state.setFavIcon(mLightningView.getFavicon());
+    }
+
+    @Subscribe
+    public void keyBoardClosed(Messages.KeyBoardClosed event) {
+        searchBar.setTitle(searchBar.getQuery());
+        searchBar.showTitleBar();
+    }
+
+    @Subscribe
+    public void updateQuery(Messages.UpdateQuery event) {
+        searchBar.updateQuery(event.suggestion);
+    }
+
+    @Subscribe
+    public void suggestions(Messages.QuerySuggestions event) {
+        final String query = searchBar.getQuery();
+        if (quickAccessBar == null) {
+            return;
+        }
+        if (query.length() == 0) {
+            return;
+        }
+        if (!query.startsWith(event.query)) {
+            return;
+        }
+        quickAccessBar.showSuggestions(event.suggestions, event.query);
+    }
+
+    @Subscribe
+    public void subscribeToNotifications(CliqzMessages.Subscribe event) {
         try {
-            preferenceManager.setAttrackEnabled(true);
-            mLightningView.enableAttrack();
-            mLightningView.reload();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            final Context context = FragmentUtilsV4.getContext(this);
+            if (event.type == null || event.subtype == null || event.id == null ||
+                    EnableNotificationDialog.showIfNeeded(context, telemetry) != null) {
+                return;
+            }
+            if (!preferenceManager.isFirstSubscription()) {
+                subscriptionsManager.addSubscription(event.type, event.subtype, event.id);
+                event.resolve();
+            } else {
+                ConfirmSubscriptionDialog.show(context, bus,
+                        subscriptionsManager, telemetry, event);
+                preferenceManager.setFirstSubscription(false);
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
         }
     }
 
+    @Subscribe
+    public void unsubscribeToNotifications(CliqzMessages.Unsubscribe event) {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            if (event.type == null || event.subtype == null || event.id == null ||
+                    EnableNotificationDialog.showIfNeeded(context, telemetry) != null) {
+                return;
+            }
+            subscriptionsManager.removeSubscription(event.type, event.subtype, event.id);
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context", e);
+        }
+        event.resolve();
+    }
+
+    @Subscribe
+    public void notifySubscrioption(Messages.NotifySubscription event) {
+        searchView.initExtensionPreferences();
+    }
+
+    @Subscribe
+    public void onFreshTabVisible(Messages.OnFreshTabVisible event) {
+        try {
+            final Context context = FragmentUtilsV4.getContext(this);
+            toolBarContainer.setBackgroundColor(ContextCompat.getColor(context,
+                    mIsIncognito ? R.color.fresh_tab_incognito_background : R.color.fresh_tab_background));
+            overflowMenuIcon.setColorFilter(ContextCompat.getColor(context, mIsIncognito ?
+                    R.color.cardview_light_background : R.color.black), PorterDuff.Mode.SRC_IN);
+            openTabsCounter.getBackground().setColorFilter(ContextCompat.getColor(context,
+                    mIsIncognito ? R.color.white : R.color.black), PorterDuff.Mode.SRC_IN);
+            openTabsCounter.setTextColor(ContextCompat.getColor(context,
+                    mIsIncognito ? R.color.white : R.color.black));
+            readerModeWebview.setVisibility(View.GONE);
+            readerModeButton.setVisibility(View.GONE);
+            mIsReaderModeOn = false;
+            readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null context");
+        }
+    }
+
+    @Subscribe
+    public void onOrientationChanged(Configuration newConfig) {
+        final String view;
+        if (state.getMode() == Mode.SEARCH) {
+            if (searchView.isFreshTabVisible()) {
+                view = TelemetryKeys.HOME;
+            } else {
+                view = TelemetryKeys.CARDS;
+            }
+        } else {
+            view = TelemetryKeys.WEB;
+        }
+        telemetry.sendOrientationSignal(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ?
+                TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT, view);
+    }
+
     private void updateUI() {
-        final int iconColor = isIncognito ? R.color.toolbar_icon_color_incognito : R.color.toolbar_icon_color_normal;
-        final int toolBarColor = isIncognito ? R.color.incognito_tab_primary_color : R.color.normal_tab_primary_color;
-        openTabsCounter.getBackground().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
-        overflowMenuIcon.getDrawable().setColorFilter(ContextCompat.getColor(getContext(), iconColor), PorterDuff.Mode.SRC_ATOP);
-        openTabsCounter.setTextColor(ContextCompat.getColor(getContext(), iconColor));
-        toolBarContainer.setBackgroundColor(ContextCompat.getColor(getContext(), toolBarColor));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final TypedArray typedArray = getActivity().getTheme().obtainStyledAttributes(getFragmentTheme(), new int[]{R.attr.colorPrimaryDark});
-            final int resourceId = typedArray.getResourceId(0, R.color.normal_tab_primary_color);
-            getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), resourceId));
-            typedArray.recycle();
+        @StyleRes final int themeId = getFragmentTheme();
+        final Context wrapper = new ContextThemeWrapper(getActivity(), themeId);
+        final Resources.Theme theme = wrapper.getTheme();
+
+        final TypedArray typedArray = theme.obtainStyledAttributes(new int[]{
+                R.attr.colorPrimary,
+                R.attr.colorPrimaryDark,
+                R.attr.textColorPrimary,
+        });
+        final int iconColor = typedArray.getColor(2,
+                ContextCompat.getColor(wrapper, R.color.text_color_primary));
+        final int toolbarColor = typedArray.getColor(0,
+                ContextCompat.getColor(wrapper, mIsIncognito ? R.color.incognito_tab_primary_color
+                        : R.color.primary_color));
+        final int statusBarColor = typedArray.getColor(1,
+                ContextCompat.getColor(wrapper, R.color.primary_color_dark));
+        typedArray.recycle();
+        toolBarContainer.setBackgroundColor(toolbarColor);
+        openTabsCounter.getBackground().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+        overflowMenuIcon.getDrawable().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+        openTabsCounter.setTextColor(iconColor);
+        try {
+            final Activity activity = FragmentUtilsV4.getActivity(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.getWindow().setStatusBarColor(statusBarColor);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+                tintManager.setStatusBarTintEnabled(true);
+                tintManager.setNavigationBarTintEnabled(true);
+                tintManager.setTintColor(statusBarColor);
+            }
+        } catch (NoInstanceException e) {
+            Log.e(TAG, "Null activity", e);
         }
     }
 
@@ -988,4 +1334,54 @@ public class TabFragment extends BaseFragment {
         mContentContainer.requestLayout();
     }
 
+    private void showRequestLocationAccessDialog() {
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.request_location_access)
+                .setPositiveButton(R.string.action_allow, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            preferenceManager.setLocationEnabled(true);
+                            dialog.dismiss();
+                            final MainActivity activity = (MainActivity) FragmentUtilsV4
+                                    .getActivity(TabFragment.this);
+                            searchView.updateQuery(state.getQuery());
+                            if (!activity.locationCache.isGPSEnabled()) {
+                                Toast.makeText(getContext(), R.string.gps_permission, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (NoInstanceException e) {
+                            Log.e(TAG, "Null activity", e);
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.action_dont_allow, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void showYTIcon() {
+        if (ytDownloadIcon.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        telemetry.sendYTIconVisibleSignal();
+        ytDownloadIcon.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideYTIcon() {
+        if (ytDownloadIcon.getVisibility() == View.GONE) {
+            return;
+        }
+        ytDownloadIcon.setVisibility(View.GONE);
+    }
+
+    // TODO: dirty hack due to the Oreo multi-process WebView
+    // Due to the loading page delay introduced to fix the multi-process WebView, we have to
+    // open urls from history and favorites like they are initial urls (meaning similar logic).
+    public void openFromOverview(String url) {
+        mOverviewUrl = url;
+    }
 }

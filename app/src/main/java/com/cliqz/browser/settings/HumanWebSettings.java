@@ -11,7 +11,7 @@ import android.preference.Preference;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.telemetry.TelemetryKeys;
 
 public class HumanWebSettings extends BaseSettingsFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {

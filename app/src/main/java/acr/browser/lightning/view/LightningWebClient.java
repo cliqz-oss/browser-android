@@ -1,5 +1,6 @@
 package acr.browser.lightning.view;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -21,6 +21,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -32,31 +33,52 @@ import android.widget.Toast;
 import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.main.Messages.ControlCenterStatus;
+import com.cliqz.browser.webview.CliqzMessages;
+import com.cliqz.jsengine.EngineNotYetAvailable;
+import com.cliqz.jsengine.WebRequest;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.UrlUtils;
 
 /**
- * @author Stefano Pacifici based on Anthony C. Restaino's code
- * @date 2015/09/22
+ * @author Anthony C. Restaino
+ * @author Stefano Pacifici
  */
 class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhishingCallback {
 
+    @SuppressWarnings("unused")
+    private static final String TAG = LightningWebClient.class.getSimpleName();
     private static final String CLIQZ_PATH = "/CLIQZ";
+    private static Pattern SPIEGEL_REGEX = Pattern.compile(".*\\.spiegel\\.de/?.*");
+    private static Set<String> SPIEGEL_FILTER = new HashSet<>(Arrays.asList(
+            "http://ssl.p.jwpcdn.com/player/v/7.8.1/gapro.js",
+            "http://ssl.p.jwpcdn.com/player/v/7.8.1/jwpsrv.js",
+            "http://ssl.p.jwpcdn.com/player/v/7.8.1/provider.html5.js",
+            "http://ssl.p.jwpcdn.com/player/v/7.8.1/related.js",
+            "http://ssl.p.jwpcdn.com/player/v/7.8.1/vast.js"
+    ));
 
     private final Context context;
     private final LightningView lightningView;
     private String mLastUrl = "";
     private final AntiPhishingDialog antiPhishingDialog;
-    LightningWebClient(Context context, LightningView lightningView) {
+    private String mCurrentHost = "";
+
+    LightningWebClient(@NonNull Context context, @NonNull LightningView lightningView) {
         this.context = context;
         this.lightningView = lightningView;
         this.antiPhishingDialog = new AntiPhishingDialog(context, lightningView.eventBus, lightningView.telemetry);
@@ -69,36 +91,41 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         if (response != null) {
             return response;
         }
-        response = lightningView.jsengine.webRequest.shouldInterceptRequest(view, request);
-        if (response == null) {
-            return null;
-        }
-
-        final String reason = response.getReasonPhrase();
-
-        if (reason != null) {
-            if (reason.contains("ATTRACK")) {
+        try {
+            final WebRequest webRequest = lightningView.jsengine.getWebRequest();
+            response = webRequest.shouldInterceptRequest(view, request, lightningView.isIncognitoTab());
+            if (response == null) {
+                // Handle spigel video bug here
+                final String requestUrl = request.getUrl().toString();
+                if (SPIEGEL_REGEX.matcher(mLastUrl).matches() && SPIEGEL_FILTER.contains(requestUrl)) {
+                    return createOKResponse();
+                }
+                return null;
+            }
+            if (webRequest.getTabHasChanged(view)) {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        lightningView.eventBus.post(new Messages.UpdateTrackerCount());
+                        lightningView.lightingViewListenerListener.increaseAntiTrackingCounter();
                     }
                 });
+                webRequest.resetTabHasChanged(view);
             }
             return response;
+        } catch (EngineNotYetAvailable e) {
+            return null;
         }
-        return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
         final Uri uri = Uri.parse(url);
-        WebResourceResponse response = handleUrl(view, uri);
-        return response;
+        return handleUrl(view, uri);
     }
 
     private WebResourceResponse handleUrl(final WebView view, Uri uri) {
-        final String cliqzPath = String.format("%s%d", CLIQZ_PATH, view.hashCode());
+        final String cliqzPath = String.format(Locale.US, "%s%d", CLIQZ_PATH, view.hashCode());
         final String path = uri.getPath();
 
         if (TrampolineConstants.CLIQZ_SCHEME.equals(uri.getScheme())) {
@@ -106,10 +133,8 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             if (TrampolineConstants.CLIQZ_TRAMPOLINE_AUTHORITY.equals(uri.getAuthority())) {
                 if (TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO_PATH.equals(path)) {
                     final Resources resources = view.getResources();
-                    final WebResourceResponse response =
-                            new WebResourceResponse("text/html", "UTF-8",
+                    return new WebResourceResponse("text/html", "UTF-8",
                                     resources.openRawResource(R.raw.trampoline_forward));
-                    return response;
                 }
                 if (TrampolineConstants.CLIQZ_TRAMPOLINE_SEARCH_PATH.equals(path)) {
                     final String query = uri.getQueryParameter("q");
@@ -148,19 +173,21 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             }
         } else if (cliqzPath.equals(path)) {
             // Urls with the special CLIQZ Path
-            lightningView.passwordManager.provideOrSavePassword(uri, view);
+            if (uri.getHost().equals(mCurrentHost)) {
+                // make sure that script is asking for password from same domain
+                lightningView.passwordManager.provideOrSavePassword(uri, view);
+            }
             return createOKResponse();
         }
         return null;
     }
 
     private WebResourceResponse createOKResponse() {
-        final WebResourceResponse response =
-                new WebResourceResponse("test/plain", "UTF-8",
+        return new WebResourceResponse("test/plain", "UTF-8",
                         new ByteArrayInputStream("OK".getBytes()));
-        return response;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onPageFinished(WebView view, String url) {
@@ -175,6 +202,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
             lightningView.mTitle.setTitle(view.getTitle());
             lightningView.eventBus.post(new Messages.UpdateTitle());
+            if (!lightningView.isIncognitoTab()) {
+                lightningView.persister.persist(lightningView.getId(), title, url, view);
+            }
         }
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT &&
                 lightningView.getInvertePage()) {
@@ -186,24 +216,36 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             lightningView.passwordManager.injectJavascript(view);
         }
         ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
-        lightningView.eventBus.post(new BrowserEvents.TabsChanged());
+        lightningView.eventBus.post(new CliqzMessages.OnPageFinished());
     }
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        @DrawableRes final int controlCenterIcon = lightningView.attrack.isWhitelisted(Uri.parse(url).getHost())
-                ? R.drawable.ic_cc_orange : R.drawable.ic_cc_green;
-        lightningView.eventBus.post(new Messages.UpdateControlCenterIcon(controlCenterIcon));
+        final Uri uri = Uri.parse(url);
+        final String host = uri.getHost();
+        if (lightningView.lightingViewListenerListener != null) {
+            lightningView.lightingViewListenerListener.onFavIconLoaded(favicon);
+        }
+        mCurrentHost = host;
+        final ControlCenterStatus status;
+        if (host != null && lightningView.attrack.isWhitelisted(host)) {
+            status = ControlCenterStatus.DISABLED; //hack change whitelisted icon instead
+        } else {
+            status = ControlCenterStatus.ENABLED;
+        }
+        lightningView.eventBus.post(new Messages.UpdateControlCenterIcon(status));
         try {
-            final String regex = "^((w|m)[a-zA-Z0-9-]{0,}\\.)";
+            final String regex = "^(([wm])[a-zA-Z0-9-]*\\.)";
             final String domain = new URL(url).getHost().replaceFirst(regex,"");
-            if (!lightningView.isIncognitoTab() && lightningView.bloomFilterUtils.contains(domain)) {
+            if (lightningView.preferences.isAutoForgetEnabled()
+                    && !lightningView.isIncognitoTab()
+                    && lightningView.bloomFilterUtils.contains(domain)) {
                 lightningView.eventBus.post(new Messages.SwitchToForget());
             } else if (lightningView.isAutoForgetTab() && !lightningView.bloomFilterUtils.contains(domain)) {
                 lightningView.eventBus.post(new Messages.SwitchToNormalTab());
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            // NOP
         }
         if (!mLastUrl.equals(url)) {
             lightningView.historyId = -1;
@@ -213,7 +255,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             }
         }
         if(lightningView.telemetry.backPressed) {
-            if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
+            if(url != null && !url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
                 if(lightningView.telemetry.showingCards) {
                     lightningView.telemetry.sendBackPressedSignal("cards", "web", url.length());
                     lightningView.telemetry.showingCards = false;
@@ -229,7 +271,6 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             lightningView.eventBus.post(new BrowserEvents.ShowToolBar());
         }
         lightningView.eventBus.post(new Messages.ResetTrackerCount());
-        lightningView.eventBus.post(new BrowserEvents.TabsChanged());
     }
 
     @Override
@@ -279,6 +320,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     private boolean mIsRunning = false;
     private float mZoomScale = 0.0f;
 
+    @SuppressLint("ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onScaleChanged(final WebView view, final float oldScale, final float newScale) {
@@ -392,16 +434,12 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         alert.show();
     }
 
+    @SuppressWarnings("deprecation")
+    @SuppressLint("ObsoleteSdkInt")
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         final Uri uri = Uri.parse(url);
         final String scheme = uri.getScheme();
-        // Removed as version 1.0.2r2
-        // Check if configured proxy is available
-        // if (!lightningView.isProxyReady()) {
-        //     // User has been notified
-        //     return true;
-        // }
 
         if (lightningView.isIncognitoTab()) {
             return super.shouldOverrideUrlLoading(view, url);
@@ -419,15 +457,11 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 return false;
             }
             if (intent != null) {
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setComponent(null);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                    intent.setSelector(null);
-                }
                 try {
-                    context.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Log.e(Constants.TAG, "ActivityNotFoundException");
+                    final URL realUrl = new URL(intent.getDataString());
+                    view.loadUrl(realUrl.toString());
+                } catch (MalformedURLException e) {
+                    // Silently ignore this
                 }
                 return true;
             }
@@ -444,12 +478,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             }
             return true;
         }
-        // CLIQZ! We do not want to open external app from our browser, so we return false here
-        // boolean startActivityForUrl = mIntentUtils.startActivityForUrl(view, url);
         if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
             lightningView.telemetry.sendNavigationSignal(url.length());
         }
-        // return startActivityForUrl;
         return false;
     }
 
@@ -466,4 +497,51 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         });
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+        if (errorCode == ERROR_FAILED_SSL_HANDSHAKE && Build.VERSION.SDK_INT <
+                Build.VERSION_CODES.KITKAT) {
+            final Uri uri = Uri.parse(failingUrl);
+            if (uri.isHierarchical() && uri.getHost().startsWith("amp.")) {
+                final String newUrl = failingUrl.replace("amp", "www");
+                lightningView.setUrlSSLError(true);
+                view.loadData("", "", null);
+                view.loadUrl(newUrl, null);
+                return;
+            }
+        }
+        super.onReceivedError(view, errorCode, description, failingUrl);
+        handleErrors(view, Uri.parse(failingUrl));
+    }
+
+    @TargetApi(23)
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        handleErrors(view, request.getUrl());
+    }
+
+    private void handleErrors(WebView view, Uri failingUrl) {
+        final String schema = failingUrl != null ? failingUrl.getScheme() : null;
+        if (schema == null) {
+            return;
+        }
+
+        // Try to handle market:// links (i.e. Facebook's install messanger)
+        if ("market".equals(schema)) {
+            final Intent intent = new Intent(Intent.ACTION_VIEW, failingUrl);
+            try {
+                lightningView.activity.startActivity(intent);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    view.evaluateJavascript("document.documentElement.innerHTML=\"\"", null);
+                }else{
+                    view.loadUrl("document.documentElement.innerHTML=\"\"", null);
+                }
+            } catch (ActivityNotFoundException e) {
+                // Nothing to do here
+            }
+        }
+    }
 }

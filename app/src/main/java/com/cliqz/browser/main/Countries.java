@@ -3,9 +3,8 @@ package com.cliqz.browser.main;
 import com.cliqz.browser.R;
 
 /**
- * Created by Ravjit on 31/01/17.
+ * @author Ravjit Uppal
  */
-
 public enum Countries {
     germany("de", R.string.germany),
     france("fr", R.string.france),

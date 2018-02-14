@@ -9,14 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.TelemetryKeys;
-import com.squareup.otto.Bus;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;

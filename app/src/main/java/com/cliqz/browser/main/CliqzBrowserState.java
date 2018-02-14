@@ -1,12 +1,13 @@
 package com.cliqz.browser.main;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
  * This class keep the state of the app and help to dispatch it to the extension during init.
  *
  * @author Stefano Pacifici
- * @date 2015/12/21
  */
 public class CliqzBrowserState implements Serializable {
 
@@ -15,24 +16,12 @@ public class CliqzBrowserState implements Serializable {
         WEBPAGE
     }
 
-    private long timestamp = System.currentTimeMillis();
     private String query = "";
-    private int cardIndex = -1;
-    private float latitude = Float.MAX_VALUE;
-    private float longitude = Float.MAX_VALUE;
     private String title = "";
     private String url = "";
     private Mode mode = Mode.SEARCH;
     private boolean incognito;
-    private boolean shouldReset = false;
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+    private Bitmap favicon = null;
 
     public String getQuery() {
         return query;
@@ -40,30 +29,6 @@ public class CliqzBrowserState implements Serializable {
 
     public void setQuery(String query) {
         this.query = query;
-    }
-
-    public int getCardIndex() {
-        return cardIndex;
-    }
-
-    public void setCardIndex(int cardIndex) {
-        this.cardIndex = cardIndex;
-    }
-
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
     }
 
     public String getTitle() {
@@ -88,7 +53,6 @@ public class CliqzBrowserState implements Serializable {
 
     public void setMode(Mode mode) {
         this.mode = mode;
-        this.timestamp = System.currentTimeMillis();
     }
 
     public boolean isIncognito() {
@@ -99,27 +63,14 @@ public class CliqzBrowserState implements Serializable {
         this.incognito = incognito;
     }
 
-    public void setShouldReset(boolean shouldReset) {
-        this.shouldReset = shouldReset;
+    void setFavIcon(Bitmap favIcon) {
+        this.favicon = favIcon;
     }
 
-    public boolean shouldReset() {
-        //Temporarily disabled reset
-        //return shouldReset;
-        return false;
+    public Bitmap getFavIcon() {
+        return favicon;
     }
 
     public CliqzBrowserState() {
     }
-
-//    public final void copyFrom(CliqzBrowserState state) {
-//        this.timestamp = state.timestamp;
-//        this.query = state.query;
-//        this.cardIndex = state.cardIndex;
-//        this.latitude = state.latitude;
-//        this.longitude = state.longitude;
-//        this.title = state.title;
-//        this.url = state.url;
-//        this.mode = state.mode;
-//    }
 }

@@ -3,17 +3,30 @@ package com.cliqz.browser.widget;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.TextView;
 
+import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.nove.Bus;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -22,14 +35,20 @@ import javax.inject.Inject;
  * Custom EditText widget with autocompletion
  *
  * @author Stefano Pacifici
- * @date 2015/10/13
  */
-public class AutocompleteEditText extends EditText {
+public class AutocompleteEditText extends AppCompatEditText {
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     private static final String TAG = AutocompleteEditText.class.getSimpleName();
-    
+
     @Inject
     Telemetry mTelemetry;
+
+    @Inject
+    Bus bus;
 
     private final ArrayList<TextWatcher> mListeners = new ArrayList<>();
     private volatile boolean mIsAutocompleting;
@@ -60,6 +79,44 @@ public class AutocompleteEditText extends EditText {
         mIsAutocompleting = false;
         mIsAutocompleted = false;
         BrowserApp.getAppComponent().inject(this);
+        setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_URI);
+        setSelectHandDrawable();
+        setDrawable();
+    }
+
+    private void setDrawable(){
+        final Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_cliqz_back);
+        final Drawable rightDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_clear_black_24dp);
+        setCompoundDrawablesWithIntrinsicBounds(leftDrawable,null,rightDrawable,null);
+    }
+
+    private void setSelectHandDrawable() {
+        try {
+            final Field fEditor = TextView.class.getDeclaredField("mEditor");
+            fEditor.setAccessible(true);
+            final Object editor = fEditor.get(this);
+
+            final Field fSelectHandleLeft = editor.getClass().getDeclaredField("mSelectHandleLeft");
+            final Field fSelectHandleRight =
+                    editor.getClass().getDeclaredField("mSelectHandleRight");
+            final Field fSelectHandleCenter =
+                    editor.getClass().getDeclaredField("mSelectHandleCenter");
+
+            fSelectHandleLeft.setAccessible(true);
+            fSelectHandleRight.setAccessible(true);
+            fSelectHandleCenter.setAccessible(true);
+
+            fSelectHandleLeft.set(editor, setDrawableColorFilter(R.drawable.text_select_handle_left_material));
+            fSelectHandleRight.set(editor, setDrawableColorFilter(R.drawable.text_select_handle_right_material));
+            fSelectHandleCenter.set(editor, setDrawableColorFilter(R.drawable.text_select_handle_middle_material));
+        } catch (final Exception ignored) {
+        }
+    }
+
+    private Drawable setDrawableColorFilter(int drawableId){
+        Drawable drawable =  ContextCompat.getDrawable(getContext(),drawableId);
+        drawable.setColorFilter(ContextCompat.getColor(getContext(),R.color.primary_color), PorterDuff.Mode.SRC_ATOP);
+        return  drawable;
     }
 
     public boolean isAutocompleted() {
@@ -68,10 +125,6 @@ public class AutocompleteEditText extends EditText {
 
     public void setIsAutocompletionEnabled(boolean value) {
         mIsAutocompletionEnabled = value;
-    }
-
-    public boolean isAutocompletionEnabled() {
-        return mIsAutocompletionEnabled;
     }
 
     @Override
@@ -90,6 +143,16 @@ public class AutocompleteEditText extends EditText {
         }
     }
 
+    @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            bus.post(new Messages.KeyBoardClosed());
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @NonNull
     public String getQuery() {
         return mQuery;
     }
@@ -161,7 +224,7 @@ public class AutocompleteEditText extends EditText {
     @Override
     public boolean onTextContextMenuItem(int id) {
         ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(getContext().CLIPBOARD_SERVICE);
+                .getSystemService(Context.CLIPBOARD_SERVICE);
         switch (id){
             case android.R.id.paste:
                 final ClipData primaryClip = clipboard.getPrimaryClip();
@@ -174,6 +237,24 @@ public class AutocompleteEditText extends EditText {
                 break;
         }
         return super.onTextContextMenuItem(id);
+    }
+
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        if(selStart == 0 && selEnd == 0 && getText().length()!= 0) {
+            boolean isUserTouch = false;
+            final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+            for(int i = 0 ; i < stackTraceElements.length ;i++){
+                if("onTouchEvent".equals(stackTraceElements[i].getMethodName())){
+                    isUserTouch = true;
+                    break;
+                }
+            }
+
+            if(!isUserTouch)
+                setSelection(0, getText().length());
+        }
     }
 
     private class AutocompleteRunnable implements Runnable {
@@ -196,7 +277,7 @@ public class AutocompleteEditText extends EditText {
                 return;
             }
             mIsAutocompleting = true;
-            if (completion.startsWith(mQuery) && !completion.equals(mQuery)) {
+            if (completion.startsWith(mQuery)) {
                 mIsAutocompleted = true;
                 final int selectionBegin = mQuery.length();
                 final int selectionEnd = completion.length();

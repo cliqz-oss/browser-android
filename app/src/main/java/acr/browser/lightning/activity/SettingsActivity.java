@@ -4,6 +4,7 @@
 package acr.browser.lightning.activity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,24 +21,20 @@ import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.utils.CustomChooserIntent;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.offrz.OffrzConfig;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.utils.ActivityUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
-import javax.inject.Inject;
+public class SettingsActivity extends AppCompatPreferenceActivity {
 
-public class SettingsActivity extends ThemableSettingsActivity {
-
-    private static final String feedbackUrlEn = "https://cliqz.com/en/support";
-    private static final String feedbackUrlDe = "https://cliqz.com/de/support";
-    private static final String reportUrlEn = "https://cliqz.com/en/report-url";
-    private static final String reportUrlDe = "https://cliqz.com/report-url";
+    private static final boolean IS_GHOSTERY = "ghostery".equals(BuildConfig.FLAVOR_api);
 
     @Inject
     Telemetry telemetry;
@@ -57,6 +54,11 @@ public class SettingsActivity extends ThemableSettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Task description
+        ActivityUtils.setTaskDescription(this, R.string.app_name, R.color.primary_color_dark,
+                R.mipmap.ic_launcher);
+
         BrowserApp.getAppComponent().inject(this);
         // this is a workaround for the Toolbar in PreferenceActitivty
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
@@ -77,8 +79,25 @@ public class SettingsActivity extends ThemableSettingsActivity {
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.preferences_headers, target);
         fragments.clear();
-        for (Header header : target) {
-            fragments.add(new HeaderInfo(header.fragment, header.id));
+        final Iterator<Header> iterator = target.iterator();
+        final boolean isOffrzAvailable = OffrzConfig.isOffrzSupportedForLang();
+        while (iterator.hasNext()) {
+            final Header header = iterator.next();
+            if (IS_GHOSTERY && (
+                    header.id == R.id.rate_us ||
+                    header.id == R.id.feedback ||
+                    header.id == R.id.report_site ||
+                    header.id == R.id.tips_and_tricks
+            )) {
+                iterator.remove();
+            } else if (!isOffrzAvailable && header.id == R.id.myoffrz) {
+                iterator.remove();
+            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+                    && header.id == R.id.ad_block) {
+                iterator.remove();
+            } else {
+                fragments.add(new HeaderInfo(header.fragment, header.id));
+            }
         }
     }
 
@@ -97,21 +116,20 @@ public class SettingsActivity extends ThemableSettingsActivity {
         final HeaderInfo info = fragments.get(position);
         if (info.id == R.id.imprint) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.IMPRINT, TelemetryKeys.MAIN);
-            openUrl("https://cliqz.com/legal");
+            openUrl(getString(R.string.imprint_url));
         } else if (info.id == R.id.feedback) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
-            final String feedbackUrl = Locale.getDefault().getLanguage().equals("de") ?
-                    feedbackUrlDe : feedbackUrlEn;
-            openUrl(feedbackUrl);
+            openUrl(getString(R.string.support_url));
         } else if (info.id == R.id.rate_us) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.cliqz.browser")));
         } else if (info.id == R.id.tips_and_tricks) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.TIPS_AND_TRICKS, TelemetryKeys.MAIN);
-            openUrl("https://cliqz.com/tips-android");
+            openUrl(getString(R.string.tips_and_tricks_url));
         } else if (info.id == R.id.report_site) {
-            final String reportUrl = Locale.getDefault().getLanguage().equals("de") ?
-                    reportUrlDe : reportUrlEn;
-            openUrl(reportUrl);
+            openUrl(getString(R.string.report_site_url));
+        } else if (info.id == R.id.myoffrz) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.ABOUT_MYOFFRZ, TelemetryKeys.MAIN);
+            openUrl(getString(R.string.myoffrz_url));
         } else {
             super.onListItemClick(l, v, position, id);
         }
@@ -127,14 +145,25 @@ public class SettingsActivity extends ThemableSettingsActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            finish();
+        } else {
+            onBackPressed();
+        }
         return true;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         PermissionsManager.getInstance().notifyPermissionsChange(permissions, grantResults);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        telemetry.sendOrientationSignal(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ?
+        TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT, TelemetryKeys.SETTINGS);
+    }
 }

@@ -1,31 +1,28 @@
 package com.cliqz.browser.overview;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.SparseArray;
 
-import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.HistoryFragment;
 
 /**
- * Created by Ravjit on 20/07/16.
+ * @author Ravjit Uppal
+ * @author Stefano Pacifici
  */
-public class OverviewPagerAdapter extends FragmentPagerAdapter {
+class OverviewPagerAdapter extends FragmentPagerAdapter {
 
-    private final TabOverviewFragment tabOverviewFragment;
-    private final HistoryFragment historyOverviewFragment;
-    private final HistoryFragment favoritesFragment;
-    private final FragmentEntry[] fragments;
+    private final SparseArray<FragmentEntry> fragments;
 
     private final Resources resources = BrowserApp.getAppContext().getResources();
 
     private final static class FragmentEntry {
         private final @StringRes int title;
         private final Fragment fragment;
+        private long mLastShowTime = 0L;
 
         FragmentEntry(@StringRes int title, Fragment fragment) {
             this.title = title;
@@ -33,33 +30,39 @@ public class OverviewPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public OverviewPagerAdapter(FragmentManager fragmentManager) {
+    OverviewPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
-        tabOverviewFragment = new TabOverviewFragment();
-        historyOverviewFragment = new HistoryFragment();
-        favoritesFragment = new HistoryFragment();
-        final Bundle favoritesBundle = new Bundle();
-        favoritesBundle.putBoolean(HistoryFragment.SHOW_FAVORITES_ONLY, true);
-        favoritesFragment.setArguments(favoritesBundle);
-        fragments = new FragmentEntry[] {
-                new FragmentEntry(R.string.open_tabs, tabOverviewFragment),
-                new FragmentEntry(R.string.history, historyOverviewFragment),
-                new FragmentEntry(R.string.favorites, favoritesFragment)
-        };
+        fragments = new SparseArray<>();
+        for (OverviewTabsEnum entry: OverviewTabsEnum.values()) {
+            if (entry != OverviewTabsEnum.UNDEFINED && entry.getFragmentIndex() >= 0) {
+                final int index = entry.getFragmentIndex();
+                final Fragment fragment = entry.newFragmentInstance();
+                final FragmentEntry fragEntry = new FragmentEntry(entry.title, fragment);
+                fragments.put(index, fragEntry);
+            }
+        }
     }
 
     @Override
     public Fragment getItem(int position) {
-        return fragments[position].fragment;
+        return fragments.get(position).fragment;
     }
 
     @Override
     public int getCount() {
-        return fragments.length;
+        return fragments.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return resources.getString(fragments[position].title);
+        return resources.getString(fragments.get(position).title);
+    }
+
+    long getLastShownTime(int position) {
+        return fragments.get(position).mLastShowTime;
+    }
+
+    void setShownTime(int position) {
+        fragments.get(position).mLastShowTime = System.currentTimeMillis();
     }
 }

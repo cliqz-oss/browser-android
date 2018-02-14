@@ -96,6 +96,18 @@ public class PasswordDatabase extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
+
+        }
+    }
+
+    public synchronized void clearPasswords() {
+        final SQLiteDatabase db = dbHandler.getDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(LoginDetailsTable.TABLE_NAME, null, null);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
         }
     }
 }

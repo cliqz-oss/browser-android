@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/query_suggestion_bg">
+
+
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:id="@+id/query_suggestion_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/access_bar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:visibility="visible">
+
+        <Button
+            android:id="@+id/tabs_overview_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            tools:drawableTint="@color/primary_color_dark"
+            tools:drawableTop="@drawable/ic_tabs_black"
+            android:text="@string/tabs_word"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_color_dark"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/history_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            tools:drawableTop="@drawable/ic_history_black"
+            tools:drawableTint="@color/primary_color_dark"
+            android:text="@string/history"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_color_dark"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/offrz_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            tools:drawableTop="@drawable/ic_offrz_black"
+            tools:drawableTint="@color/primary_color_dark"
+            android:text="@string/myoffrz_word"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_color_dark"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/favorites_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            tools:drawableTop="@drawable/ic_star"
+            tools:drawableTint="@color/primary_color_dark"
+            android:text="@string/favorites"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_color_dark"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/menu_btn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:text="@string/menu"
+            android:textAllCaps="false"
+            android:textColor="@color/primary_color_dark"
+            android:textSize="12sp"
+            tools:drawableTint="@color/primary_color_dark"
+            tools:drawableTop="@drawable/ic_menu_overflow" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:background="@color/query_suggestion_bg"
+        android:layout_below="@id/access_bar_container"/>
+
+</RelativeLayout>

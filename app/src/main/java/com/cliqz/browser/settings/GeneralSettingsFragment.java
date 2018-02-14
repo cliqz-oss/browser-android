@@ -9,19 +9,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceGroup;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.EditText;
+import android.widget.Toast;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.filechooser.FileChooserDialog;
 import com.cliqz.browser.main.Countries;
-import com.cliqz.browser.main.OnBoardingHelper;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.telemetry.TelemetryKeys;
 
 import java.io.File;
+import java.io.IOException;
 
 import acr.browser.lightning.constant.SearchEngines;
+
+import static android.app.AlertDialog.Builder;
+import static android.app.AlertDialog.OnClickListener;
 
 public class GeneralSettingsFragment extends BaseSettingsFragment implements FileChooserDialog.FileSelectedListener {
 
@@ -33,18 +38,26 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
     private static final String SETTINGS_AUTO_COMPLETION = "cb_autocompletion";
     private static final String SETTINGS_NEWS_NOTIFICATION = "cb_news_notification";
     private static final String SETTINGS_REGIONAL_SETTINGS = "regional_settings";
+    private static final String SETTINGS_QUERY_SUGGESTIONS = "cb_query_suggestion";
+    private static final String SETTINGS_SHOW_TOPSITES = "cb_show_topsites";
+    private static final String SETTINGS_SHOW_NEWS = "cb_show_news";
+    private static final String SETTINGS_LIMIT_DATA_USAGE = "cb_limit_data_usage";
+    private static final String SETTINGS_SUBSCRIPTIONS = "subscriptions";
+
     private long startTime;
 
     private Activity mActivity;
 
     private static final int API = Build.VERSION.SDK_INT;
-    private Preference searchengine;
-    private Preference showTour;
-    private Preference downloadLocation;
-    private Preference regionalSettings;
+    private Preference searchEngine;
     private CheckBoxPreference cbAdultContent;
     private CheckBoxPreference cbAutoCompletion;
     private CheckBoxPreference cbNewNotification;
+    private CheckBoxPreference cbQuerySuggestion;
+    private CheckBoxPreference cbShowTopSites;
+    private CheckBoxPreference cbShowNews;
+    private CheckBoxPreference cbLimitDataUsage;
+    private int selectedEngineIndex = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,35 +71,64 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
     }
 
     private void initPrefs() {
-        searchengine = findPreference(SETTINGS_SEARCHENGINE);
-        showTour = findPreference(SETTINGS_SHOWTOUR);
-        downloadLocation = findPreference(SETTINGS_DOWNLAOD_LOCATION);
-        regionalSettings = findPreference(SETTINGS_REGIONAL_SETTINGS);
+        searchEngine = findPreference(SETTINGS_SEARCHENGINE);
+        Preference showTour = findPreference(SETTINGS_SHOWTOUR);
+        Preference downloadLocation = findPreference(SETTINGS_DOWNLAOD_LOCATION);
+        Preference regionalSettings = findPreference(SETTINGS_REGIONAL_SETTINGS);
+        Preference subscriptionsSettigns = findPreference(SETTINGS_SUBSCRIPTIONS);
+
         cbNewNotification = (CheckBoxPreference) findPreference(SETTINGS_NEWS_NOTIFICATION);
         cbAdultContent = (CheckBoxPreference) findPreference(SETTINGS_ADULT_CONTENT);
         cbAutoCompletion = (CheckBoxPreference) findPreference(SETTINGS_AUTO_COMPLETION);
+        cbQuerySuggestion = (CheckBoxPreference) findPreference(SETTINGS_QUERY_SUGGESTIONS);
+        cbShowTopSites = (CheckBoxPreference) findPreference(SETTINGS_SHOW_TOPSITES);
+        cbShowNews = (CheckBoxPreference) findPreference(SETTINGS_SHOW_NEWS);
+        cbLimitDataUsage = (CheckBoxPreference) findPreference(SETTINGS_LIMIT_DATA_USAGE);
 
-        searchengine.setOnPreferenceClickListener(this);
+        searchEngine.setOnPreferenceClickListener(this);
+        setSearchEngineSummary(mPreferenceManager.getSearchChoice());
         showTour.setOnPreferenceClickListener(this);
         downloadLocation.setOnPreferenceClickListener(this);
         regionalSettings.setOnPreferenceClickListener(this);
+        subscriptionsSettigns.setOnPreferenceClickListener(this);
 
         cbNewNotification.setOnPreferenceChangeListener(this);
         cbAdultContent.setOnPreferenceChangeListener(this);
         cbAutoCompletion.setOnPreferenceChangeListener(this);
+        cbQuerySuggestion.setOnPreferenceChangeListener(this);
+        cbShowTopSites.setOnPreferenceChangeListener(this);
+        cbShowNews.setOnPreferenceChangeListener(this);
+        cbLimitDataUsage.setOnPreferenceChangeListener(this);
 
         if (API >= 19) {
             mPreferenceManager.setFlashSupport(0);
         }
 
-        final boolean imagesBool = mPreferenceManager.getBlockImagesEnabled();
         final boolean adultBool = mPreferenceManager.getBlockAdultContent();
         final boolean autocompleteBool = mPreferenceManager.getAutocompletionEnabled();
         final boolean newsNotificationBool = mPreferenceManager.getNewsNotificationEnabled();
+        final boolean querySuggestionBool = mPreferenceManager.getQuerySuggestionEnabled();
+        final boolean showTopSitesBool = mPreferenceManager.shouldShowTopSites();
+        final boolean showNewsBool = mPreferenceManager.shouldShowNews();
+        final boolean limitDataUsageBool = mPreferenceManager.shouldLimitDataUsage();
 
         cbNewNotification.setChecked(newsNotificationBool);
         cbAdultContent.setChecked(adultBool);
         cbAutoCompletion.setChecked(autocompleteBool);
+        cbQuerySuggestion.setChecked(querySuggestionBool);
+        cbShowTopSites.setChecked(showTopSitesBool);
+        cbShowNews.setChecked(showNewsBool);
+        cbLimitDataUsage.setChecked(limitDataUsageBool);
+
+        if (!mPreferenceManager.getCountryChoice().equals(Countries.germany)) {
+            ((PreferenceCategory) getPreferenceScreen().getPreference(0))
+                    .removePreference(cbQuerySuggestion);
+        }
+
+        if (!BuildConfig.DEBUG) {
+            ((PreferenceCategory) getPreferenceScreen().getPreference(3))
+                    .removePreference(showTour);
+        }
     }
 
     private void searchDialog() {
@@ -95,56 +137,38 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
         final SearchEngines[] engines = SearchEngines.values();
         final String[] engineNames = new String[engines.length];
         final SearchEngines selectedEngine = mPreferenceManager.getSearchChoice();
-        int n = 0;
         for (int i = 0; i < engineNames.length; i++) {
             final SearchEngines engine = engines[i];
             engineNames[i] = engine.engineName;
             if (engine == selectedEngine) {
-                n = i;
+                selectedEngineIndex = i;
             }
         }
-
-        picker.setSingleChoiceItems(engineNames, n, new DialogInterface.OnClickListener() {
+        final int preSelEngineIdx = selectedEngineIndex;
+        picker.setSingleChoiceItems(engineNames, preSelEngineIdx, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mTelemetry.sendSettingsMenuSignal(engines[which].engineName, TelemetryKeys.SELECT_SE);
-                mPreferenceManager.setSearchChoice(engines[which]);
-                setSearchEngineSummary(engines[which]);
+                selectedEngineIndex = which;
             }
         });
         picker.setNeutralButton(getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CONFIRM, TelemetryKeys.SELECT_SE);
+                if(preSelEngineIdx != selectedEngineIndex) {
+                    mPreferenceManager.setSearchChoice(engines[selectedEngineIndex]);
+                    setSearchEngineSummary(engines[selectedEngineIndex]);
+                    mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CONFIRM, TelemetryKeys.SELECT_SE);
+                }
             }
         });
         picker.show();
     }
 
-    private void searchUrlPicker() {
-        final AlertDialog.Builder urlPicker = new AlertDialog.Builder(mActivity);
-        urlPicker.setTitle(getResources().getString(R.string.custom_url));
-        final EditText getSearchUrl = new EditText(mActivity);
-        String mSearchUrl = mPreferenceManager.getSearchUrl();
-        getSearchUrl.setText(mSearchUrl);
-        urlPicker.setView(getSearchUrl);
-        urlPicker.setPositiveButton(getResources().getString(R.string.action_ok),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String text = getSearchUrl.getText().toString();
-                        mPreferenceManager.setSearchUrl(text);
-                        searchengine.setSummary(getResources().getString(R.string.custom_url) + ": "
-                                + text);
-                    }
-                });
-        urlPicker.show();
-    }
-
     private void setSearchEngineSummary(SearchEngines which) {
-        searchengine.setSummary(which.engineName);
+        searchEngine.setSummary(which.engineName);
     }
 
     @Override
@@ -156,7 +180,7 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
                 return true;
             case SETTINGS_SHOWTOUR:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SHOW_TOUR, TelemetryKeys.GENERAL);
-                OnBoardingHelper.forceShow(getActivity());
+                mPreferenceManager.setAllOnBoardingPreferences(true);
                 preference.setEnabled(false);
                 return true;
             case SETTINGS_DOWNLAOD_LOCATION:
@@ -166,9 +190,35 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
             case SETTINGS_REGIONAL_SETTINGS:
                 showCountryChooser();
                 return true;
+            case SETTINGS_SUBSCRIPTIONS:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.RESET_SUBSCRIPTIONS, TelemetryKeys.GENERAL);
+                showResetSubscriptionsDialog();
+                return true;
             default:
                 return false;
         }
+    }
+
+    private void showResetSubscriptionsDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle(R.string.reset_subscriptions_title)
+                .setMessage(R.string.reset_subscriptions_title_msg)
+                .setCancelable(true)
+                .setNegativeButton(R.string.action_no, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.action_yes, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        subscriptionsManager.resetSubscriptions();
+                        Toast.makeText(mActivity, R.string.subscriptions_resetted_toast,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .show();
     }
 
     private void showDirectoryChooser() {
@@ -196,6 +246,13 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mPreferenceManager.setCountryChoice(countries[which]);
+                if (countries[which].countryCode.equals(Countries.germany.countryCode)) {
+                    ((PreferenceGroup)getPreferenceScreen().getPreference(0))
+                            .addPreference(cbQuerySuggestion);
+                } else {
+                    ((PreferenceGroup)getPreferenceScreen().getPreference(0))
+                            .removePreference(cbQuerySuggestion);
+                }
             }
         });
         picker.setNeutralButton(getResources().getString(R.string.action_ok), new DialogInterface.OnClickListener() {
@@ -214,7 +271,7 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
                 mPreferenceManager.setNewsNotificationEnabled((Boolean) newValue);
                 cbNewNotification.setChecked((Boolean) newValue);
                 final String action = (Boolean) newValue ? TelemetryKeys.ENABLE : TelemetryKeys.DISABLE;
-                mTelemetry.sendNewsNotificationSignal(action, false);
+                mTelemetry.sendNotificationSignal(action, "news", false);
                  return true;
             case SETTINGS_ADULT_CONTENT:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.BLOCK_EXPLICIT, TelemetryKeys.GENERAL,
@@ -227,6 +284,28 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
                         !((Boolean) newValue));
                 mPreferenceManager.setAutocompletionEnabled((Boolean) newValue);
                 cbAutoCompletion.setChecked((Boolean) newValue);
+                return true;
+            case SETTINGS_QUERY_SUGGESTIONS:
+                mPreferenceManager.setQuerySuggestionEnabled((Boolean) newValue);
+                cbQuerySuggestion.setChecked((Boolean) newValue);
+                return true;
+            case SETTINGS_SHOW_TOPSITES:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SHOW_TOPSITES, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
+                mPreferenceManager.setShouldShowTopSites((Boolean) newValue);
+                cbShowTopSites.setChecked((Boolean) newValue);
+                return true;
+            case SETTINGS_SHOW_NEWS:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SHOW_NEWS, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
+                mPreferenceManager.setShouldShowNews((Boolean) newValue);
+                cbShowNews.setChecked((Boolean) newValue);
+                return true;
+            case SETTINGS_LIMIT_DATA_USAGE:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.LIMIT_DATA_USAGE, TelemetryKeys.GENERAL,
+                        !((Boolean) newValue));
+                mPreferenceManager.setLimitDataUsage((Boolean) newValue);
+                cbLimitDataUsage.setChecked((Boolean) newValue);
                 return true;
             default:
                 return false;
@@ -241,6 +320,23 @@ public class GeneralSettingsFragment extends BaseSettingsFragment implements Fil
 
     @Override
     public void fileSelected(File file) {
-        mPreferenceManager.setDownloadDirectory(file.getAbsolutePath());
+        try {
+            if (!file.isDirectory() || !file.canWrite()) {
+                throw new IOException("Can't download in " + file.getAbsolutePath());
+            }
+            mPreferenceManager.setDownloadDirectory(file.getAbsolutePath());
+        } catch (SecurityException|IOException e) {
+            final Builder builder = new Builder(getActivity());
+            builder.setTitle(R.string.can_not_download_in_directory_title)
+                    .setMessage(R.string.can_not_download_in_directory_msg)
+                    .setCancelable(true)
+                    .setNegativeButton(R.string.action_cancel, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+        }
     }
 }

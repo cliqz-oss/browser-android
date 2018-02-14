@@ -6,9 +6,11 @@ import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.utils.LocationCache;
-import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
@@ -20,14 +22,10 @@ import acr.browser.lightning.preference.PreferenceManager;
  * It provide a standard way to add bridges that works with the postMessage javascript protocol.
  *
  * @author Stefano Pacifici
- * @date 2015/12/08
  */
 public abstract class BaseWebView extends AbstractionWebView {
 
-    private static final String CLIQZ_EVENT_FORMAT = "CliqzEvents.pub('%s'%s)";
-
     private boolean mSuperSetupCalled = false;
-    private boolean mJsReady = false;
 
     @Inject
     HistoryDatabase historyDatabase;
@@ -42,10 +40,14 @@ public abstract class BaseWebView extends AbstractionWebView {
     Telemetry telemetry;
 
     @Inject
-    CliqzBridge bridge;
+    Bus bus;
+
+    @Inject
+    SubscriptionsManager subscriptionsManager;
+
+    private CliqzBridge bridge;
 
     Context context;
-    private boolean isTouched = false;
     private float initialX;
     private float initialY;
 
@@ -56,6 +58,10 @@ public abstract class BaseWebView extends AbstractionWebView {
         checkSuperSetupCalled();
     }
 
+    public final CliqzBridge getBridge() {
+        return bridge;
+    }
+
     private void checkSuperSetupCalled() {
         if (!mSuperSetupCalled)
             throw new RuntimeException("BaseWebView setup method should be called by children");
@@ -63,10 +69,12 @@ public abstract class BaseWebView extends AbstractionWebView {
 
     @Override
     protected  void setup() {
-        final ActivityComponent component = BrowserApp.getActivityComponent(context);
+        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
+        bridge = new CliqzBridge(this, bus, historyDatabase, subscriptionsManager, telemetry,
+                preferenceManager);
         // Make extra sure web performance is nice on scrolling. Can this actually be harmful?
         super.setup();
 
@@ -91,12 +99,6 @@ public abstract class BaseWebView extends AbstractionWebView {
     @Nullable
     protected abstract String getExtensionUrl();
 
-    void extensionReady() {
-        mJsReady = true;
-    }
-
-    public boolean isExtensionReady() { return mJsReady; }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -107,13 +109,8 @@ public abstract class BaseWebView extends AbstractionWebView {
     public void onResume() {
         super.onResume();
         //resumeTimers();
-        // When created we call this twice (one here and one in extensionReady()
+        // When created we call this twice (one here and one in isExtensionReady()
         // That should not be a problem
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
     }
 
     //Have to use dispatchTouchEvent instead of onTouchListener because Xwalk doesn't fire that event.
@@ -123,9 +120,7 @@ public abstract class BaseWebView extends AbstractionWebView {
         if (mAction == MotionEvent.ACTION_DOWN) {
             initialX = motionEvent.getX();
             initialY = motionEvent.getY();
-            isTouched = true;
         } else if (mAction == MotionEvent.ACTION_UP) {
-            isTouched = false;
             final float finalX = motionEvent.getX();
             final float finalY = motionEvent.getY();
             final float distanceX = finalX - initialX;
@@ -146,22 +141,12 @@ public abstract class BaseWebView extends AbstractionWebView {
     }
 
     public void notifyEvent(String event, Object... params) {
-        if (mJsReady) {
-            final StringBuilder builder = new StringBuilder();
-            for (Object obj: params) {
-                builder.append(',');
-                if (String.class.isInstance(obj)) {
-                    final String escaped =
-                            String.class.cast(obj).replace("'", "\'");
-                    builder.append("'").append(escaped).append("'");
-                } else {
-                    builder.append(obj.toString());
-                }
-            }
-            evaluateJavascript(
-                    String.format(CLIQZ_EVENT_FORMAT, event, builder.toString()), null);
-        }
+        final Object[] p = new Object[params.length+1];
+        System.arraycopy(params, 0, p, 1, params.length);
+        p[0] = event;
+        bridge.executeJavascriptFunction(null, "CliqzEvents.pub", p);
     }
+
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);

@@ -44,36 +44,14 @@
             </intent>
         </Preference>
         <Preference
-            android:summary="@string/license_gnu"
-            android:title="@string/library_netcipher">
+            android:title="@string/crux"
+            android:summary="@string/apache">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.gnu.org/licenses/lgpl.html">
+                android:data="https://github.com/chimbori/crux/blob/master/LICENSE.txt">
                 <extra
                     android:name="SOURCE"
-                    android:value="SELF" />
-            </intent>
-        </Preference>
-        <Preference
-            android:summary="@string/apache"
-            android:title="@string/snacktory">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://www.apache.org/licenses/LICENSE-2.0">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF" />
-            </intent>
-        </Preference>
-        <Preference
-            android:summary="@string/mit_license"
-            android:title="@string/jsoup">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://jsoup.org/license">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF" />
+                    android:value="SELF"/>
             </intent>
         </Preference>
     </PreferenceCategory>

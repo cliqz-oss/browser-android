@@ -56,3 +56,7 @@ out
 *.iml
 
 app/src/main/assets/bloomfilter.data
+app/src/main/res/values/facebook.xml
+node_modules/
+yarn.lock
+jsengine/

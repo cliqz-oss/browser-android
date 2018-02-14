@@ -1,5 +1,6 @@
 package com.cliqz.browser.controlcenter;
 
+import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,11 +9,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 
+import static com.cliqz.browser.controlcenter.ControlCenterFragment.KEY_HASHCODE;
+import static com.cliqz.browser.controlcenter.ControlCenterFragment.KEY_IS_INCOGNITO;
+import static com.cliqz.browser.controlcenter.ControlCenterFragment.KEY_URL;
+
 /**
- * Created by Ravjit on 15/11/16.
+ * @author Ravjit Uppal
+ * @author Stefano Pacifici
  */
 
-public class ControlCenterAdapter extends FragmentPagerAdapter {
+class ControlCenterAdapter extends FragmentPagerAdapter {
 
     private final FragmentEntry[] fragments;
 
@@ -26,13 +32,23 @@ public class ControlCenterAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public ControlCenterAdapter(FragmentManager fragmentManager, boolean isIncognito, int hashCode, String url) {
+    ControlCenterAdapter(FragmentManager fragmentManager, boolean isIncognito, int hashCode, String url) {
         super(fragmentManager);
-        fragments = new FragmentEntry[] {
-                new FragmentEntry(R.string.control_center_header_antitracking, AntiTrackingFragment.create(hashCode, url, isIncognito)),
-                new FragmentEntry(R.string.control_center_header_adblocking, AdBlockingFragment.create(url, isIncognito)),
-                new FragmentEntry(R.string.control_center_header_antiphishing, AntiPhishingFragment.create(isIncognito))
-        };
+        final ControlCenterTabs[] values = ControlCenterTabs.values();
+        fragments = new FragmentEntry[values.length];
+        try {
+            for (int i = 0; i < values.length; i++) {
+                final ControlCenterFragment fragment = values[i].fragmentClass.newInstance();
+                final Bundle args = new Bundle();
+                args.putInt(KEY_HASHCODE, hashCode);
+                args.putString(KEY_URL, url);
+                args.putBoolean(KEY_IS_INCOGNITO, isIncognito);
+                fragment.setArguments(args);
+                fragments[i] = new FragmentEntry(values[i].title, fragment);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

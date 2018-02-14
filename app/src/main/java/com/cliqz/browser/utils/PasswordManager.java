@@ -7,8 +7,8 @@ import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.utils.StreamUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,7 +18,7 @@ import acr.browser.lightning.database.LoginDetailItem;
 import acr.browser.lightning.database.PasswordDatabase;
 
 /**
- * Created by Ravjit on 24/02/16.
+ * @author Ravjit Uppal
  */
 public class PasswordManager {
 
@@ -32,7 +32,6 @@ public class PasswordManager {
     private static final class QueryParameters  {
         private QueryParameters() {}
 
-        private static final String DOMAIN = "domain";
         private static final String USERNAME = "username";
         private static final String PASSWORD = "password";
     }
@@ -41,7 +40,8 @@ public class PasswordManager {
         final Resources resources = webView.getResources();
         final InputStream inputStream = resources.openRawResource(R.raw.password_manager_script);
         try {
-            final String passwordManagerScript = String.format(convertStreamToString(inputStream),webView.hashCode());
+            final String passwordManagerScript =
+                    String.format(StreamUtils.readTextStream(inputStream), webView.hashCode());
             executeJS(passwordManagerScript, webView);
             inputStream.close();
 
@@ -61,7 +61,7 @@ public class PasswordManager {
      * @param view The webview in which the page is loaded
      */
     public void provideOrSavePassword(Uri uri, WebView view) {
-        final String domain = uri.getQueryParameter(QueryParameters.DOMAIN);
+        final String domain = uri.getHost();
         final String username = uri.getQueryParameter(QueryParameters.USERNAME);
         final String password = uri.getQueryParameter(QueryParameters.PASSWORD);
         if (domain == null) {
@@ -80,17 +80,7 @@ public class PasswordManager {
         }
     }
 
-    private String convertStreamToString(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        int i = inputStream.read();
-        while (i != -1) {
-            byteArrayOutputStream.write(i);
-            i = inputStream.read();
-        }
-        return byteArrayOutputStream.toString();
-    }
-
-    private final void executeJS(final String js, final WebView webView) {
+    private void executeJS(final String js, final WebView webView) {
         if (js != null && !js.isEmpty()) {
             webView.post(new Runnable() {
                 @Override

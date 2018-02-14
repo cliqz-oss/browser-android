@@ -1,9 +1,8 @@
 package com.cliqz.browser.controlcenter;
 
-import android.app.Dialog;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
@@ -13,12 +12,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
 
 import javax.inject.Inject;
 
@@ -27,9 +30,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by Ravjit on 22/11/16.
+ * @author Ravjit Uppal
  */
-
 public class ControlCenterDialog extends DialogFragment {
 
     private static String TAG = ControlCenterDialog.class.getSimpleName();
@@ -37,10 +39,16 @@ public class ControlCenterDialog extends DialogFragment {
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
     private static final String KEY_HASHCODE = TAG + ".HASHCODE";
     private static final String KEY_URL = TAG + ".URL";
+    private static final String KEY_IS_INCOGNITO = TAG + ".IS_INCOGNITO";
+
+    private static ControlCenterComponent sControlCenterComponent =
+            BrowserApp.getAppComponent().plus(new ControlCenterModule());
 
     private int mAnchorHeight;
     private int mHashCode;
     private String mUrl;
+    private boolean mSaveInstanceStateCalled = false;
+    private boolean mIsIncognito;
 
     @Bind(R.id.sec_features)
     TabLayout controlCenterHeaders;
@@ -51,38 +59,58 @@ public class ControlCenterDialog extends DialogFragment {
     @Inject
     Bus bus;
 
-    public static ControlCenterDialog create(View source, int hashCode, String url) {
+    @Inject
+    Telemetry telemetry;
+
+    public static ControlCenterDialog create(View source, boolean isIncognito, int hashCode, String url) {
         final ControlCenterDialog dialog = new ControlCenterDialog();
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         arguments.putInt(KEY_HASHCODE, hashCode);
         arguments.putString(KEY_URL, url);
+        arguments.putBoolean(KEY_IS_INCOGNITO, isIncognito);
         dialog.setArguments(arguments);
         return dialog;
+    }
+
+    static ControlCenterComponent getComponent() {
+        if (sControlCenterComponent == null) {
+            throw new RuntimeException("Null ControlCenterComponent, please create a " +
+                    "ControlCenterDialog instance first");
+        }
+        return sControlCenterComponent;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(STYLE_NO_TITLE, R.style.ControlCenterStyle);
-        BrowserApp.getActivityComponent(getActivity()).inject(this);
+        setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
+        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        if (component != null) {
+            component.inject(this);
+        }
         final Bundle arguments = getArguments();
         mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
         mHashCode = arguments.getInt(KEY_HASHCODE, 0);
         mUrl = arguments.getString(KEY_URL);
+        mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mSaveInstanceStateCalled = false;
         bus.register(this);
         final DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         final int height = metrics.heightPixels;
         final int resource = getContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
         final int statusBarHeight = getContext().getResources().getDimensionPixelSize(resource);
-        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height - mAnchorHeight - statusBarHeight);
-        getDialog().getWindow().setGravity(Gravity.BOTTOM);
+        final Window window = getDialog().getWindow();
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height - mAnchorHeight - statusBarHeight);
+            window.setGravity(Gravity.BOTTOM);
+        }
     }
 
     @Override
@@ -91,29 +119,76 @@ public class ControlCenterDialog extends DialogFragment {
         bus.unregister(this);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        mSaveInstanceStateCalled = true;
+        super.onSaveInstanceState(outState);
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.control_centre_layout, container, false);
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        final ContextWrapper wrapper = new ContextWrapper(inflater.getContext());
+        if (mIsIncognito) {
+            wrapper.setTheme(R.style.Theme_ControlCenter_Dialog_Incognito);
+        } else {
+            wrapper.setTheme(R.style.Theme_ControlCenter_Dialog);
+        }
+        final View view = /* themedInflater */ inflater.inflate(R.layout.control_center_layout, container, false);
         ButterKnife.bind(this, view);
         final ControlCenterAdapter controlCenterAdapter = new ControlCenterAdapter(getChildFragmentManager(),
-                false, mHashCode, mUrl);
+                mIsIncognito, mHashCode, mUrl);
         controlCenterPager.setAdapter(controlCenterAdapter);
+        controlCenterPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                final String currentPage;
+                switch (position) {
+                    case 0:
+                        currentPage = TelemetryKeys.ATTRACK;
+                        break;
+                    case 1:
+                        currentPage = TelemetryKeys.ADBLOCK;
+                        break;
+                    case 2:
+                        currentPage = TelemetryKeys.ATPHISH;
+                        break;
+                    default:
+                        currentPage = TelemetryKeys.ATTRACK;
+                }
+                if (telemetry != null) {
+                    telemetry.sendCCTabSignal(currentPage);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         controlCenterHeaders.setupWithViewPager(controlCenterPager);
-        setStyle(STYLE_NO_TITLE, R.style.ControlCenterStyle);
+        setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
         return view;
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        dismiss();
-        show(getFragmentManager(), Constants.CONTROL_CENTER);
+        dismissAllowingStateLoss();
+        if (!mSaveInstanceStateCalled) {
+            show(getFragmentManager(), Constants.CONTROL_CENTER);
+        }
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void dismissControlCenter(Messages.DismissControlCenter event) {
-        dismiss();
+        dismissAllowingStateLoss();
     }
 
 }

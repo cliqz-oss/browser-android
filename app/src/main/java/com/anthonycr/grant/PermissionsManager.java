@@ -140,7 +140,7 @@ public final class PermissionsManager {
                     } else {
                         permissions = EMPTY_PERMISSIONS;
                     }
-                    requestPermissionsIfNecessaryForResult(activity, permissions, action);
+                    requestPermissionsIfNecessaryForResult(activity, action, permissions);
                 }
             }
         });
@@ -160,10 +160,10 @@ public final class PermissionsManager {
      * @param permissions the list of permissions to request for the {@link PermissionsResultAction}.
      * @param action      the PermissionsResultAction to notify when the permissions are granted or denied.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public synchronized void requestPermissionsIfNecessaryForResult(@Nullable Activity activity,
-                                                                    @NonNull String[] permissions,
-                                                                    @Nullable PermissionsResultAction action) {
+                                                                    @Nullable PermissionsResultAction action,
+                                                                    @NonNull String... permissions) {
         if (activity == null) {
             return;
         }
@@ -214,8 +214,8 @@ public final class PermissionsManager {
      */
     @SuppressWarnings("unused")
     public synchronized void requestPermissionsIfNecessaryForResult(@NonNull Fragment fragment,
-                                                                    @NonNull String[] permissions,
-                                                                    @Nullable PermissionsResultAction action) {
+                                                                    @Nullable PermissionsResultAction action,
+                                                                    @NonNull String... permissions) {
         Activity activity = fragment.getActivity();
         if (activity == null) {
             return;

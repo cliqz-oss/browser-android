@@ -1,28 +1,45 @@
 package com.cliqz.browser.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.QueryManager;
 
-import acr.browser.lightning.utils.ThemeUtils;
+import java.util.Locale;
+
+import javax.inject.Inject;
+
+import acr.browser.lightning.view.AnimatedProgressBar;
+import acr.browser.lightning.view.TrampolineConstants;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by Ravjit on 07/12/15.
+ * @author Ravjit Uppal
  */
 public class SearchBar extends FrameLayout {
 
@@ -30,6 +47,11 @@ public class SearchBar extends FrameLayout {
     //public static final int RELOAD = 1;
     public static final int ICON_STATE_STOP = 2;
     public static final int ICON_STATE_NONE = 3;
+    private float scaleX;
+    private float scaleY;
+    private float pivotX;
+    private float pivotY;
+    private AnimatedProgressBar progressBar;
 
     public interface Listener extends TextWatcher, OnFocusChangeListener {
         void onTitleClicked(SearchBar searchBar);
@@ -39,10 +61,14 @@ public class SearchBar extends FrameLayout {
         void onQueryCleared(SearchBar searchBar);
 
         void onKeyboardOpen();
+
+        void onBackIconPressed();
     }
 
-    @Bind(R.id.search_edit_text)
     AutocompleteEditText searchEditText;
+
+    @Inject
+    QueryManager queryManager;
 
     @Bind(R.id.title_bar)
     TextView titleBar;
@@ -55,10 +81,10 @@ public class SearchBar extends FrameLayout {
     @Bind(R.id.control_center)
     RelativeLayout antiTrackingDetails;
 
-    private final int clearIconWidth;
-    private final int clearIconHeight;
+    private final Drawable clearIcon, backIcon;
     private int currentIcon;
     private
+
     @Nullable
     Listener mListener;
 
@@ -72,19 +98,81 @@ public class SearchBar extends FrameLayout {
 
     public SearchBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        BrowserApp.getAppComponent().inject(this);
         inflate(getContext(), R.layout.search_bar_widget, this);
         ButterKnife.bind(this);
-        final Drawable clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_action_delete);
-        clearIconWidth = clearIcon.getIntrinsicWidth();
-        clearIconHeight = clearIcon.getIntrinsicHeight();
+        clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
+        backIcon = ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
+        int clearIconHeight = clearIcon.getIntrinsicHeight();
         titleBar.setHeight(clearIconHeight);
-        final ListenerWrapper wrapper = new ListenerWrapper();
-        searchEditText.addTextChangedListener(wrapper);
-        searchEditText.setOnFocusChangeListener(wrapper);
         if (trackerCounter != null) {
             trackerCounter.setFocusable(false);
             trackerCounter.setFocusableInTouchMode(false);
         }
+        computeScales();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            antiTrackingDetails.setVisibility(GONE);
+        }
+    }
+
+    private void computeScales() {
+        final Resources resources = getContext().getResources();
+        final WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        final DisplayMetrics metrics = new DisplayMetrics();
+        if (wm != null) {
+            wm.getDefaultDisplay().getMetrics(metrics);
+        }
+        final int screenWidth = metrics.widthPixels;
+        final float titleBarWidth = screenWidth - 2 * resources.getDimension(R.dimen.toolbar_menu_item_w)
+                - 3 * resources.getDimension(R.dimen.toolbar_padding);
+        final float titleBarHeight = resources.getDimension(R.dimen.title_bar_h);
+        final float searchEditTextHeight = resources.getDimension(R.dimen.search_edit_text_h);
+        final float toolBarPadding = resources.getDimension(R.dimen.toolbar_padding);
+        scaleX = titleBarWidth / (float) screenWidth;
+        scaleY = titleBarHeight / searchEditTextHeight;
+        pivotX = (toolBarPadding* (float) screenWidth) / ((float) screenWidth - titleBarWidth);
+        pivotY = searchEditTextHeight/2;
+    }
+
+    public void setSearchEditText(final AutocompleteEditText searchEditText) {
+        this.searchEditText = searchEditText;
+        final ListenerWrapper wrapper = new ListenerWrapper();
+        this.searchEditText.addTextChangedListener(wrapper);
+        this.searchEditText.setOnFocusChangeListener(wrapper);
+        // TODO Fix this by removing the OnTouchListener and overriding the performClick on
+        // AutocompleteEditText
+        this.searchEditText.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() != MotionEvent.ACTION_DOWN) {
+                    return false;
+                }
+                final boolean isBackIconClicked = event.getX() <  searchEditText.getPaddingLeft() + backIcon.getIntrinsicWidth();
+                final boolean isClearIconClicked = event.getX() > searchEditText.getWidth() - searchEditText.getPaddingRight() - clearIcon.getIntrinsicWidth();
+                if (isBackIconClicked) {
+                    showTitleBar();
+                    if (mListener != null) {
+                        mListener.onBackIconPressed();
+                    }
+                    return true;
+                } else if (isClearIconClicked) {
+                    searchEditText.setText("");
+                    if (mListener != null) {
+                        mListener.onQueryCleared(SearchBar.this);
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    @Nullable
+    public AutocompleteEditText getSearchEditText() {
+        return searchEditText;
+    }
+
+    public void setProgressBar(final AnimatedProgressBar progressBar) {
+        this.progressBar = progressBar;
     }
 
     public void setListener(@Nullable Listener listener) {
@@ -95,10 +183,7 @@ public class SearchBar extends FrameLayout {
         return searchEditText.getText().toString();
     }
 
-    public boolean hasSearchFocus() {
-        return searchEditText.hasFocus();
-    }
-
+    @NonNull
     public String getQuery() {
         return searchEditText.getQuery();
     }
@@ -111,7 +196,7 @@ public class SearchBar extends FrameLayout {
         searchEditText.requestFocus();
     }
 
-    public void setSearchSelection(int length) {
+    public void setCursorPosition(int length) {
         searchEditText.setSelection(length);
     }
 
@@ -120,17 +205,42 @@ public class SearchBar extends FrameLayout {
     }
 
     public void showSearchEditText() {
-        searchEditText.setVisibility(VISIBLE);
-        titleBar.setVisibility(GONE);
-        setAntiTrackingDetailsVisibility(GONE);
+        progressBar.setVisibility(GONE);
         switchIcon(true);
+        //Dont redo the animation if the edittext is already visible
+        if (searchEditText.getVisibility() == VISIBLE) {
+            return;
+        }
+        searchEditText.setVisibility(VISIBLE);
+        final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
+        animation.setDuration(150);
+        searchEditText.startAnimation(animation);
+        requestSearchFocus();
     }
 
     public void showTitleBar() {
-        titleBar.setVisibility(VISIBLE);
-        searchEditText.setVisibility(GONE);
-        if (antiTrackingDetails != null) {
-            antiTrackingDetails.setVisibility(VISIBLE);
+        final String query = searchEditText.getQuery();
+        if (query.length() == 0) {
+            titleBar.setText("");
+            titleBar.setHint(R.string.cliqz_search_hint);
+        } else {
+            titleBar.setText(query);
+        }
+        final Animation animation = new ScaleAnimation(1.0f, scaleX, 1.0f, scaleY, pivotX, pivotY);
+        animation.setDuration(150);
+        searchEditText.startAnimation(animation);
+        searchEditText.setVisibility(View.GONE);
+    }
+
+    public void showProgressBar() {
+        progressBar.setVisibility(VISIBLE);
+    }
+
+
+    public void setProgress(int progress) {
+        //otherwise calling set progress makes it visible
+        if (progressBar.getVisibility() == VISIBLE) {
+            progressBar.setProgress(progress);
         }
     }
 
@@ -138,19 +248,57 @@ public class SearchBar extends FrameLayout {
         searchEditText.setText(text);
     }
 
+    public void selectAllText() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                searchEditText.setSelection(0,searchEditText.getText().length());
+            }
+        }, 200);
+    }
+
     public void setTitle(String title) {
+        // Be sure to not set the trampoline as the title
+        final String nnTitle = title == null ? "" : title;
+        final Uri titleAsUri = Uri.parse(nnTitle);
+        if (TrampolineConstants.CLIQZ_SCHEME.equals(titleAsUri.getScheme())) {
+            return;
+        }
         titleBar.setText(title);
     }
 
+    public void setQuery(String query) {
+        searchEditText.setText(query);
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void updateQuery(String query) {
+        final String q = query + " ";
+        searchEditText.setText(q);
+        setCursorPosition(q.length());
+    }
+
     public void setAntiTrackingDetailsVisibility(int visibility) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
         if (antiTrackingDetails != null) {
             antiTrackingDetails.setVisibility(visibility);
+            if (visibility == VISIBLE) {
+                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.left_corners_rounded_bg));
+                antiTrackingDetails.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.right_corners_rounded_bg));
+            } else {
+                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
+            }
+        } else {
+            titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
         }
     }
 
     public void setTrackerCount(int count) {
         if (trackerCounter != null) {
-            trackerCounter.setText(Integer.toString(count));
+            trackerCounter
+                    .setText(String.format(Locale.getDefault(), "%d", count));
         }
     }
 
@@ -162,7 +310,9 @@ public class SearchBar extends FrameLayout {
         InputMethodManager inputMethodManager = (InputMethodManager) getContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT);
-        mListener.onKeyboardOpen();
+        if (mListener != null) {
+            mListener.onKeyboardOpen();
+        }
     }
 
     @Override
@@ -176,32 +326,31 @@ public class SearchBar extends FrameLayout {
         }
 
         final View visibleView = titleBar.getVisibility() == VISIBLE ? titleBar : searchEditText;
-        final boolean isIconClicked = event.getX() > (visibleView.getWidth() - visibleView.getPaddingRight()) - clearIconWidth;
+        final boolean isIconClicked = event.getX() > (visibleView.getWidth() - visibleView.getPaddingRight()) - clearIcon.getIntrinsicWidth();
         if (isIconClicked && visibleView == searchEditText) {
             switch (currentIcon) {
-
                 case ICON_STATE_CLEAR:
                     showSearchEditText();
                     searchEditText.setText("");
-                    mListener.onQueryCleared(SearchBar.this);
+                    if (mListener != null) {
+                        mListener.onQueryCleared(SearchBar.this);
+                    }
                     break;
                 case ICON_STATE_STOP:
-                    mListener.onStopClicked();
+                    if (mListener != null) {
+                        mListener.onStopClicked();
+                    }
                     break;
-                //case RELOAD:
-                //    mLightningView.getWebView().reload();
-                //    break;
             }
             return true;
         } else if (titleBar.getVisibility() == VISIBLE) {
             if (antiTrackingDetails != null) {
-                antiTrackingDetails.setVisibility(GONE);
+                setAntiTrackingDetailsVisibility(GONE);
             }
+            showSearchEditText();
             if (mListener != null) {
                 mListener.onTitleClicked(SearchBar.this);
             }
-            showSearchEditText();
-            searchEditText.requestFocus();
             return true;
         }
         return super.onInterceptTouchEvent(event);
@@ -215,32 +364,16 @@ public class SearchBar extends FrameLayout {
      * @param showIcon true if icon should be visible
      */
     public void switchIcon(boolean showIcon) {
-        if (searchEditText.getVisibility() == VISIBLE) {
+        if ((currentIcon == ICON_STATE_CLEAR && showIcon) || (currentIcon == ICON_STATE_NONE && !showIcon)) {
+            return;
+        }
+        if (showIcon) {
+            searchEditText.setCompoundDrawablesWithIntrinsicBounds(backIcon, null, clearIcon, null);
             currentIcon = ICON_STATE_CLEAR;
-        } else if (showIcon) {
-            currentIcon = ICON_STATE_STOP;
         } else {
+            searchEditText.setCompoundDrawablesWithIntrinsicBounds(backIcon, null, null, null);
             currentIcon = ICON_STATE_NONE;
         }
-        Drawable icon;
-        switch (currentIcon) {
-            case ICON_STATE_CLEAR:
-                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
-                break;
-            //            case RELOAD:
-            //                icon = ThemeUtils.getLightThemedDrawable(getContext(), R.drawable.ic_action_refresh);
-            //                break;
-            case ICON_STATE_STOP:
-                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
-                break;
-            case ICON_STATE_NONE:
-                icon = null;
-                break;
-            default:
-                icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
-        }
-        //temporary solution. Should we remove it completely or re-introduce it later; to be decided
-        titleBar.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
     }
 
     /**
@@ -253,16 +386,11 @@ public class SearchBar extends FrameLayout {
             searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
             searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
             titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
-            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
         } else {
             searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
             searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
             titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
-            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
         }
-        final Drawable icon = ThemeUtils.getThemedDrawable(getContext(), R.drawable.ic_action_delete, true);
-        searchEditText.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null);
-        titleBar.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null);
     }
 
     private class ListenerWrapper implements TextWatcher, OnFocusChangeListener {
@@ -285,6 +413,11 @@ public class SearchBar extends FrameLayout {
         public void afterTextChanged(Editable s) {
             if (mListener != null) {
                 mListener.afterTextChanged(s);
+                if (s.length() == 0) {
+                    switchIcon(false);
+                } else {
+                    switchIcon(true);
+                }
             }
         }
 
@@ -301,6 +434,8 @@ public class SearchBar extends FrameLayout {
                         showKeyBoard();
                     }
                 });
+            } else {
+                showTitleBar();
             }
         }
     }

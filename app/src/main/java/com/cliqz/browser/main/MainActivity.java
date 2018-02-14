@@ -1,9 +1,10 @@
 package com.cliqz.browser.main;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,45 +14,59 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.Toast;
 
+import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
+import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.di.modules.MainActivityModule;
+import com.cliqz.browser.connect.SyncEvents;
+import com.cliqz.browser.gcm.RegistrationIntentService;
+import com.cliqz.browser.main.search.NewsFetcher;
+import com.cliqz.browser.main.search.SearchView;
+import com.cliqz.browser.main.search.Topnews;
 import com.cliqz.browser.overview.OverviewFragment;
+import com.cliqz.browser.peercomm.PeerCommunicationService;
+import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.browser.telemetry.Timings;
+import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.TelemetryKeys;
-import com.cliqz.browser.utils.Timings;
 import com.cliqz.browser.webview.CliqzMessages;
-import com.cliqz.browser.webview.SearchWebView;
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
+import com.cliqz.utils.ActivityUtils;
+import com.cliqz.utils.StringUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashSet;
-import java.util.concurrent.Callable;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -60,39 +75,49 @@ import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
+import acr.browser.lightning.view.LightningView;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * Flat navigation browser
  *
  * @author Stefano Pacifici
- * @date 2015/11/23
+ * @author Moaz Rashad
  */
-public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
+public class MainActivity extends AppCompatActivity implements ActivityComponentProvider, NewsFetcher.OnTaskCompleted {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    //Keys for arguments in intents/bundles
+    private final static String TAG = MainActivity.class.getSimpleName();
+    public static final String ACTION_DOWNLOAD = TAG + ".action_download";
+    public static final String EXTRA_FILENAME = TAG + ".extra_filename";
+    public static final String EXTRA_IS_PRIVATE = TAG + ".extra_is_private";
+    public static final String EXTRA_TITLE = TAG + ".extra_title";
+
     private static final String OVERVIEW_FRAGMENT_TAG = "overview_fragment";
-    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     protected static final String TAB_FRAGMENT_TAG = "tab_fragment";
     private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
 
-    private ActivityComponent mActivityComponent;
+    private MainActivityComponent mMainActivityComponent;
 
 
     private TabsManager.Builder firstTabBuilder;
     private OverviewFragment mOverViewFragment;
-    private boolean askedGPSPermission = false;
     private CustomViewHandler mCustomViewHandler;
-    protected SearchWebView searchWebView;
     protected String currentMode;
     private boolean mIsColdStart = true;
     private boolean mShouldShowLookbackDialog = true;
     private final HashSet<Long> downloadIds = new HashSet<>();
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
+    private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
+    private ProgressDialog progressDialog = null;
+
+    @Inject
+    CrashDetector crashDetector;
 
     @Inject
     Bus bus;
@@ -118,40 +143,38 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Inject
     GCMRegistrationBroadcastReceiver gcmReceiver;
 
-    // Removed as version 1.0.2r2
-    // @Inject
-    // ProxyUtils proxyUtils;
+    @Inject
+    SearchView searchView;
 
     @Inject
     OnBoardingHelper onBoardingHelper;
 
+    private CliqzShortcutsHelper mCliqzShortcutsHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityComponent = BrowserApp.getAppComponent().plus(createActivityModule());
-        mActivityComponent.inject(this);
-        bus.register(this);
-        // TODO reintroduce savedInstanceState logic
-//        Restore state
-//        final CliqzBrowserState oldState = savedInstanceState != null ?
-//                (CliqzBrowserState) savedInstanceState.getSerializable(SAVED_STATE) :
-//                null;
-//        mBrowserState = oldState != null ? oldState : new CliqzBrowserState();
-        // Translucent status bar only on selected platforms
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            final Window window = getWindow();
-//            window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-//                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//        }
 
-//        mFreshTabFragment = new FreshTabFragment();
-        boolean isRestored = false;
-        if (savedInstanceState != null) {
-            tabsManager.restoreTabs(savedInstanceState);
-            isRestored = true;
+        // Task description
+        ActivityUtils.setTaskDescription(this, R.string.app_name, R.color.primary_color_dark,
+                R.mipmap.ic_launcher);
+
+        mMainActivityComponent = BrowserApp.createActivityComponent(this);
+        mMainActivityComponent.inject(this);
+
+        bus.register(this);
+        crashDetector.notifyOnCreate();
+
+        boolean isRestored;
+        if (crashDetector.hasCrashed()) {
+            ResumeTabDialog.show(this);
+            crashDetector.resetCrash();
+            isRestored = false;
+        } else {
+            isRestored = tabsManager.restoreTabs();
         }
-        searchWebView = new SearchWebView(this);
-        searchWebView.setBackgroundColor(ContextCompat.getColor(this, R.color.normal_tab_primary_color));
+
+        new ABTestFetcher().fetchTestList();
         mOverViewFragment = new OverviewFragment();
         // Ignore intent if we are being recreated
         final Intent intent = savedInstanceState == null ? getIntent() : null;
@@ -160,11 +183,39 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final boolean isNotificationClicked;
         final boolean isIncognito;
         if (intent != null) {
-            final Bundle bundle = intent.getExtras();
-            isIncognito = bundle != null ? bundle.getBoolean(Constants.KEY_IS_INCOGNITO) : false;
-            url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
-            query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
-            isNotificationClicked = bundle != null ? bundle.getBoolean(Constants.NOTIFICATION_CLICKED) : false;
+            if (intent.getDataString() != null && intent.getDataString().equals("cliqz://NEWS_SHORTCUT_INTENT")) {
+                isNotificationClicked = false;
+                isIncognito = false;
+                url = null;
+                query = null;
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+                new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
+            } else if (intent.getDataString() != null && intent.getDataString().equals("cliqz://LAST_SITE_SHORTCUT_INTENT")) {
+                isNotificationClicked = false;
+                isIncognito = false;
+                url = null;
+                query = null;
+                JSONArray jsonArray = historyDatabase.getHistoryItems(0, 1);
+                try {
+                    final String lastSiteUrl = ((JSONObject)jsonArray.get(0)).optString("url");
+                    if (lastSiteUrl == null || lastSiteUrl.isEmpty()) {
+                        Toast.makeText(this, R.string.empty_history, Toast.LENGTH_SHORT).show();
+                    } else {
+                        tabsManager.buildTab().setUrl(lastSiteUrl).show();
+                        isRestored = true;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else {
+                final Bundle bundle = intent.getExtras();
+                isIncognito = bundle != null && bundle.getBoolean(EXTRA_IS_PRIVATE);
+                url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
+                query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
+                isNotificationClicked = bundle != null && bundle.getBoolean(Constants.NOTIFICATION_CLICKED);
+            }
         } else {
             url = null;
             query = null;
@@ -172,8 +223,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             isIncognito = false;
         }
         if (isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK, false);
+            sendNotificationClickedTelemetry(intent);
         }
+        //noinspection ConstantConditions
         if (!isRestored || url != null || query != null) {
             firstTabBuilder = tabsManager.buildTab();
             firstTabBuilder.setForgetMode(isIncognito);
@@ -186,22 +238,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         }
 
-        final boolean onBoardingShown =
-                onBoardingHelper.conditionallyShowOnBoarding(new Callable<Void>() {
-                    final long startTime = System.currentTimeMillis();
-
-                    @Override
-                    public Void call() throws Exception {
-                        final long now = System.currentTimeMillis();
-                        telemetry.sendOnBoardingHideSignal(now - startTime);
-                        setupContentView();
-                        return null;
-                    }
-                });
-
-        if (!onBoardingShown) {
-            setupContentView();
-        }
+        setupContentView();
 
         if (preferenceManager.getSessionId() == null) {
             preferenceManager.setSessionId(telemetry.generateSessionID());
@@ -217,6 +254,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             telemetry.sendLifeCycleSignal(TelemetryKeys.UPDATE);
         }
 
+        if (checkPlayServices()) {
+            final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
+            startService(registrationIntent);
+        }
+
         if (shouldUpdateWebview()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.update_webview_msg)
@@ -224,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                     .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id="+WEBVIEW_PACKAGE_NAME)));
+                                    Uri.parse("market://details?id=" + WEBVIEW_PACKAGE_NAME)));
                             finish();
                         }
                     });
@@ -234,10 +276,65 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         Utils.updateUserLocation(preferenceManager);
 
+        // Finally start the PeerCommunicationService
+        PeerCommunicationService.startPeerCommunication(this);
+        telemetry.sendOrientationSignal(getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_LANDSCAPE ? TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT,
+                TelemetryKeys.HOME);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            mCliqzShortcutsHelper = new CliqzShortcutsHelper(this, historyDatabase);
+        }
     }
 
-    protected MainActivityModule createActivityModule() {
-        return new MainActivityModule(this);
+    private void sendNotificationClickedTelemetry(Intent intent) {
+        final String rawType = intent.getStringExtra(Constants.NOTIFICATION_TYPE);
+        final String type = rawType != null ? rawType : "unknown";
+        telemetry.sendNotificationSignal(TelemetryKeys.CLICK, type, false);
+    }
+
+    // Please, return a TabsManager.Builder if your action as to display a new tab. null otherwise
+    private TabsManager.Builder handleIntent(Intent intent) {
+        if (intent == null) {
+            return null;
+        }
+
+        final String action = intent.getAction();
+        final TabsManager.Builder builder;
+        if (Intent.ACTION_VIEW.equals(action)) {
+            final boolean isIncognito = intent.getBooleanExtra(EXTRA_IS_PRIVATE, false);
+            final String url = intent.getDataString();
+            final String intentTitle = intent.getStringExtra(EXTRA_TITLE);
+            final String title = intentTitle != null ? intentTitle : url;
+            final boolean isNotificationClicked =
+                    intent.getBooleanExtra(Constants.NOTIFICATION_CLICKED, false);
+            if (isNotificationClicked) {
+                sendNotificationClickedTelemetry(intent);
+            }
+            if (url == null) {
+                return null;
+            }
+            builder = tabsManager.buildTab();
+            builder.setForgetMode(isIncognito).setTitle(title).setUrl(url);
+        } else if (Intent.ACTION_WEB_SEARCH.equals(action)) {
+            final String query = intent.getStringExtra(SearchManager.QUERY);
+            builder = tabsManager.buildTab();
+            builder.setQuery(query);
+        } else if (ACTION_DOWNLOAD.equals(action)) {
+            final String url = intent.getDataString();
+            if (url != null && !url.isEmpty()) {
+                final String filename = intent.getStringExtra(EXTRA_FILENAME);
+                final DownloadHelper.DownloaderListener listener =
+                        new MainActivityDownloadListner(this, url, filename);
+                DownloadHelper.download(this, url, filename, null, listener);
+            }
+            builder = null;
+        } else {
+            builder = null;
+        }
+        // Always reset the intent at the end
+        setIntent(null);
+        return builder;
     }
 
     private void setupContentView() {
@@ -245,12 +342,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (firstTabBuilder != null) {
             firstTabBuilder.show();
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Constants.SAVED_STATES, tabsManager.saveState());
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -278,114 +369,32 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     protected void onResume() {
         super.onResume();
         gcmReceiver.register();
-        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        crashDetector.notifyOnResume();
+        mDownoloadCompletedBroadcastReceiver = new DownoloadCompletedBroadcastReceiver(this);
+        registerReceiver(mDownoloadCompletedBroadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         tabsManager.resumeAllTabs();
-        final String name = getCurrentVisibleFragmentName();
+
         timings.setAppStartTime();
-        //Ask for "Dangerous Permissions" on runtime
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (preferenceManager.getLocationEnabled()
-                    && onBoardingHelper.isOnboardingCompleted()
-                    && !askedGPSPermission
-                    && checkSelfPermission(LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
-                askedGPSPermission = true;
-                final String[] permissions = {LOCATION_PERMISSION}; //Array of permissions needed
-                final int requestCode = 1; //Used to identify the request in the callback onRequestPermissionsResult(Not used)
-                requestPermissions(permissions, requestCode);
-            }
-        }
         //The idea is to reset all tabs if the app has been in background for 30mins
-        tabsManager.setShouldReset(
-                System.currentTimeMillis() - timings.getAppStopTime() >= Constants.HOME_RESET_DELAY);
         if (preferenceManager.getLocationEnabled()) {
             locationCache.start();
         } else {
             locationCache.stop();
         }
-
-        // Removed as version 1.0.2r2
-        // proxyUtils.updateProxySettings(this);
-
-        //Asks for permission if GPS is not enabled on the device.
-        // Note: Will ask for permission even if location is enabled, but not using GPS
-        if (!locationCache.isGPSEnabled()
-                && !preferenceManager.getNeverAskGPSPermission()
-                && onBoardingHelper.isOnboardingCompleted()
-                && preferenceManager.getLocationEnabled()
-                && !askedGPSPermission) {
-            askedGPSPermission = true;
-            showGPSPermissionDialog();
-        } else {
-            showLookbackDialog();
-        }
+        showLookbackDialog();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+        final String action = intent.getAction();
+        if (Intent.ACTION_MAIN.equals(action)) {
             return;
         }
-        final Bundle bundle = intent.getExtras();
-        final String url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
-        final String query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
-        final boolean isNotificationClicked = bundle != null ? bundle.getBoolean(Constants.NOTIFICATION_CLICKED) : false;
-        final TabsManager.Builder builder = tabsManager.buildTab();
-        if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
-            builder.setUrl(url);
-        } else if (url != null) {
-            final String guessedUrl = UrlUtils.smartUrlFilter(url, false, null);
-            if (guessedUrl != null) {
-                builder.setUrl(url);
-            }
+        final TabsManager.Builder builder = handleIntent(intent);
+        if (builder != null) {
+            builder.show();
         }
-        builder.setQuery(query);
-        if (isNotificationClicked) {
-            telemetry.sendNewsNotificationSignal(TelemetryKeys.CLICK, false);
-        }
-        builder.show();
-    }
-
-    private void showGPSPermissionDialog() {
-        final LayoutInflater inflater = LayoutInflater.from(this);
-        final View dialogLayout = inflater.inflate(R.layout.dialog_gps_permission, null);
-        final CheckBox dontShowAgain = (CheckBox) dialogLayout.findViewById(R.id.skip);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
-        final String message = getResources().getString(R.string.gps_permission);
-        builder.setView(dialogLayout);
-        builder.setMessage(message)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivity(new Intent(action));
-                                dialog.dismiss();
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    showLookbackDialog();
-                }
-            });
-        }
-        builder.create().show();
-        dontShowAgain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                preferenceManager.setNeverAskGPSPermission(isChecked);
-            }
-        });
     }
 
     private void showLookbackDialog() {
@@ -398,9 +407,18 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     protected void onPause() {
         super.onPause();
-        performExitCleanUp();
         gcmReceiver.unregister();
-        unregisterReceiver(onComplete);
+        crashDetector.notifyOnPause();
+        try {
+            if (mDownoloadCompletedBroadcastReceiver != null) {
+                unregisterReceiver(mDownoloadCompletedBroadcastReceiver);
+            }
+        } catch (IllegalArgumentException e) {
+            // This happens on a lot of Samsung devices
+            Log.e(TAG, "Can't unregister broadcast receiver", e);
+        } finally {
+            mDownoloadCompletedBroadcastReceiver = null;
+        }
         tabsManager.pauseAllTabs();
         String context = getCurrentVisibleFragmentName();
         timings.setAppStopTime();
@@ -408,14 +426,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             telemetry.sendClosingSignals(TelemetryKeys.CLOSE, context);
         }
         locationCache.stop();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            mCliqzShortcutsHelper.updateShortcuts();
+        }
     }
-
-    //TODO Reintroduce this
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        outState.putSerializable(SAVED_STATE, mBrowserState);
-//        super.onSaveInstanceState(outState);
-//    }
 
     @Override
     protected void onDestroy() {
@@ -438,6 +452,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (preferenceManager.getClearCookiesExitEnabled()) {
             WebUtils.clearCookies(this);
         }
+        if (preferenceManager.getCloseTabsExit()) {
+            tabsManager.clearTabsData();
+        }
     }
 
     @Override
@@ -447,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void openLinkInNewTab(BrowserEvents.OpenUrlInNewTab event) {
-        createTab(event.url, event.isIncognito, false);
+        createTab(event.url, event.isIncognito, event.showImmediately);
         bus.post(new Messages.UpdateTabCounter(tabsManager.getTabCount()));
         Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), new View.OnClickListener() {
             @Override
@@ -483,8 +500,29 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         fileChooserHelper.showFileChooser(event);
     }
 
-    private void createTab(Message msg, boolean isIncognito) {
-        tabsManager.buildTab().setForgetMode(isIncognito).setMessage(msg).show();
+    @Subscribe
+    public void sendTabToDesctop(Messages.SentTabToDesktop event) {
+        final TabFragment tabFragment = tabsManager.getCurrentTab();
+        final LightningView lightningView = tabFragment != null ? tabFragment.mLightningView : null;
+        if (lightningView == null) {
+            return;
+        }
+        final String url = lightningView.getUrl();
+        final String title = lightningView.getTitle();
+        final boolean isIncognito = lightningView.isIncognitoTab();
+        if (url.isEmpty()) {
+            return;
+        }
+        SendTabHelper.sendTab(this, url, title, isIncognito);
+    }
+
+    @Subscribe
+    public void showSnackBarMessage(BrowserEvents.ShowSnackBarMessage msg) {
+        if (msg.message != null) {
+            Utils.showSnackbar(this, msg.message);
+        } else if (msg.stringRes > 0) {
+            Utils.showSnackbar(this, msg.stringRes);
+        }
     }
 
     private void createTab(String url, boolean isIncognito, boolean showImmediately) {
@@ -509,6 +547,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         mCustomViewHandler.showCustomView();
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void hideCustomView(BrowserEvents.HideCustomView event) {
         if (mCustomViewHandler != null) {
@@ -517,31 +556,50 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void goToOverView(Messages.GoToOverview event) {
         telemetry.resetBackNavigationVariables(-1);
         final FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction transaction = fm.beginTransaction();
         //workaround for getting the mode in hitroy fragment
-        currentMode = tabsManager.getCurrentTab()
-                .state.getMode() == CliqzBrowserState.Mode.SEARCH ? "cards" : "web";
+        //noinspection ConstantConditions
+        currentMode = tabsManager.getCurrentTab().getTelemetryView();
         transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
                 .addToBackStack(null)
                 .commit();
     }
 
+    @SuppressWarnings("UnusedParameters")
+    @Subscribe
+    public void goToFavorites(Messages.GoToFavorites event) {
+        mOverViewFragment.setDisplayFavorites();
+        goToOverView(null);
+    }
+
+    @Subscribe
+    public void gotToOffrz(Messages.GoToOffrz event) {
+        mOverViewFragment.setDisplayOffrz();
+        goToOverView(null);
+    }
+
+    @Subscribe
+    public void goToHistory(Messages.GoToHistory event) {
+        mOverViewFragment.setDisplayHistory();
+        goToOverView(null);
+    }
+
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void goToSettings(Messages.GoToSettings event) {
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    //    @Subscribe
-//    public void goToSearch(Messages.GoToSearch event) {
     @Subscribe
     public void onQueryNotified(final CliqzMessages.NotifyQuery event) {
         final FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
-        final String query = event.query;
+        //noinspection ConstantConditions
         tabsManager.getCurrentTab().state.setQuery(event.query);
         if (event.query != null) {
             fm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -549,20 +607,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 public void onBackStackChanged() {
                     fm.removeOnBackStackChangedListener(this);
                     tabsManager.getCurrentTab().searchQuery(event.query);
-//                    bus.post(new CliqzMessages.NotifyQuery(query));
                 }
             });
         }
-    }
-
-    @Subscribe
-    public void setAdjustPan(Messages.AdjustPan event) {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-    }
-
-    @Subscribe
-    public void setAdjustResize(Messages.AdjustResize event) {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     @Subscribe
@@ -570,6 +617,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         downloadIds.add(event.downloadId);
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void closeTab(BrowserEvents.CloseTab event) {
         if (tabsManager.getTabCount() > 1) {
@@ -583,8 +631,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Subscribe
-    public void quit(Messages.Quit event) {
+    void quit(Messages.Quit event) {
+        performExitCleanUp();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             finishAndRemoveTask();
         } else {
@@ -592,9 +642,31 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @Subscribe
+    void sendTabError(SyncEvents.SendTabError event) {
+        SendTabErrorDialog.show(this, SendTabErrorTypes.GENERIC_ERROR);
+    }
+
+    @Subscribe
+    void sendTabSuccess(SyncEvents.SendTabSuccess event) {
+        final String message = getString(R.string.tab_send_success_msg, event.name);
+        bus.post(new BrowserEvents.ShowSnackBarMessage(message));
+        telemetry.sendSendTabSuccessSignal();
+    }
+
+    @Subscribe
+    void setAdjustPan(Messages.AdjustPan event) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    }
+
+    @Subscribe
+    void setAdjustResize(Messages.AdjustResize event) {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
+
     // returns screen that is visible
     private String getCurrentVisibleFragmentName() {
-        String name = "";
+        final String name;
         final TabFragment currentTab = tabsManager.getCurrentTab();
         if (mOverViewFragment != null && mOverViewFragment.isVisible()) {
             name = "past";
@@ -606,9 +678,21 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return name;
     }
 
+    /**
+     * We check for Google Play Services availability, but we do not rely on them so much so we
+     * do not show any error message if they are not installed.
+     * See https://github.com/googlesamples/google-services/blob/master/android/gcm/app/src/main/java/gcm/play/android/samples/com/gcmquickstart/MainActivity.java
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        return resultCode == ConnectionResult.SUCCESS;
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
     private boolean shouldUpdateWebview() {
         //Only need to check for android 5 and 6
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ||
+        if (BrowserApp.isTestInProgress() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return false;
         }
@@ -616,59 +700,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         try {
             final PackageInfo packageInfo = packageManager.getPackageInfo(WEBVIEW_PACKAGE_NAME, 0);
             final String versionName = packageInfo.versionName;
-            final int versionNumber = Integer.parseInt(versionName.substring(0,2));
-            if (versionNumber < BuildConfig.MINIMUM_WEBVIEW_VERSION) {
-                return true;
-            } else {
-                return false;
-            }
+            final int versionNumber = Integer.parseInt(versionName.substring(0, 2));
+            return versionNumber < BuildConfig.MINIMUM_WEBVIEW_VERSION;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Package Android System WebView is not found");
             return false;
         }
     }
-
-    private final BroadcastReceiver onComplete = new BroadcastReceiver() {
-        public void onReceive(Context ctxt, final Intent intent) {
-            final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
-            final boolean isYouTubeVideo = downloadIds.contains(downloadId);
-            if (isYouTubeVideo) {
-                downloadIds.remove(downloadId);
-            }
-            final DownloadManager downloadManager = (DownloadManager)
-                    getSystemService(Context.DOWNLOAD_SERVICE);
-            final DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(downloadId);
-            final Cursor cursor = downloadManager.query(query);
-            final int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-            final int localUriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-            final int mediaTypeIndex = cursor.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE);
-            if (cursor.moveToFirst()) {
-                if (cursor.getInt(statusIndex) == DownloadManager.STATUS_SUCCESSFUL) {
-                    if (isYouTubeVideo) {
-                        telemetry.sendVideoDownloadedSignal(true);
-                    }
-                    final View.OnClickListener onClickListener = new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            final Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.parse(cursor.getString(localUriIndex)),
-                                    cursor.getString(mediaTypeIndex));
-                            startActivity(intent);
-                        }
-                    };
-                    Utils.showSnackbar(MainActivity.this, getString(R.string.download_successful),
-                            getString(R.string.action_open), onClickListener);
-                } else if (cursor.getInt(statusIndex) == DownloadManager.STATUS_FAILED) {
-                    if (isYouTubeVideo) {
-                        telemetry.sendVideoDownloadedSignal(false);
-                    }
-                    Utils.showSnackbar(MainActivity.this, getString(R.string.download_failed));
-                }
-            }
-        }
-    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -696,14 +734,148 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionsManager.getInstance().notifyPermissionsChange(permissions, grantResults);
+        if (requestCode == Constants.LOCATION_PERMISSION && grantResults.length > 0 &&
+                grantResults[0] == PERMISSION_GRANTED) {
+            preferenceManager.setLocationEnabled(true);
+            if (!locationCache.isGPSEnabled()) {
+                Toast.makeText(this, R.string.gps_permission, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @Nullable
     @Override
-    public ActivityComponent getActivityComponent() {
-        return mActivityComponent;
+    public MainActivityComponent getActivityComponent() {
+        return mMainActivityComponent;
     }
 
-    public SearchWebView getSearchWebView() {
-        return searchWebView;
+    @VisibleForTesting
+    public HistoryDatabase getHistoryDatabase() {
+        return historyDatabase;
     }
 
+    boolean removeDownloadId(long downloadId) {
+        return downloadIds.remove(downloadId);
+    }
+
+    @Subscribe
+    void openTab(CliqzMessages.OpenTab event) {
+        if (!event.isValid) {
+            Log.e(TAG, "Invalid OpenTab event");
+            return;
+        }
+        final Uri uri = Uri.parse(event.url);
+        // Is the uri still null?
+        if (uri == null) {
+            Log.e(TAG, "Can't parse Url");
+            return;
+        }
+
+        // we can only throw an intent here
+        final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setData(uri);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.putExtra(MainActivity.EXTRA_IS_PRIVATE, event.isIncognito);
+        intent.putExtra(MainActivity.EXTRA_TITLE, event.title);
+
+        getApplicationContext().startActivity(intent);
+    }
+
+    @Subscribe
+    void downloadVideo(CliqzMessages.DownloadVideo data) {
+        final JSONObject jsonObject = data.json;
+        final String filename = jsonObject.optString("filename", null);
+        final String rawUrl = jsonObject.optString("url", null);
+        final String url = StringUtils.encodeURLProperly(rawUrl);
+        final Context context = getApplicationContext();
+        final ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return;
+        }
+        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI && preferenceManager.shouldLimitDataUsage()) {
+            NoWiFiDialog.show(this, bus);
+            return;
+        }
+        if (canDownloadInBackground(context) && url != null) {
+            DownloadHelper.download(context, url, filename, null,
+                    new DownloadHelper.DownloaderListener() {
+                        @Override
+                        public void onSuccess(String url) {
+                            bus.post(new BrowserEvents
+                                    .ShowSnackBarMessage(context
+                                    .getString(R.string.download_started)));
+                        }
+
+                        @Override
+                        public void onFailure(String url, DownloadHelper.Error error,
+                                              Throwable throwable) {
+                            final String title;
+                            final String message;
+                            switch (error) {
+                                case MEDIA_NOT_MOUNTED:
+                                    message = context.getString(R.string.download_sdcard_busy_dlg_msg);
+                                    title = context.getString(R.string.download_sdcard_busy_dlg_title);
+                                    break;
+                                case MEDIA_NOT_AVAILABLE:
+                                    message = context.getString(R.string.download_no_sdcard_dlg_msg);
+                                    title = context.getString(R.string.download_no_sdcard_dlg_title);
+                                    break;
+                                default:
+                                    message = context.getString(R.string.download_failed);
+                                    title = context.getString(R.string.title_error);
+                                    break;
+                            }
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle(title)
+                                    .setMessage(message)
+                                    .setPositiveButton(R.string.action_ok, null)
+                                    .show();
+                        }
+                    });
+        } else {
+            // We must show interface here, just start the browser
+            final Intent intent = new Intent(context, MainActivity.class);
+            intent.setAction(MainActivity.ACTION_DOWNLOAD);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(StringUtils.encodeURLProperly(rawUrl)));
+            intent.putExtra(MainActivity.EXTRA_FILENAME, filename);
+            context.startActivity(intent);
+        }
+    }
+
+    @Subscribe
+    void onReactCheckPermission(ReactMessages.CheckPermission event) {
+        if (PermissionsManager.hasPermission(this, event.permission)) {
+            event.promise.resolve(true);
+        } else {
+            event.promise.resolve(false);
+        }
+    }
+
+    @Subscribe
+    void onReactRequestPermission(ReactMessages.RequestPermission event) {
+        PermissionsManager.getInstance()
+                .requestPermissionsIfNecessaryForResult(this, event, event.permission);
+    }
+
+    private static boolean canDownloadInBackground(Context context) {
+        final int result = ContextCompat
+                .checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
+        return result == PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onTaskCompleted(List<Topnews> topnewses, int breakingNewsCount, int topNewsCount, String newsVersion) {
+        progressDialog.dismiss();
+        if (topnewses.size() >= 1 && topnewses.get(0).url != null) {
+            tabsManager.buildTab().setUrl(topnewses.get(0).url).show();
+        }
+    }
 }

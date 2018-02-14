@@ -1,33 +1,34 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../scripts/CliqzConfig.gradle'
 apply from: 'cliqz.gradle'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
-    defaultConfig {
-        targetSdkVersion 25
-        minSdkVersion 21
-        versionCode 35
-        versionName "1.1.2"
+    compileSdkVersion compile_sdk_version 
+    buildToolsVersion "26.0.2"
 
+    defaultConfig {
+        targetSdkVersion 23
+        minSdkVersion 16
+        versionCode 87
+        versionName "1.6.2.4"
         multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
-        buildConfigField "boolean", "FULL_VERSION", "true"
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
 
         applicationId "com.cliqz.browser"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
+        vectorDrawables.useSupportLibrary = true
     }
+
     buildTypes {
         debug {
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
             shrinkResources false
             proguardFiles 'proguard-project.txt'
-            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA02"'
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
         }
@@ -37,18 +38,35 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
             shrinkResources false
             proguardFiles 'proguard-project.txt'
-            buildConfigField 'String', 'TELEMETRY_CHANNEL', '"MA00"'
         }
     }
     packagingOptions {
         exclude '.readme'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+        exclude "lib/arm64-v8a/**"
+        exclude "lib/armeabi/**"
+        exclude "lib/x86_64/**"
     }
     sourceSets {
-        lookback {
+        standard {
+            java.srcDirs += [
+                    'src/cliqz/java',
+            ]
+        }
+        amazon {
             java.srcDirs += [
                     'src/standard/java',
+                    'src/cliqz/java',
+            ]
+            res.srcDirs += [
+                    'src/standard/res',
+            ]
+        }
+        huawei {
+            java.srcDirs += [
+                    'src/standard/java',
+                    'src/cliqz/java',
             ]
             res.srcDirs += [
                     'src/standard/res',
@@ -63,16 +81,9 @@ android {
             dimension "api"
             versionCode 5
         }
-        xwalk {
+        amazon {
             dimension "api"
-            minSdkVersion 16
-            versionCode 1
-        }
-        lookback {
-            dimension "api"
-            targetSdkVersion 21
-            versionCode 9
-            applicationId "com.cliqz.browser.ut"
+            versionCode 8
         }
         x86 {
             dimension "abi"
@@ -92,13 +103,18 @@ android {
             dimension "abi"
             versionCode 1
         }
+        huawei {
+            dimension "api"
+            versionCode 5
+            applicationIdSuffix ".huawei"
+        }
     }
 }
 
 dexcount {
     includeClasses = false
     includeFieldCount = false
-    printAsTree = true
+    format = "tree"
     orderByMethodCount = true
     verbose = false
 }
@@ -107,87 +123,138 @@ repositories {
     flatDir {
         dirs 'aars'
     }
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
 }
 
 configurations.all {
   resolutionStrategy {
-    force 'com.android.support:support-v4:25.0.0'
-    force 'com.android.support:support-annotations:25.0.0'
+      force "com.android.support:support-v4:${support_lib_version}"
+      force "com.android.support:appcompat-v7:${support_lib_version}"
+      force "com.android.support:support-annotations:${support_lib_version}"
+      force "com.google.code.findbugs:jsr305:3.0.0"
   }
 }
 
 dependencies {
+
     // support libraries
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    xwalkCompile 'com.android.support:multidex:1.0.1'
-    // Gson
-    compile 'com.google.code.gson:gson:2.6.1'
-    // html parsing fo reading mode
-    compile 'org.jsoup:jsoup:1.8.3'
+    implementation "com.android.support:support-v4:${support_lib_version}"
+    implementation "com.android.support:cardview-v7:${support_lib_version}"
+    implementation "com.android.support:design:${support_lib_version}"
+    implementation "com.android.support:support-vector-drawable:${support_lib_version}"
+    implementation "com.android.support:animated-vector-drawable:${support_lib_version}"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation "com.android.support:appcompat-v7:${support_lib_version}"
+
+    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+
     // event bus
-    compile 'com.squareup:otto:1.3.8'
+    annotationProcessor 'com.cliqz:nove-compiler:0.2.0'
+    implementation 'com.cliqz:nove:0.2.0'
+    
     // dependency injection
-    compile 'com.google.dagger:dagger:2.0.1'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.0.1'
-    provided 'javax.annotation:jsr250-api:1.0'
+    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.google.dagger:dagger:2.11'
+    implementation 'com.google.dagger:dagger-android-support:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    compileOnly 'javax.annotation:jsr250-api:1.0'
+    
     // view binding
-    compile 'com.jakewharton:butterknife:7.0.1'
-    // Anti-tracking
-    standardCompile 'com.github.cliqz-oss:jsengine:ef76b5f@aar', {transitive=true}
-    lookbackCompile 'com.github.cliqz-oss:jsengine:ef76b5f@aar', {transitive=true}
+    annotationProcessor 'com.jakewharton:butterknife:7.0.1'
+    implementation 'com.jakewharton:butterknife:7.0.1'
 
+    // native fs support for React-Native
+    implementation project(':react-native-fs')
+    
+    // sqlite support for React-Native
+    implementation project(':react-native-sqlite2')
+    implementation project(':WebRTCModule')
+
+    // react native screenshot view
+    implementation project(':react-native-view-shot')
+
+    // react native share card
+    implementation project(':react-native-share')
+    
     // Utils libraries
-    compile project(':utils')
-    compile project(':android_utils')
+    implementation project(':utils')
+    implementation project(':android_utils')
+    
     // On-boarding
-    compile 'com.github.deano2390:MaterialShowcaseView:1.1.0@aar'
+    implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    
     // memory leak analysis
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    androidTestCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    
     // Google Play Services
-    compile "com.google.android.gms:play-services-gcm:9.4.0"
-
-    // xwalk webview
-    xwalkCompile 'org.xwalk:xwalk_core_library:20.50.533.12'
+    implementation 'com.google.android.gms:play-services-gcm:9.4.0'
+    
+    // React-Native
+    implementation 'com.facebook.react:react-native:+'
     
     // AWS SNS SDK
-    compile 'com.amazonaws:aws-android-sdk-sns:2.+'
-    compile 'com.amazonaws:aws-android-sdk-cognito:2.+'
+    implementation 'com.amazonaws:aws-android-sdk-sns:2.+'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.+'
+    
+    // Barcode scanner
+    implementation 'com.google.zxing:core:3.3.0'
+    
+    // Facebook Core only (Analytics)
+    // Checkout how we use this in FacebookWrapper.java.
+    // When upgrading the version number check the output manifest for shady providers or stuff
+    // that get initialised automatically
+    implementation 'com.facebook.android:facebook-core:4.28.0'
 
-    //Facebook SDK
-    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    // Facebook App Links only
+    implementation 'com.facebook.android:facebook-applinks:4.28.0'
 
-    // Loopback.io
-    lookbackCompile(name:'lookback-android-sdk-0.9.13', ext:'aar')
-    lookbackCompile 'com.squareup.okhttp:okhttp:2.6.0'
-    lookbackCompile 'com.squareup.retrofit:retrofit:1.9.0'
+    // Fresco
+    implementation 'com.facebook.fresco:fresco:1.4.0'
 
     // MiniBloomFilter
-    compile 'com.github.cliqz-oss:minibloomfilter:1.0'
-
+    implementation 'com.github.cliqz-oss:minibloomfilter:1.0'
+    
+    // Ghostery chart support
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    
     // Testing-only dependencies
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+    
     // Forcing version
-    androidTestCompile 'com.android.support:support-annotations:25.0.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
-    androidTestCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-
+    androidTestImplementation "com.android.support:support-annotations:${support_lib_version}"
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test:rules:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-web:2.2.2'
+    androidTestImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    testImplementation 'org.apache.velocity:velocity:1.7'
 }
-
 
 preBuild << {
     android.applicationVariants.each { variant ->
         def apiVersion = variant.productFlavors.get(0).versionCode
         def abiVersion = variant.productFlavors.get(1).versionCode
         // set the composite code
-        variant.mergedFlavor.versionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
+        def generatedVersionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
+        variant.mergedFlavor.versionCode = generatedVersionCode
+        variant.outputs.all { output ->
+            output.setVersionCodeOverride(generatedVersionCode)
+        }
     }
 }
+
+play {
+    track = 'alpha'
+}
+
+apply plugin: 'com.google.gms.google-services'

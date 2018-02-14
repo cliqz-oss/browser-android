@@ -43,41 +43,16 @@ public class UrlUtils {
                     "(.*)");
     // Google search
     public final static String QUERY_PLACE_HOLDER = "%s";
-    // Regular expression to strip http:// and optionally
-    // the trailing slash
-    private static final Pattern STRIP_URL_PATTERN =
-            Pattern.compile("^http://(.*?)/?$");
 
     // Regular expression to recognize youtube video page
     private static final Pattern YOUTUBE_VIDEO_URL_PATTERN =
             Pattern.compile("https?://(m\\.|www\\.)?youtube.+/watch\\?v=.*");
 
     private final static Set<String> HOST_PREFIXES = new HashSet<>(Arrays.asList(new String[] {
-            "www", "m"
+            "www", "m", "mobile", "amp"
     }));
 
     private UrlUtils() { /* cannot be instantiated */ }
-
-    /**
-     * Strips the provided url of preceding "http://" and any trailing "/". Does not
-     * strip "https://". If the provided string cannot be stripped, the original string
-     * is returned.
-     * <p/>
-     * TODO: Put this in TextUtils to be used by other packages doing something similar.
-     *
-     * @param url a url to strip, like "http://www.google.com/"
-     * @return a stripped url like "www.google.com", or the original string if it could
-     * not be stripped
-     */
-    public static String stripUrl(String url) {
-        if (url == null) return null;
-        Matcher m = STRIP_URL_PATTERN.matcher(url);
-        if (m.matches()) {
-            return m.group(1);
-        } else {
-            return url;
-        }
-    }
 
     /**
      * Attempts to determine whether user input is a URL or search
@@ -90,6 +65,7 @@ public class UrlUtils {
      *                    URL. If false, invalid URLs will return null
      * @return Original or modified URL
      */
+    @SuppressWarnings("SameParameterValue")
     public static String smartUrlFilter(String url, boolean canBeSearch, String searchUrl) {
         String inUrl = url.trim();
         boolean hasSpace = inUrl.indexOf(' ') != -1;

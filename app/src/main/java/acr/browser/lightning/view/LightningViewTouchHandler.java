@@ -1,39 +1,29 @@
 package acr.browser.lightning.view;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Message;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.webkit.WebView;
-
-import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.utils.Utils;
 
 /**
  * Touches handler for the {@link LightningView}, directly extracted from it
  *
  * @author Stefano Pacifici
- * @date 2016/05/20
  */
 class LightningViewTouchHandler {
 
-    private static final int SCROLL_UP_THRESHOLD = Utils.dpToPx(10);
-
     private final LightningView lightningView;
     private final GestureDetector gestureDetector;
-    private final float maxFling;
-    private float mLightningViewScrollPositionY;
 
     private LightningViewTouchHandler(LightningView lightningView) {
         this.lightningView = lightningView;
         final WebView webView = lightningView.getWebView();
-        final Context context = webView.getContext();
-        webView.setOnTouchListener(new TouchListener());
-        gestureDetector = new GestureDetector(context, new CustomGestureListener());
-        maxFling = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
+        if (webView != null) {
+            webView.setOnTouchListener(new TouchListener());
+        }
+        gestureDetector = new GestureDetector(lightningView.activity, new CustomGestureListener());
     }
 
     static void attachTouchListener(LightningView lightningView) {
@@ -41,11 +31,7 @@ class LightningViewTouchHandler {
     }
 
     private class TouchListener implements View.OnTouchListener {
-
-        float mLocation;
-        float mY;
-        int mAction;
-
+        
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -69,9 +55,10 @@ class LightningViewTouchHandler {
         public void onLongPress(MotionEvent e) {
             if (mCanTriggerLongPress) {
                 Message msg = lightningView.webViewHandler.obtainMessage();
-                if (msg != null) {
+                final WebView webView = lightningView.getWebView();
+                if (msg != null && webView != null) {
                     msg.setTarget(lightningView.webViewHandler);
-                    lightningView.getWebView().requestFocusNodeHref(msg);
+                    webView.requestFocusNodeHref(msg);
                 }
             }
         }

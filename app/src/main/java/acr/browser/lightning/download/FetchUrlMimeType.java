@@ -4,26 +4,13 @@
 package acr.browser.lightning.download;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.MimeTypeMap;
-import android.webkit.URLUtil;
-
-import com.cliqz.browser.R;
-import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.Messages;
-import com.squareup.otto.Bus;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import acr.browser.lightning.bus.BrowserEvents;
 
 /**
  * This class is used to pull down the http headers of a given URL so that we

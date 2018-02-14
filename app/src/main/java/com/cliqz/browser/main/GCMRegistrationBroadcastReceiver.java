@@ -9,7 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.di.annotations.PerActivity;
+import com.cliqz.browser.annotations.PerActivity;
 
 import javax.inject.Inject;
 

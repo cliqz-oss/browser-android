@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_category_browsing">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="attrack"
-            android:title="@string/showcase_antitracking_title"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="location"
-            android:title="@string/location" />
+            android:title="@string/control_center_header_antitracking" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="allow_cookies"
             android:summary="@string/recommended"
-            android:title="@string/cookies" />
+            android:title="@string/enable_cookies" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autoforget"
+            android:title="@string/auto_forget_tab" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="location"
+            android:title="@string/location" />
         <!-- <CheckBoxPreference
             android:defaultValue="false"
             android:key="incognito_cookies"
@@ -22,25 +27,20 @@
             android:key="password"
             android:title="@string/password" />
         <Preference
+            android:key="restore_top_sites"
+            android:title="@string/restore_top_sites" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_clear_data">
+        <Preference
             android:key="clear_history"
             android:title="@string/clear_history" />
         <Preference
             android:key="clear_favorites"
             android:title="@string/clear_favorites" />
-        <Preference
-            android:key="restore_top_sites"
-            android:title="@string/restore_top_sites"/>
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="clear_cache_exit"
-            android:title="@string/cache" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="clear_history_exit"
-            android:title="@string/clear_history_exit" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="clear_cookies_exit"
-            android:title="@string/clear_cookies_exit" />
-
+            android:key="clear_private_data_exit"
+            android:summary="@string/clear_data_summary"
+            android:title="@string/clear_private_data" />
+    </PreferenceCategory>
 </PreferenceScreen>

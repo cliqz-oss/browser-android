@@ -46,12 +46,14 @@ function sendLoginDetails (onsubmit, submit) {
 }
 
 function sendRequest (params) {
-  var target = window.location.origin + '/' + SECURE_CLIQZ + SECURE_HASH + '?domain=' + window.location.host;
+  var target = window.location.origin + '/' + SECURE_CLIQZ + SECURE_HASH;
+  var paramsString = '';
   for (var key in params) {
     if (params.hasOwnProperty(key)) {
-      target += '&' + key + '=' + params[key];
+      paramsString += '&' + key + '=' + params[key];
     }
   }
+  target += paramsString.replace('&', '?');
   var xhttp = new XMLHttpRequest();
   xhttp.open("GET", target, true);
   xhttp.setRequestHeader("url", window.location.hostname);

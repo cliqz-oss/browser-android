@@ -18,13 +18,13 @@ public class HistoryWebView extends BaseWebView {
 
     public HistoryWebView(Context context) {
         super(context);
-        bridge.setWebView(this);
+        getBridge().setWebView(this);
     }
 
     @Nullable
     @Override
     protected AWVClient createClient() {
-        return new SslWorkAroundClient();
+        return null;
     }
 
     @Nullable
@@ -38,7 +38,7 @@ public class HistoryWebView extends BaseWebView {
     }
 
     @Override
-    void extensionReady() {
+    public void extensionReady() {
         super.extensionReady();
         final PreferenceManager.ClearQueriesOptions clear = preferenceManager.shouldClearQueries();
         if (clear != PreferenceManager.ClearQueriesOptions.NO) {

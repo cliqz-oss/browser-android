@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="create_history_table_v3" translatable="false">CREATE TABLE history (id INTEGER PRIMARY KEY, url TEXT, title TEXT, time INTEGER, visits INTEGER)</string>
-    <string name="create_url_index_v3" translatable="false">CREATE INDEX IF NOT EXISTS urlIndex ON history (url COLLATE NOCASE)</string>
+    <!-- string name="create_history_table_v3" translatable="false">CREATE TABLE history (id INTEGER PRIMARY KEY, url TEXT, title TEXT, time INTEGER, visits INTEGER)</string -->
+    <!-- string name="create_url_index_v3" translatable="false">CREATE INDEX IF NOT EXISTS urlIndex ON history (url COLLATE NOCASE)</string -->
     <string name="create_visits_index_v3" translatable="false">CREATE INDEX IF NOT EXISTS countIndex ON history (visits)</string>
     <string name="alter_history_table_v2_to_v3" translatable="false">ALTER TABLE history ADD visits INTEGER"</string>
 </resources>

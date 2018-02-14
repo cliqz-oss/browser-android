@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/drawable-hdpi/firefox_menu.png" />
+        <ignore path="src/main/res/drawable-mdpi/firefox_menu.png" />
+        <ignore path="src/main/res/drawable-xhdpi/firefox_menu.png" />
+        <ignore path="src/main/res/drawable-xxhdpi/firefox_menu.png" />
+        <ignore path="src/main/res/drawable-xxxhdpi/firefox_menu.png" />
+        <ignore path="src/main/res/mipmap-xxxhdpi/firefox_menu.png" />
+    </issue>
+</lint>

@@ -1,63 +1,45 @@
 package com.cliqz.browser.webview;
 
-import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.utils.Telemetry;
-import com.squareup.otto.Bus;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
-
-import acr.browser.lightning.database.HistoryDatabase;
-
 /**
  * @author Stefano Pacifici
- * @date 2015/11/13
  */
 public abstract class Bridge {
 
     private static final String TAG = Bridge.class.getSimpleName();
 
     private final Handler handler;
-    private BaseWebView webView;
 
-    @Inject
-    Telemetry telemetry;
+    private AbstractionWebView webView;
 
-    @Inject
-    Bus bus;
-
-    @Inject
-    HistoryDatabase historyDatabase;
-
-    protected Bridge(Activity activity) {
+    protected Bridge() {
         this.handler = new Handler(Looper.getMainLooper());
-        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
-        if (component != null) {
-            component.inject(this);
-        }
     }
 
-    interface IAction {
+    protected abstract void inject(Context context);
+
+    public interface IAction {
         void execute(Bridge bridge, Object data, String callback);
     }
 
-    public void setWebView(BaseWebView baseWebView) {
+    public void setWebView(AbstractionWebView baseWebView) {
         this.webView = baseWebView;
     }
+
     protected abstract  IAction safeValueOf(@NonNull String name);
 
     protected abstract boolean checkCapabilities();
 
-    BaseWebView getWebView() {
+    AbstractionWebView getWebView() {
         return webView;
     }
 
@@ -83,7 +65,50 @@ public abstract class Bridge {
         }
     }
 
-    void executeJavascript(final String javascript) {
-        webView.evaluateJavascript(javascript, null);
+    /**
+     * Build and execute a callback without any synchronization (the callback will be immediately
+     * executed). <strong>This is expecially designed for callbacks from native side APIs, do not
+     * use this to call JavaScript side APIs</strong>
+     *
+     * @param callback callback name
+     * @param args arguments to be provided to the callback
+     */
+    protected final void executeJavascriptCallback(String callback, Object... args) {
+        if (callback == null || callback.isEmpty()) {
+            throw new RuntimeException("Null or empty callback provided");
+        }
+
+        final StringBuilder builder = new StringBuilder(callback);
+        builder.append('(');
+        String divider = "";
+        if (args != null) {
+            for (Object arg: args) {
+                builder.append(divider);
+                if (arg instanceof String) {
+                    builder.append('"').append((String) arg).append('"');
+                } else if (arg instanceof Integer) {
+                    builder.append((int) arg);
+                } else {
+                    builder.append(arg.toString());
+                }
+                divider = ",";
+            }
+        }
+        builder.append(')');
+        executeJavascriptOnMainThread(builder.toString());
+    }
+
+    protected final void executeJavascriptOnMainThread(@NonNull final String script) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    webView.evaluateJavascript(script, null);
+                }else{
+                    webView.loadUrl(script);
+                }
+
+            }
+        });
     }
 }

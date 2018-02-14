@@ -4,10 +4,9 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.cliqz.utils.StringUtils;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
@@ -18,7 +17,6 @@ import acr.browser.lightning.utils.UrlUtils;
  * Anti-phishing module. Should be used as a singleton.
  *
  * @author Stefano Pacifici
- * @date 2016/07/08
  */
 public class AntiPhishing {
 
@@ -84,15 +82,14 @@ public class AntiPhishing {
         final Runnable fetcher = new Runnable() {
             @Override
             public void run() {
-                final Gson gson = new Gson();
                 final String md5prefix = AntiPhishingUtils.splitMD5(md5Hash)[0];
                 final String formattedUrl = String.format(Locale.US, "%s?md5=%s", endpoint, md5prefix);
                 HttpURLConnection connection = null;
                 try {
                     final URL curl = new URL(formattedUrl);
                     connection = (HttpURLConnection) curl.openConnection();
-                    final JsonReader reader = gson.newJsonReader(new InputStreamReader(connection.getInputStream()));
-                    final CacheEntry response = gson.fromJson(reader, CacheEntry.class);
+                    final Reader reader = new InputStreamReader(connection.getInputStream());
+                    final CacheEntry response = CacheEntry.from(reader);
                     cache.addToCache(md5prefix, response);
                     processUrl(url, callback);
                     reader.close();

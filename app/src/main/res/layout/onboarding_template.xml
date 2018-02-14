@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/onboarding_background">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/onboarding_feature_icon_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/oval_shape_white"
+        android:scaleType="center"
+        app:tint="@color/accent_color"
+        app:srcCompat="@drawable/ic_offrz_black"/>
+
+    <TextView
+        android:id="@+id/onboarding_feature_description_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/onboarding_feature_icon_iv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        tools:text="@string/myoffrz_onboarding_description" />
+
+    <ImageButton
+        android:id="@+id/onboarding_close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@null"
+        android:tint="@color/accent_color"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
+    <Button
+        android:id="@+id/learn_more_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/onboarding_feature_description_tv"
+        android:layout_centerHorizontal="true"
+        android:text="@string/learn_more"
+        android:textColor="@color/accent_color" />
+
+</RelativeLayout>

@@ -3,10 +3,11 @@ package com.cliqz.browser.main;
 import android.support.v4.app.Fragment;
 
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.Timings;
-import com.squareup.otto.Bus;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.Timings;
+import com.cliqz.browser.webview.CliqzBridge;
+import com.cliqz.jsengine.Engine;
+import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
@@ -17,7 +18,6 @@ import acr.browser.lightning.preference.PreferenceManager;
  * A fragment with a bus that register/unregister itself (children) to it automatically
  *
  * @author Stefano Pacifici
- * @date 2015/11/30
  */
 public abstract class FragmentWithBus extends Fragment {
 
@@ -36,6 +36,15 @@ public abstract class FragmentWithBus extends Fragment {
     @Inject
     HistoryDatabase historyDatabase;
 
+    @Inject
+    CliqzBridge cliqzBridge;
+
+    @Inject
+    Engine engine;
+
+    @Inject
+    MainActivityHandler handler;
+
     public FragmentWithBus() {
         super();
     }
@@ -43,7 +52,7 @@ public abstract class FragmentWithBus extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        final ActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
         if (component != null) {
             component.inject(this);
         }
@@ -58,7 +67,10 @@ public abstract class FragmentWithBus extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        bus.register(this);
+        registerToBus();
     }
 
+    protected void registerToBus() {
+        bus.register(this);
+    }
 }

@@ -1,1 +1,0 @@
-{"platform":"mobile","testsBasePath":"./build/tests","testem_launchers":["Mocha","Chrome"],"settings":{"frameScriptWhitelist":[]},"modules":["core","autocomplete","mobile-ui","mobile-freshtab","mobile-history","yt-downloader","static"],"buildEnv":"production","sourceMaps":false,"EXTENSION_VERSION":"3.12.5"}

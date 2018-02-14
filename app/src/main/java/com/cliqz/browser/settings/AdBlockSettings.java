@@ -11,7 +11,7 @@ import android.text.util.Linkify;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.utils.TelemetryKeys;
+import com.cliqz.browser.telemetry.TelemetryKeys;
 
 /**
  * @author Stefano Pacifici

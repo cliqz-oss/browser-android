@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="menu_cliqz_search_item" type="id">120114</item>
-    <item name="action_del_bookmark" type="id">130114</item>
-    <item name="main_activity_content" type="id">82451</item>
     <item name="new_tab_menu_button" type="id"/>
     <item name="new_incognito_tab_menu_button" type="id"/>
-    <item name="copy_link_menu_button" type="id"/>
     <item name="add_to_favourites_menu_button" type="id"/>
     <item name="settings_menu_button" type="id"/>
-    <item name="contact_cliqz_menu_button" type="id"/>
-    <item name="save_link_menu_button" type="id"/>
-    <item name="show_tab_manager_menu_button" type="id"/>
     <item name="search_on_page_menu_button" type="id"/>
     <item name="download_youtube_video_menu_button" type="id"/>
     <item name="tracker_counter" type="id"/>
-    <item name="anti_tracking_details" type="id"/>
     <item name="quit_menu_button" type="id"/>
     <item name="search_web_view" type="id"/>
-    <item name="cliqz_web_view" type="id"/>
     <item name="request_desktop_site" type="id" />
     <item name="control_center" type="id"/>
     <item name="cc_icon" type="id"/>
+    <item name="desktop_pairing" type="id"/>
+    <!-- Zxing barcode scanner ids -->
+    <item name="restart_preview" type="id" />
+    <item name="decode_succeeded" type="id" />
+    <item name="decode_failed" type="id" />
+    <item name="decode" type="id" />
+    <item name="quit" type="id" />
+    <item name="msg_kill_caller_thread" type="id" />
+    <item name="msg_execute_javascript_function" type="id" />
+    <item name="msg_extension_caller_quit" type="id" />
+    <item name="msg_extension_details_from_url" type="id" />
+    <item name="executeJavascript" type="id" />
+    <item name="callNative" type="id" />
+    <item name="msg_extension_ready" type="id" />
+    <item name="browser_view" type="id" />
+    <item name="enableable_view" type="id" />
+    <item name="go_to_favorites_button" type="id" />
+    <item name="react_debug" type="id" />
+    <item name="send_tab_menu_button" type="id" />
+    <item name="code_scanner" type="id" />
+    <item name="reader_mode" type="id" />
+    <item name="overflow_menu_list" type="id" />
+    <item name="incognito_tab_id" type="id" />
+    <item name="regular_tab_id" type="id" />
 </resources>

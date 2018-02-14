@@ -1,25 +1,62 @@
 buildscript {
     repositories {
         jcenter()
+        google()
         maven {
             url 'https://jitpack.io'
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.2.1'
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1'
+        classpath 'com.google.gms:google-services:3.0.0'
         classpath 'com.github.cliqz-oss:minibloomfilter:1.0'
+        classpath 'com.github.triplet.gradle:play-publisher:1.2.0'
+    }
+}
+
+ext {
+    compileSdkVersion = 27
+    buildToolsVersion = "26.0.2"
+}
+
+subprojects { subproject ->
+    afterEvaluate{
+        if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
     }
 }
 
 allprojects {
+    buildscript {
+        repositories {
+            google()
+        }
+    }
     repositories {
         jcenter()
+        google()
         maven {
             url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
         }
         maven {
             url 'https://jitpack.io'
+        }
+        maven {
+            url  "http://dl.bintray.com/cliqz/cliqz-oss"
+        }
+        maven {
+            url "${rootProject.projectDir}/node_modules/react-native/android"
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force 'com.facebook.react:react-native:0.51.0'
         }
     }
 }

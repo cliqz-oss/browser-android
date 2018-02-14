@@ -1,22 +1,15 @@
-/*
- * Copyright 2014 A.C.R. Development
- */
-
 package acr.browser.lightning.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -25,7 +18,6 @@ import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
@@ -34,52 +26,54 @@ import android.webkit.WebView;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
-import com.cliqz.browser.utils.Telemetry;
+import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.Engine;
-import com.squareup.otto.Bus;
+import com.cliqz.jsengine.EngineNotYetAvailable;
+import com.cliqz.nove.Bus;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
 import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
 
+/**
+ * @author Anthony C. Restaino
+ * @author Stefano Pacifici
+ * @author Ravjit Uppal
+ */
 public class LightningView {
 
-    public static final String HEADER_REQUESTED_WITH = "X-Requested-With";
-    public static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
-    public static final String HEADER_DNT = "DNT";
+    private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
+    private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
+    private static final String HEADER_DNT = "DNT";
     private static final String TAG = LightningView.class.getSimpleName();
+    private static final Pattern USER_AGENT_PATTERN =
+            Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
     final Activity activity;
     private final Paint mPaint = new Paint();
-    private boolean isForegroundTab;
     private boolean mInvertPage = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
-    private final String mId;
+    private final String id;
     private boolean mIsAutoForgetTab;
-
+    private boolean urlSSLError = false;
     /**
      * This prevent history point creation when navigating back and forward. It's used by {@link
      * LightningView} and {@link LightningChromeClient} in combination: the first set it to false
@@ -98,7 +92,24 @@ public class LightningView {
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
     //Id of the current page in the history database
-    public long historyId = -1;
+    long historyId = -1;
+
+    LightingViewListener lightingViewListenerListener;
+
+    public void setUrlSSLError(boolean urlSSLError) {
+        this.urlSSLError = urlSSLError;
+    }
+
+    public boolean isUrlSSLError() {
+        return urlSSLError;
+    }
+
+    public interface LightingViewListener {
+
+        void increaseAntiTrackingCounter();
+
+        void onFavIconLoaded(Bitmap favicon);
+    }
 
     @Inject
     Bus eventBus;
@@ -111,20 +122,18 @@ public class LightningView {
 
     @Inject
     Engine jsengine;
+
     @Inject
     AntiTracking attrack;
+
     @Inject
     Adblocker adblocker;
-    
+
     @Inject
     HistoryDatabase historyDatabase;
 
     @Inject
     Telemetry telemetry;
-
-    // Removed as version 1.0.2r2
-    // @Inject
-    // ProxyUtils proxyUtils;
 
     @Inject
     PasswordManager passwordManager;
@@ -135,42 +144,21 @@ public class LightningView {
     @Inject
     BloomFilterUtils bloomFilterUtils;
 
+    @Inject
+    WebViewPersister persister;
+
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }
         this.activity = activity;
-        mId = uniqueId;
-        mWebView = /* overrideWebView != null ? overrideWebView : */new CliqzWebView(activity);
+        id = uniqueId;
         mIsIncognitoTab = isIncognito;
         Boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
         mTitle = new LightningViewTitle(activity, useDarkTheme);
-
-        mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-        mWebView.setFocusableInTouchMode(true);
-        mWebView.setFocusable(true);
-        mWebView.setDrawingCacheEnabled(false);
-        mWebView.setWillNotCacheDrawing(true);
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            //noinspection deprecation
-            mWebView.setAnimationCacheEnabled(false);
-            //noinspection deprecation
-            mWebView.setAlwaysDrawnWithCacheEnabled(false);
-        }
-        mWebView.setBackgroundColor(Color.WHITE);
-
-        mWebView.setScrollbarFadingEnabled(true);
-
-        mWebView.setSaveEnabled(true);
-        mWebView.setNetworkAvailable(true);
-        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-        mWebView.setWebViewClient(new LightningWebClient(activity, this));
-        mWebView.setDownloadListener(new LightningDownloadListener(activity));
         LightningViewTouchHandler.attachTouchListener(this);
-        initializeSettings(mWebView.getSettings(), activity);
     }
 
     /**
@@ -178,10 +166,9 @@ public class LightningView {
      *
      * @param settings the WebSettings object to use, you can pass in null
      *                 if you don't have a reference to them
-     * @param context  the activity in which the WebView was created
      */
-    @SuppressLint("NewApi")
-    public synchronized void initializePreferences(@Nullable WebSettings settings, Context context) {
+    @SuppressLint({"NewApi", "SetJavaScriptEnabled"})
+    private synchronized void initializePreferences(@Nullable WebSettings settings) {
         if (settings == null && mWebView == null) {
             return;
         } else if (settings == null) {
@@ -231,22 +218,14 @@ public class LightningView {
             }
         }
 
-        // Removed as version 1.0.2r2, restore if needed
-        // setUserAgent(context, preferences.getUserAgentChoice());
-        // settings.setUserAgentString(WebSettings.getDefaultUserAgent(activity));
+        settings.setUserAgentString(getMobileUserAgent());
 
         if (API <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             //noinspection deprecation
             settings.setSavePassword(false);
         }
-        // Removed as version 1.0.2r2, restore if needed
-        // if (preferences.getJavaScriptEnabled()) {
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        // } else {
-        //     settings.setJavaScriptEnabled(false);
-        //     settings.setJavaScriptCanOpenWindowsAutomatically(false);
-        // }
 
         if (preferences.getTextReflowEnabled()) {
             settings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
@@ -292,7 +271,7 @@ public class LightningView {
                 settings.setTextZoom(50);
                 break;
         }
-        CookieManager.getInstance().setAcceptCookie(preferences.getCookiesEnabled());
+        CookieManager.getInstance().setAcceptCookie(preferences.getCookiesEnabled() && !isIncognitoTab());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, false);
         }
@@ -301,7 +280,7 @@ public class LightningView {
         try {
             attrack.setEnabled(preferences.isAttrackEnabled());
             adblocker.setEnabled(preferences.getAdBlockEnabled());
-        } catch (ExecutionException e) {
+        } catch (EngineNotYetAvailable e) {
             Log.w(TAG, "error updating jsengine state", e);
         }
 
@@ -350,7 +329,7 @@ public class LightningView {
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccess(true);
         settings.setDefaultTextEncodingName("utf-8");
-        // setAccessFromUrl(url, settings);
+        // setAccessFromUrl(urlView, settings);
         if (API >= Build.VERSION_CODES.JELLY_BEAN) {
             settings.setAllowFileAccessFromFileURLs(false);
             settings.setAllowUniversalAccessFromFileURLs(false);
@@ -364,56 +343,18 @@ public class LightningView {
         }
     }
 
-    public void restoreState(Bundle bundle) {
-        mWebView.restoreState(bundle);
-    }
-
-    @NonNull
-    protected Map<String, String> getRequestHeaders() {
-        return mRequestHeaders;
-    }
-
-    public boolean isShown() {
+    boolean isShown() {
         return mWebView != null && mWebView.isShown();
-    }
-
-    public synchronized void onPause() {
-        if (mWebView != null) {
-            //mWebView.onPause();
-        }
     }
 
     public synchronized void onResume() {
         if (mWebView != null) {
             Log.w(LightningView.class.getSimpleName(), "Resuming");
-            initializePreferences(mWebView.getSettings(), activity);
+            initializePreferences(mWebView.getSettings());
             mWebView.onResume();
         }
     }
 
-    public synchronized void freeMemory() {
-        if (mWebView != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            //noinspection deprecation
-            mWebView.freeMemory();
-        }
-    }
-
-    public void setForegroundTab(boolean isForeground) {
-        isForegroundTab = isForeground;
-        eventBus.post(new BrowserEvents.TabsChanged());
-    }
-
-    public boolean isForegroundTab() {
-        return isForegroundTab;
-    }
-
-    public int getProgress() {
-        if (mWebView != null) {
-            return mWebView.getProgress();
-        } else {
-            return 100;
-        }
-    }
 
     public synchronized void stopLoading() {
         if (mWebView != null) {
@@ -427,10 +368,6 @@ public class LightningView {
 
     private void setNormalRendering() {
         mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
-    }
-
-    public void setSoftwareRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     private void setColorMode(int mode) {
@@ -477,21 +414,9 @@ public class LightningView {
 
     }
 
-    public synchronized void pauseTimers() {
-        if (mWebView != null) {
-            // mWebView.onPause();
-        }
-    }
-
     public synchronized void resumeTimers() {
         if (mWebView != null) {
             mWebView.onResume();
-        }
-    }
-
-    public void requestFocus() {
-        if (mWebView != null && !mWebView.hasFocus()) {
-            mWebView.requestFocus();
         }
     }
 
@@ -513,32 +438,12 @@ public class LightningView {
         }
     }
 
-    /**
-     * Naive caching of the favicon according to the domain name of the URL
-     *
-     * @param icon the icon to cache
-     */
-    private void cacheFavicon(final Bitmap icon) {
-        if (icon == null) return;
-        final Uri uri = Uri.parse(getUrl());
-        if (uri.getHost() == null) {
-            return;
-        }
-        new Thread(new IconCacheTask(uri, icon)).start();
-    }
-
     @SuppressLint("NewApi")
     public synchronized void findInPage(String text) {
-        if (mWebView != null) {
-            if (API >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                mWebView.findAllAsync(text);
-            } else {
-                //noinspection deprecation
-                mWebView.findAll(text);
-            }
-        }
+            mWebView.findAllAsync(text);
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public synchronized void onDestroy() {
         if (mWebView != null) {
             //deletePreview();
@@ -596,27 +501,24 @@ public class LightningView {
         }
     }
 
-    public synchronized void clearFindMatches() {
-        if (mWebView != null) {
-            mWebView.clearMatches();
-        }
-    }
-
     /**
      * Used by {@link LightningWebClient}
      *
      * @return true if the page is in inverted mode, false otherwise
      */
-    public boolean getInvertePage() {
+    boolean getInvertePage() {
         return mInvertPage;
     }
 
     /**
-     * handles a long click on the page, parameter String url
-     * is the url that should have been obtained from the WebView touch node
+     * handles a long click on the page, parameter String urlView
+     * is the urlView that should have been obtained from the WebView touch node
      * thingy, if it is null, this method tries to deal with it and find a workaround
      */
     private void longClickPage(final String url) {
+        if (mWebView == null) {
+            return;
+        }
         final WebView.HitTestResult result = mWebView.getHitTestResult();
         if (url != null) {
             if (result != null) {
@@ -632,7 +534,7 @@ public class LightningView {
         } else if (result != null && result.getExtra() != null) {
             final String newUrl = result.getExtra();
             if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(url, newUrl, getUserAgent());
+                dialogBuilder.showLongPressImageDialog(null, newUrl, getUserAgent());
             } else {
                 dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
             }
@@ -647,8 +549,32 @@ public class LightningView {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    @Nullable
+    @NonNull
     public synchronized WebView getWebView() {
+        if (mWebView == null) {
+            mWebView = new CliqzWebView(activity);
+            mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+            mWebView.setFocusableInTouchMode(true);
+            mWebView.setFocusable(true);
+            mWebView.setDrawingCacheEnabled(false);
+            mWebView.setWillNotCacheDrawing(true);
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                //noinspection deprecation
+                mWebView.setAnimationCacheEnabled(false);
+                //noinspection deprecation
+                mWebView.setAlwaysDrawnWithCacheEnabled(false);
+            }
+            mWebView.setBackgroundColor(Color.WHITE);
+
+            mWebView.setSaveEnabled(true);
+            mWebView.setNetworkAvailable(true);
+            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+            mWebView.setWebViewClient(new LightningWebClient(activity, this));
+            mWebView.setDownloadListener(new LightningDownloadListener(activity));
+            initializeSettings(mWebView.getSettings(), activity);
+            persister.restore(id, mWebView);
+        }
         return mWebView;
     }
 
@@ -657,18 +583,7 @@ public class LightningView {
     }
 
     public synchronized void loadUrl(String url) {
-        // Removed as version 1.0.2r2
-        // Check if configured proxy is available
-        // if (!isProxyReady()) {
-        //     return;
-        // }
         mWebView.loadUrl(url, mRequestHeaders);
-    }
-
-    public synchronized void invalidate() {
-        if (mWebView != null) {
-            mWebView.invalidate();
-        }
     }
 
     public String getTitle() {
@@ -685,22 +600,8 @@ public class LightningView {
     }
 
     public String getId() {
-        return mId;
+        return id;
     }
-
-    // Removed as version 1.0.2r2
-    //    boolean isProxyReady() {
-    //        switch (proxyUtils.getProxyState()) {
-    //            case I2P_NOT_RUNNING:
-    //                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_not_running));
-    //                return false;
-    //            case I2P_TUNNELS_NOT_READY:
-    //                eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.i2p_tunnels_not_ready));
-    //                return false;
-    //            default:
-    //                return true;
-    //        }
-    //    }
 
     public boolean isIncognitoTab() {
         return mIsIncognitoTab;
@@ -710,7 +611,7 @@ public class LightningView {
         this.mIsIncognitoTab = isIncognitoTab;
     }
 
-    public boolean isAutoForgetTab() {
+    boolean isAutoForgetTab() {
         return mIsAutoForgetTab;
     }
 
@@ -721,20 +622,62 @@ public class LightningView {
     public void enableAdBlock() {
         try {
             adblocker.setEnabled(true);
-        } catch (ExecutionException e) {
-            Log.w(TAG, "error updating jsengine state", e);
+        } catch (EngineNotYetAvailable engineNotYetAvailable) {
+            engineNotYetAvailable.printStackTrace();
         }
     }
 
-    public void enableAttrack() throws ExecutionException {
+    public void enableAttrack(){
+        try {
             attrack.setEnabled(true);
+        } catch (EngineNotYetAvailable engineNotYetAvailable) {
+            engineNotYetAvailable.printStackTrace();
+        }
     }
 
+    public void setDesktopUserAgent() {
+        if (mWebView == null) {
+            return;
+        }
+        final WebSettings webSettings = mWebView.getSettings();
+        webSettings.setUserAgentString(Constants.DESKTOP_USER_AGENT);
+        final String url = mWebView.getUrl();
+        if (url != null && (
+                (url.startsWith("m.") || url.contains("/m.")))) {
+            mWebView.loadUrl(url.replaceFirst("m.", ""));
+        } else {
+            mWebView.reload();
+        }
+    }
+
+    public void setMobileUserAgent() {
+        if (mWebView == null) {
+            return;
+        }
+
+        final WebSettings webSettings = mWebView.getSettings();
+        webSettings.setUserAgentString(getMobileUserAgent());
+        mWebView.reload();
+    }
+
+    private String getMobileUserAgent() {
+        final String defaultUserAgent = mWebView.getSettings().getUserAgentString();
+        final Matcher matcher = USER_AGENT_PATTERN.matcher(defaultUserAgent);
+        final String userAgent;
+        if (matcher.matches() && matcher.groupCount() >= 5) {
+            userAgent = matcher.group(1) + matcher.group(2) + matcher.group(5);
+        } else {
+            userAgent = defaultUserAgent;
+        }
+        return userAgent;
+    }
+
+    // Weaker access suppressed, this class can not be private because of the obtainMessage(...)
+    // call in the LightningViewTouchHandler
     static class WebViewHandler extends Handler {
 
         private WeakReference<LightningView> mReference;
-
-        public WebViewHandler(LightningView view) {
+        WebViewHandler(LightningView view) {
             mReference = new WeakReference<>(view);
         }
 
@@ -749,63 +692,26 @@ public class LightningView {
         }
     }
 
-    //Saves the screenshot of the tab. The image name is the "id" of the tab.
-    public void savePreview() {
-        ViewParent viewParent = mWebView.getParent();
-        if (viewParent != null) {
-            throw new RuntimeException("Do not take screenshots when you are attached");
-        }
-        final int scrollX = mWebView.getScrollX();
-        final int scrollY = mWebView.getScrollY();
-        mWebView.scrollTo(0, 0);
-        final int width = mWebView.getWidth();
-        final int height = width / 3 * 4;
-        final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bitmap);
-        mWebView.draw(canvas);
-        mWebView.scrollTo(scrollX, scrollY);
-        try {
-            File directory = activity.getDir(Constants.TABS_SCREENSHOT_FOLDER_NAME, Context.MODE_PRIVATE);
-            File file = new File(directory, mId + ".jpeg");
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fileOutputStream);
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            bitmap.recycle();
-        } catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "FileNotFoundException in savePreview", e);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException in savePreview", e);
-        }
-    }
-
-    //deletes the screenshot of the tab being deleted.
-    private void deletePreview() {
-        File directory = activity
-                .getDir(Constants.TABS_SCREENSHOT_FOLDER_NAME, Context.MODE_PRIVATE);
-        File file = new File(directory, mId + ".jpeg");
-        file.delete();
-    }
-
-
     void addItemToHistory(@Nullable final String title, @NonNull final String url) {
-        Runnable update = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
-                } catch (IllegalStateException e) {
-                    Log.e(Constants.TAG, "IllegalStateException in updateHistory", e);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "NullPointerException in updateHistory", e);
-                } catch (SQLiteException e) {
-                    Log.e(Constants.TAG, "SQLiteException in updateHistory", e);
-                }
-            }
-        };
         if (!url.startsWith(Constants.FILE)) {
-            new Thread(update).start();
+            LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
         }
     }
 
+    void updateHistoryItemTitle(@NonNull final String title) {
+        if (historyId < 0) {
+            return;
+        }
+        historyDatabase.updateTitleFor(historyId, title);
+    }
+
+    public void setListener(LightingViewListener lightingViewListenerListener) {
+        this.lightingViewListenerListener = lightingViewListenerListener;
+    }
+
+    public boolean isUrlWhiteListed(){
+        final Uri uri = Uri.parse(getUrl());
+        final String host = uri.getHost();
+        return attrack.isWhitelisted(host);
+    }
 }

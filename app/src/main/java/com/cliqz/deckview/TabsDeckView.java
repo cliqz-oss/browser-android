@@ -1,0 +1,128 @@
+package com.cliqz.deckview;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
+
+import com.cliqz.browser.R;
+import com.cliqz.browser.main.CliqzBrowserState;
+import com.cliqz.browser.main.MainActivity;
+import com.cliqz.jsengine.Engine;
+
+import java.util.ArrayList;
+
+import javax.inject.Inject;
+
+/**
+ * @author Stefano Pacifici
+ */
+public class TabsDeckView extends FrameLayout {
+
+    @Inject
+    Engine engine;
+
+    private RecyclerView recyclerView;
+
+    final ArrayList<CliqzBrowserState> entries = new ArrayList<>();
+
+    // Store the current card, it's used only on screen rotations
+    private int mCurrentCard = 0;
+
+    // The cards remainder size
+    int mRemainderSize;
+    int mDeckPadding;
+
+    public interface TabsDeckViewListener {
+        void onTabClosed(int position, CliqzBrowserState state);
+
+        void onTabClicked(int position, CliqzBrowserState state);
+    }
+
+    private TabsDeckViewAdapter adapter;
+
+    private TabsDeckViewListener mListener = null;
+
+    public void setListener(TabsDeckViewListener listener) {
+        this.mListener = listener;
+    }
+
+    public TabsDeckView(Context context) {
+        super(context);
+        init(context, null);
+    }
+
+    public TabsDeckView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
+
+    public TabsDeckView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context, attrs);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        //noinspection ConstantConditions
+        ((MainActivity) context).getActivityComponent().inject(this);
+
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TabsDeckView,
+                0, R.style.Widget_Cliqz_TabsDeckView);
+        mRemainderSize = typedArray.getDimensionPixelSize(R.styleable.TabsDeckView_remainderSize, 0);
+        mDeckPadding = typedArray.getDimensionPixelSize(R.styleable.TabsDeckView_deckPadding, 0);
+        typedArray.recycle();
+
+        createViews(context);
+    }
+
+    private void createViews(Context context) {
+        recyclerView = new RecyclerView(context);
+        adapter = new TabsDeckViewAdapter(this);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new DeckLayoutManager(this));
+        addView(recyclerView);
+        final ItemTouchHelper.SimpleCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    public void scrollToCard(int position) {
+        mCurrentCard = position;
+        recyclerView.scrollToPosition(position);
+    }
+
+    void closeTab(int position) {
+        final CliqzBrowserState state = adapter.remove(position);
+        if (mListener == null) {
+            return;
+        }
+        mListener.onTabClosed(position, state);
+    }
+
+    void onTabClicked(int position) {
+        if (mListener == null) {
+            return;
+        }
+        final CliqzBrowserState state = entries.get(position);
+        mListener.onTabClicked(position, state);
+    }
+
+    public void refreshEntries(ArrayList<CliqzBrowserState> entries) {
+        this.entries.clear();
+        this.entries.addAll(entries);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        removeAllViews();
+        createViews(getContext());
+        recyclerView.scrollToPosition(mCurrentCard);
+    }
+}

@@ -1,31 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/normal_tab_primary_color">
 
-
-    <android.support.v7.widget.RecyclerView
+    <com.cliqz.deckview.TabsDeckView
         android:id="@+id/tabs_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp" />
+        app:remainderSize="50dp"
+        app:deckPadding="10dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_tab_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_action_add_white"
-        android:tint="@color/black"
-        app:backgroundTint="#45C2CC"
+        app:backgroundTint="?attr/colorPrimary"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true" />
-    <!-- app:layout_anchor="@id/tabs_list_view"
-    app:layout_anchorGravity="bottom|right|end" -->
 </RelativeLayout>

@@ -4,7 +4,7 @@
     <style name="Theme.SettingsTheme" parent="Theme.AppCompat.Light">
 
         <!-- customize the color palette -->
-        <item name="android:windowBackground">@null</item>
+        <!-- item name="android:windowBackground">@null</item -->
         <item name="toolbarSettingsBackground">@drawable/toolbar_elevate</item>
         <item name="listBackground">@drawable/list_bg</item>
         <item name="colorPrimary">@color/primary_color</item>
@@ -14,36 +14,6 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="dividerColor">@color/divider_light</item>
-    </style>
-
-    <style name="Theme.SettingsTheme.Dark" parent="Theme.AppCompat">
-
-        <!-- customize the color palette -->
-        <item name="android:windowBackground">@null</item>
-        <item name="toolbarSettingsBackground">@drawable/toolbar_elevate_dark</item>
-        <item name="listBackground">@drawable/list_bg</item>
-        <item name="colorPrimary">@color/primary_color_dark</item>
-        <item name="colorPrimaryDark">@color/secondary_color_settings_dark</item>
-        <item name="colorAccent">@color/accent_color</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="dividerColor">@color/divider_dark</item>
-    </style>
-
-    <style name="Theme.SettingsTheme.Black" parent="Theme.AppCompat">
-
-        <!-- customize the color palette -->
-        <item name="android:windowBackground">@null</item>
-        <item name="toolbarSettingsBackground">@drawable/toolbar_elevate_black</item>
-        <item name="listBackground">@drawable/list_bg</item>
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryDark">@color/black</item>
-        <item name="colorAccent">@color/accent_color</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="dividerColor">@color/divider_dark</item>
     </style>
 
     <style name="Theme.LightTheme" parent="Theme.AppCompat.Light">
@@ -63,66 +33,11 @@
         <item name="autoCompleteTitleColor">@color/black</item>
         <item name="autoCompleteUrlColor">@color/gray_medium</item>
         <item name="actionOverflowButtonStyle">@style/overFlowButtonStyle</item>
-        <item name="drawerBackground">@color/drawer_background</item>
         <item name="dividerColor">@color/divider_light</item>
         <item name="selectedBackground">@drawable/list_bg_light</item>
     </style>
 
-    <style name="Theme.DarkTheme" parent="Theme.AppCompat">
-
-        <!-- customize the color palette -->
-        <item name="searchBackground">@drawable/card_bg_elevate</item>
-        <item name="colorPrimary">@color/primary_color_dark</item>
-        <item name="colorPrimaryDark">@color/secondary_color</item>
-        <item name="colorAccent">@color/accent_color</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="progressBackgroundColor">@color/secondary_color</item>
-        <item name="listBackground">@drawable/list_bg</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="progressColor">@color/gray_medium</item>
-        <item name="numberColor">@color/gray_dark</item>
-        <item name="autoCompleteTitleColor">@color/black</item>
-        <item name="autoCompleteUrlColor">@color/gray_medium</item>
-        <item name="actionOverflowButtonStyle">@style/overFlowButtonStyle</item>
-        <item name="drawerBackground">@color/drawer_background_dark</item>
-        <item name="dividerColor">@color/divider_dark</item>
-        <item name="selectedBackground">@drawable/list_bg_dark</item>
-    </style>
-
-    <style name="Theme.BlackTheme" parent="Theme.AppCompat">
-
-        <!-- customize the color palette -->
-        <item name="searchBackground">@drawable/card_bg_elevate</item>
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryDark">@color/black</item>
-        <item name="colorAccent">@color/accent_color</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="progressBackgroundColor">@color/black</item>
-        <item name="listBackground">@drawable/list_bg</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="progressColor">@color/gray_medium</item>
-        <item name="numberColor">@color/gray_dark</item>
-        <item name="autoCompleteTitleColor">@color/black</item>
-        <item name="autoCompleteUrlColor">@color/gray_medium</item>
-        <item name="actionOverflowButtonStyle">@style/overFlowButtonStyle</item>
-        <item name="drawerBackground">@color/black</item>
-        <item name="dividerColor">@color/black</item>
-        <item name="selectedBackground">@drawable/list_bg_dark</item>
-    </style>
-
-    <style name="Theme.Cliqz.Present" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/normal_tab_primary_color</item>
-        <item name="colorPrimaryDark">@color/normal_tab_primary_color_dark</item>
-    </style>
-
-    <style name="Theme.Cliqz.History" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/history_primary_color</item>
-        <item name="colorPrimaryDark">@color/history_primary_color_dark</item>
-    </style>
-
-    <style name="Theme.Cliqz.Present.Incognito" parent="Theme.AppCompat.Light">
+    <style name="Theme.LightTheme.Incognito" parent="Theme.LightTheme">
         <item name="colorPrimary">@color/incognito_tab_primary_color</item>
         <item name="colorPrimaryDark">@color/incognito_tab_primary_color_dark</item>
         <item name="android:textColorPrimary">@color/white</item>
@@ -133,9 +48,16 @@
     </style>
 
     <style name="Theme.Cliqz.Overview" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/normal_tab_primary_color</item>
-        <item name="colorPrimaryDark">@color/gray_medium</item>
-        <item name="android:textColorPrimary">@color/black</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryDark">@color/primary_color_dark</item>
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:textColorPrimaryDisableOnly">#9fff</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="colorControlNormal">@color/text_color_primary</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="actionModeStyle">@style/Widget.Cliqz.ActionMode</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_clear_white</item>
     </style>
 
     <style name="overFlowButtonStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
@@ -155,41 +77,50 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="boldText">
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="normalText">
-        <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>
-    </style>
-
-    <style name="TwoWayView">
-        <item name="android:orientation">horizontal</item>
-    </style>
-
     <style name="popupMenu.textViewStyle" parent="TextAppearance.AppCompat.Medium">
         <item name="android:layout_margin">5dp</item>
         <item name="android:background">?attr/actionBarItemBackground</item>
         <item name="android:color">@color/abc_primary_text_material_dark</item>
     </style>
 
-    <style name="ControlCenterStyle" parent="@android:style/Theme.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowTitleStyle">@null</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-        <item name="android:gravity">center</item>
+    <style name="Theme.ControlCenter.Dialog"  parent="Theme.AppCompat.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="selectableItemBackground">@color/primary_color</item>
+        <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="controlCenterSwitch" parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">#2CBA84</item>
-        <item name="android:colorForeground">#42221f1f</item>
+    <style name="Theme.ControlCenter.Dialog.Incognito"  parent="Theme.ControlCenter.Dialog">
+        <item name="selectableItemBackground">@color/incognito_tab_primary_color</item>
+        <item name="colorAccent">@color/white</item>
     </style>
 
+    <style name="Theme.ControlCenter.Fragment" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorControlActivated">@color/primary_color</item>
+        <item name="controlCenterBackground">#ffffff</item>
+        <item name="textColorPrimary">@color/black</item>
+        <item name="colorSecondary">#97A4AE</item>
+    </style>
 
+    <style name="Theme.ControlCenter.Fragment.Incognito" parent="Theme.ControlCenter.Fragment">
+        <item name="textColorPrimary">@color/white</item>
+        <item name="controlCenterBackground">#000000</item>
+    </style>
+
+    <style name="Theme.Cliqz.Semitrasparent.FullScreen.Dialog" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/topsites_background</item>
+    </style>
+
+    <style name="Widget.Cliqz.ActionBar" parent="Widget.AppCompat.Light.ActionBar">
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="colorControlNormal">@color/text_color_primary</item>
+    </style>
+    <style name="Widget.Cliqz.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@color/primary_color</item>
+    </style>
+
+    <style name="Widget.Cliqz.TabsDeckView" parent="">
+        <item name="remainderSize">15dp</item>
+    </style>
 </resources>

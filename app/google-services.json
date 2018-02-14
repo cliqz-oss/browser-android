@@ -1,0 +1,125 @@
+{
+  "project_info": {
+    "project_number": "00000000000",
+    "firebase_url": "https://cliqz-browser.firebaseio.com",
+    "project_id": "cliqz-browser",
+    "storage_bucket": "cliqz-browser.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for huawei",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser.huawei.debug"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for huawei",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser.huawei"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for sync",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser.sync"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for sync",
+        "android_client_info": {
+          "package_name": "com.cliqz.browser.sync.debug"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

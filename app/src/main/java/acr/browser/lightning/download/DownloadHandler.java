@@ -22,9 +22,10 @@ import android.webkit.URLUtil;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.di.components.ActivityComponent;
+import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.squareup.otto.Bus;
+import com.cliqz.nove.Bus;
+import com.cliqz.utils.WebAddress;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,7 +128,7 @@ public class DownloadHandler {
      * Notify the host application a download should be done, even if there is a
      * streaming viewer available for thise type.
      *
-     * @param activity            The context in which the download is requested.
+     * @param activity           The context in which the download is requested.
      * @param url                The full url to the content that should be downloaded
      * @param userAgent          User agent of the downloading application.
      * @param contentDisposition Content-disposition http header, if present.
@@ -142,7 +143,7 @@ public class DownloadHandler {
             return;
         }
 
-        final ActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
         final Bus eventBus = component != null ? component.getBus() : new Bus();
         final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
 
@@ -233,8 +234,6 @@ public class DownloadHandler {
             }
         };
         handler.post(runnable);
-        eventBus.post(new BrowserEvents.ShowSnackBarMessage(
-                activity.getString(R.string.download_pending) + ' ' + filename));
     }
 
     private static final String sFileName = "test";

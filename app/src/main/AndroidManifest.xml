@@ -15,6 +15,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA"
+        android:required="false" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission tools:node="remove" android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature
         android:name="android.hardware.location.gps"
@@ -25,22 +29,48 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <application
         android:name=".app.BrowserApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        tools:replace="android:allowBackup"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/cliqz_app_name"
-        tools:replace="android:label">
+        android:label="@string/app_name">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <!--<activity android:name="com.cliqz.jsengine.ui.ConversationUIActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar">-->
+
+        <!--</activity>-->
+
+
+        <!--<activity android:name="com.cliqz.jsengine.ui.ConversationUIActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+
+        <!--</activity>-->
 
         <activity
             android:name=".main.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/cliqz_app_name"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.LightTheme"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,6 +80,16 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.APP_BROWSER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cliqz"/>
+
+            </intent-filter>
+
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -94,7 +134,11 @@
             <meta-data
                 android:name="com.android.systemui.action_assist_icon"
                 android:resource="@drawable/assist_icon" />
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
+
         <activity
             android:name="acr.browser.lightning.activity.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -106,23 +150,25 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="acr.browser.lightning.activity.ReadingActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/reading_mode"
-            android:theme="@style/Theme.SettingsTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.READING" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".connect.SyncActivity" android:exported="false"
+            android:theme="@style/Theme.AppCompat" android:screenOrientation="portrait" />
+
+        <activity android:name=".qrscanner.CodeScannerActivity" android:exported="false"
+            android:theme="@style/Theme.AppCompat" android:screenOrientation="portrait" />
 
         <receiver
-            android:name=".utils.InstallReferrerReceiver"
+            android:name=".telemetry.InstallReferrerReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".main.AppUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
@@ -158,6 +204,9 @@
         <service
             android:name=".gcm.RegistrationIntentService"
             android:exported="false"/>
+        <service
+            android:name=".peercomm.PeerCommunicationService"
+             android:exported="false" />
         <!-- GCM End -->
 
         <uses-library
@@ -179,6 +228,23 @@
         <meta-data
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:resource="@dimen/app_minimumsize_h" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
+        <!-- Check if this gets removed from the output manifest -->
+        <provider
+            android:name="com.facebook.internal.FacebookInitProvider"
+            android:authorities="${applicationId}.FacebookInitProvider"
+            android:exported="false"
+            tools:node="remove" />
 
     </application>
 

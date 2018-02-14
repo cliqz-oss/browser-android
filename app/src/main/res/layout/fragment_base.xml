@@ -1,30 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/statusbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:elevation="0dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|snap"
-            app:contentInsetEnd="0dp"
-            app:contentInsetStart="0dp" />
-    </android.support.design.widget.AppBarLayout>
-
-    <FrameLayout
-        android:id="@+id/content_container"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-</android.support.design.widget.CoordinatorLayout>
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        app:elevation="10dp">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/statusbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:elevation="10dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/fresh_tab_background"
+                app:contentInsetEnd="0dp"
+                app:contentInsetStart="0dp"
+                app:layout_scrollFlags="scroll|snap">
+
+                <com.cliqz.browser.widget.AutocompleteEditText
+                    android:id="@+id/search_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_edit_text_h"
+                    android:background="#ffffff"
+                    android:drawablePadding="5dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="start|center_vertical"
+                    android:hint="@string/search_hint"
+                    android:imeActionLabel="@string/go"
+                    android:imeOptions="actionGo"
+                    android:maxLines="1"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:selectAllOnFocus="true"
+                    android:textColor="#333333"
+                    android:textColorHighlight="@color/text_highlight_color"
+                    android:textColorHint="#aaaaaa"
+                    android:textCursorDrawable="@drawable/custom_cursor"
+                    tools:drawableLeft="@drawable/ic_cliqz_back"
+                    tools:drawableRight="@drawable/ic_clear_black_24dp"
+                    tools:textSelectHandle="@drawable/text_select_handle_middle_material"
+                    tools:textSelectHandleLeft="@drawable/text_select_handle_left_material"
+                    tools:textSelectHandleRight="@drawable/text_select_handle_right_material"
+                    android:textSize="15sp"/>
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <!--add views which are fixed to the bottom of the screen here-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/in_page_search_bar"
+        android:background="@color/background_material_light">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_action_expand"
+            android:id="@+id/in_page_search_down_button"
+            android:contentDescription="@string/in_page_search_next_result"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_action_collapse"
+            android:id="@+id/in_page_search_up_button"
+            android:contentDescription="@string/in_page_search_prev_result"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            android:id="@+id/in_page_search_cancel_button"
+            android:contentDescription="@string/close_in_page_search"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@null"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bottom_anchor_view" />
+
+    <com.cliqz.browser.main.QuickAccessBar
+        android:id="@+id/quick_access_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/bottom_anchor_view"
+        tools:layout_below="@null"
+        tools:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

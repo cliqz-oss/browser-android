@@ -2,85 +2,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:layout_centerVertical="true"
+        android:layout_weight="1"
         android:contentDescription="@string/descr_search_bar"
         android:focusable="true"
         android:focusableInTouchMode="true">
 
-        <com.cliqz.browser.widget.AutocompleteEditText
-            android:id="@+id/search_edit_text"
-            android:background="#ffffff"
-            android:textColor="#333333"
-            android:textSize="15sp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:drawableRight="@drawable/ic_action_delete"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="left|center_vertical"
-            android:hint="@string/search_hint"
-            android:imeActionLabel="@string/go"
-            android:imeOptions="actionGo"
-            android:inputType="textUri|textNoSuggestions"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:textColorHint="#aaaaaa"
-            android:textCursorDrawable="@null" />
-
         <TextView
             android:id="@+id/title_bar"
-            android:background="#ffffff"
-            android:textColor="#333333"
-            android:textSize="15sp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:drawableRight="@drawable/ic_action_delete"
-            android:gravity="left|center_vertical"
+            android:layout_height="@dimen/title_bar_h"
+            android:background="@drawable/tab_item_bg_normal"
+            android:gravity="start|center_vertical"
+            android:hint="@string/cliqz_search_hint"
+            android:singleLine="true"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
-            android:singleLine="true"
-            android:visibility="gone" />
+            android:paddingRight="8dp"
+            android:paddingLeft="8dp"
+            android:textColor="#333333"
+            android:textSize="15sp" />
 
     </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/control_center"
-        android:layout_width="50dp"
+        android:layout_width="@dimen/control_center_layout_w"
         android:layout_height="match_parent"
         android:layout_weight="0"
         android:background="#ffffff"
-        android:elevation="2dp"
         android:visibility="gone">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/cc_icon"
             android:layout_width="26dp"
             android:layout_height="20dp"
-            android:paddingLeft="5dp"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
             android:scaleType="fitXY"
-            android:src="@drawable/ic_cc_green" />
+            app:srcCompat="@drawable/ic_control_center" />
 
         <TextView
             android:id="@+id/tracker_counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="5dp"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="0"
+            android:focusable="false"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:text="@string/zero"
             android:textColor="@color/black"
-            android:textSize="14sp"
-            android:focusable="false" />
+            android:textSize="14sp" />
 
     </RelativeLayout>
 

@@ -1,0 +1,50 @@
+{
+  "name": "android-browser",
+  "version": "1.6.0",
+  "description": "",
+  "scripts": {
+    "dev-server": "node node_modules/react-native/local-cli/cli.js start",
+    "dev-bundle": "node node_modules/react-native/local-cli/cli.js bundle --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/",
+    "bundle": "node node_modules/react-native/local-cli/cli.js bundle --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ --dev false && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cliqz-oss/android-browser.git"
+  },
+  "author": "Cliqz GmbH",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/cliqz-oss/android-browser/issues"
+  },
+  "homepage": "https://github.com/cliqz-oss/android-browser#readme",
+  "dependencies": {
+    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/react-native/3.22.6/aa51cf4.tgz",
+    "buffer": "5.0.7",
+    "https-browserify": "1.0.0",
+    "path-browserify": "0.0.0",
+    "pouchdb-adapter-react-native-sqlite": "1.0.3",
+    "pouchdb-react-native": "6.3.4",
+    "react": "16.0.0",
+    "react-native": "0.51.0",
+    "react-native-collapsible": "0.8.1",
+    "react-native-device-info": "0.10.2",
+    "react-native-fs": "2.8.1",
+    "react-native-share": "1.0.23",
+    "react-native-snap-carousel": "^3.3.4",
+    "react-native-sqlite-2": "1.5.0",
+    "react-native-view-shot": "2.2.0",
+    "react-native-webrtc": "1.58.3",
+    "stream-browserify": "2.0.1",
+    "stream-http": "2.7.2",
+    "url": "^0.11.0"
+  },
+  "resolutions": {
+    "**/core-js": "2.5.1",
+    "**/moment": "2.19.3",
+    "**/caniuse-lite": "1.0.30000780",
+    "**/errno": "0.1.4",
+    "**/errno/prr": "0.0.0",
+    "**/fancy-log": "1.3.0",
+    "**/uglify-es": "3.2.1"
+  }
+}

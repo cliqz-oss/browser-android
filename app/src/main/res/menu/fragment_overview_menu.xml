@@ -7,6 +7,8 @@
     <item android:id="@+id/action_new_forget_tab"
         app:showAsAction="collapseActionView"
         android:title="@string/action_incognito" />
+    <item android:id="@+id/action_close_all_tabs"
+        android:title="@string/action_close_all_tabs" />
     <item android:id="@+id/action_settings"
         app:showAsAction="collapseActionView"
         android:title="@string/settings"/>

@@ -10,7 +10,6 @@ import java.util.Map;
  * Simple cache for the anti-phishing module, it does not implement any form of persistence
  *
  * @author Stefano Pacifici
- * @date 2016/07/11
  */
 class Cache {
 
@@ -21,6 +20,7 @@ class Cache {
         FAULT // We do not have a cached entry
     }
 
+    @SuppressWarnings("unused")
     private static final String TAG = Cache.class.getSimpleName();
 
     private final Map<String, CacheEntry> mCache = new HashMap<>();
@@ -41,10 +41,8 @@ class Cache {
         addToList(entry.whitelist, md5parts[1]);
     }
 
-    private void addToList(ArrayList<ArrayList<String>> list, String md5suffix) {
-        final ArrayList<String> entry = new ArrayList<>();
-        entry.add(md5suffix);
-        list.add(entry);
+    private void addToList(ArrayList<String> list, String md5suffix) {
+        list.add(md5suffix);
     }
 
     public Result check(String md5) {
@@ -62,13 +60,8 @@ class Cache {
         }
     }
 
-    private boolean checkIfListContains(ArrayList<ArrayList<String>> list, String md5Suffix) {
-        for (ArrayList<String> entry: list) {
-            if (entry.contains(md5Suffix)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean checkIfListContains(ArrayList<String> list, String md5Suffix) {
+        return list.contains(md5Suffix);
     }
 
     private CacheEntry getOrCreateCacheEntry(String md5prefix) {

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="15dp"
+    android:background="?attr/controlCenterBackground">
+
+    <TextView
+        android:id="@+id/antitracking_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="15dp"
+        android:paddingBottom="5dp"
+        android:text="@string/antitracking_header"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:tag="@id/enableable_view"
+        />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/attrack_icon"
+        android:layout_below="@+id/antitracking_header"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:layout_centerHorizontal="true"
+        android:padding="10dp"
+        app:srcCompat="@drawable/shield"
+        android:tint="?attr/colorPrimary"
+        tools:ignore="ContentDescription"
+        android:tag="@id/enableable_view"
+        />
+
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/attrack_icon"
+        tools:text="0"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/trackers_blocked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/counter"
+        android:paddingBottom="10dp"
+        android:text="@string/antitracking_datapoints"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="18sp"
+        android:tag="@id/enableable_view"
+        />
+
+    <Switch
+        android:layout_below="@id/trackers_blocked"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:id="@+id/attrack_enable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/clear_cache"
+        android:textColor="?attr/textColorPrimary"
+        android:layout_marginStart="2dp"
+        android:textStyle="bold"
+        android:checked="false"
+        android:layout_marginLeft="2dp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/button_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_rectangle_bg_white"
+        app:backgroundTint="?attr/colorPrimary"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/action_ok"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:textSize="14sp">
+    </android.support.v7.widget.AppCompatButton>
+
+    <TextView
+        android:id="@+id/learn_more"
+        android:layout_width="wrap_content"
+        android:paddingTop="15dp"
+        android:layout_height="36dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="12sp"
+        android:textColor="?attr/textColorPrimary"
+        android:text="@string/learn_more"
+        tools:ignore="RelativeOverlap"
+        android:layout_alignParentRight="true" />
+
+    <LinearLayout
+        android:id="@+id/anti_tracking_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/attrack_enable"
+        android:layout_above="@id/button_ok"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/companies_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textColor="?attr/textColorPrimary"
+                android:layout_weight="1"
+                android:text="@string/antitracking_tracking_companies"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/counter_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_weight="1"
+                android:textColor="?attr/textColorPrimary"
+                android:text="@string/antitracking_datapoints_count"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/upperLine"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:background="#333333" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/trackers_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:scrollbars="vertical" />
+
+        <View
+            android:id="@+id/lowerLine"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:background="#333333" />
+    </LinearLayout>
+
+</RelativeLayout>

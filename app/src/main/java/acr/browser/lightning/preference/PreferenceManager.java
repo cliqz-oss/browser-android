@@ -3,7 +3,9 @@ package acr.browser.lightning.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.Countries;
+import com.cliqz.browser.main.CrashDetector;
 
 import java.util.Locale;
 
@@ -13,6 +15,7 @@ import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.constant.SearchEngines;
 import acr.browser.lightning.download.DownloadHandler;
 
+@SuppressWarnings({"unused", "SameParameterValue"})
 @Singleton
 public class PreferenceManager {
 
@@ -31,85 +34,96 @@ public class PreferenceManager {
         }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
-        public static final String ADOBE_FLASH_SUPPORT = "enableflash";
-        public static final String BLOCK_ADS = "AdBlock";
-        public static final String BLOCK_IMAGES = "blockimages";
-        public static final String NEWS_NOTIFICATION = "newsnotification";
-        public static final String CLEAR_CACHE_EXIT = "cache";
-        public static final String COOKIES = "cookies";
-        public static final String DOWNLOAD_DIRECTORY = "downloadLocation";
-        public static final String FULL_SCREEN = "fullscreen";
-        public static final String HIDE_STATUS_BAR = "hidestatus";
-        public static final String HOMEPAGE = "home";
-        public static final String INCOGNITO_COOKIES = "incognitocookies";
-        public static final String JAVASCRIPT = "java";
-        public static final String LOCATION = "location";
-        public static final String OVERVIEW_MODE = "overviewmode";
-        public static final String POPUPS = "newwindows";
-        public static final String RESTORE_LOST_TABS = "restoreclosed";
-        public static final String SAVE_PASSWORDS = "passwords";
+        static final String ADOBE_FLASH_SUPPORT = "enableflash";
+        static final String BLOCK_ADS = "AdBlock";
+        static final String BLOCK_IMAGES = "blockimages";
+        static final String NEWS_NOTIFICATION = "newsnotification";
+        static final String CLEAR_CACHE_EXIT = "cache";
+        static final String COOKIES = "cookies";
+        static final String DOWNLOAD_DIRECTORY = "downloadLocation";
+        static final String FULL_SCREEN = "fullscreen";
+        static final String HIDE_STATUS_BAR = "hidestatus";
+        static final String HOMEPAGE = "home";
+        static final String INCOGNITO_COOKIES = "incognitocookies";
+        static final String JAVASCRIPT = "java";
+        static final String LOCATION = "location";
+        static final String OVERVIEW_MODE = "overviewmode";
+        static final String POPUPS = "newwindows";
+        static final String RESTORE_LOST_TABS = "restoreclosed";
+        static final String SAVE_PASSWORDS = "passwords";
         // The name was changed to support new String format (instead of int)
-        public static final String SEARCH = "searchCliqz";
-        public static final String SEARCH_URL = "searchurl";
-        public static final String TEXT_REFLOW = "textreflow";
-        public static final String TEXT_SIZE = "textsize";
-        public static final String URL_MEMORY = "memory";
-        public static final String USE_WIDE_VIEWPORT = "wideviewport";
-        public static final String USER_AGENT = "agentchoose";
-        public static final String USER_AGENT_STRING = "userAgentString";
-        public static final String GOOGLE_SEARCH_SUGGESTIONS = "GoogleSearchSuggestions";
-        public static final String CLEAR_HISTORY_EXIT = "clearHistoryExit";
-        public static final String CLEAR_COOKIES_EXIT = "clearCookiesExit";
-        public static final String SAVE_URL = "saveUrl";
-        public static final String RENDERING_MODE = "renderMode";
-        public static final String BLOCK_THIRD_PARTY = "thirdParty";
-        public static final String ENABLE_COLOR_MODE = "colorMode";
-        public static final String URL_BOX_CONTENTS = "urlContent";
-        public static final String INVERT_COLORS = "invertColors";
-        public static final String READING_TEXT_SIZE = "readingTextSize";
-        public static final String THEME = "Theme";
-        public static final String TEXT_ENCODING = "textEncoding";
-        public static final String CLEAR_WEBSTORAGE_EXIT = "clearWebStorageExit";
-        public static final String SHOW_TABS_IN_DRAWER = "showTabsInDrawer";
-        public static final String DO_NOT_TRACK = "doNotTrack";
-        public static final String IDENTIFYING_HEADERS = "removeIdentifyingHeaders";
+        static final String SEARCH = "searchCliqz";
+        static final String SEARCH_URL = "searchurl";
+        static final String TEXT_REFLOW = "textreflow";
+        static final String TEXT_SIZE = "textsize";
+        static final String URL_MEMORY = "memory";
+        static final String USE_WIDE_VIEWPORT = "wideviewport";
+        static final String USER_AGENT = "agentchoose";
+        static final String USER_AGENT_STRING = "userAgentString";
+        static final String GOOGLE_SEARCH_SUGGESTIONS = "GoogleSearchSuggestions";
+        static final String CLEAR_HISTORY_EXIT = "clearHistoryExit";
+        static final String CLEAR_COOKIES_EXIT = "clearCookiesExit";
+        static final String SAVE_URL = "saveUrl";
+        static final String RENDERING_MODE = "renderMode";
+        static final String BLOCK_THIRD_PARTY = "thirdParty";
+        static final String ENABLE_COLOR_MODE = "colorMode";
+        static final String URL_BOX_CONTENTS = "urlContent";
+        static final String INVERT_COLORS = "invertColors";
+        static final String READING_TEXT_SIZE = "readingTextSize";
+        static final String THEME = "Theme";
+        static final String TEXT_ENCODING = "textEncoding";
+        static final String CLEAR_WEBSTORAGE_EXIT = "clearWebStorageExit";
+        static final String SHOW_TABS_IN_DRAWER = "showTabsInDrawer";
+        static final String DO_NOT_TRACK = "doNotTrack";
+        static final String IDENTIFYING_HEADERS = "removeIdentifyingHeaders";
 
-        public static final String USE_PROXY = "useProxy";
-        public static final String PROXY_CHOICE = "proxyChoice";
-        public static final String USE_PROXY_HOST = "useProxyHost";
-        public static final String USE_PROXY_PORT = "useProxyPort";
-        public static final String INITIAL_CHECK_FOR_TOR = "checkForTor";
-        public static final String INITIAL_CHECK_FOR_I2P = "checkForI2P";
+        static final String USE_PROXY = "useProxy";
+        static final String PROXY_CHOICE = "proxyChoice";
+        static final String USE_PROXY_HOST = "useProxyHost";
+        static final String USE_PROXY_PORT = "useProxyPort";
+        static final String INITIAL_CHECK_FOR_TOR = "checkForTor";
+        static final String INITIAL_CHECK_FOR_I2P = "checkForI2P";
+
         // CLIQZ
-        public static final String ONBOARDING_COMPLETE = "onboardingComplete";
-        public static final String SESSION_ID = "sessionId";
-        public static final String TELEMETRY_SEQUENCE = "telemetrySequence";
-        public static final String VERSION_CODE = "versionCode";
-        public static final String TIME_OF_LAST_ENVIRONMENT_SIGNAL = "lastEnvironmentSignal";
-        public static final String TELEMETRY_SIGNALS = "telemetrySignals";
-        public static final String BROWSER_STATE = "cliqzBrowserState";
-        public static final String BLOCK_ADULT_CONTENT = "blockAdultContent";
-        public static final String HUMAN_WEB = "humanweb";
-        public static final String NEVER_ASK_GPS_PERMISSION = "gpsPermission";
-        public static final String CLEAR_QUERIES = "jsAPI.clearQueries";
-        public static final String GCM_TOKEN_SENT = "gcmTokenSent";
-        public static final String ARN_ENDPOINT = "aws_arn_endpoint";
-        public static final String RESETORE_TOP_SITES = "restore_top_sites";
-        public static final String ADVERT_ID = "advert_id";
-        public static final String OPTIMIZED_BLOCK_ADS = "optimized_block_ads";
-        public static final String REFERRER_URL = "referrer_url";
-        public static final String DISTRIBUTION = "distribution";
-        public static final String DISTRIBUTION_EXCEPTION = "distribution_exception";
-        public static final String COUNTRY = "country";
-        public static final String SHOULD_SHOW_ONBOARDING = "should_show_onboarding";
-        public static final String SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION = "should_show_anti_tracking_description";
-        public static final String SHOULD_SHOW_SEARCH_DESCRIPTION = "should_show_search_description";
-        public static final String ATTRACK_ENABLED = "attrack_enabled";
-
+        static final String ONBOARDING_COMPLETE = "onboardingComplete";
+        static final String SESSION_ID = "sessionId";
+        static final String TELEMETRY_SEQUENCE = "telemetrySequence";
+        static final String VERSION_CODE = "versionCode";
+        static final String TIME_OF_LAST_ENVIRONMENT_SIGNAL = "lastEnvironmentSignal";
+        static final String BLOCK_ADULT_CONTENT = "blockAdultContent";
+        static final String HUMAN_WEB = "humanweb";
+        static final String NEVER_ASK_GPS_PERMISSION = "gpsPermission";
+        static final String CLEAR_QUERIES = "jsAPI.clearQueries";
+        static final String GCM_TOKEN_SENT = "gcmTokenSent";
+        static final String ARN_ENDPOINT = "aws_arn_endpoint";
+        static final String ADVERT_ID = "advert_id";
+        static final String OPTIMIZED_BLOCK_ADS = "optimized_block_ads";
+        static final String REFERRER_URL = "referrer_url";
+        static final String DISTRIBUTION = "distribution";
+        static final String DISTRIBUTION_EXCEPTION = "distribution_exception";
+        static final String COUNTRY = "country";
+        static final String SHOULD_SHOW_ONBOARDING = "should_show_onboarding";
+        static final String SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION = "should_show_anti_tracking_description";
+        static final String SHOULD_SHOW_SEARCH_DESCRIPTION = "should_show_search_description";
+        static final String ATTRACK_ENABLED = "attrack_enabled";
+        static final String PAIRING_FIRST_DEVICE_DIALOG_SHOWN = "pairing_first_device_dialog_shown";
         // TODO: Temporary fix for faulty autocompletion
-        public static final String AUTO_COMPLETION_ENABLED = "auto_completion_enabled";
-        public static final String LAST_KNOWN_LOCATION = "last_known_location";
+        static final String AUTO_COMPLETION_ENABLED = "auto_completion_enabled";
+        static final String LAST_KNOWN_LOCATION = "last_known_location";
+        static final String AB_TEST_LIST = "ab_test_list";
+        static final String QUERY_SUGGESTIONS = "query_suggestion";
+        static final String MAIN_ACTIVITY_LAST_STATE = "main_activity_last_state";
+        static final String LATEST_APK_VERSION = "latest_installed_apk_version";
+        static final String SHOULD_SHOW_YOUTUBE_DESCRIPTION = "should_show_youtube_description";
+        static final String AUTO_FORGET_MODE = "auto_forget_mode";
+        static final String CLOSE_TABS_ON_EXIT = "close_tabs_on_exit";
+        static final String IS_FIRST_SUBSCRIPTION = "is_first_subscription";
+        static final String SHOW_TOP_SITES = "show_top_sites";
+        static final String SHOW_NEWS = "show_news";
+        static final String LIMIT_DATA_USAGE = "limit_data_usage";
+        static final String IS_MYOFFRZ_ONBOARDING_ENABLED = "myoffrz_onboarding_enabled";
     }
 
     private final SharedPreferences mPrefs;
@@ -123,11 +137,12 @@ public class PreferenceManager {
     /**
      * Is adblocking enabled?
      * !!! As Richard asked on 2016/08/22 we should not enable adblocker by default !!!
+     * Enabled for apk submitted to Amazon appstore
      *
      * @return true if adblocking is enabled, false otherwise
      */
     public boolean getAdBlockEnabled() {
-        return mPrefs.getBoolean(Name.BLOCK_ADS, false);
+        return mPrefs.getBoolean(Name.BLOCK_ADS, BuildConfig.FLAVOR_api.equals("amazon"));
     }
 
     public boolean getOptimizedAdBlockEnabled() {
@@ -211,7 +226,7 @@ public class PreferenceManager {
     }
 
     public boolean getLocationEnabled() {
-        return mPrefs.getBoolean(Name.LOCATION, true);
+        return mPrefs.getBoolean(Name.LOCATION, false);
     }
 
     public String getMemoryUrl() {
@@ -255,16 +270,11 @@ public class PreferenceManager {
     }
 
     public SearchEngines getSearchChoice() {
-        final SearchEngines engine = SearchEngines.safeValueOf(mPrefs.getString(Name.SEARCH, ""));
-        return engine;
+        return SearchEngines.safeValueOf(mPrefs.getString(Name.SEARCH, ""));
     }
 
     public String getSearchUrl() {
         return mPrefs.getString(Name.SEARCH_URL, Constants.GOOGLE_SEARCH);
-    }
-
-    public boolean getSystemBrowserPresent() {
-        return false;
     }
 
     public boolean getTextReflowEnabled() {
@@ -355,10 +365,6 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.NEWS_NOTIFICATION, true);
     }
 
-    public boolean getRestoreTopSites() {
-        return mPrefs.getBoolean(Name.RESETORE_TOP_SITES, false);
-    }
-
     public String getDistribution() {
         return mPrefs.getString(Name.DISTRIBUTION, "");
     }
@@ -373,6 +379,14 @@ public class PreferenceManager {
 
     public String getReferrerUrl() {
         return mPrefs.getString(Name.REFERRER_URL, "");
+    }
+
+    public boolean shouldShowTopSites() {
+        return mPrefs.getBoolean(Name.SHOW_TOP_SITES, true);
+    }
+
+    public boolean shouldShowNews() {
+        return mPrefs.getBoolean(Name.SHOW_NEWS, true);
     }
 
     public ClearQueriesOptions shouldClearQueries() {
@@ -393,7 +407,15 @@ public class PreferenceManager {
     }
 
     public boolean getAutocompletionEnabled() {
-        return mPrefs.getBoolean(Name.AUTO_COMPLETION_ENABLED, true);
+        return mPrefs.getBoolean(Name.AUTO_COMPLETION_ENABLED, false);
+    }
+
+    public boolean getShouldShowOnboarding() {
+        return mPrefs.getBoolean(Name.SHOULD_SHOW_ONBOARDING, true);
+    }
+
+    public boolean getShouldShowAntiTrackingDescription() {
+        return mPrefs.getBoolean(Name.SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION, true);
     }
 
     public String getLastKnownLocation() {
@@ -401,19 +423,44 @@ public class PreferenceManager {
     }
 
     public Countries getCountryChoice() {
-        final Countries country = Countries.safeValueOf(mPrefs.getString(Name.COUNTRY, getDefaultCountry()));
-        return country;
+        return Countries.safeValueOf(mPrefs.getString(Name.COUNTRY, getDefaultCountry()));
     }
 
     public boolean getShouldShowSearchDescription() {
         return mPrefs.getBoolean(Name.SHOULD_SHOW_SEARCH_DESCRIPTION, true);
     }
 
+    public boolean getFirstDevicePaired() {
+        return mPrefs.getBoolean(Name.PAIRING_FIRST_DEVICE_DIALOG_SHOWN, false);
+    }
+
     public boolean isAttrackEnabled() {
         return mPrefs.getBoolean(Name.ATTRACK_ENABLED, true);
     }
 
+    public int getMainActivityLastState() {
+        return mPrefs.getInt(Name.MAIN_ACTIVITY_LAST_STATE, CrashDetector.State.UNKNOWN);
+    }
 
+    public int getLatestAppVersion() {
+        return mPrefs.getInt(Name.LATEST_APK_VERSION, BuildConfig.VERSION_CODE - 1);
+    }
+
+    public boolean isAutoForgetEnabled() {
+        return mPrefs.getBoolean(Name.AUTO_FORGET_MODE, true);
+    }
+
+    public boolean getCloseTabsExit() {
+        return mPrefs.getBoolean(Name.CLOSE_TABS_ON_EXIT, false);
+    }
+
+    public boolean isFirstSubscription() {
+        return mPrefs.getBoolean(Name.IS_FIRST_SUBSCRIPTION, true);
+    }
+
+    public boolean isMyOffrzOnboardingEnabled() {
+        return mPrefs.getBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, true);
+    }
     private void putBoolean(String name, boolean value) {
         mPrefs.edit().putBoolean(name, value).apply();
     }
@@ -430,6 +477,13 @@ public class PreferenceManager {
         mPrefs.edit().putLong(name, value).apply();
     }
 
+    public void setMyOffrzOnboardingEnabled(boolean value) {
+        putBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, value);
+    }
+
+    public void setFirstSubscription(boolean value) {
+        putBoolean(Name.IS_FIRST_SUBSCRIPTION, value);
+    }
     public void setRemoveIdentifyingHeadersEnabled(boolean enabled) {
         putBoolean(Name.IDENTIFYING_HEADERS, enabled);
     }
@@ -680,10 +734,6 @@ public class PreferenceManager {
         putString(Name.ARN_ENDPOINT, value);
     }
 
-    public void setRestoreTopSites(boolean restoreTopSites) {
-        putBoolean(Name.RESETORE_TOP_SITES, restoreTopSites);
-    }
-
     public void setDistribution(String distribution) {
         putString(Name.DISTRIBUTION, distribution);
     }
@@ -706,7 +756,19 @@ public class PreferenceManager {
 
     public void setAttrackEnabled(boolean value) {
         putBoolean(Name.ATTRACK_ENABLED, value);
-	}
+    }
+
+    public void setShouldShowOnboarding(boolean value) {
+        putBoolean(Name.SHOULD_SHOW_ONBOARDING, value);
+    }
+
+    public void setShouldShowAntiTrackingDescription(boolean value) {
+        putBoolean(Name.SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION, value);
+    }
+
+    public void setShouldShowSearchDescription(boolean value) {
+        putBoolean(Name.SHOULD_SHOW_SEARCH_DESCRIPTION, value);
+    }
 
     public void setLastKnownLocation(String location) {
         putString(Name.LAST_KNOWN_LOCATION, location);
@@ -723,6 +785,80 @@ public class PreferenceManager {
                 return country.name();
             }
         }
-        return Countries.germany.name();
+        return Countries.usa.name();
+    }
+
+    public void setAllOnBoardingPreferences(boolean value) {
+        setShouldShowOnboarding(value);
+        setShouldShowAntiTrackingDescription(value);
+        setShouldShowSearchDescription(value);
+    }
+
+    public void setFirstDevicePaired(boolean value) {
+        putBoolean(Name.PAIRING_FIRST_DEVICE_DIALOG_SHOWN, value);
+    }
+
+    public void setABTestPreference(String preferenceName, boolean value) {
+        putBoolean(preferenceName, value);
+    }
+
+    public boolean getABTestPreference(String preferenceName) {
+        return mPrefs.getBoolean(preferenceName, false);
+    }
+
+    public void setABTestList(String list) {
+        putString(Name.AB_TEST_LIST, list);
+    }
+
+    public String getABTestList() {
+        return mPrefs.getString(Name.AB_TEST_LIST, "");
+    }
+
+    public boolean getQuerySuggestionEnabled() {
+        return mPrefs.getBoolean(Name.QUERY_SUGGESTIONS, true);
+    }
+
+    public void setQuerySuggestionEnabled(Boolean newValue) {
+        putBoolean(Name.QUERY_SUGGESTIONS, newValue);
+    }
+
+    public void setMainActivityLastState(int lastState) {
+        putInt(Name.MAIN_ACTIVITY_LAST_STATE, lastState);
+    }
+
+    public void setLastAppVersion(int version) {
+        putInt(Name.LATEST_APK_VERSION, version);
+    }
+
+    public void setAutoForgetModeEnabled(boolean newValue) {
+        putBoolean(Name.AUTO_FORGET_MODE, newValue);
+    }
+
+    public boolean getShouldShowYouTubeDescription() {
+        return mPrefs.getBoolean(Name.SHOULD_SHOW_YOUTUBE_DESCRIPTION, true);
+    }
+
+    public void setShouldShowYouTubeDescription(boolean value) {
+        putBoolean(Name.SHOULD_SHOW_YOUTUBE_DESCRIPTION, value);
+    }
+
+    public void setCloseTabsExit(boolean value) {
+        putBoolean(Name.CLOSE_TABS_ON_EXIT, value);
+    }
+
+    public void setShouldShowTopSites(boolean value) {
+        putBoolean(Name.SHOW_TOP_SITES, value);
+    }
+
+    public void setShouldShowNews(boolean value) {
+        putBoolean(Name.SHOW_NEWS, value);
+    }
+
+    public boolean shouldLimitDataUsage() {
+        return mPrefs.getBoolean(Name.LIMIT_DATA_USAGE, true);
+    }
+
+    public void setLimitDataUsage(boolean value) {
+        putBoolean(Name.LIMIT_DATA_USAGE, value);
     }
 }

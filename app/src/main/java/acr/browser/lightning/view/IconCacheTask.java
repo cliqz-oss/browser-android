@@ -29,7 +29,7 @@ class IconCacheTask implements Runnable{
     @Override
     public void run() {
         String hash = String.valueOf(uri.getHost().hashCode());
-        Log.d(Constants.TAG, "Caching icon for " + uri.getHost());
+        Log.d(Constants.TAG, "Caching iconView for " + uri.getHost());
         FileOutputStream fos = null;
         try {
             File image = new File(BrowserApp.getAppContext().getCacheDir(), hash + ".png");

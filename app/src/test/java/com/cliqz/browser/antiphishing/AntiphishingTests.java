@@ -1,5 +1,6 @@
 package com.cliqz.browser.antiphishing;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.antiphishing.AntiPhishing.AntiPhishingCallback;
 
 import org.eclipse.jetty.server.Handler;
@@ -9,6 +10,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 
@@ -24,6 +28,8 @@ import static org.mockito.Mockito.verify;
 /**
  *
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class AntiphishingTests {
 
     private static final String PHISHING_URL = "https://phishing.test.url.1234test.com/index.html";
@@ -32,7 +38,7 @@ public class AntiphishingTests {
     private static final String REGULAR_URL_MD5 = "660328a7f9004d462085aa67a82065db";
 
     private static final String[] PHISHING_MD5_PARTS = AntiPhishingUtils.splitMD5(PHISHING_URL_MD5);
-    private static final String PHISHING_PREFIX = PHISHING_MD5_PARTS[0];
+    // private static final String PHISHING_PREFIX = PHISHING_MD5_PARTS[0];
     private static final String PHISHING_SUFFIX = PHISHING_MD5_PARTS[1];
     private static final String JSON_RESPONSE = "{\n" +
             "  \"blacklist\": [\n" +

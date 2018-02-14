@@ -8,9 +8,14 @@
     <attr name="progressBackgroundColor" format="color" />
     <attr name="searchBackground" format="reference|color" />
     <attr name="toolbarSettingsBackground" format="reference|color" />
-    <attr name="drawerBackground" format="reference|color" />
     <attr name="dividerColor" format="reference|color" />
     <attr name="selectedBackground" format="reference|color" />
+    <attr name="textColorPrimary" format="reference|color" />
+    <attr name="colorSecondary" format="reference|color" />
+
+    <declare-styleable name="ControlCenterTheme">
+        <attr name="controlCenterBackground" format="reference|color" />
+    </declare-styleable>
 
     <declare-styleable name="AnimatedProgressBar">
         <attr name="progressColor" format="color" />
@@ -18,4 +23,8 @@
         <attr name="bidirectionalAnimate" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="TabsDeckView">
+        <attr name="remainderSize" format="dimension" />
+        <attr name="deckPadding" format="dimension" />
+    </declare-styleable>
 </resources>

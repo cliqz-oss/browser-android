@@ -1,11 +1,13 @@
 package com.cliqz.browser.webview;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivity;
 
 /**
@@ -46,7 +48,7 @@ public enum BrowserActionTypes {
             return null;
         }
     }),
-
+    
     /**
      * Every thing we do not know how to handle
      */
@@ -59,6 +61,7 @@ public enum BrowserActionTypes {
     });
 
     private final IntentCreator intentCreator;
+    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     BrowserActionTypes(@NonNull final IntentCreator intentCreator) {
         this.intentCreator = intentCreator;

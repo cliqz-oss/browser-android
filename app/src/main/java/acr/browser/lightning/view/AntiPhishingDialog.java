@@ -1,5 +1,6 @@
 package acr.browser.lightning.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
@@ -9,14 +10,15 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.utils.Telemetry;
-import com.cliqz.browser.utils.TelemetryKeys;
-import com.squareup.otto.Bus;
+import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.telemetry.TelemetryKeys;
+import com.cliqz.nove.Bus;
 
 import acr.browser.lightning.bus.BrowserEvents;
 
@@ -44,7 +46,20 @@ class AntiPhishingDialog extends AlertDialog {
                 resources.getString(R.string.antiphishing_ignore_danger), onClickListener);
         setCancelable(false);
         setUrl("unknown");
+        setOnKeyListener(onKeyListener);
     }
+
+    private final OnKeyListener onKeyListener = new DialogInterface.OnKeyListener() {
+        @Override
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                eventBus.post(new Messages.BackPressed());
+                dialog.dismiss();
+                return true;
+            }
+            return false;
+        }
+    };
 
     private final OnClickListener onClickListener = new OnClickListener() {
         @Override
@@ -97,6 +112,7 @@ class AntiPhishingDialog extends AlertDialog {
                 .setMovementMethod(LinkMovementMethod.getInstance());
     }
 
+    @SuppressLint("ParcelCreator")
     private class OperURLSpan extends URLSpan {
 
         public OperURLSpan(String url) {
@@ -105,7 +121,7 @@ class AntiPhishingDialog extends AlertDialog {
 
         @Override
         public void onClick(View widget) {
-            telemetry.sendAntiPhisingSignal(TelemetryKeys.INFO);
+            telemetry.sendAntiPhisingSignal(TelemetryKeys.LEARN_MORE);
             eventBus.post(new BrowserEvents.OpenUrlInNewTab(getURL()));
             AntiPhishingDialog.this.dismiss();
         }

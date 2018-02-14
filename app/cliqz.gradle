@@ -3,22 +3,61 @@ import com.cliqz.minibloomfilter.BloomFilter
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import groovy.json.JsonSlurper
+import org.apache.commons.io.FileUtils
+
+
+enum DistributionChannel {
+    STANDARD(~/standard.*/, 0), AMAZON(~/amazon.*/, 2), HUAWEI(~/huawei.*/, 4)
+
+    final regexp
+    final channel
+
+    DistributionChannel(regexp, channel) {
+        this.regexp = regexp
+        this.channel = channel
+    }
+}
+
+enum BuildType {
+    DEBUG(2), RELEASE(0)
+
+    final value
+
+    BuildType(value) {
+        this.value = value
+    }
+}
 
 buildscript {
     repositories {
+        jcenter()
         maven {
             url 'https://jitpack.io'
         }
     }
     dependencies {
         classpath 'com.github.cliqz-oss:minibloomfilter:1.0'
+        classpath 'commons-io:commons-io:2.4'
+        classpath 'com.github.triplet.gradle:play-publisher:1.1.5'
     }
 }
 
-def props = project.properties.withDefault { "" }
+// Signing configuration for Jenkinsis passed through environment variables
+def props = [:].withDefault { '' }
+if (System.getenv('CERT_PATH') && System.getenv('CERT_PASS') && System.getenv('PLAY_STORE_CERT')) {
+    props = [
+            'Browser.storeFile': System.getenv('CERT_PATH'),
+            'Browser.storePassword': System.getenv('CERT_PASS'),
+            'Browser.keyAlias': 'browser',
+            'Browser.keyPassword': System.getenv('CERT_PASS'),
+            'Browser.playStoreCert': System.getenv('PLAY_STORE_CERT')
+    ]
+} else if (project.hasProperty('Browser.storeFile')) {
+    props = project.properties.withDefault { "" }
+}
 
-// Release sginature configuration if we have the environment correctly setted
-if (project.hasProperty('Browser.storeFile')) {
+// Signing config for local machine appens only if configured in root gradle.properties
+if (props['Browser.storeFile']) {
     android {
         signingConfigs {
             release {
@@ -37,9 +76,22 @@ if (project.hasProperty('Browser.storeFile')) {
     }
 }
 
+if (props['Browser.playStoreCert']) {
+    android{
+        playAccountConfigs {
+            defaultAccountConfig {
+                serviceAccountEmail = 'app-publish@api-5666285663749888703-218338.iam.gserviceaccount.com'
+                jsonFile = file(props['Browser.playStoreCert'])
+            }
+        }
+
+        defaultConfig {
+            playAccountConfig = playAccountConfigs.defaultAccountConfig
+        }
+    }
+}
+
 def extPath = file('../external/extension')
-def downloadFile = new File(extPath, '.download')
-def extZip = new File(extPath, 'extension_latest.zip')
 
 def createBloomFilter(File outputDir) {
     def blackList = new File('app/blacklist.txt')
@@ -49,11 +101,16 @@ def createBloomFilter(File outputDir) {
     }
     def bloomFilter = BloomFilter.create(lineCount, 0.00001)
     blackList.eachLine { line ->
-        bloomFilter.put(line.substring(0, line.indexOf("\t")));
+        bloomFilter.put(line.substring(1, line.indexOf("\"", 1)));
     }
     new File(outputDir.absolutePath+"/bloomfilter.data").withObjectOutputStream { stream ->
         stream.writeObject(bloomFilter)
     }
+}
+
+def copyJsEngine(File outputDir) {
+    final src = new File('./jsengine/')
+    FileUtils.copyDirectory(src, outputDir);
 }
 
 def compileAdHostsList(File outputDir) {
@@ -75,7 +132,7 @@ def compileAdHostsList(File outputDir) {
 }
 
 def getCliqzExtensionVersion() {
-    File cliqzJson = new File('app/src/main/assets/search/cliqz.json');
+    File cliqzJson = new File('node_modules/browser-core/build/config//cliqz.json');
     if (cliqzJson.exists() && cliqzJson.isFile()) {
         JsonSlurper slurper = new JsonSlurper();
         def json = slurper.parse(cliqzJson)
@@ -88,13 +145,14 @@ def getCliqzExtensionVersion() {
 afterEvaluate { project ->
     project.tasks.each { tazk ->
         if (tazk.name =~ /mergeXwalk.*Assets/ && !tazk.name.endsWith('TestAssets')) {
-            tazk << {
+            tazk.doLast {
                 compileAdHostsList(tazk.outputDir)
             }
         }
         if (tazk.name =~ /merge.*Assets/ && !tazk.name.endsWith('TestAssets')) {
-            tazk << {
+            tazk.doLast {
                 createBloomFilter(tazk.outputDir)
+                copyJsEngine(tazk.outputDir)
             }
         }
     }
@@ -118,5 +176,15 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
+    }
+}
+
+preBuild.doLast {
+    android.applicationVariants.each { variant ->
+        final channel = DistributionChannel.find {
+            variant.name =~ it.regexp
+        }
+        final buildType = variant.buildType.debuggable ? BuildType.DEBUG : BuildType.RELEASE
+        variant.buildConfigField 'String', 'TELEMETRY_CHANNEL', "\"MA${channel.channel}${buildType.value}\""
     }
 }

@@ -1,1 +1,16 @@
-include ':app', ':tests_helper', ':oss', ':utils', ':android_utils', ':antitracking-test'
+include ':app', ':oss', ':utils', ':android_utils', ':testdroid'
+
+include ':react-native-fs'
+project(':react-native-fs').projectDir = new File(settingsDir, 'node_modules/react-native-fs/android')
+
+include ':react-native-sqlite2'
+project(':react-native-sqlite2').projectDir = new File(settingsDir, 'node_modules/react-native-sqlite-2/android')
+
+include ':WebRTCModule'
+project(':WebRTCModule').projectDir = new File(settingsDir, 'node_modules/react-native-webrtc/android')
+
+include ':react-native-view-shot'
+project(':react-native-view-shot').projectDir = new File(settingsDir, 'node_modules/react-native-view-shot/android')
+
+include ':react-native-share'
+project(':react-native-share').projectDir = new File(settingsDir, 	'node_modules/react-native-share/android')
