@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="primary_color">#00AEF0</color>
-    <color name="primary_color_dark">#0288d1</color>
-    <color name="text_color_primary">@color/white</color>
-    <color name="default_tab_bg">#000000</color>
-</resources>
