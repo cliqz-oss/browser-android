@@ -6,17 +6,23 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.webview.Topsite;
 import com.cliqz.utils.ViewUtils;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +30,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -42,6 +49,9 @@ class RemoveTopsitesOverlay {
     private ArrayList<View> mTopSiteViews;
     private Rect[] mTopSitePositions;
     private final List<Topsite> removedTopSites;
+    private  List<Integer> idxAtParentOfRemoved;
+    private  List<Integer> draggedIdxOfRemoved;
+
 
     private int mDraggedViewIndex = -1;
     private RemoveTopSitesDialog mDialog;
@@ -50,8 +60,11 @@ class RemoveTopsitesOverlay {
 
     RemoveTopsitesOverlay(@NonNull Freshtab freshtab) {
         removedTopSites = new LinkedList<>();
-        this.adapter = new TopsitesAdapter(freshtab.historyDatabase, freshtab.engine,freshtab.handler);
+        this.adapter = new TopsitesAdapter(freshtab.historyDatabase, freshtab.engine,
+                freshtab.handler, freshtab.preferenceManager);
         this.freshtab = freshtab;
+        idxAtParentOfRemoved = new ArrayList<>();
+        draggedIdxOfRemoved = new ArrayList<>();
     }
 
     void start(@NonNull ViewGroup topSitesContainer) {
@@ -66,6 +79,19 @@ class RemoveTopsitesOverlay {
         mDialog.contentView.calculateViewBounduaries();
         mDialog.contentView.refreshTopSites();
         mDialog.show();
+    }
+
+    boolean isStarted() {
+        return mDialog != null && mDialog.isShowing();
+    }
+
+    /**
+     * Part of the "immediately moveable topsites" workaround, this called by the
+     * {@link TopsitesEventsListener} if the top sites layout in the {@link Freshtab} is still
+     * receiving touch events after we start the {@link RemoveTopsitesOverlay}
+     */
+    void dispatchTouchEvent(MotionEvent event) {
+        mDialog.contentView.dispatchTouchEvent(event);
     }
 
     private class RemoveTopSitesContentView extends FrameLayout {
@@ -155,20 +181,27 @@ class RemoveTopsitesOverlay {
                 return super.onTouchEvent(event);
             }
             final int action = event.getActionMasked();
-            final int eventX = (int) event.getX();
-            final int eventY = (int) event.getY();
+            final int eventX = (int) event.getRawX();
+            final int eventY = (int) event.getRawY();
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     mDraggedViewIndex = pickTopSite(eventX, eventY);
                     if (mDraggedViewIndex >= 0) {
+                        adjustAlphaOfSelectedView(mDraggedViewIndex,0.5f);
+                        animateDraggedTopsiteIcon(mDraggedViewIndex);
+                        hideSelectedTopsiteTitle(mDraggedViewIndex);
                         return true;
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (mDraggedViewIndex >= 0) {
-                        checkIfRemoved();
+                        if(!checkIfRemoved()){
+                            showSelectedTopsiteTitle(mDraggedViewIndex);
+                            clearDraggedTopsiteIconAnimation(mDraggedViewIndex);
+                        }
                         reset();
                         mDraggedViewIndex = -1;
+                        adjustAlphaOfSelectedView(mDraggedViewIndex,1f);
                         return true;
                     }
                     break;
@@ -182,24 +215,76 @@ class RemoveTopsitesOverlay {
             return super.onTouchEvent(event);
         }
 
-        private void checkIfRemoved() {
+        private void animateDraggedTopsiteIcon(int draggedViewIndex) {
+            final View view = mTopSiteViews.get(draggedViewIndex);
+            Animation scale = new ScaleAnimation(1.0f, 1.3f, 1.0f, 1.3f, Animation
+                    .RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            scale.setDuration(300);
+            scale.setFillAfter(true);
+            view.startAnimation(scale);
+        }
+
+        private void clearDraggedTopsiteIconAnimation(int draggedViewIndex){
+            final View view = mTopSiteViews.get(draggedViewIndex);
+            view.clearAnimation();
+        }
+
+        private void adjustAlphaOfSelectedView(int draggedViewIndex,float alpha){
+            for(int i = 0;i < mTopSiteViews.size();i++){
+                if(i != draggedViewIndex) {
+                    mTopSiteViews.get(i).setAlpha(alpha);
+                }
+            }
+        }
+
+        private void hideSelectedTopsiteTitle(int position){
+            ((TopsitesViewHolder)mTopSiteViews.get(position).getTag()).domainView.setVisibility(INVISIBLE);
+        }
+
+        private void showSelectedTopsiteTitle(int position){
+            ((TopsitesViewHolder)mTopSiteViews.get(position).getTag()).domainView.setVisibility(VISIBLE);
+        }
+
+        private boolean checkIfRemoved() {
             // Here mDraggedViewIndex is >= 0
             if (!trashCanView.checkCollision(mTopSitePositions[mDraggedViewIndex])) {
-                return;
+                return false;
             }
 
             final View view = mTopSiteViews.get(mDraggedViewIndex);
             final TopsitesViewHolder holder = (TopsitesViewHolder) view.getTag();
             if (holder == null) {
-                return;
+                return false;
             }
 
             final Topsite topsite = holder.getTopsite();
             if (topsite != null) {
                 removedTopSites.add(topsite);
                 mTopSiteViews.remove(mDraggedViewIndex);
+                draggedIdxOfRemoved.add(holder.getDraggedPosition());
+                idxAtParentOfRemoved.add(holder.getPositionAtParent());
                 removeView(view);
+                updateControlIconsStatus();
             }
+            return true;
+        }
+
+        public void updateControlIconsStatus() {
+            final int removedTopsitesSz = removedTopSites.size();
+
+            if (removedTopsitesSz > 0) {
+                final String msg= getResources().getQuantityString(
+                        R.plurals.topsite_deleted, removedTopsitesSz, removedTopsitesSz);
+                mDialog.topsitesDeletedNum.setText(msg);
+            } else {
+                mDialog.topsitesDeletedNum.setVisibility(INVISIBLE);
+                mDialog.undo.setVisibility(INVISIBLE);
+                return;
+            }
+            mDialog.undo.setVisibility(VISIBLE);
+            mDialog.topsitesDeletedNum.setVisibility(View.VISIBLE);
         }
 
         private void reset() {
@@ -217,7 +302,15 @@ class RemoveTopsitesOverlay {
             lastDragPosition.x = eventX;
             lastDragPosition.y = eventY;
             updateTopSitePosition(index, deltaX, deltaY);
-            trashCanView.setCollisionMode(trashCanView.checkCollision(mTopSitePositions[index]));
+            boolean ckCollision = trashCanView.checkCollision(mTopSitePositions[index]);
+            trashCanView.setCollisionMode(ckCollision);
+            final SimpleDraweeView icon = ((TopsitesViewHolder) mTopSiteViews.get(index).getTag())
+                    .iconView;
+            if(ckCollision) {
+                icon.setAlpha(0.4f);
+            }else{
+                icon.setAlpha(1f);
+            }
         }
 
         private void updateTopSitePosition(int index, int dx, int dy) {
@@ -271,20 +364,26 @@ class RemoveTopsitesOverlay {
             mTopSitePositions = new Rect[topSitesNo];
             for (int index = 0; index < topSitesNo; index++) {
                 final View view = adapter.getView(index, null, this);
-                final TopsitesViewHolder holder = TopsitesViewHolder.class.cast(view.getTag());
-                holder.domainView.setTextColor(Color.WHITE);
                 mTopSiteViews.add(view);
                 mTopSitePositions[index] = new Rect(mOriginalTopsitePositions[index]);
                 addView(view);
+                TopsitesViewHolder holder = ((TopsitesViewHolder)view.getTag());
+                holder.setPositionAtParent(indexOfChild(view));
+                holder.domainView.setTextColor(ContextCompat.getColor(getContext(),R.color.white));
             }
             requestLayout();
         }
     }
 
-
     class RemoveTopSitesDialog extends Dialog {
 
         final RemoveTopSitesContentView contentView;
+
+        @Bind(R.id.button_undo)
+        Button undo;
+
+        @Bind(R.id.number_deleted_topsites)
+        TextView topsitesDeletedNum;
 
         RemoveTopSitesDialog(@NonNull Context context) {
             super(context, R.style.Theme_Cliqz_Semitrasparent_FullScreen_Dialog);
@@ -300,6 +399,23 @@ class RemoveTopsitesOverlay {
         }
 
         @OnClick(R.id.button_undo)
+        public void undo(){
+            final int lastDraggedIndex = draggedIdxOfRemoved.size()-1;
+            final int lastIdxAtParent = idxAtParentOfRemoved.size()-1;
+            int draggedIndex = draggedIdxOfRemoved.get(lastDraggedIndex);
+            final int idxAtParent = idxAtParentOfRemoved.get(lastIdxAtParent);
+            final View view = adapter.getView(draggedIndex,null,this.contentView);
+            draggedIndex = Math.min(mTopSiteViews.size(),draggedIndex);
+            mTopSiteViews.add(draggedIndex,view);
+            mTopSitePositions[draggedIndex] = new Rect(mOriginalTopsitePositions[draggedIndex]);
+            this.contentView.addView(view,Math.min(idxAtParent,this.contentView.getChildCount()));
+            draggedIdxOfRemoved.remove(lastDraggedIndex);
+            idxAtParentOfRemoved.remove(lastIdxAtParent);
+            removedTopSites.remove(removedTopSites.size()-1);
+            this.contentView.updateControlIconsStatus();
+            this.contentView.requestLayout();
+        }
+
         @Override
         public void dismiss() {
             super.dismiss();

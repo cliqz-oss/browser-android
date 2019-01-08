@@ -1,12 +1,18 @@
 package com.cliqz.browser.utils;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.SavePasswordDialog;
+import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.utils.StreamUtils;
 
 import java.io.IOException;
@@ -20,13 +26,35 @@ import acr.browser.lightning.database.PasswordDatabase;
 /**
  * @author Ravjit Uppal
  */
-public class PasswordManager {
+public class PasswordManager implements SavePasswordDialog.PasswordDialogListener {
+
+    private static final String TAG = PasswordManager.class.getSimpleName();
 
     @Inject
     PasswordDatabase passwordDatabase;
 
-    public PasswordManager() {
-        BrowserApp.getAppComponent().inject(this);
+    @Inject
+    Telemetry telemetry;
+
+    private Activity mActivity;
+
+    public PasswordManager(Activity activity) {
+        mActivity = activity;
+        final MainActivityComponent component = BrowserApp.getActivityComponent(mActivity);
+        if (component != null) {
+            component.inject(this);
+        }
+    }
+
+    @Override
+    public void save(LoginDetailItem loginDetailItem) {
+        passwordDatabase.saveLoginDetails(loginDetailItem);
+
+    }
+
+    @Override
+    public void neverSave(LoginDetailItem loginDetailItem) {
+        passwordDatabase.addDomainToBlackList(loginDetailItem.domain);
     }
 
     private static final class QueryParameters  {
@@ -36,17 +64,25 @@ public class PasswordManager {
         private static final String PASSWORD = "password";
     }
 
-    public void injectJavascript(WebView webView) {
-        final Resources resources = webView.getResources();
-        final InputStream inputStream = resources.openRawResource(R.raw.password_manager_script);
+    public void injectJavascript(@NonNull WebView webView) {
         try {
+            final String url = webView.getUrl();
+            if (url == null || url.isEmpty()) {
+                return;
+            }
+            final Uri uri = Uri.parse(url);
+            if (passwordDatabase.isDomainBlackListed(uri.getHost())) {
+                return;
+            }
+            final Resources resources = webView.getResources();
+            final InputStream inputStream = resources.openRawResource(R.raw.password_manager_script);
             final String passwordManagerScript =
                     String.format(StreamUtils.readTextStream(inputStream), webView.hashCode());
             executeJS(passwordManagerScript, webView);
             inputStream.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error reading the js code", e);
         }
     }
 
@@ -70,13 +106,13 @@ public class PasswordManager {
         if (username == null && password == null) {
             final LoginDetailItem loginDetailItem = passwordDatabase.getLoginDetails(domain);
             if (loginDetailItem != null) {
-                String loginId = loginDetailItem.getLoginId();
-                String loginPassword = loginDetailItem.getPassword();
+                String loginId = loginDetailItem.loginId;
+                String loginPassword = loginDetailItem.password;
                 executeJS("fillLoginDetails('" + loginId + "','" + loginPassword + "')", view);
             }
         } else if (username != null && password != null) {
             LoginDetailItem loginDetailItem = new LoginDetailItem(domain, username, password);
-            passwordDatabase.saveLoginDetails(loginDetailItem);
+            SavePasswordDialog.show(mActivity, this, loginDetailItem, telemetry);
         }
     }
 

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import acr.browser.lightning.utils.Utils;
+import acr.browser.lightning.view.TrampolineConstants;
 
 /**
  * Asynchronous web view state persister
@@ -62,6 +63,11 @@ public class WebViewPersister {
     @MainThread
     public void persist(@NonNull String identifier, @NonNull String title,
                         @NonNull String url, @NonNull WebView webView) {
+
+        // Do not persist any tab that has the trampoline close command in the url
+        if (url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE_FORMAT)) {
+            return;
+        }
         try {
             initCountDownLatch.await();
             final Message msg = mHandler.obtainMessage();
@@ -156,8 +162,11 @@ public class WebViewPersister {
                 final Bundle bundle = readMetadataBundle(metafile, byteBuffer);
                 bundle.putLong(TabBundleKeys.LAST_VISIT, metafile.lastModified());
                 metadata.add(bundle);
-            } catch (IOException e) {
-                Log.e(TAG, "Can't read metadata from " + metafile, e);
+            } catch (Exception e) {
+                Log.e(TAG, "Invalid metadata from " + metafile + ". We'll remove it.", e);
+                if (!metafile.delete()) {
+                    Log.e(TAG, "Can't delete " + metafile);
+                }
             }
         }
         return metadata;

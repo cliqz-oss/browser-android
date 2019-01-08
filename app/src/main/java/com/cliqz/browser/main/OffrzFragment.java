@@ -59,7 +59,6 @@ public class OffrzFragment extends FragmentWithBus implements
     private static final String CALL_TO_ACTION_KEY = "call_to_action";
     private static final String CALL_TO_ACTION_TEXT_KEY = "text";
     private static final String CALL_TO_ACTION_URL_KEY = "url";
-    private static final String MYOFFRZ_URL = "https://cliqz.com/myoffrz";
 
     @Bind(R.id.empty_offers_outer_container)
     ViewGroup emptyOffersOuterContainer;
@@ -69,6 +68,9 @@ public class OffrzFragment extends FragmentWithBus implements
 
     @Bind(R.id.offrz_onboaring_container)
     ViewGroup onboardingVG;
+
+    @Bind(R.id.offrz_activation_container)
+    ViewGroup activationVG;
 
     @Bind(R.id.offers_container)
     ViewGroup offersContainer;
@@ -82,8 +84,14 @@ public class OffrzFragment extends FragmentWithBus implements
     @Bind(R.id.onboarding_feature_description_tv)
     TextView onboardingText;
 
+    @Bind(R.id.activation_feature_description_tv)
+    TextView activationText;
+
     @Bind(R.id.offers_loading_pb)
     ProgressBar progressBar;
+
+    @Bind(R.id.myoffrz_deactivate_view)
+    View myOffrzDeactivateView;
 
     @Nullable
     @Override
@@ -92,6 +100,7 @@ public class OffrzFragment extends FragmentWithBus implements
 
         ButterKnife.bind(this, view);
         onboardingText.setText(R.string.myoffrz_onboarding_description);
+        activationText.setText(R.string.myoffrz_activation_description);
 
         return view;
     }
@@ -110,19 +119,48 @@ public class OffrzFragment extends FragmentWithBus implements
     @Override
     public void onStart() {
         super.onStart();
-        if (!preferenceManager.isMyOffrzOnboardingEnabled()) {
-            onboardingVG.setVisibility(View.GONE);
-        } else {
+        if (!preferenceManager.isMyOffrzEnable()) {
+            activationVG.setVisibility(View.VISIBLE);
+            myOffrzDeactivateView.setVisibility(View.VISIBLE);
+            myOffrzDeactivateView.bringToFront();
+            enableClickActionsOnOffrz(false);
+        } else if (preferenceManager.isMyOffrzOnboardingEnabled()) {
+            onboardingVG.setVisibility(View.VISIBLE);
             telemetry.sendOnboardingSignal(TelemetryKeys.SHOW, TelemetryKeys.OFFRZ);
         }
     }
 
+    @OnClick(R.id.activate_btn)
+    void OnActivateButtonClicked(){
+        preferenceManager.setMyOffrzEnable(true);
+        preferenceManager.setMyOffrzOnboardingEnabled(false);
+        activationVG.setVisibility(View.GONE);
+        myOffrzDeactivateView.setVisibility(View.INVISIBLE);
+        enableClickActionsOnOffrz(true);
+    }
+
+    private void enableClickActionsOnOffrz(boolean enable){
+        for(int i = 0 ; i < offersContainer.getChildCount();i++){
+            View curChild = offersContainer.getChildAt(i);
+            if (curChild.getId() == R.id.offer_card){
+                curChild.findViewById(R.id.terms_and_conditions_btn).setClickable(enable);
+                curChild.findViewById(R.id.go_to_offer_btn).setClickable(enable);
+                curChild.findViewById(R.id.offer_copy_code_btn).setClickable(enable);
+            }
+        }
+    }
+
+    @OnClick(R.id.learn_more_tv)
+    void onActivationLearnMoreClicked() {
+        bus.post(new CliqzMessages.OpenTab(getString(R.string.myoffrz_url), "", false));
+    }
+
     @OnClick(R.id.learn_more_btn)
-    void onLearnMoreClicked() {
+    void onOnBoardingLearnMoreClicked() {
         closeOnboarding();
         telemetry.sendOnboardingSignal(TelemetryKeys.CLICK, TelemetryKeys.LEARN_MORE,
                 TelemetryKeys.OFFRZ);
-        bus.post(new CliqzMessages.OpenTab(MYOFFRZ_URL, "", false));
+        bus.post(new CliqzMessages.OpenTab(getString(R.string.myoffrz_url), "", false));
     }
 
     @OnClick(R.id.onboarding_close_btn)
@@ -213,6 +251,14 @@ public class OffrzFragment extends FragmentWithBus implements
         }
 
         offersContainer.addView(offer);
+        if(!preferenceManager.isMyOffrzEnable()) {
+            myOffrzDeactivateView.setVisibility(View.VISIBLE);
+            myOffrzDeactivateView.bringToFront();
+            holder.enableClickActions(false);
+        }else{
+            myOffrzDeactivateView.setVisibility(View.INVISIBLE);
+            holder.enableClickActions(true);
+        }
     }
 
     private static JSONObject getTemplateData(final JSONObject data) {
@@ -319,6 +365,12 @@ public class OffrzFragment extends FragmentWithBus implements
 
         public void setCode(String code) {
             this.mCode = code;
+        }
+
+        public void enableClickActions(boolean enable){
+            goToOffer.setClickable(enable);
+            termsAndConditionsButton.setClickable(enable);
+            copyCode.setClickable(enable);
         }
     }
 }

@@ -34,6 +34,7 @@ class JSEngineReactPackage implements ReactPackage {
         modules.add(new RNDeviceInfo(reactContext));
         modules.add(new Crypto(reactContext));
         modules.add(new UserAgentConstants(reactContext));
+        modules.add(new LocaleConstants(reactContext));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             modules.add(new WebRequest(reactContext, this.engine));

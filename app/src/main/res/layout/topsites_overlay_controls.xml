@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
     android:orientation="horizontal"
     android:padding="5dp"
+    android:weightSum="1"
+    android:gravity="center_vertical"
     style="?android:buttonBarStyle">
 
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:id="@+id/number_deleted_topsites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Topsite deleted"
+        android:textColor="@color/white"
+        android:visibility="invisible"
+        android:layout_weight="0.8"
+        />
     <Button
         android:id="@+id/button_undo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:text="@string/action_undo"
         style="?android:buttonBarButtonStyle"
-        android:layout_alignParentLeft="true" />
+        android:visibility="invisible"
+        android:layout_weight="0.1"
+    />
 
     <Button
         android:id="@+id/button_apply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:text="@string/action_done"
         style="?android:buttonBarButtonStyle"
-        android:layout_alignParentRight="true"
+        android:layout_weight="0.1"
     />
 
-</RelativeLayout>
+</LinearLayout>

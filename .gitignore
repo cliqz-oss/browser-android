@@ -5,6 +5,7 @@
 /.idea/workspace.xml
 /build
 app/app.iml
+/captures
 
 # External tool builders
 .externalToolBuilders/
@@ -55,8 +56,14 @@ out
 
 *.iml
 
+# Specific files
 app/src/main/assets/bloomfilter.data
-app/src/main/res/values/facebook.xml
+app/src/main/assets/search/app.map
+captures/
+
+# React-native stuff
+app/src/main/assets/jsengine.bundle.js
+/jsengine/*
+!/jsengine/.gitkeep
 node_modules/
 yarn.lock
-jsengine/

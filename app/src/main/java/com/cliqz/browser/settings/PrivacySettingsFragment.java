@@ -3,13 +3,18 @@
  */
 package com.cliqz.browser.settings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 
 import com.cliqz.browser.R;
@@ -20,7 +25,7 @@ import java.util.HashMap;
 
 public class PrivacySettingsFragment extends BaseSettingsFragment {
 
-    private static final String SETTINGS_LOCATION = "location";
+    private static final String SETTINGS_APP_SETTINGS = "settings";
     private static final String SETTINGS_ENABLECOOKIES = "allow_cookies";
     private static final String SETTINGS_SAVEPASSWORD = "password";
     private static final String SETTINGS_CLEARHISTORY = "clear_history";
@@ -29,15 +34,17 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_RESTORETOPSITES = "restore_top_sites";
     private static final String SETTINGS_AUTO_FORGET = "autoforget";
     private static final String SETTINGS_ATTRACK = "attrack";
-
+    private static final String SETTINGS_SEND_USAGE_DATA = "send_usage_data";
     private static final int PREFERENCE_GROUP_BROWSING_INDEX = 0;
-    private static final int PREFERENCE_GROUP_CLEAR_DATA_INDEX = 1;
 
     private Activity mActivity;
 
     @SuppressWarnings("FieldCanBeLocal")
-    private CheckBoxPreference cblocation, cbenablecookies, cbsavepasswords, cbclearexit,
-            cbautoforget, cbattrack;
+    private CheckBoxPreference cbenablecookies, cbsavepasswords, cbclearexit, cbautoforget,
+            cbattrack, cbsendusagedata;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private Preference prpermissions;
 
     private long startTime;
 
@@ -54,21 +61,24 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
 
     private void initPrefs() {
         cbattrack = (CheckBoxPreference) findPreference(SETTINGS_ATTRACK);
-        cblocation = (CheckBoxPreference) findPreference(SETTINGS_LOCATION);
+        prpermissions = findPreference(SETTINGS_APP_SETTINGS);
         cbenablecookies = (CheckBoxPreference) findPreference(SETTINGS_ENABLECOOKIES);
         cbsavepasswords = (CheckBoxPreference) findPreference(SETTINGS_SAVEPASSWORD);
         cbclearexit = (CheckBoxPreference) findPreference(SETTINGS_CLEAR_DATA_ON_EXIT);
         cbautoforget = (CheckBoxPreference) findPreference(SETTINGS_AUTO_FORGET);
+        cbsendusagedata = (CheckBoxPreference) findPreference(SETTINGS_SEND_USAGE_DATA);
 
         cbattrack.setOnPreferenceChangeListener(this);
-        cblocation.setOnPreferenceChangeListener(this);
+        if (prpermissions != null) {
+            prpermissions.setOnPreferenceClickListener(this);
+        }
         cbenablecookies.setOnPreferenceChangeListener(this);
         cbsavepasswords.setOnPreferenceChangeListener(this);
         cbclearexit.setOnPreferenceChangeListener(this);
         cbautoforget.setOnPreferenceChangeListener(this);
+        cbsendusagedata.setOnPreferenceChangeListener(this);
 
         cbattrack.setChecked(mPreferenceManager.isAttrackEnabled());
-        cblocation.setChecked(mPreferenceManager.getLocationEnabled());
         cbenablecookies.setChecked(mPreferenceManager.getCookiesEnabled());
         cbsavepasswords.setChecked(mPreferenceManager.getSavePasswordsEnabled());
         cbautoforget.setChecked(mPreferenceManager.isAutoForgetEnabled());
@@ -104,6 +114,21 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
             case SETTINGS_RESTORETOPSITES:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.RESTORE_TOPSITES, TelemetryKeys.PRIVACY);
                 restoreTopSitesDialog();
+                return true;
+            case SETTINGS_APP_SETTINGS:
+                final Activity activity = getActivity();
+                final PackageManager pm = activity != null ? activity.getPackageManager() : null;
+                final String packageName = activity != null ? activity.getPackageName() : null;
+                final Uri permissionsUri = packageName != null ?
+                        Uri.fromParts("package", packageName, null) : null;
+                final Intent intent = permissionsUri != null ?
+                        new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, permissionsUri) :
+                        null;
+                final boolean intentSupported = intent != null && pm != null &&
+                        intent.resolveActivity(pm) != null;
+                if (intentSupported) {
+                    startActivity(intent);
+                }
                 return true;
             default:
                 return false;
@@ -171,6 +196,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         passwordDatabase.clearPasswords();
+                        passwordDatabase.clearBlackList();
                         break;
                     default:
                         break;
@@ -204,6 +230,7 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
     }
 
     private void clearDataDialog() {
+        @SuppressLint("UseSparseArrays")
         final HashMap<Integer, Boolean> valueSet = new HashMap<>();
         valueSet.put(0, mPreferenceManager.getCloseTabsExit());
         valueSet.put(1, mPreferenceManager.getClearHistoryExitEnabled());
@@ -261,12 +288,6 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
                 mPreferenceManager.setAttrackEnabled((Boolean) newValue);
                 cbattrack.setChecked((Boolean) newValue);
                 return true;
-            case SETTINGS_LOCATION:
-                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.LOCATION_ACCESS, TelemetryKeys.PRIVACY,
-                        (!(boolean) newValue));
-                mPreferenceManager.setLocationEnabled((Boolean) newValue);
-                cblocation.setChecked((Boolean) newValue);
-                return true;
             case SETTINGS_ENABLECOOKIES:
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_COOKIES, TelemetryKeys.PRIVACY,
                         (!(boolean) newValue));
@@ -291,6 +312,11 @@ public class PrivacySettingsFragment extends BaseSettingsFragment {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.AUTO_FORGET_TAB, TelemetryKeys.PRIVACY,
                         (!(boolean) newValue));
                 mPreferenceManager.setAutoForgetModeEnabled((Boolean) newValue);
+                return true;
+            case SETTINGS_SEND_USAGE_DATA:
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SEND_USAGE_DATA,
+                        TelemetryKeys.PRIVACY, (boolean) newValue);
+                mPreferenceManager.setSendUsageData((Boolean) newValue);
                 return true;
             default:
                 return false;

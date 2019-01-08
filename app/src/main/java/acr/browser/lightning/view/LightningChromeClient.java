@@ -10,8 +10,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -19,9 +21,15 @@ import android.webkit.WebView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
@@ -33,6 +41,8 @@ import acr.browser.lightning.utils.UrlUtils;
  */
 class LightningChromeClient extends WebChromeClient {
 
+    private static final String TAG = LightningChromeClient.class.getSimpleName();
+    private static final String LOG_FORMAT = "%s:%d - %s";
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
 
     private final Activity activity;
@@ -70,14 +80,21 @@ class LightningChromeClient extends WebChromeClient {
 
     @Override
     public void onReceivedTitle(WebView view, String title) {
-        final String url = view != null ? view.getUrl() : null;
+        final String url;
+        // Ensure the url is not null
+        if (view != null) {
+            final String tmpUrl = view.getUrl();
+            url = tmpUrl != null ? tmpUrl : "";
+        } else {
+            url = "";
+        }
         if (title != null && !title.isEmpty() &&
-                !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url) && !lightningView.isUrlSSLError()) {
+                !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) &&
+                !lightningView.isUrlSSLError()) {
             lightningView.mTitle.setTitle(title);
             eventBus.post(new Messages.UpdateTitle());
         }
-        if (url != null
-                && !url.startsWith("cliqz://")
+        if (!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)
                 && !lightningView.isIncognitoTab()) {
             if (!url.equals(mLastUrl)) {
                 lightningView.addItemToHistory(title, url);
@@ -218,5 +235,31 @@ class LightningChromeClient extends WebChromeClient {
     @Override
     public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
         eventBus.post(new BrowserEvents.ShowCustomView(view, callback, requestedOrientation));
+    }
+
+    @Override
+    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+        if (BuildConfig.DEBUG) {
+            final String message = String.format(Locale.US, LOG_FORMAT, consoleMessage.sourceId(),
+                    consoleMessage.lineNumber(), consoleMessage.message());
+            switch (consoleMessage.messageLevel()) {
+                case DEBUG:
+                    Log.d(TAG, message);
+                    break;
+                case ERROR:
+                    Log.e(TAG, message);
+                    break;
+                case WARNING:
+                    Log.w(TAG, message);
+                    break;
+                case LOG:
+                    Log.i(TAG, message);
+                    break;
+                default:
+                    Log.v(TAG, message);
+                    break;
+            }
+        }
+        return true;
     }
 }

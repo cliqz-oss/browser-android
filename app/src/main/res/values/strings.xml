@@ -59,7 +59,7 @@
     <string name="download_sdcard_busy_dlg_msg">The storage is busy. To allow downloads, touch Turn Off USB Storage in the notification.</string>
     <string name="message_text_copied">Text copied to clipboard</string>
     <string name="message_url_copied">Url copied to clipboard</string>
-    <string name="licenses">Open Source Licenses</string>
+    <string name="licenses">Policies and Licenses</string>
     <string name="block_ads">Block Ads</string>
     <string name="message_insecure_connection">Connection to this site is not secure:\n%1$s\nProceed anyway?</string>
     <string name="message_certificate_date_invalid">date of certificate is invalid</string>
@@ -81,7 +81,6 @@
     <string name="clear_cookies_exit">Clear cookies on exit</string>
     <string name="clear_history_exit">Clear history on exit</string>
     <string name="untitled">Untitled</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Freeware</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
@@ -331,16 +330,47 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="reset_subscriptions_title">Reset all subscriptions</string>
     <string name="reset_subscriptions_title_msg">Would you like to reset all your subscriptions (e.g. to Bundesliga games)?</string>
     <string name="subscriptions_resetted_toast">All subscriptions reset</string>
-    <string name="no_history">Here you will find your history.\n\nYou haven\'t searched or visited any websites so far.</string>
-    <string name="no_favorites">Here you will find your favorites.\n\nYou haven\'t created any favorites so far.</string>
+    <string name="no_history">Here you will find your history.</string>
+    <string name="no_favorites">Here you will find your favorites.</string>
     <string name="no_offers_msg">Here you\'ll find a new offer every week</string>
     <string name="myoffrz_settings_header">About MyOffrz</string>
     <string name="news_label">News</string>
     <string name="crux" translatable="false">Crux</string>
     <string name="menu">Menu</string>
-    <string translatable="false" name="cliqz_tab_default_url">Cliqz Tab</string>
+    <string name="android_app_settings_title">Location permissions</string>
+    <string name="make_default_browser">Make default browser</string>
+    <string name="default_browser_title">Cliqz as Default Browser</string>
+    <string name="default_browser_message">You seem to like using Cliqz. Do you want to make it your default browser?</string>
+    <string name="proceed">PROCEED</string>
+    <string name="save">SAVE</string>
+    <string name="never">NEVER</string>
+    <string name="save_password_text">Do you want Cliqz to save your password for this site?</string>
+    <string name="cliqz_tab_default_url" translatable="false">Cliqz Tab</string>
     <plurals name="items">
         <item quantity="one">%d item selected</item>
         <item quantity="other">%d items selected</item>
     </plurals>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
+    <string name="eula">EULA</string>
+    <string name="eula_text">The Cliqz for Android browser is built upon the &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
+ Browser open source project&lt;/a&gt; and is made available to you under the terms of the &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; a free
+ software license, which gives you the right to run the program for any purpose, to study how it works, to give copies to your friends and to modify it to meet your needs better. There is no separate End User License Agreement (EULA).</string>
+    <string name="title_activity_eula_setting">EULA</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d topsite deleted</item>
+        <item quantity="other">%d topsites deleted</item>
+    </plurals>
+    <string name="welcome_cliqz">Welcome to Cliqz!</string>
+    <string name="agree_privacy_policy_cliqz">By using this application, you agree to the
+        &lt;font color=\'#00aef0\'>Cliqz Privacy Policy &lt;/font></string>
+    <string name="accept">ACCEPT</string>
+    <string name="privacy_policy_title">Privacy Policy - Cliqz</string>
+    <string name="settings_show_background_image">Show background image</string>
+    <string name="settings_show_my_offrz">Show MyOffrz</string>
+    <string name="settings_about_my_offrz">About MyOffrz</string>
+    <string name="myoffrz_activation_description">Activate MyOffrz to receive attractive discounts and bargains.</string>
+    <string name="settings_category_user_data_choices">Data Choices</string>
+    <string name="send_usage_data">Send usage data</string>
+    <string name="send_usage_data_summary">Help us improve your browsing experience. Cliqz collects strictly anonymous usage data. At no occasion is any PII collected.</string>
 </resources>

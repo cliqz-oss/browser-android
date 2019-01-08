@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -97,7 +98,11 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         return tabsDeckView.entries.size();
     }
 
+    @Nullable
     CliqzBrowserState remove(int position) {
+        if (position >= tabsDeckView.entries.size()) {
+            return null;
+        }
         final CliqzBrowserState state = tabsDeckView.entries.get(position);
         tabsDeckView.entries.remove(position);
         notifyItemRemoved(position);

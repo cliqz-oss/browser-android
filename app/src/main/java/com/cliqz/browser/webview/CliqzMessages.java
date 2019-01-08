@@ -1,6 +1,7 @@
 package com.cliqz.browser.webview;
 
 import android.support.annotation.NonNull;
+import android.view.animation.Animation;
 import android.webkit.URLUtil;
 
 import com.facebook.react.bridge.Promise;
@@ -61,14 +62,30 @@ public class CliqzMessages {
     public static final class OpenLink {
         public final String url;
         public final boolean reset;
+        public final boolean fromHistory;
+        public final Animation animation;
 
-        public OpenLink(String url, boolean reset) {
+        private OpenLink(String url, boolean reset, boolean fromHistory, Animation animation) {
             this.url = URLUtil.guessUrl(url);
             this.reset = reset;
+            this.fromHistory = fromHistory;
+            this.animation = animation;
         }
 
-        public OpenLink(String url) {
-            this(url, false);
+        public static OpenLink open(String url) {
+            return new OpenLink(url, false, false, null);
+        }
+
+        public static OpenLink open(String url, Animation animation) {
+            return new OpenLink(url, false, false, animation);
+        }
+
+        public static OpenLink resetAndOpen(String url) {
+            return new OpenLink(url, true, false, null);
+        }
+
+        public static OpenLink openFromHistory(String url) {
+            return new OpenLink(url, false, true, null);
         }
     }
 
@@ -113,6 +130,9 @@ public class CliqzMessages {
     }
 
     public static class HideKeyboard {
+    }
+
+    public static class ShowKeyboard {
     }
 
     public static class CallNumber {

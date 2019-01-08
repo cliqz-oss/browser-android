@@ -5,34 +5,53 @@ var allForms = [];
   allForms = allForms.concat([].slice.call(document.forms));
   var frames = document.querySelectorAll("frame,iframe");
   for (var i = 0; i < frames.length; i++) {
-    fillFormsFromFrames(frames[i].contentDocument);
+    try {
+        fillFormsFromFrames(frames[i].contentDocument);
+    } catch (e) { /* cross origin */ }
   }
 })(document);
 
+var loginForms = [];
+
 allForms.forEach(function(form) {
-  var isFound = false;
   for(var i = 1; i < form.length; i++) {
     if(form.elements[i].type === 'password' && USERNAME_INPUT_TYPES.indexOf(form.elements[i - 1].type) >= 0) {
-      usernameField = form.elements[i-1];
-      passwordField = form.elements[i];
-      isFound = true;
-      var onsubmit = form.onsubmit && form.onsubmit.bind(form)
-      var submit = form.submit && form.submit.bind(form)
-      form.onsubmit = form.submit = sendLoginDetails(onsubmit, submit);
-      sendRequest();
+      loginForms.push({
+        form: form,
+        usernameField: form.elements[i-1],
+        passwordField: form.elements[i],
+      });
+      break;
     }
-    if (isFound && form.elements[i].type === 'button' && form.elements[i].name && form.elements[i].name.toLowerCase() === 'login' ) {
-      form.elements[i].addEventListener('touchend', sendLoginDetails());
+  }
+});
+
+if (loginForms.length) {
+  sendRequest();
+}
+
+loginForms.forEach(function(item) {
+  var form = item.form;
+  var onsubmit = form.onsubmit && form.onsubmit.bind(form)
+  var submit = form.submit && form.submit.bind(form)
+  form.onsubmit = form.submit = sendLoginDetails(item.usernameField, item.passwordField, onsubmit, submit);
+  for(var i = 1; i < form.length; i++) {
+    if (form.elements[i].type === 'button' && form.elements[i].name && form.elements[i].name.toLowerCase() === 'login' ) {
+      form.elements[i].addEventListener('touchend', sendLoginDetails(item.usernameField, item.passwordField));
     }
   }
 });
 
 function fillLoginDetails (username, password) {
-  usernameField.value = savedUsername = username;
-  passwordField.value = savedPassword = password;
+  savedUsername = username;
+  savedPassword = password;
+  loginForms.forEach(function(form) {
+    form.usernameField.value = username;
+    form.passwordField.value = password;
+  });
 }
 
-function sendLoginDetails (onsubmit, submit) {
+function sendLoginDetails (usernameField, passwordField, onsubmit, submit) {
   return function() {
     if(usernameField.value !== savedUsername || passwordField.value !== savedPassword) {
       sendRequest({
@@ -59,4 +78,3 @@ function sendRequest (params) {
   xhttp.setRequestHeader("url", window.location.hostname);
   xhttp.send();
 }
-

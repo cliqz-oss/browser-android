@@ -1,13 +1,14 @@
 package com.cliqz.browser.main.search;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.location.Location;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
@@ -15,11 +16,10 @@ import com.cliqz.browser.main.JSYTDownloadCallback;
 import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.QueryManager;
-import com.cliqz.browser.utils.LocationCache;
+import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.SubscriptionsManager;
 import com.cliqz.browser.webview.ExtensionEvents;
 import com.cliqz.jsengine.Engine;
-import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.nove.Bus;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
@@ -33,6 +33,7 @@ import acr.browser.lightning.preference.PreferenceManager;
 /**
  * @author Khaled Tantawy
  */
+@SuppressLint("ViewConstructor")
 public class SearchView extends FrameLayout {
 
     private static final String TAG = SearchView.class.getSimpleName();
@@ -50,13 +51,13 @@ public class SearchView extends FrameLayout {
     SubscriptionsManager subscriptionsManager;
 
     @Inject
-    LocationCache locationCache;
-
-    @Inject
     MainActivityHandler handler;
 
     @Inject
     Bus bus;
+
+    @Inject
+    AppBackgroundManager appBackgroundManager;
 
     @Inject
     QueryManager queryManager;
@@ -76,7 +77,7 @@ public class SearchView extends FrameLayout {
         mReactView = engine.reactRootView;
         freshtab = new Freshtab(this.context);
         incognito = new Incognito(this.context);
-        mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
+        // mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
         mReactView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         final ViewGroup parent = (ViewGroup) mReactView.getParent();
@@ -109,6 +110,17 @@ public class SearchView extends FrameLayout {
             mReactView.bringToFront();
             freshtab.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
+            final Context context = getContext();
+            if (state.isIncognito()) {
+                appBackgroundManager.setViewBackgroundColor(mReactView,
+                        ContextCompat.getColor(context, R.color.fresh_tab_incognito_background));
+            } else if (preferenceManager.isBackgroundImageEnabled()) {
+                appBackgroundManager.setViewBackground(mReactView,
+                        ContextCompat.getColor(context, R.color.primary_color));
+            } else {
+                appBackgroundManager.setViewBackgroundColor(mReactView,
+                        ContextCompat.getColor(context, R.color.fresh_tab_background));
+            }
         }
     }
 
@@ -124,34 +136,17 @@ public class SearchView extends FrameLayout {
         preferences.putBoolean("incognito", state != null && state.isIncognito());
         preferences.putString("backend_country", preferenceManager.getCountryChoice().countryCode);
         preferences.putBoolean("suggestionsEnabled", preferenceManager.getQuerySuggestionEnabled());
+        boolean locationAccess = PermissionsManager.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
+        preferences.putString("share_location", locationAccess ? "yes" : "ask");
 
-        //TODO: need to discuss the problem in detail here. just a quick fix for now
-        try {
-            engine.getBridge().publishEvent(ExtensionEvents.CLIQZ_EVENT_SET_SEARCH_ENGINE, searchEngine.engineName, context.getString(searchEngine.engineUrl));
-            engine.getBridge().publishEvent(ExtensionEvents.CLIQZ_EVENT_NOTIFY_PREFERENCES, preferences);
-            engine.getBridge().publishEvent(ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS);
-        } catch (EngineNotYetAvailable engineNotYetAvailable) {
-            engineNotYetAvailable.printStackTrace();
-        }
-    }
 
-    public void notifySearchWebViewEvent(String eventName) {
-//        mReactView.notifyEvent(eventName);
+        engine.publishEvent(ExtensionEvents.CLIQZ_EVENT_SET_SEARCH_ENGINE, searchEngine.engineName, context.getString(searchEngine.engineUrl));
+        engine.publishEvent(ExtensionEvents.CLIQZ_EVENT_NOTIFY_PREFERENCES, preferences);
     }
 
     private void performSearch(String query) {
         queryManager.addOrIgnoreQuery(query);
         state.setQuery(query);
-        final Location location = locationCache.getLastLocation();
-        final boolean hasLocation = preferenceManager.getLocationEnabled() && location != null;
-        final double lat = hasLocation ? location.getLatitude() : 0.0;
-        final double lon = hasLocation ? location.getLongitude() : 0.0;
-
-        try {
-            engine.getBridge().publishEvent("search", query, hasLocation, lat, lon);
-        } catch (EngineNotYetAvailable engineNotYetAvailable) {
-            Log.i(TAG, "Can't get the brigde", engineNotYetAvailable);
-        }
     }
 
     public void onResume() {
@@ -183,12 +178,33 @@ public class SearchView extends FrameLayout {
 //        cardsView.requestCardUrl();
     }
 
-    public void updateQuery(String query) {
+    public void updateQuery(String query, int start, int count) {
+        String keyCode = "";
+        if (count == 0) {
+            keyCode = "Backspace";
+        } else if (count == 1) {
+            final String key = String.valueOf(query.charAt(start)).toUpperCase();
+            keyCode = "Key" + key;
+        }
+        WritableMap map = Arguments.createMap();
+        map.putString("keyCode", keyCode);
+        map.putBoolean("isTyped", true);
+        map.putString("query", query);
+        engine.publishEvent("urlbar:input", map);
         performSearch(query);
         bringToFront();
     }
 
     public boolean isFreshTabVisible() {
         return freshtab.getVisibility() == VISIBLE;
+    }
+
+    public void updateFreshTab() {
+        freshtab.updateFreshTab();
+    }
+
+    public void handleUrlbarFocusChange(boolean hasFocus) {
+        final String eventName = hasFocus ? ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS : ExtensionEvents.CLIQZ_EVENT_URL_BAR_BLUR;
+        engine.publishEvent(eventName, Arguments.createMap());
     }
 }

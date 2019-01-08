@@ -10,8 +10,6 @@
         android:id="@+id/empty_offers_icon_iv"
         android:layout_width="@dimen/overview_placeholder_icon_w"
         android:layout_height="@dimen/overview_placeholder_icon_h"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/oval_shape_white"
         android:scaleType="center"
         android:tint="@color/accent_color"
@@ -19,6 +17,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/text_padding"
+        android:textColor="@color/secondary_color_settings"
+        android:textSize="@dimen/text_no_layout_size"
         android:text="@string/no_offers_msg"/>
 
 </LinearLayout>

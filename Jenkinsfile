@@ -1,10 +1,9 @@
 #!/bin/env groovy
 
 node('us-east-1 && ubuntu && docker && !gpu') {
-    stage('Checkout') {
+    stage('Checkout SCM') {
         checkout scm
     }
-    sh "`aws ecr get-login --region=us-east-1 --no-include-email`"
     def apk = "app/build/outputs/apk/standardX86/debug/app-standard-x86-debug.apk"
     def instance_id = sh(returnStdout: true, script: '''
             aws ec2 run-instances --image-id ami-13050368 --count 1 --instance-type t2.medium --key-name android_ci_genymotion --security-group-ids sg-5bbf173f --subnet-id subnet-341ff61f  --region=us-east-1 --query "Instances[].InstanceId" --output text
@@ -35,7 +34,7 @@ node('us-east-1 && ubuntu && docker && !gpu') {
         def dockerfileChecksum = sh(returnStdout: true, script: 'md5sum Dockerfile | cut -d" " -f1').trim()
         def dockerTag = "${dockerfileChecksum}"
         def baseImageName = "browser-android/build:${dockerTag}"
-        stage('Build docker image') {
+        stage('Dockerize') {
             docker.withRegistry('https://141047255820.dkr.ecr.us-east-1.amazonaws.com'){
                     try {
                         def image = docker.image(baseImageName)
@@ -48,25 +47,39 @@ node('us-east-1 && ubuntu && docker && !gpu') {
             }
         }
 
-        def args = "-v ${pwd}/artifacts:/artifacts:rw"
+        def args = " -v ${pwd}/artifacts:/artifacts:rw"
         docker.image("141047255820.dkr.ecr.us-east-1.amazonaws.com/${baseImageName}").inside(args) {
-
-            stage('Extension') {
+            stage('Build Extension') {
               sh '''yarn && npm run dev-bundle'''
             }
-
-            stage('Compile') {
+            stage('Compile APK') {
                 sh './gradlew --stacktrace clean assembleStandardX86Debug'
             }
+        }
 
+        withEnv(["INSTANCE_ID=${instance_id}"]){
+            timeout(5){
+                stage('Genymotion Status'){
+                    def status = sh(returnStdout: true, script: """
+                            aws ec2 describe-instance-status --region=us-east-1 --instance-id $INSTANCE_ID --query 'InstanceStatuses[].InstanceStatus[].Details[].Status' --output text
+                        """).trim()
+                    while (status != 'passed') {
+                        println "Waiting for the instance to fully Boot up...."
+                        sleep(15)
+                        status = sh(returnStdout: true, script: """
+                            aws ec2 describe-instance-status --region=us-east-1 --instance-id $INSTANCE_ID --query 'InstanceStatuses[].InstanceStatus[].Details[].Status' --output text
+                        """).trim()
+                        println "Instance Status: ${status}"
+                    }
+                }
+            }
+        }
+
+        docker.image("141047255820.dkr.ecr.us-east-1.amazonaws.com/${baseImageName}").inside(args) {
             try{
                 withEnv(["IP=${ip}", "APP=${apk}", "platformName=android", "deviceName=127.0.0.1:5556"]){
                     withCredentials([file(credentialsId: 'f4141ff9-4dc0-4250-84b5-ef212d4fbb42', variable: 'FILE' )]){
                         stage('Run Tests') {
-                            sh '''#!/bin/bash -l
-                                npm uninstall -g appium || true
-                                npm uninstall wd || true
-                            '''
                             timeout(60) {
                                 sh'''#!/bin/bash -l
                                     set -x
@@ -76,9 +89,8 @@ node('us-east-1 && ubuntu && docker && !gpu') {
                                     ssh -v -o StrictHostKeyChecking=no -i $FILE -NL 5556:127.0.0.1:5555 root@$IP &
                                     ~/android_home/platform-tools/adb connect 127.0.0.1:5556
                                     ~/android_home/platform-tools/adb wait-for-device
-                                    npm install -g appium@1.7.1
-                                    npm install wd
                                     appium &
+                                    sleep 10
                                     export app=$PWD/$APP
                                     cd external/autobots
                                     chmod 0755 requirements.txt
@@ -93,31 +105,21 @@ node('us-east-1 && ubuntu && docker && !gpu') {
                 }
             }
             finally{
-                stage('Generate and Upload Results') {
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'external/autobots/*.log'
-                    zip archive: true, dir: 'external/autobots/screenshots', glob: '', zipFile: 'external/autobots/screenshots.zip'
-                    junit "external/autobots/test-reports/*.xml"
-                    def report_folder = sh(returnStdout: true, script: 'echo ${JOB_NAME#cliqz/browser/android-browser/}-${BUILD_NUMBER}').trim()
-                    withEnv(["REPORT_FOLDER=${report_folder}"]){
-                        sh '''#!/bin/bash -l
-                            set -x
-                            set -e
-                            cd external/autobots/unitth/
-                            cp unitth.* ../test-reports/
-                            cd ../test-reports/
-                            java -jar unitth.jar .
-                        '''
-                    }
-                    zip archive: true, dir: 'external/autobots/test-reports', glob: '', zipFile: 'external/autobots/reports.zip'
-                    //s3Upload bucket: 'cdn.cliqz.com', file: '${report_folder}', path: 'mobile/browser/reports/${report_folder}'
-                }
                 stage('Clean Up') {
                     sh '''#!/bin/bash -l
                         rm -rf node-modules
                         rm -rf jsengine/*
                         npm uninstall -g appium
                         npm uninstall wd
+                        rm -rf node-modules
+                        rm -rf jsengine/*
                     '''
+                }
+                stage('Upload Artifacts and Results') {
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'app/build/outputs/apk/standardX86/debug/app-standard-x86-debug.apk'
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'external/autobots/*.log'
+                    junit "external/autobots/test-reports/*.xml"
+                    zip archive: true, dir: 'external/autobots/screenshots', glob: '', zipFile: 'external/autobots/screenshots.zip'
                 }
             }
         }
@@ -126,7 +128,6 @@ node('us-east-1 && ubuntu && docker && !gpu') {
         sh """#!/bin/bash -l
             set -x
             set -e
-            aws ecr get-login --region=us-east-1 --no-include-email
             aws ec2 terminate-instances --instance-ids ${instance_id} --region=us-east-1
         """
     }

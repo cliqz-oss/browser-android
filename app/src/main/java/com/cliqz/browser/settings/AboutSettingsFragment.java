@@ -22,6 +22,7 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     private static final String SETTINGS_VERSION = "pref_version";
     private static final String EXTENSION_VERSION = "pref_ext_ver";
     private static final String AMAZON_ARN = "pref_arn";
+    private static final String SETTING_EULA = "pref_eula";
     private long startTime;
 
     @Override

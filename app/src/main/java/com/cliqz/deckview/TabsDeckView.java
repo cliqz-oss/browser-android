@@ -98,7 +98,7 @@ public class TabsDeckView extends FrameLayout {
 
     void closeTab(int position) {
         final CliqzBrowserState state = adapter.remove(position);
-        if (mListener == null) {
+        if (mListener == null || state == null) {
             return;
         }
         mListener.onTabClosed(position, state);

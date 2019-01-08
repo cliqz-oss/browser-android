@@ -6,29 +6,41 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.cliqz.browser.R;
 
 /**
- * Created by Ravjit on 25/02/16.
+ * @author Ravjit Uppal
  */
 public class PasswordDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "passwordManager";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private final DatabaseHandler dbHandler;
     private final Resources resources;
 
     private static final class LoginDetailsTable {
-        private LoginDetailsTable() {};
+        private LoginDetailsTable() {}
 
-        public static final String TABLE_NAME = "login_details";
+        static final String TABLE_NAME = "login_details";
 
         //Columns
         public static final String ID = "id";
-        public static final String DOMAIN = "domain";
-        public static final String LOGIN_ID = "login_id";
-        public static final String PASSWORD = "password";
+        static final String DOMAIN = "domain";
+        static final String LOGIN_ID = "login_id";
+        static final String PASSWORD = "password";
+    }
+
+    @SuppressWarnings("unused")
+    private static final class BlackListedDomainsTable {
+        private BlackListedDomainsTable() {}
+
+        static final String TABLE_NAME = "blacklisted_sites";
+
+        static final String ID = "id";
+        static final String DOMAIN = "domain";
     }
 
     public PasswordDatabase(Context context) {
@@ -42,21 +54,37 @@ public class PasswordDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            createV1DB(db);
+            createV2DB(db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
     }
 
-    private void createV1DB(SQLiteDatabase db) {
+    private void createV2DB(SQLiteDatabase db) {
         db.execSQL(resources.getString(R.string.create_login_details_table_v1));
         db.execSQL(resources.getString(R.string.create_login_url_index_v1));
+        db.execSQL(resources.getString(R.string.create_blacklist_table_v2));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.beginTransaction();
+        try {
+            switch (oldVersion) {
+                case 1:
+                    db.execSQL(resources.getString(R.string.create_blacklist_table_v2));
+                    db.setTransactionSuccessful();
+                    break;
+                default:
+                    db.execSQL("DROP TABLE IF EXISTS " + LoginDetailsTable.TABLE_NAME);
+                    db.execSQL("DROP TABLE IF EXISTS " + BlackListedDomainsTable.TABLE_NAME);
+                    createV2DB(db);
+                    db.setTransactionSuccessful();
+            }
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public synchronized void close() {
@@ -64,31 +92,39 @@ public class PasswordDatabase extends SQLiteOpenHelper {
         super.close();
     }
 
-    public synchronized LoginDetailItem getLoginDetails(String domain) {
+    @Nullable
+    public synchronized LoginDetailItem getLoginDetails(@Nullable String domain) {
+        if (domain == null || domain.isEmpty()) {
+            return null;
+        }
         final SQLiteDatabase db = dbHandler.getDatabase();
-        Cursor cursor = db.query(LoginDetailsTable.TABLE_NAME,
+        final Cursor cursor = db.query(LoginDetailsTable.TABLE_NAME,
                 new String[]{LoginDetailsTable.DOMAIN,LoginDetailsTable.LOGIN_ID,LoginDetailsTable.PASSWORD},
                 LoginDetailsTable.DOMAIN + " = ?", new String[]{domain}, null, null, null);
-        if (cursor.moveToFirst()) {
-            final int domainIndex = cursor.getColumnIndex(LoginDetailsTable.DOMAIN);
-            final int loginIdIndex = cursor.getColumnIndex(LoginDetailsTable.LOGIN_ID);
-            final int passwordIndex = cursor.getColumnIndex(LoginDetailsTable.PASSWORD);
-            final LoginDetailItem loginDetailItem = new LoginDetailItem(
-                    cursor.getString(domainIndex),
-                    cursor.getString(loginIdIndex),
-                    cursor.getString(passwordIndex));
-            return loginDetailItem;
-        } else {
-            return null;
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            if (cursor.moveToFirst()) {
+                final int domainIndex = cursor.getColumnIndex(LoginDetailsTable.DOMAIN);
+                final int loginIdIndex = cursor.getColumnIndex(LoginDetailsTable.LOGIN_ID);
+                final int passwordIndex = cursor.getColumnIndex(LoginDetailsTable.PASSWORD);
+                return new LoginDetailItem(
+                        cursor.getString(domainIndex),
+                        cursor.getString(loginIdIndex),
+                        cursor.getString(passwordIndex));
+            } else {
+                return null;
+            }
+        } finally {
+            cursor.close();
         }
     }
 
-    public synchronized void  saveLoginDetails(LoginDetailItem loginDetailItem) {
+    public synchronized void saveLoginDetails(@NonNull LoginDetailItem loginDetailItem) {
         final SQLiteDatabase db = dbHandler.getDatabase();
         final ContentValues loginDetailValues = new ContentValues();
-        loginDetailValues.put(LoginDetailsTable.DOMAIN, loginDetailItem.getDomain());
-        loginDetailValues.put(LoginDetailsTable.LOGIN_ID, loginDetailItem.getLoginId());
-        loginDetailValues.put(LoginDetailsTable.PASSWORD, loginDetailItem.getPassword());
+        loginDetailValues.put(LoginDetailsTable.DOMAIN, loginDetailItem.domain);
+        loginDetailValues.put(LoginDetailsTable.LOGIN_ID, loginDetailItem.loginId);
+        loginDetailValues.put(LoginDetailsTable.PASSWORD, loginDetailItem.password);
         db.beginTransaction();
         try {
             db.insertWithOnConflict(LoginDetailsTable.TABLE_NAME, null, loginDetailValues,
@@ -97,6 +133,45 @@ public class PasswordDatabase extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
 
+        }
+    }
+
+    public synchronized void addDomainToBlackList(@Nullable String domain) {
+        if (domain == null || domain.isEmpty()) {
+            return;
+        }
+        final SQLiteDatabase db = dbHandler.getDatabase();
+        final ContentValues contentValues = new ContentValues();
+        contentValues.put(BlackListedDomainsTable.DOMAIN, domain);
+        db.beginTransaction();
+        try {
+            db.insert(BlackListedDomainsTable.TABLE_NAME, null, contentValues);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public synchronized boolean isDomainBlackListed(@Nullable String domain) {
+        if (domain == null || domain.isEmpty()) {
+            return true;
+        }
+        final String query = "SELECT * FROM " + BlackListedDomainsTable.TABLE_NAME + " WHERE "
+                + BlackListedDomainsTable.DOMAIN + " =?";
+        final Cursor cursor = dbHandler.getDatabase().rawQuery(query, new String[]{domain});
+        final boolean result = cursor.moveToFirst();
+        cursor.close();
+        return result;
+    }
+
+    public synchronized void clearBlackList() {
+        final SQLiteDatabase db = dbHandler.getDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(BlackListedDomainsTable.TABLE_NAME, null, null);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
         }
     }
 

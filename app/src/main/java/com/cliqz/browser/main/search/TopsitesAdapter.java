@@ -2,18 +2,24 @@ package com.cliqz.browser.main.search;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.webview.Topsite;
 import com.cliqz.jsengine.Engine;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import acr.browser.lightning.database.HistoryDatabase;
+import acr.browser.lightning.preference.PreferenceManager;
 
 /**
  * @author Khaled Tantawy
@@ -33,13 +39,17 @@ public class TopsitesAdapter extends BaseAdapter {
     private List<Topsite> topsites;
     private final Engine engine;
     private final Handler handler;
+    private final PreferenceManager preferenceManager;
 
     // private final Context context;
 
-    TopsitesAdapter(HistoryDatabase database, Engine engine, Handler handler) {
+    @Inject
+    TopsitesAdapter(HistoryDatabase database, Engine engine, MainActivityHandler handler,
+                    PreferenceManager preferenceManager) {
         this.historyDatabase = database;
         this.engine = engine;
         this.handler = handler;
+        this.preferenceManager = preferenceManager;
     }
 
     void fetchTopsites() {
@@ -89,7 +99,7 @@ public class TopsitesAdapter extends BaseAdapter {
                 if (convertView == null) {
                     // if it's not recycled, initialize some attributes
                     convertView = inflater.inflate(R.layout.topsites_layout, parent, false);
-                    row = new TopsitesViewHolder(convertView);
+                    row = new TopsitesViewHolder(convertView,position);
                     convertView.setTag(row);
                 } else {
                     row = (TopsitesViewHolder) convertView.getTag();
@@ -97,6 +107,9 @@ public class TopsitesAdapter extends BaseAdapter {
                 final Topsite topsite = topsites.get(position);
                 row.setTopsite(topsite);
                 row.domainView.setText(topsite.domain);
+                row.domainView.setTextColor(ContextCompat.getColor(context,
+                        preferenceManager.isBackgroundImageEnabled() ?
+                                R.color.white : R.color.black));
 
                 loadIcon(row, topsite.url);
                 break;

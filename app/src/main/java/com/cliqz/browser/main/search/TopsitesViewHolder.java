@@ -12,10 +12,13 @@ import com.cliqz.browser.webview.Topsite;
 class TopsitesViewHolder extends IconViewHolder {
     private volatile Topsite mTopsite;
     final TextView domainView;
+    private final int draggedPosition;
+    private int positionAtParent;
 
-    TopsitesViewHolder(View convertView) {
+    TopsitesViewHolder(View convertView,int draggedPosition) {
         super(convertView);
         domainView = (TextView) convertView.findViewById(R.id.domain_view);
+        this.draggedPosition = draggedPosition;
     }
 
     synchronized void setTopsite(Topsite topsite) {
@@ -28,5 +31,17 @@ class TopsitesViewHolder extends IconViewHolder {
 
     public Topsite getTopsite() {
         return mTopsite;
+    }
+
+    public int getPositionAtParent() {
+        return positionAtParent;
+    }
+
+    public void setPositionAtParent(int positionAtParent) {
+        this.positionAtParent = positionAtParent;
+    }
+
+    public int getDraggedPosition() {
+        return draggedPosition;
     }
 }

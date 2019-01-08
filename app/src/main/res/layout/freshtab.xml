@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:fillViewport="true"
-    android:background="@color/fresh_tab_background"
+    android:background="@null"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -30,10 +31,15 @@
             android:id="@+id/news_widget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:elevation="3dp"
             android:orientation="vertical"
-            android:background="@color/white">
+            android:background="@null">
 
             <TextView
                 android:id="@+id/news_label"
@@ -41,8 +47,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/news_label"
                 android:textSize="18sp"
-                android:textColor="@color/white"
-                android:background="@color/black"
+                android:textColor="@color/black"
+                android:background="@color/fresh_tab_news_background_color"
                 tools:drawableRight="@drawable/ic_action_expand"
                 android:gravity="center_vertical"
                 android:paddingTop="5dp"
@@ -56,7 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:id="@+id/topnews_list" />
+                android:id="@+id/topnews_list"
+                android:background="@null"/>
         </LinearLayout>
 
     </LinearLayout>

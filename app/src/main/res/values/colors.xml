@@ -87,8 +87,11 @@
     <color name="attrack_red_4">#FBCDD1</color>
     <color name="text_highlight_color">#ade1f5</color>
     <color name="fresh_tab_background">#E7ECEE</color>
-    <color name="fresh_tab_incognito_background">#1B1B1B</color>
-    <color name="fresh_tab_placeholder_color">#DBE1E4</color>
+    <color name="fresh_tab_incognito_background">#4A4A4A</color>
+    <color name="fresh_tab_placeholder_color">#4FFF</color>
+    <color name="fresh_tab_news_background_color">#CFFF</color>
     <color name="text_hint_color_press">#89000000</color>
     <color name="text_hint_color_default">#60000000</color>
+    <color name="progress_bar_bg">#E7ECEE</color>
+    <color name="progress_bar_color">#2B5993</color>
 </resources>

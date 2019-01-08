@@ -199,7 +199,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final String url = (data instanceof String) ? (String) data : null;
                 if (url != null) {
-                    bridge.bus.post(new CliqzMessages.OpenLink(url));
+                    bridge.bus.post(CliqzMessages.OpenLink.open(url));
                 }
             }
         }),
@@ -222,7 +222,7 @@ public class CliqzBridge extends Bridge {
                 final BrowserActionTypes action = BrowserActionTypes.fromTypeString(typePar);
                 switch (action) {
                     case map:
-                        bridge.bus.post(new CliqzMessages.OpenLink(dataPar));
+                        bridge.bus.post(CliqzMessages.OpenLink.open(dataPar));
                         break;
                     default:
                         final Intent intent = action.getIntent(webView.getContext(), dataPar);
@@ -317,13 +317,6 @@ public class CliqzBridge extends Bridge {
                         Log.e(TAG, "Can't find any callback reference", e);
                     }
                 }
-            }
-        }),
-
-        shareLocation(new EnhancedAction<CliqzBridge>() {
-            @Override
-            protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
-                bridge.bus.post(new Messages.AskForLocationPermission());
             }
         }),
 

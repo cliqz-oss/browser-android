@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -38,7 +39,6 @@ import android.webkit.URLUtil;
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
-import com.cliqz.browser.app.BrowserApp;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -224,7 +224,7 @@ public final class Utils {
         }
     }
 
-    private static boolean deleteDir(File dir) {
+    static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
             for (String aChildren : children) {
@@ -428,13 +428,7 @@ public final class Utils {
      * @param url Url or string with the base64 data
      */
     public static void writeBase64ToStorage(final Activity activity, final String url) {
-        String downloadLocation = BrowserApp.getAppComponent().getPreferenceManager().getDownloadDirectory();
-        if (downloadLocation != null) {
-            downloadLocation = addNecessarySlashes(downloadLocation);
-        } else {
-            downloadLocation = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
-            BrowserApp.getAppComponent().getPreferenceManager().setDownloadDirectory(downloadLocation);
-        }
+        final String downloadLocation = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
         final String base64ImageData = url.replace("data:image/jpeg;base64,", "");
         FileOutputStream fos;
         try {
@@ -609,6 +603,19 @@ public final class Utils {
             }
         }
         return array;
+    }
+
+    public static boolean isFirstInstall(Context context) {
+        final PackageInfo packageInfo;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context
+                            .getPackageName(),
+                    0);
+            return packageInfo.firstInstallTime == packageInfo.lastUpdateTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG,e.getMessage(),e);
+            return true;
+        }
     }
 
 }

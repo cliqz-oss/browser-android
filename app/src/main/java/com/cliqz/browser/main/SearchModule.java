@@ -36,7 +36,7 @@ public class SearchModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void openLink(String url) {
         if (url != null) {
-            bus.post(new CliqzMessages.OpenLink(url));
+            bus.post(CliqzMessages.OpenLink.open(url));
             Log.d(TAG, "Open link: " + url);
         }
     }

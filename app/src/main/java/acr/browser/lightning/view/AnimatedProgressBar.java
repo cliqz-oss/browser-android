@@ -4,16 +4,16 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import com.cliqz.browser.R;
 
@@ -32,7 +32,7 @@ import com.cliqz.browser.R;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class AnimatedProgressBar extends LinearLayout {
+public class AnimatedProgressBar extends FrameLayout {
 
     private int mProgress = 0;
     private boolean mBidirectionalAnimate = true;
@@ -69,11 +69,8 @@ public class AnimatedProgressBar extends LinearLayout {
             array.recycle();
         }
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.animated_progress_bar, this, true);
-
-
-        this.setBackgroundColor(backgroundColor);           // set the background color for this view
+        inflate(context, R.layout.animated_progress_bar, this);
+        this.setBackgroundColor(backgroundColor); // set the background color for this view
 
     }
 
@@ -82,6 +79,7 @@ public class AnimatedProgressBar extends LinearLayout {
      *
      * @return progress of the view
      */
+    @SuppressWarnings("unused")
     public int getProgress() {
         return mProgress;
     }
@@ -89,12 +87,17 @@ public class AnimatedProgressBar extends LinearLayout {
     private final Paint mPaint = new Paint();
     private final Rect mRect = new Rect();
 
+
     @Override
     protected void onDraw(Canvas canvas) {
-        mPaint.setColor(mProgressColor);
-        mPaint.setStrokeWidth(10);
-        mRect.right = mRect.left + mDrawWidth;
-        canvas.drawRect(mRect, mPaint);
+        if (getVisibility() == VISIBLE) {
+            mPaint.setColor(mProgressColor);
+            mPaint.setStrokeWidth(10);
+            mRect.right = mRect.left + mDrawWidth;
+            canvas.drawRect(mRect, mPaint);
+        } else {
+            canvas.drawColor(Color.TRANSPARENT);
+        }
     }
 
     /**
@@ -106,13 +109,11 @@ public class AnimatedProgressBar extends LinearLayout {
      * @param progress an integer between 0 and 100
      */
     public void setProgress(int progress) {
-
-        if (progress > 100) {       // progress cannot be greater than 100
-            progress = 100;
-        } else if (progress < 0) {  // progress cannot be less than 0
-            progress = 0;
+        if (getVisibility() != VISIBLE) {
+            return;
         }
 
+        progress = Math.max(0, Math.min(100, progress));
         if (this.getAlpha() < 1.0f) {
             fadeIn();
         }

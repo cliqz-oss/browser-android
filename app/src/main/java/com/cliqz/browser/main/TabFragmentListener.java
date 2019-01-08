@@ -7,7 +7,6 @@ import android.view.View;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.telemetry.TelemetryKeys;
-import com.cliqz.browser.webview.ExtensionEvents;
 import com.cliqz.browser.widget.SearchBar;
 
 import acr.browser.lightning.utils.Utils;
@@ -30,6 +29,10 @@ class TabFragmentListener implements SearchBar.Listener {
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
+        final SearchView searchView = fragment.searchView;
+        if (searchView != null) {
+            searchView.handleUrlbarFocusChange(hasFocus);
+        }
         Mode mode = fragment.state.getMode();
         if (!hasFocus) {
             fragment.telemetry.sendURLBarBlurSignal(fragment.state.isIncognito(),
@@ -55,7 +58,6 @@ class TabFragmentListener implements SearchBar.Listener {
             fragment.resetFindInPage();
             fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(),
                     fragment.getTelemetryView());
-            fragment.searchView.notifySearchWebViewEvent(ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS);
             ViewCompat.setElevation(fragment.mStatusBar, Utils.dpToPx(5));
         }
     }
@@ -81,9 +83,9 @@ class TabFragmentListener implements SearchBar.Listener {
         final SearchView searchView = fragment.searchView;
         final boolean shouldSend = (((start + count) != before) ||
                 !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
-        if (searchView != null && shouldSend) {
+        if (searchView != null && shouldSend && !q.equals(fragment.mLightningView.getUrl())) {
             fragment.lastQuery = q;
-            searchView.updateQuery(q);
+            searchView.updateQuery(q, start, count);
         }
         // TODO Stefano Are we shure?
         //        if (q.length() == 0 && fragment.querySuggestor != null) {
@@ -107,13 +109,13 @@ class TabFragmentListener implements SearchBar.Listener {
         }
         fragment.state.setMode(Mode.SEARCH);
         final String url = fragment.mLightningView.getUrl();
-        if (url.toLowerCase().startsWith(TrampolineConstants.CLIQZ_SCHEME)) {
+        if (url.toLowerCase().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME+"=")) {
             searchBar.setSearchText("");
         } else {
             searchBar.setSearchText(url);
         }
         searchBar.selectAllText();
-        fragment.searchView.updateQuery("");
+        fragment.searchView.updateQuery("", 0, -1);
         fragment.mShowWebPageAgain = true;
         fragment.hideYTIcon();
     }

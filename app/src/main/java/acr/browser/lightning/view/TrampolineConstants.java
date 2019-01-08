@@ -2,18 +2,21 @@ package acr.browser.lightning.view;
 
 /**
  * @author Stefano Pacifici
- * @date 2016/02/25
  */
+@SuppressWarnings("WeakerAccess")
 public final class TrampolineConstants {
+    public static final String TRAMPOLINE_COMMAND_PARAM_NAME = "cliqz_cmd";
+    public static final String TRAMPOLINE_COMMAND_CLOSE = "close";
+    public static final String TRAMPOLINE_COMMAND_GOTO = "goto";
+    public static final String TRAMPOLINE_COMMAND_SEARCH="search";
+    public static final String TRAMPOLINE_QUERY_PARAM_NAME = "cliqz_q";
+    public static final String TRAMPOLINE_RESET_PARAM_NAME = "cliqz_r";
+    public static final String TRAMPOLINE_FROM_HISTORY_PARAM_NAME = "cliqz_h";
+    public static final String TRAMPOLINE_COMMAND_HISTORY = "history";
+    public static final String TRAMPOLINE_PAGE_TITLE = "trampoline";
+
+    public static final String TRAMPOLINE_COMMAND_CLOSE_FORMAT = TRAMPOLINE_COMMAND_PARAM_NAME +
+            "=" + TRAMPOLINE_COMMAND_CLOSE;
+
     private TrampolineConstants() {} // No instances
-
-    public static final String CLIQZ_SCHEME = "cliqz";
-    public static final String CLIQZ_TRAMPOLINE_AUTHORITY = "trampoline";
-    public static final String CLIQZ_TRAMPOLINE_GOTO_PATH = "/goto.html";
-    public static final String CLIQZ_TRAMPOLINE_SEARCH_PATH = "/search.html";
-    public static final String CLIQZ_TRAMPOLINE_CLOSE_PATH = "/close.html";
-    public static final String CLIQZ_TRAMPOLINE_HISTORY_PATH = "/history.html";
-
-    public static final String CLIQZ_TRAMPOLINE_PREFIX = String.format("%s://%s", CLIQZ_SCHEME, CLIQZ_TRAMPOLINE_AUTHORITY);
-    public static final String CLIQZ_TRAMPOLINE_GOTO = String.format("%s%s", CLIQZ_TRAMPOLINE_PREFIX, CLIQZ_TRAMPOLINE_GOTO_PATH);
 }

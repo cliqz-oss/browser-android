@@ -66,6 +66,7 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
                 Utils.showSnackbar(mainActivity, mainActivity.getString(R.string.download_failed));
             }
         }
+        cursor.close();
     }
 
     private Intent createFileIntent(String uri, String mediaType) {

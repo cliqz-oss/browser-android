@@ -55,7 +55,8 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
     public void bringToFront() {
         final ViewGroup container = (ViewGroup) getParent();
         //return if the view is already on top
-        if (container.getChildAt(container.getChildCount() - 1).getId() == getId()) {
+        if (container != null &&
+                container.getChildAt(container.getChildCount() - 1).getId() == getId()) {
             return;
         }
         super.bringToFront();

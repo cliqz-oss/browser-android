@@ -1,6 +1,7 @@
 package com.cliqz.browser.main.search;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
@@ -25,6 +27,7 @@ import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
@@ -36,7 +39,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.UrlUtils;
+import acr.browser.lightning.utils.Utils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -62,9 +65,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     @Bind(R.id.news_label)
     TextView newsLabel;
 
-    RemoveTopsitesOverlay overlay;
+    @Bind(R.id.container)
+    ScrollView contanier;
 
-    private TopsitesAdapter topsitesAdapter;
+    RemoveTopsitesOverlay removeTopsitesOverlay;
+
+    @Inject
+    TopsitesAdapter topsitesAdapter;
 
     @Inject
     Bus bus;
@@ -85,10 +92,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     MainActivityHandler handler;
 
     @Inject
+    AppBackgroundManager appBackgroundManager;
+
+    @Inject
     LocationCache locationCache;
 
     private final Drawable expandNewsIcon, collapseNewsIcon;
-    private boolean isNewsExpanded = false;
+    private boolean isNewsExpanded = true;
 
     public Freshtab(Context context) {
         this(context, null);
@@ -106,12 +116,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     }
 
     private void init() {
-        inflate(getContext(), R.layout.freshtab, this);
-
+        final Context context = getContext();
+        inflate(context, R.layout.freshtab, this);
+        setBackgroundColor(ContextCompat.getColor(context, R.color.fresh_tab_background));
         this.setVisibility(View.VISIBLE);
         ButterKnife.bind(this, this);
 
-        final MainActivityComponent component = BrowserApp.getActivityComponent(getContext());
+        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
@@ -119,8 +130,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 expandNewsIcon, null);
 
-        overlay = new RemoveTopsitesOverlay(this);
-        topsitesAdapter = new TopsitesAdapter(historyDatabase, engine, handler);
+        removeTopsitesOverlay = new RemoveTopsitesOverlay(this);
 
         topsitesGridView.setAdapter(topsitesAdapter);
 
@@ -128,6 +138,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 new TopsitesEventsListener(this);
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
+        topsitesGridView.setOnTouchListener(topsitesEventsListener);
         updateFreshTab();
     }
 
@@ -174,6 +185,14 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         // TODO @Khaled: please pull news every 30 minutes instead every time the view is brought to front
         refreshTopsites();
         getTopnews();
+        final Context context = getContext();
+        if (preferenceManager.isBackgroundImageEnabled()) {
+            appBackgroundManager.setViewBackground(this,
+                    ContextCompat.getColor(context, R.color.primary_color));
+        } else {
+            appBackgroundManager.setViewBackgroundColor(this,
+                    ContextCompat.getColor(context, R.color.fresh_tab_background));
+        }
     }
 
     public void refreshTopsites() {
@@ -216,8 +235,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             final NewsViewHolder holder = new NewsViewHolder(view, count++, piece, telemetry, bus);
             holder.setUrl(piece.url);
             holder.titleView.setText(buildTitleSpannable(piece));
-            holder.urlView.setText(UrlUtils.getTopDomain(piece.url));
-            engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), piece.url);
+            holder.urlView.setText(piece.domain);
+            engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), piece.domain);
             if (!isNewsExpanded && count > COLLAPSED_NEWS_NO) {
                 view.setVisibility(GONE);
             }

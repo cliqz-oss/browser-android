@@ -204,7 +204,7 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
 
     @SuppressWarnings("UnusedParameters")
     @Subscribe
-    public void pairingError(SyncEvents.PairingError ignored) {
+    public void pairingError(CliqzMessages.NotifyPairingError ignored) {
         // Just display an error dialog
         telemetry.sendConnectPairingSignal(System.currentTimeMillis() - mConnectionStartedTime, false);
         PairingErrorDialog.show(this);
@@ -212,7 +212,7 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
 
     @SuppressWarnings("UnusedParameters")
     @Subscribe
-    public void pairingSuccess(SyncEvents.PairingSuccess ignored) {
+    public void pairingSuccess(CliqzMessages.NotifyPairingSuccess ignored) {
         telemetry.sendConnectPairingSignal(System.currentTimeMillis() - mConnectionStartedTime, true);
         if (mService != null) {
             mService.requestPairingData();

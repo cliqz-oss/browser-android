@@ -1,0 +1,25 @@
+apply plugin: 'groovy'
+
+targetCompatibility = '1.7'
+sourceCompatibility = '1.7'
+
+//create a single Jar with all dependencies
+task('testdroid-cli', type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': '1.0',
+                'Main-Class': 'TestDroid'
+    }
+    baseName = project.name + '-cli'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+dependencies {
+    compile 'com.testdroid:testdroid-api:2.39'
+    compile 'org.codehaus.groovy:groovy-all:2.4.7'
+    compile 'commons-cli:commons-cli:1.2'
+    compile("jline:jline:2.11") {
+        exclude(group: 'junit', module: 'junit')
+    }
+}

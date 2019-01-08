@@ -5,11 +5,9 @@ import com.cliqz.browser.connect.PairedDevicesFragment;
 import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.controlcenter.ControlCenterComponent;
 import com.cliqz.browser.controlcenter.ControlCenterModule;
-import com.cliqz.browser.facebook.FbInvocationHandler;
 import com.cliqz.browser.gcm.MessageListenerService;
 import com.cliqz.browser.gcm.NotificationDismissedReceiver;
 import com.cliqz.browser.gcm.RegistrationIntentService;
-import com.cliqz.browser.reactnative.BrowserActions;
 import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
 import com.cliqz.browser.main.OnBoardingHelper;
@@ -21,16 +19,17 @@ import com.cliqz.browser.peercomm.PeerCommBridge;
 import com.cliqz.browser.peercomm.PeerWebView;
 import com.cliqz.browser.qrscanner.CaptureFragment;
 import com.cliqz.browser.qrscanner.CodeScannerActivity;
+import com.cliqz.browser.reactnative.AutoCompletion;
+import com.cliqz.browser.reactnative.BrowserActions;
+import com.cliqz.browser.reactnative.GeoLocationModule;
 import com.cliqz.browser.reactnative.PermissionManagerModule;
 import com.cliqz.browser.reactnative.QuerySuggestion;
-import com.cliqz.browser.reactnative.AutoCompletion;
 import com.cliqz.browser.reactnative.TelemetryModule;
 import com.cliqz.browser.settings.BaseSettingsFragment;
 import com.cliqz.browser.telemetry.InstallReferrerReceiver;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.HistoryCleaner;
-import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.browser.webview.Bridge;
 import com.cliqz.browser.widget.AutocompleteEditText;
@@ -75,9 +74,6 @@ public interface AppComponent {
 
     void inject(AutocompleteEditText autocompleteEditText);
 
-    void inject(PasswordManager passwordManager);
-
-
     void inject(HistoryCleaner historyCleaner);
 
     void inject(RegistrationIntentService registrationIntentService);
@@ -101,8 +97,6 @@ public interface AppComponent {
     void inject(SyncActivity activity);
 
     void inject(CaptureFragment captureFragment);
-
-    void inject(FbInvocationHandler fbInvocationHandler);
 
     void inject(TopsitesAdapter topsitesAdapter);
 
@@ -133,4 +127,6 @@ public interface AppComponent {
     void inject(PermissionManagerModule permissionManagerModule);
 
     void inject(TelemetryModule telemetryModule);
+
+    void inject(GeoLocationModule geoLocationModule);
 }

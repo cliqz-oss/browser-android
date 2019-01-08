@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -148,6 +149,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
         db.execSQL(res.getString(R.string.create_queries_table_v7));
     }
 
+
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -242,9 +244,13 @@ public class HistoryDatabase extends SQLiteOpenHelper {
             historyID = db.insert(HistoryTable.TABLE_NAME, null, historyValues);
             db.setTransactionSuccessful();
             return historyID;
+        } catch (Exception e) {
+            // We do not want to crash if we can't update history
+            Log.e(TAG, "Error updating history", e);
         } finally {
             db.endTransaction();
         }
+        return -1;
     }
 
     /**
@@ -594,6 +600,21 @@ public class HistoryDatabase extends SQLiteOpenHelper {
                 db.update(UrlsTable.TABLE_NAME, contentValues, null, null);
             }
             db.delete(QueriesTable.TABLE_NAME, null, null);
+
+            //way to flush ghost entries on older sqlite version
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                db.execSQL(res.getString(R.string.create_temp_urls_table_v6));
+                db.execSQL("INSERT into urls_temp SELECT * from urls");
+                db.execSQL("drop table urls");
+                db.execSQL("drop table queries");
+                db.execSQL(res.getString(R.string.create_urls_table_v6));
+                db.execSQL(res.getString(R.string.create_queries_table_v7));
+                db.execSQL(res.getString(R.string.create_urls_index_v5));
+                db.execSQL(res.getString(R.string.create_visits_index_v5));
+                db.execSQL("INSERT into urls SELECT * from urls_temp");
+                db.execSQL("drop table urls_temp");
+            }
+
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

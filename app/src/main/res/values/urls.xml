@@ -11,5 +11,5 @@
     <string name="ecosia_url" translatable="false">https://www.ecosia.org/search?q=</string>
     <string name="startpage_url" translatable="false">https://startpage.com/do/search?query=</string>
     <string name="qwant_url" translatable="false">https://www.qwant.com/?t=all&amp;q=</string>
-    <string name="myoffrz_url" translatable="false">https://cliqz.com/myoffrz</string>
+    <string name="myoffrz_url">https://cliqz.com/en/myoffrz</string>
 </resources>

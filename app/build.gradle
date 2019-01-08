@@ -7,12 +7,13 @@ apply from: 'cliqz.gradle'
 android {
     compileSdkVersion compile_sdk_version 
     buildToolsVersion "26.0.2"
+    compileOptions.encoding = "UTF-8"
 
     defaultConfig {
         targetSdkVersion 23
         minSdkVersion 16
-        versionCode 87
-        versionName "1.6.2.4"
+        versionCode 100
+        versionName "1.7.3.1"
         multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
@@ -63,6 +64,14 @@ android {
                     'src/standard/res',
             ]
         }
+        ghostery {
+            java.srcDirs += [
+                    'src/standard/java',
+            ]
+            res.srcDirs += [
+                    'src/standard/res',
+            ]
+        }
         huawei {
             java.srcDirs += [
                     'src/standard/java',
@@ -80,6 +89,12 @@ android {
         standard {
             dimension "api"
             versionCode 5
+        }
+        ghostery {
+            dimension "api"
+            versionCode 5
+            // TODO use the original Ghostery application id
+            applicationId 'com.cliqz.ghostery'
         }
         amazon {
             dimension "api"
@@ -121,7 +136,7 @@ dexcount {
 
 repositories {
     flatDir {
-        dirs 'aars'
+        dirs 'libs'
     }
     jcenter()
     maven {
@@ -153,8 +168,8 @@ dependencies {
     implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
     // event bus
+    implementation name:'nove-0.2.1000'
     annotationProcessor 'com.cliqz:nove-compiler:0.2.0'
-    implementation 'com.cliqz:nove:0.2.0'
     
     // dependency injection
     implementation 'com.android.support:multidex:1.0.1'
@@ -204,15 +219,6 @@ dependencies {
     
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
-    
-    // Facebook Core only (Analytics)
-    // Checkout how we use this in FacebookWrapper.java.
-    // When upgrading the version number check the output manifest for shady providers or stuff
-    // that get initialised automatically
-    implementation 'com.facebook.android:facebook-core:4.28.0'
-
-    // Facebook App Links only
-    implementation 'com.facebook.android:facebook-applinks:4.28.0'
 
     // Fresco
     implementation 'com.facebook.fresco:fresco:1.4.0'

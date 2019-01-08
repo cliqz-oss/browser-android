@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils
 
 
 enum DistributionChannel {
-    STANDARD(~/standard.*/, 0), AMAZON(~/amazon.*/, 2), HUAWEI(~/huawei.*/, 4)
+    STANDARD(~/standard.*/, 0), AMAZON(~/amazon.*/, 2), GHOSTERY(~/ghostery.*/, 3), HUAWEI(~/huawei.*/, 4)
 
     final regexp
     final channel
@@ -99,7 +99,7 @@ def createBloomFilter(File outputDir) {
     blackList.eachLine { line ->
         lineCount++;
     }
-    def bloomFilter = BloomFilter.create(lineCount, 0.00001)
+    def bloomFilter = BloomFilter.create(lineCount, 0.0001)
     blackList.eachLine { line ->
         bloomFilter.put(line.substring(1, line.indexOf("\"", 1)));
     }
@@ -185,6 +185,8 @@ preBuild.doLast {
             variant.name =~ it.regexp
         }
         final buildType = variant.buildType.debuggable ? BuildType.DEBUG : BuildType.RELEASE
+        variant.resValue 'string', 'application_id', variant.applicationId
         variant.buildConfigField 'String', 'TELEMETRY_CHANNEL', "\"MA${channel.channel}${buildType.value}\""
+        println(variant.applicationId)
     }
 }

@@ -18,9 +18,12 @@
   },
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
-    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/react-native/3.22.6/aa51cf4.tgz",
+    "@cliqz/indexeddbshim": "3.4.1",
+    "browser-core": "http://cdn2.cliqz.com/update/edge/react-native/v3.26/3.26.2.tgz",
     "buffer": "5.0.7",
+    "core-js": "2.5.3",
     "https-browserify": "1.0.0",
+    "number-to-locale-string": "1.1.0",
     "path-browserify": "0.0.0",
     "pouchdb-adapter-react-native-sqlite": "1.0.3",
     "pouchdb-react-native": "6.3.4",
@@ -39,7 +42,6 @@
     "url": "^0.11.0"
   },
   "resolutions": {
-    "**/core-js": "2.5.1",
     "**/moment": "2.19.3",
     "**/caniuse-lite": "1.0.30000780",
     "**/errno": "0.1.4",

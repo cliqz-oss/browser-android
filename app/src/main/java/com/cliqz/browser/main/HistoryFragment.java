@@ -3,13 +3,13 @@ package com.cliqz.browser.main;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
@@ -21,6 +21,9 @@ import com.cliqz.nove.Subscribe;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * @author Stefano Pacifici
  * @author Ravjit Singh
@@ -29,19 +32,22 @@ public class HistoryFragment extends FragmentWithBus {
 
     private boolean isMultiSelect;
     private HistoryAdapter adapter;
-    private RecyclerView historyListView;
     private final ArrayList<HistoryModel> historyList = new ArrayList<>();
     private View contextualToolBar;
     private TextView contextualToolBarTitle;
-    private TextView noHistoryMessage;
+
+    @Bind(R.id.history_rview)
+    RecyclerView historyListView;
+
+    @Bind(R.id.no_history_ll)
+    LinearLayout noHistoryMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        historyListView = null;
         contextualToolBar = ((OverviewFragment)getParentFragment()).contextualToolBar;
         contextualToolBarTitle = contextualToolBar.findViewById(R.id.contextual_title);
         final View view = inflater.inflate(R.layout.fragment_history_recyclerview, container, false);
-        noHistoryMessage = view.findViewById(R.id.no_history_tv);
+        ButterKnife.bind(this,view);
         return view;
     }
 
@@ -72,7 +78,7 @@ public class HistoryFragment extends FragmentWithBus {
                     if (isMultiSelect) {
                         multiSelect(position);
                     } else if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_HISTORY) {
-                        bus.post(new CliqzMessages.OpenLink(historyList.get(position).getUrl()));
+                        bus.post(CliqzMessages.OpenLink.openFromHistory(historyList.get(position).getUrl()));
                     } else if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_QUERY) {
                         bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
                     }
@@ -129,10 +135,10 @@ public class HistoryFragment extends FragmentWithBus {
     }
 
     private void prepareRecyclerView() {
-        if (historyListView != null) {
+        final View view = getView();
+        if (view == null) {
             return;
         }
-        historyListView = getView().findViewById(R.id.history_rview);
         historyListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //callback to handle swipe and delete
@@ -252,7 +258,7 @@ public class HistoryFragment extends FragmentWithBus {
         }
         isMultiSelect = true;
         getParentFragment().setHasOptionsMenu(false);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        setDisplayHomeAsUpEnabled(false);
         contextualToolBar.setVisibility(View.VISIBLE);
     }
 
@@ -265,7 +271,7 @@ public class HistoryFragment extends FragmentWithBus {
         adapter.multiSelectList.clear();
         adapter.notifyDataSetChanged();
         getParentFragment().setHasOptionsMenu(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setDisplayHomeAsUpEnabled(true);
         contextualToolBar.setVisibility(View.GONE);
     }
 }

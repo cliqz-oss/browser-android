@@ -261,7 +261,8 @@ public class SearchBar extends FrameLayout {
         // Be sure to not set the trampoline as the title
         final String nnTitle = title == null ? "" : title;
         final Uri titleAsUri = Uri.parse(nnTitle);
-        if (TrampolineConstants.CLIQZ_SCHEME.equals(titleAsUri.getScheme())) {
+        if (TrampolineConstants.TRAMPOLINE_PAGE_TITLE.equals(nnTitle) || titleAsUri != null && titleAsUri.isHierarchical() && titleAsUri
+                .getQueryParameter(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) != null) {
             return;
         }
         titleBar.setText(title);

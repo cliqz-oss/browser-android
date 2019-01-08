@@ -15,10 +15,12 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
@@ -37,6 +39,7 @@ import com.cliqz.browser.main.Messages.ControlCenterStatus;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.WebRequest;
+import com.cliqz.nove.Bus;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -128,48 +131,24 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         final String cliqzPath = String.format(Locale.US, "%s%d", CLIQZ_PATH, view.hashCode());
         final String path = uri.getPath();
 
-        if (TrampolineConstants.CLIQZ_SCHEME.equals(uri.getScheme())) {
-            // Urls with the cliqz scheme
-            if (TrampolineConstants.CLIQZ_TRAMPOLINE_AUTHORITY.equals(uri.getAuthority())) {
-                if (TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO_PATH.equals(path)) {
-                    final Resources resources = view.getResources();
-                    return new WebResourceResponse("text/html", "UTF-8",
-                                    resources.openRawResource(R.raw.trampoline_forward));
-                }
-                if (TrampolineConstants.CLIQZ_TRAMPOLINE_SEARCH_PATH.equals(path)) {
-                    final String query = uri.getQueryParameter("q");
-                    lightningView.telemetry.sendBackPressedSignal("web", "cards", query.length());
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            lightningView.eventBus.post(new Messages.ShowSearch(query));
-                        }
-                    });
-                    return createOKResponse();
-                }
-                if (TrampolineConstants.CLIQZ_TRAMPOLINE_CLOSE_PATH.equals(path)) {
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            lightningView.eventBus.post(new BrowserEvents.CloseTab());
-                        }
-                    });
-                }
-                if (TrampolineConstants.CLIQZ_TRAMPOLINE_HISTORY_PATH.equals(path)) {
-                    lightningView.telemetry.sendBackPressedSignal("web", "history", 0);
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            lightningView.eventBus.post(new Messages.GoToOverview());
-                            if (lightningView.canGoBack()) {
-                                lightningView.goBack();
-                            } else {
-                                lightningView.eventBus.post(new Messages.ShowSearch(""));
-                            }
-                        }
-                    });
-                    return createOKResponse();
-                }
+        final Set<String> uriParams = uri.isHierarchical() ?
+                uri.getQueryParameterNames() : null;
+
+//        if (TrampolineConstants.CLIQZ_SCHEME.equals(uri.getScheme())&&
+//                TrampolineConstants.CLIQZ_TRAMPOLINE_AUTHORITY.equals(uri.getAuthority())) {
+        if (uriParams != null &&
+                uriParams.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+            final String cmd =
+                    uri.getQueryParameter(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME);
+            if (TrampolineConstants.TRAMPOLINE_COMMAND_GOTO.equals(cmd)) {
+                final Resources resources = view.getResources();
+                return new WebResourceResponse("text/html", "UTF-8",
+                                resources.openRawResource(R.raw.trampoline_forward));
+            }
+            if (handleSearchCommand(view, cmd, uri) ||
+                    handleCloseCommand(view, cmd, uri) ||
+                    handleHistoryCommand(view, cmd,uri)) {
+                return createOKResponse();
             }
         } else if (cliqzPath.equals(path)) {
             // Urls with the special CLIQZ Path
@@ -182,26 +161,81 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         return null;
     }
 
+    private boolean handleHistoryCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
+        if (TrampolineConstants.TRAMPOLINE_COMMAND_HISTORY.equals(cmd)) {
+            lightningView.telemetry.sendBackPressedSignal("web", "history", 0);
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    lightningView.eventBus.post(new Messages.GoToHistory());
+                    if (lightningView.canGoBack()) {
+                        lightningView.goBack();
+                    } else {
+                        lightningView.eventBus.post(new Messages.ShowSearch(""));
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleCloseCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
+        if (TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE.equals(cmd)) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    lightningView.eventBus.post(new BrowserEvents.CloseTab());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleSearchCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
+        if (TrampolineConstants.TRAMPOLINE_COMMAND_SEARCH.equals(cmd)) {
+            final String query = uri.getQueryParameter(TrampolineConstants.TRAMPOLINE_QUERY_PARAM_NAME);
+            lightningView.telemetry.sendBackPressedSignal("web", "cards", query.length());
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    lightningView.eventBus.post(new Messages.ShowSearch(query));
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
     private WebResourceResponse createOKResponse() {
-        return new WebResourceResponse("test/plain", "UTF-8",
+        return new WebResourceResponse("text/plain", "UTF-8",
                         new ByteArrayInputStream("OK".getBytes()));
+    }
+
+    private <T> void post(View view, final T msg) {
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                lightningView.eventBus.post(msg);
+            }
+        });
     }
 
     @SuppressLint("ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
-    public void onPageFinished(WebView view, String url) {
+    public void onPageFinished(WebView view, final String url) {
         if (view.isShown()) {
-            lightningView.eventBus.post(new BrowserEvents.UpdateUrl(url,true));
+            post(view, new BrowserEvents.UpdateUrl(url,true));
             view.postInvalidate();
         }
         final String title = view.getTitle();
         if (title != null &&
                 !title.isEmpty() &&
-                !title.startsWith(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO) &&
-                !TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO.equals(url)) {
+                !TrampolineConstants.TRAMPOLINE_PAGE_TITLE.equals(title)) {
             lightningView.mTitle.setTitle(view.getTitle());
-            lightningView.eventBus.post(new Messages.UpdateTitle());
+            post(view, new Messages.UpdateTitle());
             if (!lightningView.isIncognitoTab()) {
                 lightningView.persister.persist(lightningView.getId(), title, url, view);
             }
@@ -216,12 +250,14 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             lightningView.passwordManager.injectJavascript(view);
         }
         ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
-        lightningView.eventBus.post(new CliqzMessages.OnPageFinished());
+        post(view, new CliqzMessages.OnPageFinished());
     }
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         final Uri uri = Uri.parse(url);
+        final Set<String> params = uri.isHierarchical() ? uri.getQueryParameterNames() : null;
+
         final String host = uri.getHost();
         if (lightningView.lightingViewListenerListener != null) {
             lightningView.lightingViewListenerListener.onFavIconLoaded(favicon);
@@ -255,12 +291,19 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             }
         }
         if(lightningView.telemetry.backPressed) {
-            if(url != null && !url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
+            if(params != null && params.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
                 if(lightningView.telemetry.showingCards) {
                     lightningView.telemetry.sendBackPressedSignal("cards", "web", url.length());
                     lightningView.telemetry.showingCards = false;
                 } else {
                     lightningView.telemetry.sendBackPressedSignal("web", "web", url.length());
+                }
+                final String cmd =
+                        uri.getQueryParameter(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // Oreo does not call shouldInterceptRequest if the url is the same of the
+                    // current page, so we need to handle the trampoline here
+                    handleSearchCommand(view, cmd, uri);
                 }
             }
             lightningView.telemetry.backPressed = false;
@@ -478,7 +521,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             }
             return true;
         }
-        if(!url.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_GOTO)) {
+        if(!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             lightningView.telemetry.sendNavigationSignal(url.length());
         }
         return false;

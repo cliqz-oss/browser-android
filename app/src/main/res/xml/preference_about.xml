@@ -10,49 +10,47 @@
         android:key="pref_ext_ver"
         android:title="@string/extension_version" />
     <PreferenceCategory android:title="@string/licenses">
-        <Preference
-            android:summary="@string/mpl_license"
-            android:title="@string/app_name">
+        <Preference android:title="@string/privacy_policy">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.mozilla.org/MPL/2.0/">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF" />
-            </intent>
+                android:data="@string/privacy_policy_url"
+                android:targetClass="com.cliqz.browser.main.MainActivity"
+                android:targetPackage="@string/application_id" />
+        </Preference>
+        <Preference
+            android:key="pref_eula"
+            android:title="@string/eula">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.cliqz.browser.settings.EulaSettingActivity"
+                android:targetPackage="@string/application_id" />
         </Preference>
         <Preference
             android:summary="@string/apache"
             android:title="@string/android_open_source_project">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://www.apache.org/licenses/LICENSE-2.0">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF" />
-            </intent>
+                android:data="http://www.apache.org/licenses/LICENSE-2.0"
+                android:targetClass="com.cliqz.browser.main.MainActivity"
+                android:targetPackage="@string/application_id" />
         </Preference>
         <Preference
             android:summary="@string/freeware"
             android:title="@string/hphosts_ad_server_list">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://hosts-file.net/">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF" />
-            </intent>
+                android:data="http://hosts-file.net/"
+                android:targetClass="com.cliqz.browser.main.MainActivity"
+                android:targetPackage="@string/application_id" />
         </Preference>
         <Preference
-            android:title="@string/crux"
-            android:summary="@string/apache">
+            android:summary="@string/apache"
+            android:title="@string/crux">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/chimbori/crux/blob/master/LICENSE.txt">
-                <extra
-                    android:name="SOURCE"
-                    android:value="SELF"/>
-            </intent>
+                android:data="https://github.com/chimbori/crux/blob/master/LICENSE.txt"
+                android:targetClass="com.cliqz.browser.main.MainActivity"
+                android:targetPackage="@string/application_id" />
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

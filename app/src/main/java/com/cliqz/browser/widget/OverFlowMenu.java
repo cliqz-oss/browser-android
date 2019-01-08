@@ -648,6 +648,7 @@ public class OverFlowMenu extends FrameLayout {
                 historyDatabase.setFavorites(mUrl, mTitle, System.currentTimeMillis(), false);
                 Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
             }
+            OverFlowMenu.this.dismiss();
         }
     };
 }

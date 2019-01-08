@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Nowa karta</string>
     <string name="action_copy">Kopiuj link</string>
     <string name="settings">Ustawienia</string>
@@ -28,7 +27,7 @@
     <string name="download_no_sdcard_dlg_title">Brak karty SD</string>
     <string name="block_ads">Blokowanie reklam</string>
     <string name="message_insecure_connection">Połączenie z tą stroną nie jest bezpieczne: %1$s\nCzy chcesz kontynuować mimo wszystko?</string>
-    <string name="licenses">Licencje wolnego oprogramowania</string>
+    <string name="licenses">Zasady i licencje</string>
     <string name="message_certificate_expired">certyfikat wygasł</string>
     <string name="message_certificate_invalid">certyfikat jest nieprawidłowy</string>
     <string name="message_certificate_domain_mismatch">domena, dla której wydano certyfikat jest różna od domeny odwiedzanej</string>
@@ -36,7 +35,7 @@
     <string name="message_text_copied">Tekst skopiowano do schowka</string>
     <string name="download_no_sdcard_dlg_msg">Pamięć USB jest niezbędna do pobrania pliku.</string>
     <string name="download_sdcard_busy_dlg_title">Pamięć USB jest niedostępna</string>
-    <string name="problem_download">Wykryto nieprawidłowy URL, pobieranie jest niemożliwe</string>
+    <string name="problem_download">Nieprawidłowy URL, pobranie jest niemożliwe</string>
     <string name="problem_location_download">Pobieranie do wybranej lokalizacji nie jest możliwe</string>
     <string name="close_tabs_on_exit">Zamknij karty przy zamykaniu</string>
     <string name="location">Dostęp do geolokalizacji</string>
@@ -65,7 +64,6 @@
     <string name="clear_cookies_exit">Wyczyść ciasteczka przy zamykaniu</string>
     <string name="clear_history_exit">Wyczyść historię przy zamykaniu</string>
     <string name="untitled">Bez tytułu</string>
-    <string name="mpl_license">Mozilla Public Licence v. 2.0</string>
     <string name="freeware">Freeware</string>
     <string name="android_open_source_project">Projekt Wolnego Oprogramowania dla Androida</string>
     <string name="hphosts_ad_server_list">Lista filtrów hpHosts</string>
@@ -92,7 +90,7 @@
     <string name="enable_human_web">Włącz Human Web</string>
     <string name="humanweb">Human Web</string>
     <string name="about_humanweb_url">https://cliqz.com/en/whycliqz/human-web</string>
-    <string name="share_link">Udostępnij używając</string>
+    <string name="share_link">Udostępnij za pomocą</string>
     <string name="shared_using">Udostępnione przez Cliqz na Androida</string>
     <string name="gps_permission">Aktywuj GPS, aby uzyskać lepsze wyniki wyszukiwania</string>
     <string name="open_in_new_tab">Otwórz w nowej karcie</string>
@@ -111,14 +109,13 @@
     <string name="in_page_search_next_result">Następny wynik wyszukiwania na stronie</string>
     <string name="in_page_search_prev_result">Poprzedni wynik wyszukiwania na stronie</string>
     <string name="close_in_page_search">Zamknij wyszukiwanie na stronie</string>
-    <string name="download_successful">Pobieranie pliku zakończone</string>
-    <string name="download_failed">Pobieranie pliku nie powiodło się</string>
+    <string name="download_successful">Pobieranie zakończone</string>
+    <string name="download_failed">Pobieranie nie powiodło się</string>
     <string name="app_not_found">Nie wykryto właściwej aplikacji</string>
     <string name="settings_block_ads">Blokowanie reklam (Beta)</string>
-    <string name="optimized_block_ads">Sprawiedliwe blokowanie reklam</string>
-    <string name="what_does_optimized_mean">Co znaczy \'sprawiedliwe\'?</string>
-    <string name="optimized_block_ads_description">Blokada reklam w Cliqz jest w tym momencie w fazie beta. W wersji finalnej dostępne będą następujące opcje: Zezwól na dobre reklamy (ustawienie domyślne), Blokuj wszystkie reklamy, Zezwól na wszystkie reklamy.\n
-Więcej na https://cliqz.com/whycliqz/adblocking</string>
+    <string name="optimized_block_ads">Uczciwe blokowanie reklam</string>
+    <string name="what_does_optimized_mean">Co znaczy \'uczciwe\'?</string>
+    <string name="optimized_block_ads_description">Blokada reklam w Cliqz jest w fazie beta. W wersji finalnej dostępne będą następujące opcje: Zezwól na uczciwe reklamy (ustawienie domyślne), Blokuj wszystkie reklamy, Zezwól na wszystkie reklamy.\nWięcej na https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Obejrzyj film w trybie offline</string>
     <string name="overview">Przegląd</string>
     <string name="open_tabs">Otwarte karty</string>
@@ -136,7 +133,7 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="download_started">Pobieranie pliku zostało rozpoczęte</string>
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="others">Inne</string>
-    <string name="exit">Wyjdź</string>
+    <string name="exit">Wyjście</string>
     <string name="view">Zobacz</string>
     <string name="tab_created">Karta została utworzona</string>
     <string name="home_title">Najczęściej odwiedzane strony i wiadomości</string>
@@ -190,7 +187,7 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="report_site">Zgłoś stronę</string>
     <string name="clear_passwords">Usuń hasła</string>
     <string name="clear_passwords_message">Czy chciałbyś usunąć zapisane hasła?</string>
-    <string name="msg_pairing_instructions_dialog">Otwórz przeglądarkę Cliqz na swoim komputerze (lub pobierz ją z cliqz.com).</string>
+    <string name="msg_pairing_instructions_dialog">Otwórz przeglądarkę Cliqz na swoim komputerze (lub pobierz z cliqz.com).</string>
     <string name="pairing_information">Połącz Cliqz na swoim urządzeniu mobilnym z Cliqz na Twoim komputerze. Umożliwi Ci to przesyłanie kart pomiędzy przeglądarką desktopową i urządzeniem mobilnym. Możesz także ściągać filmy bezpośrednio z przeglądarki desktopowej na swoje urządzenie mobilne.</string>
     <string name="pairing_error_message">Połączenie między urządzeniami nie powiodło się. Spróbuj ponownie.</string>
     <string name="pairing_error_title">Połączenie nie powiodło się</string>
@@ -203,18 +200,18 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="pairing_device_rename_title">Zmień nazwę połączenia</string>
     <string name="pairing_device_rename_message">Wprowadź nową nazwę połączenia:</string>
     <string name="pairing_device_rename_hint">Nowa nazwa</string>
-    <string name="query_suggestion">Podpowiedzi wyszukiwarki</string>
+    <string name="query_suggestion">Podpowiedzi wyszukiwania</string>
     <string name="request_location_access">Czy chcesz zezwolić przeglądarce Cliqz na dostęp do informacji o geolokalizacji?</string>
     <string name="msg_connecting_to_desktop">Łączenie z przeglądarką desktopową…</string>
-    <string name="freshtab_no_topsites">Strony odwiedzane przez Ciebie najczęściej pojawią się tutaj</string>
-    <string name="action_done">Zrobione</string>
+    <string name="freshtab_no_topsites">Twoje najczęściej odwiedzane strony pojawią się tutaj</string>
+    <string name="action_done">Gotowe</string>
     <string name="action_undo">Cofnij</string>
     <string name="resume_tab_dialog_title">Przywróć otwarte karty</string>
     <string name="resume_tab_dialog_msg">Czy chcesz przywrócić wszystkie poprzednio otwarte karty?</string>
     <string name="action_resume">Przywróć</string>
     <string name="action_close_all_tabs">Zamknij wszystkie karty</string>
     <string name="msg_new_icon">Hej, logo Cliqz jest teraz niebieskie. Sprawdź nową wersję aplikacji!</string>
-    <string name="auto_forget_tab">Automatyczna zmiana w tryb prywatny</string>
+    <string name="auto_forget_tab">Automatyczny tryb prywatny</string>
     <string name="showcase_youtube_title">Asystent pobierania plików</string>
     <string name="showcase_youtube_message">Pobierz filmy z YouTube na swój smartfon.</string>
     <string name="please_wait">Proszę czekać…</string>
@@ -245,8 +242,8 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="search_hint">Szukaj</string>
     <string name="allow_write_permission">Zezwól na zapis danych, aby skorzystać z tej funkcjonalności.</string>
     <string name="share_card_email_subject">Odkryłem to w Cliqz Browser</string>
-    <string name="no_history">Tutaj znajdziesz swoją historię.\n\nDo tej pory nie wyszukałeś ani nie odwiedziłeś żadnej strony.</string>
-    <string name="no_favorites">Tutaj znajdziesz swoje ulubione.\n\nDo tej pory nie stworzyłeś żadnych ulubionych.</string>
+    <string name="no_history">Tutaj znajdziesz swoją historię.</string>
+    <string name="no_favorites">Tutaj znajdziesz swoje ulubione.</string>
     <string name="download_pending">Oczekuje na pobranie</string>
     <string name="message_url_copied">Adres URL skopiowany do schowka</string>
     <string name="control_center_header_overview">PRZEGLĄD</string>
@@ -318,4 +315,37 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
         <item quantity="many">wybranych elementów</item>
         <item quantity="other">wybranych elementów</item>
     </plurals>
+    <string name="welcome_cliqz">Witamy w Cliqz!</string>
+    <string name="agree_privacy_policy_cliqz">Używając tej aplikacji, akceptujesz
+         &lt;font color=\'#00aef0\'&gt;Politykę Prywatności Cliqz &lt;/font&gt;</string>
+    <string name="accept">Akceptuj</string>
+    <string name="settings_show_background_image">Pokaż tapetę</string>
+    <string name="menu">Menu</string>
+    <string name="android_app_settings_title">Uprawnienia lokalizacji</string>
+    <string name="make_default_browser">Ustaw jako domyślną przeglądarkę</string>
+    <string name="default_browser_title">Cliqz jako domyślna przeglądarka</string>
+    <string name="default_browser_message">Wygląda na to, że chętnie korzystasz z Cliqz. Czy chcesz ustawić tę przeglądarkę jako domyślną?</string>
+    <string name="proceed">POTWIERDŹ</string>
+    <string name="save">ANULUJ</string>
+    <string name="never">NIE</string>
+    <string name="save_password_text">Czy chcesz aby Cliqz zapamiętał hasło do tej witryny?</string>
+    <string name="privacy_policy">Polityka prywatności</string>
+    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
+    <string name="eula">EULA</string>
+    <string name="eula_text">Przeglądarka Cliqz dla systemu Android jest zbudowana na otwartym projekcie &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
+ Browser open source project&lt;/a&gt; i jest udostępniana na warunkach &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, licencja wolnego
+ oprogramowania, która daje prawo do uruchomienia programu w dowolnym celu, poznania jego działania oraz prawa do dawania kopii znajomym w celu modyfikacji, aby lepiej spełniał twoje potrzeby. Nie ma osobnej umowy licencyjnej użytkownika końcowego (EULA).</string>
+    <string name="title_activity_eula_setting">EULA</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Strona usunięta</item>
+        <item quantity="few">%d Strony usunięte</item>
+        <item quantity="many">%d Stron usuniętych</item>
+    </plurals>
+    <string name="privacy_policy_title">Polityka prywatności - Cliqz</string>
+<string name="settings_show_my_offrz">Pokaż MyOffrz</string>
+    <string name="settings_about_my_offrz">O MyOffrz</string>
+    <string name="myoffrz_activation_description">Aktywuj MyOffrz, aby otrzymywać atrakcyjne oferty i rabaty.</string>
+    <string name="settings_category_user_data_choices">Dane zbierane przez Cliqz</string>
+    <string name="send_usage_data">Interakcje z programem</string>
+    <string name="send_usage_data_summary">Pomóż nam udoskonalić Cliqz. Wszysztkie dane zbierane przez Cliqz są anonimowe.</string>
 </resources>

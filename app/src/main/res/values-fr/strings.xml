@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Nouvel onglet</string>
     <string name="action_copy">Copier le lien</string>
     <string name="settings">Préférences</string>
@@ -56,7 +56,7 @@
     <string name="download_sdcard_busy_dlg_title">Aucun stockage USB disponible</string>
     <string name="download_sdcard_busy_dlg_msg">Le périphérique de stockage est occupé. Pour autoriser les téléchargements, veuillez désactiver le stockage USB dans les notifications.</string>
     <string name="message_text_copied">Texte copié dans le presse-papier</string>
-    <string name="licenses">Licenses Open Source</string>
+    <string name="licenses">Politiques et licences</string>
     <string name="block_ads">Bloquer les pubs</string>
     <string name="message_insecure_connection">La connexion à ce site n\'est pas sécurisée :
 %1$s
@@ -80,7 +80,6 @@ Continuer tout de même ?</string>
     <string name="clear_cookies_exit">Supprimer les cookies lors de la fermeture</string>
     <string name="clear_history_exit">Supprimer l\'historique lors de la fermeture</string>
     <string name="untitled">Sans titre</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Logiciel gratuit</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
@@ -118,7 +117,7 @@ Continuer tout de même ?</string>
     <string name="deleting_in_progress_message">Suppression…</string>
     <string name="add_to_favourites">Ajouter aux marque-pages</string>
     <string name="save_link">Enregistrer le lien</string>
-    <string name="news_notification">Notifications de l\'actualité</string>
+    <string name="news_notification">Notifications sur l\'actualité</string>
     <string name="restore_top_sites">Restaurer les sites les plus visités </string>
     <string name="message_restore_top_sites">La page de démarrage montre les sites les plus visités</string>
     <string name="descr_search_bar">Barre de recherche</string>
@@ -261,8 +260,8 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="dialog_notification_disabled_msg">Cette fonctionnalité nécessite l\'activation des notifications. Allez dans \"Paramètres Système\" pour activer les notifications puis réessayez.</string>
     <string name="allow_write_permission">Veuillez autoriser l\'accès au \"Stockage\" pour activer cette fonctionnalité.</string>
     <string name="share_card_email_subject">J\'ai découvert ça grâce au navigateur Cliqz</string>
-    <string name="no_history">Retrouvez votre historique ici.\n\nVous n\'avez pas encore recherché ou visité de site.</string>
-    <string name="no_favorites">Retrouvez vos sites favoris ici.\n\nVous n\'avez pas encore enregistré de favoris.</string>
+    <string name="no_history">Retrouvez votre historique ici.</string>
+    <string name="no_favorites">Retrouvez vos sites favoris ici.</string>
     <string name="download_pending">Téléchargement en cours</string>
     <string name="message_url_copied">URL copiée</string>
     <string name="control_center_header_overview">APERÇU</string>
@@ -293,43 +292,74 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Abonnements &amp; Notifications</string>
     <string name="settings_category_others">Autres</string>
-    <string name="settings_show_top_sites">Afficher vos sites webs les plus visités</string>
+    <string name="settings_show_top_sites">Afficher vos sites web les plus visités</string>
     <string name="settings_show_news">Afficher l\'Actualité</string>
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Attribuer</string>
-    <string name="clear_private_data">Supprimer les données personnelles à la sortie</string>
-    <string name="clear_data_summary">Cliqz supprimera automatiquement vos données dès que vous sélectionnerez \"Sortir\" dans le menu principal.</string>
+    <string name="clear_private_data">Supprimer les données personnelles à la fermeture</string>
+    <string name="clear_data_summary">Cliqz supprimera automatiquement vos données dès que vous sélectionnerez \"Quitter\" dans le menu principal.</string>
     <string name="find_hint">Chercher</string>
     <string name="settings_category_download">Options de téléchargements</string>
-    <string name="limit_data_usage">Limiter l\'utilisation des données mobiles</string>
-    <string name="limit_data_usage_summary">Télécharger des vidéos uniquement via Wifi</string>
-    <string name="no_wi_fi_title">Aucune connection Wifi</string>
-    <string name="no_wi_fi_message">Vous n\'êtes pas connectés au Wifi. Pour télécharger des vidéos via vos données mobiles, allez à Préférences &gt; Général &gt; Options de téléchargements</string>
+    <string name="limit_data_usage">Limiter l\'utilisation de la connexion mobile</string>
+    <string name="limit_data_usage_summary">Télécharger les vidéos uniquement via Wifi</string>
+    <string name="no_wi_fi_title">Aucune connexion Wifi</string>
+    <string name="no_wi_fi_message">Vous n\'êtes pas connecté au Wifi. Pour télécharger des vidéos via votre connexion mobile, allez dans Préférences &gt; Général &gt; Options de téléchargements</string>
     <string name="dismiss">IGNORER</string>
-    <string name="top_news">Actualité à la Une</string>
+    <string name="top_news">Actualités</string>
     <string name="last_site">Dernier Site</string>
     <string name="empty_history">Votre historique est vide</string>
     <string name="tabs_word">Onglets</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
-    <string name="myoffrz_onboarding_description">Recevoir des réductions intéréssantes et de bonnes affaires avec MyOffrz</string>
+    <string name="myoffrz_onboarding_description">Recevoir des réductions et de bonnes affaires avec MyOffrz</string>
     <string name="order_now_label">Commander maintenant !</string>
     <string name="tap_code_to_copy_label">Toucher le code pour copier</string>
     <string name="terms_and_conditions_label">Termes et conditions</string>
     <string name="message_code_copied">Code copié</string>
     <string name="can_not_download_in_directory_title">Dossier invalide</string>
-    <string name="can_not_download_in_directory_msg">L\'application ne peut accéder au dossier sélectionner. Veuillez en sélectionner un accessible.</string>
-    <string name="powered_by_kicker">powered by kicker online</string>
+    <string name="can_not_download_in_directory_msg">L\'application ne peut accéder au dossier sélectionné. Veuillez en sélectionner un accessible.</string>
+    <string name="powered_by_kicker">Fourni par Kicker Online</string>
     <string name="reset_subscriptions">Réinitialiser tous vos abonnements</string>
     <string name="reset_subscriptions_title">Réinitialiser tous vos abonnements</string>
-    <string name="reset_subscriptions_title_msg">Voulez vous réinitialiser tous vos abonnements (ex. à la Ligue 1) ?</string>
+    <string name="reset_subscriptions_title_msg">Voulez-vous réinitialiser tous vos abonnements (ex. à la Ligue 1) ?</string>
     <string name="subscriptions_resetted_toast">Tous vos abonnements ont été réinitialisés</string>
     <string name="no_offers_msg">Ici vous trouverez une nouvelle offre chaque semaine</string>
     <string name="myoffrz_settings_header">À propos de MyOffrz</string>
     <string name="news_label">Actualité</string>
     <plurals name="items">
-        <item quantity="one">%d item sélectionné</item>
-        <item quantity="other">%d items sélectionnés</item>
+	<item quantity="one">%d entrée sélectionnée</item>
+	<item quantity="other">%d entrées sélectionnées</item>
     </plurals>
+    <string name="privacy_policy_url">https://cliqz.com/fr/privacy-browser</string>
+    <string name="settings_show_background_image">Afficher l\'image d\'arrière plan</string>
+    <string name="menu">Menu</string>
+    <string name="android_app_settings_title">Autorisations de position</string>
+    <string name="make_default_browser">Définir comme navigateur par défault</string>
+    <string name="default_browser_title">Cliqz come navigateur par défault</string>
+    <string name="default_browser_message">Il semble que vous aimez utiliser Cliqz. Voulez-vous le définir comme navigateur par défault ?</string>
+    <string name="proceed">APPLIQUER</string>
+    <string name="save">ENREGISTRER</string>
+    <string name="never">JAMAIS</string>
+    <string name="save_password_text">Voulez-vous que Cliqz enregistre votre mot de passe pour ce site ?</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="eula">CGU</string>
+    <string name="eula_text">Le navigateur Cliqz pour Android est basé sur le &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;projet open source
+Lightning Browser&lt;/a&gt; et est mis à votre disposition selon les termes de la &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, une licence
+ de logiciel libre, qui vous donne le droit d\'exécuter le programme à toute fin, d\'étudier comment cela fonctionne, de fournir des copies à vos amis et les modifier pour mieux répondre à vos besoins. Il n\'existe pas de conditions générales d\'utilisation (CGU) distinctes.</string>
+    <string name="title_activity_eula_setting">CGU</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Site supprimé</item>
+        <item quantity="other">%d Sites supprimé</item>
+    </plurals>
+    <string name="welcome_cliqz">Bienvenu sur Cliqz !</string>
+    <string name="agree_privacy_policy_cliqz">Em utilisant cette application, vous acceptez les termes la &lt;font color="#00aef0"&gt;politique de confidentialié de Cliqz&lt;/font&gt;</string>
+    <string name="accept">ACCEPTER</string>
+    <string name="privacy_policy_title">Politique de confidentialité - Cliqz</string>
+<string name="settings_show_my_offrz">Montrer MyOffrz</string>
+    <string name="settings_about_my_offrz">À propos de MyOffrz</string>
+    <string name="myoffrz_activation_description">Activer MyOffrz pour recevoir des remises et offres attractives.</string>
+    <string name="settings_category_user_data_choices">Collecte de données</string>
+    <string name="send_usage_data_summary">Aidez-nous à améliorer votre expérience de navigation. Ces données d\'utilisation sont uniquement composées de statistiques anonymes, qui ne contiennent pas d\'information à caractère personnel.</string>
+    <string name="send_usage_data">Autoriser la collecte de données d\'utilisation</string>
 </resources>

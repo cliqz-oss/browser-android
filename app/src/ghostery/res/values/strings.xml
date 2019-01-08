@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2013 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name">Ghostery</string>
+    <string name="shared_using">Shared with Ghostery for Android</string>
+    <string name="optimized_block_ads_description">The Ghostery Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads.\nMore https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Ghostery has blocked access to %1$s because it has been reported as a phishing website.\nPhishing websites disguise as other sites you may trust in order to trick you into disclosing your login, password or other sensitive information.\n[Learn more|https://cliqz.com/en/whycliqz/anti-phishing]</string>
+    <string name="showcase_antitracking_message">You are in control: Ghostery Anti-Tracking protects your privacy</string>
+    <string name="rate_us">Rate Ghostery</string>
+    <string name="summary_adblock_data">Please note: Ghostery has to download some data packages first, before the ad-blocker works efficiently. For this, the app must be connected to Wi-Fi.</string>
+    <string name="tips_and_tricks">Get the best out of Ghostery</string>
+    <string name="duck_url" translatable="false">https://duckduckgo.com/?t=com.cliqz.browser&amp;q=</string>
+    <string name="msg_pairing_instructions_dialog">Open Ghostery Browser on your computer (or get it from ghostery.com).</string>
+    <string name="pairing_information">Connect Ghostery on your mobile device with Cliqz on your computer. This will allow you to send links or download YouTube videos from your desktop straight to your smartphone or tablet.</string>
+    <string name="request_location_access">Allow Ghostery Browser to access this device\'s location</string>
+
+    <!-- Incognito mode strings -->
+    <string name="action_incognito">New Ghost Tab</string>
+    <string name="open_in_incognito_tab">Open in new Ghost Tab</string>
+    <string name="switched_to_forget" >Automatic Ghost Tab enabled</string>
+    <string name="open_link_forget_tab">Open link in Ghost Tab</string>
+    <string name="open_image_forget_tab">Open image in Ghost Tab</string>
+    <string name="incognito_tab_title">Ghost Tab</string>
+</resources>

@@ -11,8 +11,6 @@
         android:id="@+id/icon_view"
         android:layout_width="@dimen/freshtab_icons_size"
         android:layout_height="@dimen/freshtab_icons_size"
-        app:roundWithOverlayColor="@color/fresh_tab_background"
-        app:roundedCornerRadius="5dp"
         tools:ignore="ContentDescription" />
 
     <TextView

@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -90,10 +91,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     header.id == R.id.tips_and_tricks
             )) {
                 iterator.remove();
-            } else if (!isOffrzAvailable && header.id == R.id.myoffrz) {
-                iterator.remove();
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
                     && header.id == R.id.ad_block) {
+                iterator.remove();
+            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
+                    && header.id == R.id.default_browser) {
                 iterator.remove();
             } else {
                 fragments.add(new HeaderInfo(header.fragment, header.id));
@@ -113,6 +115,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        if (position >= fragments.size()) {
+            return;
+        }
         final HeaderInfo info = fragments.get(position);
         if (info.id == R.id.imprint) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.IMPRINT, TelemetryKeys.MAIN);
@@ -127,9 +132,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             openUrl(getString(R.string.tips_and_tricks_url));
         } else if (info.id == R.id.report_site) {
             openUrl(getString(R.string.report_site_url));
-        } else if (info.id == R.id.myoffrz) {
-            telemetry.sendSettingsMenuSignal(TelemetryKeys.ABOUT_MYOFFRZ, TelemetryKeys.MAIN);
-            openUrl(getString(R.string.myoffrz_url));
+        } else if (info.id == R.id.default_browser){
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.MAKE_DEFAULT, TelemetryKeys.MAIN);
+            final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
+            startActivity(intent);
         } else {
             super.onListItemClick(l, v, position, id);
         }

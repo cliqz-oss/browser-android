@@ -1,5 +1,6 @@
 package com.cliqz.browser.telemetry;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,12 +39,12 @@ import acr.browser.lightning.preference.PreferenceManager;
 */
 public class Telemetry {
 
-  // This tag is only used to quick filter the telemetry stuff on the console using this command:
-  // adb logcat '*:S TELEMETRY_DEBUG'
-  private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
+    // This tag is only used to quick filter the telemetry stuff on the console using this command:
+    // adb logcat '*:S TELEMETRY_DEBUG'
+    private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
 
-  private static final int BATCH_SIZE = 50;
-  private JSONArray mSignalCache = new JSONArray();
+    private static final int BATCH_SIZE = 50;
+    private JSONArray mSignalCache = new JSONArray();
 
     private final PreferenceManager preferenceManager;
     private final HistoryDatabase historyDatabase;
@@ -233,7 +234,12 @@ public class Telemetry {
             return;
         }
         timings.setLastEnvSingalTime();
-        final int historySize = historyDatabase.getHistoryItemsCount();
+        int historySize = 0;
+        try {
+            historySize = historyDatabase.getHistoryItemsCount();
+        } catch (Throwable throwable) {
+            logError(TelemetryKeys.ENVIRONMENT);
+        }
         JSONObject signal = new JSONObject();
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.ENVIRONMENT);
@@ -268,7 +274,6 @@ public class Telemetry {
         JSONObject prefsJson = new JSONObject();
         try {
             prefsJson.put(TelemetryKeys.BLOCK_EXPLICIT, preferenceManager.getBlockAdultContent());
-            prefsJson.put(TelemetryKeys.LOCATION_ACCESS, preferenceManager.getLocationEnabled());
             prefsJson.put(TelemetryKeys.ENABLE_COOKIES, preferenceManager.getCookiesEnabled());
             prefsJson.put(TelemetryKeys.SAVE_PASSWORDS, preferenceManager.getSavePasswordsEnabled());
             prefsJson.put(TelemetryKeys.CLEAR_CACHE, preferenceManager.getClearCacheExit());
@@ -280,6 +285,7 @@ public class Telemetry {
             prefsJson.put(TelemetryKeys.FAIR_BLOCKING, preferenceManager.getOptimizedAdBlockEnabled());
             prefsJson.put(TelemetryKeys.CONFIG_LOCATION, preferenceManager.getLastKnownLocation());
             prefsJson.put(TelemetryKeys.NOTIFICATION, preferenceManager.getNewsNotificationEnabled());
+            prefsJson.put(TelemetryKeys.LOCATION_ACCESS_SYSTEM, isLocationGranted());
         } catch (JSONException e) {
             Log.e(TELEMETRY_TAG, "Can't read preferences");
         }
@@ -839,12 +845,12 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-    public void sendCCOkSignal(String okOrActiave, String view) {
+    public void sendCCOkSignal(String okOrActivate, String view) {
         JSONObject signal = new JSONObject();
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONTROL_CENTER);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, okOrActiave);
+            signal.put(TelemetryKeys.TARGET, okOrActivate);
             signal.put(TelemetryKeys.VIEW, view);
         } catch (JSONException e) {
             logError(TelemetryKeys.CONTROL_CENTER);
@@ -852,6 +858,7 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
+    /* We removed this due to privacy
     public void sendFBInstallSignal(String campaignName) {
         JSONObject signal = new JSONObject();
         try {
@@ -865,6 +872,7 @@ public class Telemetry {
         Log.v(TELEMETRY_TAG, signal.toString());
         saveSignal(signal, false);
     }
+    */
 
     public void sendTopsitesClickSignal(int index, int count) {
         JSONObject signal = new JSONObject();
@@ -1217,14 +1225,38 @@ public class Telemetry {
         addIdentifiers(signal);
         mSignalCache.put(signal);
         if (BuildConfig.DEBUG) {
+            try {
+                signal.put("cindex", mSignalCache.length());
+            } catch (JSONException e) {
+                // NOP
+            }
             Log.v(TELEMETRY_TAG, signal.toString());
         }
-        if (forcePush || mSignalCache.length() > BATCH_SIZE) {
-            final JSONArray cache = mSignalCache;
-            mSignalCache = new JSONArray();
-            final TelemetrySender sender = new TelemetrySender(cache, context);
-            executorService.execute(sender);
+        final boolean shouldSend = (forcePush || mSignalCache.length() > BATCH_SIZE);
+        if (shouldSend) {
+            sendCachedSignals();
         }
+    }
+
+    private synchronized void sendCachedSignals() {
+        if (!preferenceManager.isSendUsageDataEnabled()) {
+            // Do not send any signal, just flush out the cached ones
+            mSignalCache = new JSONArray();
+            return;
+        }
+        final JSONArray cache = mSignalCache;
+        if(BuildConfig.DEBUG){
+            final JSONObject msg = new JSONObject();
+            try {
+                msg.put("csize", mSignalCache.length());
+                Log.v(TELEMETRY_TAG, msg.toString());
+            } catch (JSONException e) {
+                // NOP
+            }
+        }
+        mSignalCache = new JSONArray();
+        final TelemetrySender sender = new TelemetrySender(cache, context);
+        executorService.execute(sender);
     }
 
     /**
@@ -1424,6 +1456,55 @@ public class Telemetry {
         }
     }
 
+    public void sendDefaultBrowserSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.DEFAULT_BROWSER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.DEFAULT_BROWSER);
+        }
+    }
+
+    public void sendDefaultBrowserCancelSignal(long duration) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.DEFAULT_BROWSER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.SHOW_DURATION, duration);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.DEFAULT_BROWSER);
+        }
+    }
+
+    public void sendPasswordDialogShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PASSWORD_MANAGER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.WEB);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PASSWORD_MANAGER);
+        }
+    }
+
+    public void sendPasswordDialogClickSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PASSWORD_MANAGER);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.WEB);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PASSWORD_MANAGER);
+        }
+    }
+
     //receiver listening to changes in battery levels
     private class BatteryInfoReceiver extends BroadcastReceiver {
         @Override
@@ -1448,5 +1529,11 @@ public class Telemetry {
                 sendNetworkStatus();
             }
         }
+    }
+
+    private boolean isLocationGranted() {
+        final String permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        final int res = context.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
     }
 }

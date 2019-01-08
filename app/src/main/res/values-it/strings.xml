@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
   Copyright 2013 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Nuovo tab</string>
     <string name="action_copy">Copia link</string>
     <string name="settings">Impostazioni</string>
@@ -55,7 +55,7 @@
     <string name="download_sdcard_busy_dlg_title">Memoria USB non disponibile</string>
     <string name="download_sdcard_busy_dlg_msg">La memoria è occupata. Per consentire i download, disattiva la memoria USB nelle notifiche.</string>
     <string name="message_text_copied">Testo copiato negli appunti</string>
-    <string name="licenses">Licenze Open Source</string>
+    <string name="licenses">Politiche e licenze</string>
     <string name="block_ads">Blocca Pubblicità</string>
     <string name="title_form_resubmission">Reinvio modulo</string>
     <string name="message_form_resubmission">Vuoi inviare nuovamente i dati?</string>
@@ -70,7 +70,6 @@
     <string name="clear_cookies_exit">Cancella cookie in chiusura</string>
     <string name="clear_history_exit">Cancella cronologia in chiusura</string>
     <string name="untitled">Senza titolo</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Freeware</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
@@ -261,8 +260,8 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="search_hint">Cerca</string>
     <string name="allow_write_permission">Abilita la scrittura per usare questa funzionalità.</string>
     <string name="share_card_email_subject">Ho scoperto questo usando Cliqz Browser</string>
-    <string name="no_history">Qui puoi trovare la tua cronologia.\n\nNon hai cercato o visitato nessun sito finora.</string>
-    <string name="no_favorites">Qui puoi trovare i tuoi segnalibri.\n\nNon hai aggiunto nessun segnalibro finora.</string>
+    <string name="no_history">Qui puoi trovare la tua cronologia.</string>
+    <string name="no_favorites">Qui puoi trovare i tuoi segnalibri.</string>
     <string name="settings_category_search">Ricerca</string>
     <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Iscrizioni &amp; Notifiche</string>
@@ -332,4 +331,35 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">News</string>
+    <string name="settings_show_background_image">Mostra immagine di sfondo</string>
+    <string name="eula">EULA</string>
+    <string name="eula_text">Il browser Cliqz per Android è basato sul &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;progetto
+ open source Lightning Browser&lt;/a&gt; ed è reso disponibile all\'utente sotto i termini della &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0.&lt;/a&gt; Tale licenza
+ di software libero ti dà il diritto di condividere, eseguire, studiare e modificare il programma per qualsiasi scopo e per soddisfare al meglio le tue esigenze. Non esiste un ulteriore accordo di licenza con l\'utente finale (EULA).</string>
+    <string name="title_activity_eula_setting">EULA</string>
+    <string name="privacy_policy">Norme sulla privacy</string>
+    <string name="save_password_text">Vuoi che Cliqz ricordi la password per questo sito?</string>
+    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Sito eliminato</item>
+        <item quantity="other">%d Siti eliminati</item>
+    </plurals>
+    <string name="agree_privacy_policy_cliqz">Utilizzando questa applicazione l\'utente accetta il testo dell\'&lt;font color="#00aef0"&gt;Informativa sulla privacy di Cliqz.&lt;/font&gt;</string>
+    <string name="menu">Menu</string>
+    <string name="android_app_settings_title">Permessi geolocalizzazione</string>
+    <string name="make_default_browser">Imposta browser predefinito</string>
+    <string name="default_browser_title">Cliqz come browser predefinito</string>
+    <string name="default_browser_message">Cliqz sembra piacerti. Vorresti che fosse il tuo browser predefinito?</string>
+    <string name="proceed">PROCEDI</string>
+    <string name="save">SALVA</string>
+    <string name="never">MAI</string>
+    <string name="welcome_cliqz">Cliqz ti dà il benvenuto!</string>
+    <string name="accept">ACCETTA</string>
+    <string name="privacy_policy_title">Informativa sulla Privacy - Cliqz</string>
+<string name="settings_show_my_offrz">Visualizza MyOffrz</string>
+    <string name="settings_about_my_offrz">Informazioni su MyOffrz</string>
+    <string name="myoffrz_activation_description">Attiva MyOffrz per ricevere accattivanti sconti e offerte.</string>
+    <string name="settings_category_user_data_choices">Invio dei dati</string>
+    <string name="send_usage_data">Invia dati sull\'utilizzo dell\'</string>
+    <string name="send_usage_data_summary">Aiutaci a migliorare la tua esperienza di navigazione. Cliqz raccoglie dati di utilizzo in forma anonima. In nessun caso vengono raccolte informazioni personali.</string>
 </resources>

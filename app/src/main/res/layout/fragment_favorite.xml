@@ -19,8 +19,7 @@
         <ImageView
             android:layout_width="@dimen/overview_placeholder_icon_w"
             android:layout_height="@dimen/overview_placeholder_icon_h"
-            app:srcCompat="@drawable/bookmark_icon"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            app:srcCompat="@drawable/ic_bookmarks"
             />
 
         <TextView
@@ -29,7 +28,9 @@
             android:text="@string/no_favorites"
             android:textColor="@color/secondary_color_settings"
 			android:textAlignment="center"
-            android:textSize="@dimen/text_no_fav_size" />
+            android:textSize="@dimen/text_no_layout_size"
+            android:padding="@dimen/text_padding"
+            />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

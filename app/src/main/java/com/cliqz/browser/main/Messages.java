@@ -215,9 +215,6 @@ public final class Messages {
         }
     }
 
-    public static class AskForLocationPermission {
-    }
-
     public static class QuerySuggestions {
         public final String query;
         public final String[] suggestions;

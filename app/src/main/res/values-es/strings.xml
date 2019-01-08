@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools"><string name="action_copy">Copiar enlace</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="action_copy">Copiar enlace</string>
     <string name="action_new_tab">Nueva pestaña</string>
     <string name="password">Guardar contraseñas</string>
     <string name="clear_cache">Eliminar caché al salir</string>
@@ -33,7 +34,7 @@
     <string name="download_no_sdcard_dlg_msg">Se requiere almacenamiento USB para descargar.</string>
     <string name="download_sdcard_busy_dlg_title">Almacenamiento USB no disponible</string>
     <string name="message_text_copied">Texto copiado en portapapeles</string>
-    <string name="licenses">Licencias de código abierto</string>
+    <string name="licenses">Políticas y Licencias</string>
     <string name="message_certificate_date_invalid">Fecha de certificado incorrecta</string>
     <string name="message_certificate_expired">El Certificado ha expirado</string>
     <string name="title_warning">Advertencia</string>
@@ -64,7 +65,6 @@
     <string name="clear_cookies_exit">Eliminar cookies al salir</string>
     <string name="clear_history_exit">Eliminar historial al salir</string>
     <string name="untitled">Sin título</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Software gratuito</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
@@ -252,7 +252,7 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="trust_site">Confiar en este sitio</string>
     <string name="block_trackers">Bloquear trackers</string>
     <string name="found_on">encontrados en</string>
-    <string name="blocked">boloqueados</string>
+    <string name="blocked">bloqueados</string>
     <string name="active">activos</string>
     <string name="advertising">Publicidad</string>
     <string name="site_analytics">Análisis web</string>
@@ -293,14 +293,14 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="tap_code_to_copy_label">Toca para copiar</string>
     <string name="terms_and_conditions_label">Términos</string>
     <string name="message_code_copied">Código copiado</string>
-    <string name="can_not_download_in_directory_title">Directorio no válido</string>
+    <string name="can_not_download_in_directory_title">El directorio no es válido</string>
     <string name="can_not_download_in_directory_msg">La aplicación no puede escribir en esta carpeta. Por favor, selecciona una cárpeta válida.</string>
-    <string name="reset_subscriptions">Eliminar las subscripciones</string>
+    <string name="reset_subscriptions">Eliminar todas las subscripciones</string>
     <string name="reset_subscriptions_title">Eliminar las subscripciones</string>
     <string name="reset_subscriptions_title_msg">¿Quieres eleminar todas tus subscripciones (p.ej. de partidos de La Liga)?</string>
     <string name="subscriptions_resetted_toast">Subcripciones eliminadas</string>
-    <string name="no_history">Aquí verás tu historial.\n\nTodavía no has buscado ni visitado ninguna página web.</string>
-    <string name="no_favorites">Aquí verás tus favoritos.\n\nTodavía no has marcado ninguna página como favorito.</string>
+    <string name="no_history">Aquí verás tu historial.\n\n</string>
+    <string name="no_favorites">Aquí verás tus favoritos.</string>
     <string name="no_offers_msg">Aquí aparecerá una oferta nueva cada semana.</string>
     <string name="myoffrz_settings_header">Acerca de MyOffrz</string>
     <plurals name="items">
@@ -316,4 +316,36 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">Noticias</string>
-    </resources>
+    <string name="welcome_cliqz">¡Bienvenido a Cliqz!</string>
+    <string name="agree_privacy_policy_cliqz">Al usar esta apliación, aceptas
+         &lt;font color=\'#00aef0\'&gt;la política de privacidad de Cliqz &lt;/font&gt;</string>
+    <string name="accept">ACEPTAR</string>
+    <string name="settings_show_background_image">Mostrar imagen de fondo</string>
+    <string name="menu">Menú</string>
+    <string name="android_app_settings_title">Permisos de ubicación</string>
+    <string name="make_default_browser">Convertir en navegador predeterminado</string>
+    <string name="default_browser_title">Navegador predeterminado</string>
+    <string name="default_browser_message">Parece que te gusta usar Cliqz. ¿Quieres que sea tu navegador predeterminado?</string>
+    <string name="proceed">SÍ</string>
+    <string name="never">NO</string>
+    <string name="save">SÍ</string>
+    <string name="save_password_text">¿Quieres que Cliqz guarde tus contraseñas para esta página?</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
+    <string name="eula">ALUF</string>
+    <string name="eula_text">Cliqz para Android se basa en el &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;proyecto de código abierto
+ Lightning Browser&lt;/a&gt;, y se distribuye bajo los términos de&lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, una licencia de software libre que
+ permite utilizar este programa con cualquier objetivo, estudiar su funcionamiento, compartirlo con tus amigos y modificarlo según tus propias necesidades. No existe un Acuerdo de Licencia de Usuario Final (ALUF) adicional.</string>
+    <string name="title_activity_eula_setting">ALUF</string>
+    <string name="privacy_policy_title">Política de privacidad - Cliqz</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Página eliminada</item>
+        <item quantity="other">%d Páginas eliminadas</item>
+    </plurals>
+<string name="settings_show_my_offrz">Mostrar MyOffrz</string>
+    <string name="settings_about_my_offrz">Sobre MyOffrz</string>
+    <string name="myoffrz_activation_description">Activa MyOffrz para recibir atractivos descuentos y ofertas.</string>
+    <string name="settings_category_user_data_choices">Opciones de envío de datos</string>
+    <string name="send_usage_data">Enviar estadísticas de uso</string>
+    <string name="send_usage_data_summary">Ayúdanos a mejorar tu experiencia de usuario. Cliqz recopila datos anónimos sobre el uso de la aplicación. Cliqz no recopila información personal en ningún momento.</string>
+</resources>

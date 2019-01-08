@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/no_history_ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="@dimen/overview_placeholder_icon_w"
+        android:layout_height="@dimen/overview_placeholder_icon_h"
+        app:srcCompat="@drawable/ic_history" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/text_padding"
+        android:text="@string/no_history"
+        android:textColor="@color/secondary_color_settings"
+        android:textSize="@dimen/text_no_layout_size" />
+</LinearLayout>

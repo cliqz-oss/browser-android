@@ -15,7 +15,6 @@
   limitations under the License.
 -->
 <resources>
-
     <string name="action_new_tab">Neuer Tab</string>
     <string name="action_copy">Link kopieren</string>
     <string name="settings">Einstellungen</string>
@@ -55,7 +54,7 @@
     <string name="download_sdcard_busy_dlg_title">USB-Speicher nicht verfügbar</string>
     <string name="download_sdcard_busy_dlg_msg">Speicher aktiv. Um ein Herunterladen zu ermöglichen, schalte den USB-Speicher in der Benachrichtigung aus.</string>
     <string name="message_text_copied">Text in Zwischenablage kopiert</string>
-    <string name="licenses">Open Source-Lizenzen</string>
+    <string name="licenses">Richtlinien und Lizenzen</string>
     <string name="block_ads">Werbung blockieren</string>
     <string name="title_form_resubmission">Formularneuzustellung</string>
     <string name="message_form_resubmission">Daten erneut senden?</string>
@@ -70,7 +69,6 @@
     <string name="clear_cookies_exit">Cookies beim Beenden löschen</string>
     <string name="clear_history_exit">Verlauf beim Beenden löschen</string>
     <string name="untitled">Ohne Titel</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Freeware</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server Liste</string>
@@ -263,8 +261,8 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="search_hint">Suchen</string>
     <string name="subscribe_dialog_title_fmt">%1$s abonnieren</string>
 <string name="empty_history">Dein Verlauf ist leer</string>
-    <string name="no_history">Hier findest du in Zukunft deine Suchen und besuchten Seiten.\n\nBisher hast du noch nicht gesucht und warst auf keinen Webseiten.</string>
-    <string name="no_favorites">Hier findest du in Zukunft deine Favoriten.\n\nBisher hast du noch keine Favoriten angelegt.</string>
+    <string name="no_history">Hier findest du in Zukunft deine Suchen und besuchten Seiten.</string>
+    <string name="no_favorites">Hier findest du in Zukunft deine Favoriten.</string>
     <string name="settings_category_search">Suche</string>
     <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_others">Sonstiges</string>
@@ -295,10 +293,10 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="no_offers_msg">Hier findest du jede Woche ein neues Angebot</string>
     <string name="myoffrz_settings_header">Über MyOffrz</string>
     <plurals name="items">
-	<item quantity="one">%d Eintrag ausgewählt</item>
-	<item quantity="other">%d Einträge ausgewählt</item>
-</plurals>
-<string name="settings_category_notifications">Abonnements &amp; Benachrichtigungen</string>
+    	<item quantity="one">%d Eintrag ausgewählt</item>
+	    <item quantity="other">%d Einträge ausgewählt</item>
+    </plurals>
+    <string name="settings_category_notifications">Abonnements &amp; Benachrichtigungen</string>
     <string name="top_news">Top News</string>
     <string name="news_label">News</string>
     <string name="social_media">Soziale Medien</string>
@@ -334,4 +332,36 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="video_player">Video-Player</string>
     <string name="hosting">Hosting</string>
     <string name="loading_failed">Es konnten keine Infos zu dieser Seite geladen werden</string>
-    </resources>
+    <string name="make_default_browser">Als Standardbrowser festlegen</string>
+    <string name="default_browser_title">Cliqz als Standardbrowser</string>
+    <string name="default_browser_message">Du scheinst Cliqz gerne zu verwenden. Möchtest du Cliqz zu deinem Standardbrowser machen?</string>
+    <string name="proceed">FORTFAHREN</string>
+    <string name="privacy_policy_url">https://cliqz.com/privacy-browser</string>
+    <string name="settings_show_background_image">Hintergrundbild anzeigen</string>
+    <string name="menu">Menü</string>
+    <string name="android_app_settings_title">Standortberechtigungen</string>
+    <string name="save">SPEICHERN</string>
+    <string name="never">NIE</string>
+    <string name="save_password_text">Soll Cliqz dein Passwort für diese Webseite speichern?</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="eula">Endnutzer-Lizenzvertrag (EULA)</string>
+    <string name="eula_text">Cliqz für Android basiert auf dem Open-Source-Projekt &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Open-Source-Projekt
+Lightning Browser&lt;/a&gt; und wird unter der &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; bereitgestellt - einer freien Softwarelizenz, die es dir 
+erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Programms zu untersuchen, das Programm an Freunde weiterzugeben und das Programm nach deinen Bedürfnissen zu modifizieren. Es bestehen keine zusätzlichen Bestimmungen für diese Endnutzer-Lizenzvereinbarung.</string>
+    <string name="title_activity_eula_setting">Endnutzer-Lizenzvertrag (EULA)</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Topseite gelöscht</item>
+        <item quantity="other">%d Topseiten gelöscht</item>
+    </plurals>
+    <string name="welcome_cliqz">Willkommen bei Cliqz!</string>
+    <string name="agree_privacy_policy_cliqz">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Cliqz zu.&lt;/font&gt;</string>
+    <string name="accept">AKZEPTIEREN</string>
+    <string name="privacy_policy_title">Datenschutzerklärung - Cliqz</string>
+    <string name="settings_show_my_offrz">MyOffrz anzeigen</string>
+    <string name="settings_about_my_offrz">Über MyOffrz</string>
+    <string name="myoffrz_activation_description">Aktiviere MyOffrz und sichere dir attraktive
+        Rabatte und Schnäppchen.</string>
+    <string name="send_usage_data">Nutzungsdaten senden</string>
+    <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Cliqz sammelt streng anonyme Daten darüber, wie du Cliqz benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
+    <string name="settings_category_user_data_choices">Datenübermittlung</string>
+</resources>

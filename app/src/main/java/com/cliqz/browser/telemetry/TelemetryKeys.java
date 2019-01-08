@@ -51,7 +51,6 @@ public final class TelemetryKeys {
     public static final String DISPLAY_TIME = "display_time";
     public static final String DISTRIBUTION = "distribution";
     public static final String DOWNLOAD = "download";
-    public static final String DOWNLOAD_LOCATION = "download_location";
     public static final String DURATION = "duration";
 
     public static final String ENABLE = "enable";
@@ -95,7 +94,6 @@ public final class TelemetryKeys {
     public static final String LANGUAGE = "language";
     public static final String LENGTH = "key_length";
     public static final String LINK = "link";
-    public static final String LOCATION_ACCESS = "location_access";
     public static final String LOCATION_CHANGE = "location_change";
     public static final String LONGPRESS = "longpress";
 
@@ -118,7 +116,6 @@ public final class TelemetryKeys {
     public static final String OPEN = "open";
     public static final String OPEN_TABS = "open_tabs";
     public static final String OPEN_TAB_COUNT = "open_tab_count";
-    public static final String OS_VERSION = "os_version";
     public static final String OVERVIEW = "overview";
 
     public static final String PAGE_LOAD = "page_load";
@@ -221,7 +218,6 @@ public final class TelemetryKeys {
     public static final String CONNECTION = "connections";
     public static final String NO_CONNECTION_MESSAGE ="no_connection_message";
     public static final String SEND_ERROR_MESSAGE = "send_error_message";
-    public static final String CLOSE_TABS_ON_EXIT = "close_tabs_on_exit";
     public static final String SHOW_MORE = "show_more";
     public static final String SHOW_LESS = "show_less";
     public static final String NEWS = "news";
@@ -250,4 +246,10 @@ public final class TelemetryKeys {
     public static final String IS_TOPSITES_ON = "is_topsites_on";
     public static final String IS_NEWS_ON = "is_news_on";
     public static final String ACCEPTED = "accepted";
+    public static final String MAKE_DEFAULT = "make_default";
+    public static final String LOCATION_ACCESS_SYSTEM = "location_access_system";
+    public static final String PASSWORD_MANAGER = "password_manager";
+    public static final String NEVER = "never";
+    public static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
+    public static final String SEND_USAGE_DATA = "send_usage_data";
 }

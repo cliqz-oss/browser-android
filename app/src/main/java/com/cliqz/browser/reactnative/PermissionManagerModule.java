@@ -1,5 +1,6 @@
 package com.cliqz.browser.reactnative;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
@@ -59,7 +60,8 @@ public class PermissionManagerModule extends ReactContextBaseJavaModule {
 
     static {
         final Map<String, String> permissions = new HashMap<>();
-        permissions.put("WRITE_EXTERNAL_STORAGE", android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.put("WRITE_EXTERNAL_STORAGE", Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.put("ACCESS_FINE_LOCATION", Manifest.permission.ACCESS_FINE_LOCATION);
 
         final Map<String, Object> results = new HashMap<>();
         results.put("GRANTED", PackageManager.PERMISSION_GRANTED);

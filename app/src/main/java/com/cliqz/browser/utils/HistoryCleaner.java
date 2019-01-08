@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
+import acr.browser.lightning.utils.WebUtils;
 
 import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_FAVORITES;
 import static acr.browser.lightning.preference.PreferenceManager.ClearQueriesOptions.CLEAR_HISTORY;
@@ -94,5 +95,6 @@ public class HistoryCleaner {
                 });
             }
         }).start();
+        WebUtils.clearWebStorage(context);
     }
 }

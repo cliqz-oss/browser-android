@@ -10,7 +10,6 @@ import android.support.multidex.MultiDexApplication;
 
 import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
-import com.cliqz.browser.facebook.FacebookWrapper;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -49,8 +48,6 @@ public class BrowserApp extends MultiDexApplication {
 
         LeakCanary.install(this);
         LookbackWrapper.init(this);
-        //TODO Do we need Facebook sdk for Amazon appstore? To be checked with Marketing team
-        FacebookWrapper.initialize(this);
     }
 
     private void installMultidex() {

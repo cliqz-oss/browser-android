@@ -8,8 +8,6 @@ import com.cliqz.browser.main.FavoritesFragment;
 import com.cliqz.browser.main.HistoryFragment;
 import com.cliqz.browser.main.OffrzFragment;
 
-import java.util.Locale;
-
 /**
  * @author Stefano Pacifici
  */
@@ -30,17 +28,15 @@ public enum OverviewTabsEnum {
     }
 
     public int getFragmentIndex() {
-        final Locale locale = Locale.getDefault();
-        final String lang = locale.getLanguage();
         switch (this) {
             case TABS:
                 return 0;
             case HISTORY:
                 return 1;
             case OFFRZ:
-                return "de".equals(lang) ? 2 : -1;
+                return 2;
             case FAVORITES:
-                return "de".equals(lang) ? 3 : 2;
+                return 3;
             default:
                 throw new RuntimeException("Unsupported index");
         }

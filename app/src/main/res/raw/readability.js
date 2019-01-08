@@ -2889,8 +2889,9 @@ if (typeof module === "object") {
 })(this);
 
 function getArticle() {
+    var blockList = ["github.com", "pinterest.com", "facebook.com", "twitter.com", "reddit.com",
+        "youtube.com", "mail.google.com"];
     var loc = document.location;
-
     var uri = {
       spec: loc.href,
       host: loc.host,
@@ -2898,10 +2899,18 @@ function getArticle() {
       scheme: loc.protocol.substr(0, loc.protocol.indexOf(":")),
       pathBase: loc.protocol + "//" + loc.host + loc.pathname.substr(0, loc.pathname.lastIndexOf("/") + 1)
     };
-
     var documentClone = document.cloneNode(true);
-    var article = new Readability(uri, documentClone).parse();
-
+    var readability = new Readability(uri, documentClone);
+    var isProbablyReaderable = readability.isProbablyReaderable(false);
+    for(var i = 0; i < blockList.length; i++) {
+        if (loc.host.endsWith(blockList[i])) {
+            return null;
+        }
+    }
+    if (loc.pathname == "/" || !isProbablyReaderable) {
+        return null;
+    }
+    var article = readability.parse();
     return encodeURI((JSON.stringify(article)));
 }
 

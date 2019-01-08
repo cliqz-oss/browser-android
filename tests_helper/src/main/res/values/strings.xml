@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CLIQZ Tests Helper</string>
+    <string name="open_url">Open URL</string>
+    <string name="select_a_browser">Select a Browser</string>
+    <string name="send_news_message_action">Send news test message</string>
+    <string name="msg_title">Message Title</string>
+    <string name="msg_url">Message Url</string>
+    <string name="hint_msg_title">Enter a title here</string>
+    <string name="hint_msg_url">Enter a valid url here</string>
+    <string name="send">Send</string>
+    <string name="on_boarding_toogle">Toggle Onboarding</string>
+    <string name="onboarding">Onboarding</string>
+</resources>

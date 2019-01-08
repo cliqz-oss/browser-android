@@ -6,9 +6,11 @@ import com.cliqz.browser.controlcenter.AntiPhishingFragment;
 import com.cliqz.browser.controlcenter.AntiTrackingFragment;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.main.search.Freshtab;
+import com.cliqz.browser.main.search.Incognito;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.overview.TabOverviewFragment;
+import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.webview.BaseWebView;
 import com.cliqz.browser.webview.CliqzBridge;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -65,4 +67,8 @@ public interface MainActivityComponent {
     void inject(TabsDeckView tabsDeckView);
 
     void inject(QuickAccessBar quickAccessBar);
+
+    void inject(PasswordManager passwordManager);
+
+    void inject(Incognito incognito);
 }

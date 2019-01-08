@@ -1,29 +1,21 @@
 package acr.browser.lightning.database;
 
+import android.support.annotation.NonNull;
+
 /**
- * Created by Ravjit on 19/02/16.
+ * @author Stefano Pacifici
  */
 public class LoginDetailItem {
 
-    private String mDomain;
-    private String mLoginId;
-    private String mPassword;
+    public final String domain;
+    public final String loginId;
+    public final String password;
 
-    public LoginDetailItem(String domain, String loginId, String password) {
-        this.mDomain = domain;
-        this.mLoginId = loginId;
-        this.mPassword = password;
-    }
-
-    public String getDomain() {
-        return mDomain;
-    }
-
-    public String getLoginId() {
-        return mLoginId;
-    }
-
-    public String getPassword() {
-        return mPassword;
+    public LoginDetailItem(@NonNull String domain,
+                           @NonNull String loginId,
+                           @NonNull String password) {
+        this.domain = domain;
+        this.loginId = loginId;
+        this.password = password;
     }
 }

@@ -66,19 +66,13 @@ public class JSBridge extends ReactContextBaseJavaModule {
         forwardedEvents.put("mobile-search:openUrl", new EventTranslator() {
             @Override
             public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.OpenLink(args.getString(0));
+                return CliqzMessages.OpenLink.open(args.getString(0));
             }
         });
         forwardedEvents.put("mobile-search:copyValue", new EventTranslator() {
             @Override
             public Object messageForEvent(ReadableArray args) {
                 return new CliqzMessages.CopyData(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-search:hideKeyboard", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.HideKeyboard();
             }
         });
         forwardedEvents.put("mobile-search:call", new EventTranslator() {
@@ -90,13 +84,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
         forwardedEvents.put("mobile-search:map", new EventTranslator() {
             @Override
             public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.OpenLink(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-search:share-location", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new Messages.AskForLocationPermission();
+                return CliqzMessages.OpenLink.open(args.getString(0));
             }
         });
         forwardedEvents.put("mobile-pairing:openTab", new EventTranslator() {
@@ -106,42 +94,6 @@ public class JSBridge extends ReactContextBaseJavaModule {
             }
         });
 
-        forwardedEvents.put("mobile-pairing:pushPairingData", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.PushPairingData(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyPairingSuccess", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyPairingSuccess(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyPairingError", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyPairingError(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyTabSuccess", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyTabSuccess(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyTabError", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyTabError(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:downloadVideo", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.DownloadVideo(args.getMap(0));
-            }
-        });
         forwardedEvents.put("mobile-pairing:pushPairingData", new EventTranslator() {
             @Override
             public Object messageForEvent(ReadableArray args) {
@@ -202,7 +154,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
         return constants;
     }
 
-    DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
+    private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
         if (this.eventEmitter == null) {
             this.eventEmitter = this.context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
         }
@@ -248,7 +200,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
         final Object[] args;
         final Callback callback;
 
-        public WaitingAction(String actionName, Object[] args, Callback callback) {
+        WaitingAction(String actionName, Object[] args, Callback callback) {
             this.actionName = actionName;
             this.args = args;
             this.callback = callback;

@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <include layout="@layout/toolbar_settings"/>
+<TextView
+    android:id="@+id/tv_eula_text"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:textSize="@dimen/text_no_layout_size"
+    android:textColor="@color/primary_color_dark"
+    android:padding="@dimen/activity_vertical_margin"
+    tools:context="com.cliqz.browser.settings.EulaSettingActivity" />
+
+</LinearLayout>

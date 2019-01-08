@@ -2,7 +2,6 @@ import 'react-native/Libraries/Core/InitializeCore';
 import { AppRegistry } from 'react-native';
 import React from 'react';
 import { startup, components } from 'browser-core';
-import 'babel-polyfill';
 
 // set app global for debugging
 const appStart = startup.then((app) => {

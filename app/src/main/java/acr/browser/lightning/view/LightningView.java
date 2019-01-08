@@ -194,11 +194,8 @@ public class LightningView {
             mRequestHeaders.remove(HEADER_WAP_PROFILE);
         }
 
-        if (!mIsIncognitoTab) {
-            settings.setGeolocationEnabled(preferences.getLocationEnabled());
-        } else {
-            settings.setGeolocationEnabled(false);
-        }
+        settings.setGeolocationEnabled(!mIsIncognitoTab);
+
         if (API < Build.VERSION_CODES.KITKAT) {
             switch (preferences.getFlashSupport()) {
                 case 0:
@@ -427,11 +424,6 @@ public class LightningView {
     }
 
     public synchronized void reload() {
-        // Removed as version 1.0.2r2
-        // Check if configured proxy is available
-        // if (!isProxyReady()) {
-        //     return;
-        // }
         if (mWebView != null) {
             isHistoryItemCreationEnabled = false;
             mWebView.reload();

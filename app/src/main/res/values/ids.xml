@@ -36,4 +36,7 @@
     <item name="overflow_menu_list" type="id" />
     <item name="incognito_tab_id" type="id" />
     <item name="regular_tab_id" type="id" />
+    <item name="trash_topsites_id" type="id" />
+    <item name="background_manager_listener_key" type="id" />
+    <item name="background_manager_mode_key" type="id" />
 </resources>

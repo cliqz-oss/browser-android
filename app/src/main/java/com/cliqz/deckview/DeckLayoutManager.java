@@ -1,6 +1,7 @@
 package com.cliqz.deckview;
 
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -248,7 +249,7 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
         }
     }
 
-    private void updateViews(RecyclerView.Recycler recycler, RecyclerView.State state) {
+    private void updateViews(@NonNull  RecyclerView.Recycler recycler, RecyclerView.State state) {
         final int firstVisible = firstVisibleCard(state);
 
         // We have to remove all the cards if the item count is 0
@@ -265,9 +266,11 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
         // We have to remove no more visible views or add them when they appear from above
         if (mCurrentFirstVisible >= 0) {
             // Remove invisible
-            if(recycler != null) {
-                for (int i = mCurrentFirstVisible; i < firstVisible; i++) {
-                    removeAndRecycleViewAt(0, recycler);
+            for (int i = mCurrentFirstVisible; i < firstVisible && getChildCount() > 0; i++) {
+                final View view = getChildAt(0);
+                if (view != null) {
+                    removeViewAt(0);
+                    recycler.recycleView(view);
                 }
             }
             // Add appearing from above

@@ -109,6 +109,10 @@ public class OffrzLoader extends AsyncTaskLoader<JSONObject> {
         } catch (JSONException e) {
             Log.e(TAG, "Can't parse json response");
             return null;
+        } catch (Exception e) {
+            // This blog prevents generic crashes
+            Log.e(TAG, "Generic failure", e);
+            return null;
         }
         try {
             FileUtils.writeTextToFile(cachedOffrzFile, firstOffrz.toString());

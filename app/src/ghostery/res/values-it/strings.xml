@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_humanweb_url">https://cliqz.com/whycliqz/human-web</string>
+    <string name="shared_using">Condiviso con Ghostery per Android</string>
+    <string name="optimized_block_ads_description">La funzione anti-pubblicità di Ghostery è ancora in fase Beta. La versione definitiva permetterà all’utente di scegliere fra le seguenti opzioni: consenti le pubblicità non inopportune, blocca tutta la pubblicità, consenti tutta la pubblicità.\nPer saperne di più: https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Ghostery ha bloccato %1$s perché il dominio è stato segnalato come phishing.\nIl phishing è la pratica di apparire come altri siti di cui ti potresti fidare in modo da estorcerti lo username, la password o altre informazioni sensibili.\nClicca [qui|https://cliqz.com/en/whycliqz/anti-phishing] per maggiori informazioni</string>
+    <string name="showcase_search_message">Con Ghostery hai tutto sott\'occhio! I migliori risultati per le tue ricerche appariranno subito nelle schede</string>
+    <string name="showcase_antitracking_message">Il controllo è nelle tue mani: Ghostery Anti-Tracking protegge la tua privacy</string>
+    <string name="rate_us">Valuta Ghostery</string>
+    <string name="summary_adblock_data">NOTA: Per far funzionare correttamente l\'ad-blocker, Ghostery deve scaricare dei dati. Questi vengono scaricati solo se è disponibile una connessione Wi-Fi.</string>
+    <string name="tips_and_tricks">Usa Ghostery al meglio</string>
+    <string name="app_name">Ghostery</string>
+
+    <!-- Incognito mode strings -->
+    <string name="action_incognito">Nuovo tab Ghost</string>
+    <string name="open_in_incognito_tab">Apri in modalità Ghost</string>
+    <string name="switched_to_forget">Modalità Ghost automatica attivata</string>
+    <string name="open_link_forget_tab">Apri link in modalità Ghost</string>
+    <string name="open_image_forget_tab">Apri immagine in modalità Ghost</string>
+    <string name="incognito_tab_title">Ghost Tab</string>
+</resources>

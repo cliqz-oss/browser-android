@@ -2,6 +2,7 @@ package com.cliqz.jsengine;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.ReactSearchPackage;
@@ -25,6 +26,7 @@ import cl.json.RNSharePackage;
  * @author Sam Macbeth
  */
 public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
+    private static final String TAG = Engine.class.getSimpleName();
     public final ReactRootView reactRootView;
     public final ReactInstanceManager reactInstanceManager;
     private List<Runnable> startupCallbacks = new LinkedList<>();
@@ -69,7 +71,20 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
                 try {
                     getBridge().callAction(functionName, callback, args);
                 } catch (EngineNotYetAvailable engineNotYetAvailable) {
-                    throw new RuntimeException(engineNotYetAvailable);
+                    Log.e(TAG, "Engine not available", engineNotYetAvailable);
+                }
+            }
+        });
+    }
+
+    public void publishEvent(final String eventName, final Object... args) {
+        engineQueuingThread.getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getBridge().publishEvent(eventName, args);
+                } catch (EngineNotYetAvailable engineNotYetAvailable) {
+                    Log.e(TAG, "Engine not available", engineNotYetAvailable);
                 }
             }
         });
@@ -89,8 +104,8 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
         throw new EngineNotYetAvailable();
     }
 
-    public void setPref(String pref, Object value) throws EngineNotYetAvailable {
-        this.getBridge().callAction("core:setPref", new JSBridge.NoopCallback(), pref, value);
+    public void setPref(String pref, Object value) {
+        this.callAction("core:setPref", new JSBridge.NoopCallback(), pref, value);
     }
 
     void setBridgeIsReady(JSBridge bridge) {

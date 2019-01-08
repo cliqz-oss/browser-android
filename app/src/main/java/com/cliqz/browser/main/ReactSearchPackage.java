@@ -1,6 +1,7 @@
 package com.cliqz.browser.main;
 
 import com.cliqz.browser.reactnative.BrowserActions;
+import com.cliqz.browser.reactnative.GeoLocationModule;
 import com.cliqz.browser.reactnative.QuerySuggestion;
 import com.cliqz.browser.reactnative.AutoCompletion;
 import com.cliqz.browser.reactnative.PermissionManagerModule;
@@ -31,6 +32,7 @@ public class ReactSearchPackage implements ReactPackage {
         modules.add(new RNViewShotModule(reactContext));
         modules.add(new PermissionManagerModule(reactContext));
         modules.add(new TelemetryModule(reactContext));
+        modules.add(new GeoLocationModule(reactContext));
         return modules;
     }
 

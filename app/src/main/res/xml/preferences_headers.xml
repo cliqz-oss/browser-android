@@ -14,6 +14,9 @@
         android:title="@string/settings_block_ads"
         android:id="@+id/ad_block"/>
     <header
+        android:title="@string/make_default_browser"
+        android:id="@+id/default_browser"/>
+    <header
         android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
         android:title="@string/settings_about"
         android:summary="@string/settings_about_explain" />
@@ -29,9 +32,6 @@
     <header
         android:title="@string/tips_and_tricks"
         android:id="@+id/tips_and_tricks" />
-    <header
-        android:title="@string/myoffrz_settings_header"
-        android:id="@+id/myoffrz" />
     <header
         android:title="@string/contact_cliqz"
         android:id="@+id/feedback" />

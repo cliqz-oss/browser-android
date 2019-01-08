@@ -4,9 +4,9 @@ import android.app.Activity;
 
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.main.search.SearchView;
+import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.BloomFilterUtils;
-import com.cliqz.browser.webview.CliqzBridge;
-import com.cliqz.browser.webview.SearchWebView;
+import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.jsengine.Engine;
 
 import acr.browser.lightning.preference.PreferenceManager;
@@ -26,49 +26,26 @@ public class MainActivityModule {
     }
 
     @Provides
-    CliqzBridge provideCliqzBridge(SearchWebView searchWebView) {
-        return searchWebView.getBridge();
-    }
-
-//    @Provides
-//    JSBridge provideJSBridge(Engine engine) {
-//        try {
-//            return engine.getBridge();
-//        } catch (EngineNotYetAvailable engineNotYetAvailable) {
-//            engineNotYetAvailable.printStackTrace();
-//        }
-//        return null;
-//    }
-
-
-
-    @Provides
-    public Activity providesActivity() {
+    Activity providesActivity() {
         return activity;
     }
 
     @PerActivity
     @Provides
-    public TabsManager providesTabsManager() {
+    TabsManager providesTabsManager() {
         return new TabsManager(activity.getSupportFragmentManager());
     }
 
     @PerActivity
     @Provides
-    public OnBoardingHelper providesOnBoardingHelper() {
+    OnBoardingHelper providesOnBoardingHelper() {
         return new OnBoardingHelper(activity);
     }
 
     @PerActivity
     @Provides
-    public BloomFilterUtils providesBloomFilterUtils() {
+    BloomFilterUtils providesBloomFilterUtils() {
         return new BloomFilterUtils();
-    }
-
-    @PerActivity
-    @Provides
-    public SearchWebView provideSearchWebView(Activity activity) {
-        return new SearchWebView(activity);
     }
 
     @PerActivity
@@ -79,13 +56,25 @@ public class MainActivityModule {
 
     @PerActivity
     @Provides
-    public CrashDetector provideCrashDetector(PreferenceManager preferenceManager) {
+    CrashDetector provideCrashDetector(PreferenceManager preferenceManager) {
         return new CrashDetector(preferenceManager);
     }
 
     @PerActivity
     @Provides
-    public MainActivityHandler providesMainActivityHandler() {
+    MainActivityHandler providesMainActivityHandler() {
         return new MainActivityHandler(activity);
+    }
+
+    @PerActivity
+    @Provides
+    PasswordManager providePasswordManager() {
+        return new PasswordManager(activity);
+    }
+
+    @PerActivity
+    @Provides
+    AppBackgroundManager provideBackgroundManager() {
+        return new AppBackgroundManager(activity);
     }
 }

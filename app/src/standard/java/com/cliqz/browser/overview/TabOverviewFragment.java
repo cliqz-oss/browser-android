@@ -62,7 +62,8 @@ public class TabOverviewFragment extends Fragment implements TabsDeckView.TabsDe
             @Override
             public void onClick(View v) {
                 telemetry.sendNewTabSignal(tabsManager.getTabCount()+1);
-                tabsManager.buildTab().show();
+                final int position = tabsManager.buildTab().create();
+                tabsManager.showTab(position, R.anim.new_tab_scale_animation);
             }
         });
         deckView.setListener(this);

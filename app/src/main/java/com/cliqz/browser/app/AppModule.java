@@ -8,7 +8,6 @@ import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.peercomm.ChunkedFileManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
-import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.SubscriptionsManager;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
@@ -47,12 +46,6 @@ public class AppModule {
     Telemetry providesTelemetry(PreferenceManager preferenceManager,
                      HistoryDatabase historyDatabase, Timings timings) {
         return new Telemetry(app.getApplicationContext(), preferenceManager, historyDatabase, timings);
-    }
-
-    @Provides
-    @Singleton
-    PasswordManager providePasswordManager() {
-        return new PasswordManager();
     }
 
     @Provides

@@ -170,7 +170,7 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
 
     @OnCheckedChanged(R.id.attrack_enable)
     void onChecked(boolean isEnabled) {
-        if (mUrl.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_PREFIX)) {
+        if (mUrl.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             return;
         }
         setEnabled(isEnabled);
@@ -293,7 +293,7 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (mUrl.contains(TrampolineConstants.CLIQZ_TRAMPOLINE_PREFIX)) {
+        if (mUrl.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             return;
         }
         setEnabled(isChecked);

@@ -2,7 +2,6 @@ package com.cliqz.browser.main;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -70,7 +69,7 @@ public class FavoritesFragment extends FragmentWithBus {
                     if (isMultiSelect) {
                         multiSelect(position);
                     } else {
-                        bus.post(new CliqzMessages.OpenLink(favoritesList.get(position).getUrl()));
+                        bus.post(CliqzMessages.OpenLink.open(favoritesList.get(position).getUrl()));
                     }
                 }
 
@@ -132,7 +131,11 @@ public class FavoritesFragment extends FragmentWithBus {
         if (favoritesListView != null) {
             return;
         }
-        favoritesListView = getView().findViewById(R.id.history_rview);
+        final View view = getView();
+        if (view == null) {
+            return;
+        }
+        favoritesListView = view.findViewById(R.id.history_rview);
         favoritesListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //callback to handle swipe and delete
@@ -219,7 +222,7 @@ public class FavoritesFragment extends FragmentWithBus {
         }
         isMultiSelect = true;
         getParentFragment().setHasOptionsMenu(false);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        setDisplayHomeAsUpEnabled(false);
         contextualToolBar.setVisibility(View.VISIBLE);
     }
 
@@ -232,7 +235,8 @@ public class FavoritesFragment extends FragmentWithBus {
         adapter.multiSelectList.clear();
         adapter.notifyDataSetChanged();
         getParentFragment().setHasOptionsMenu(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setDisplayHomeAsUpEnabled(true);
         contextualToolBar.setVisibility(View.GONE);
     }
+
 }

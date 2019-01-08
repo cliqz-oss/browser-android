@@ -2,10 +2,12 @@ package acr.browser.lightning.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.Countries;
 import com.cliqz.browser.main.CrashDetector;
+import com.cliqz.browser.offrz.OffrzConfig;
 
 import java.util.Locale;
 
@@ -120,10 +122,14 @@ public class PreferenceManager {
         static final String AUTO_FORGET_MODE = "auto_forget_mode";
         static final String CLOSE_TABS_ON_EXIT = "close_tabs_on_exit";
         static final String IS_FIRST_SUBSCRIPTION = "is_first_subscription";
+        static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
         static final String SHOW_TOP_SITES = "show_top_sites";
         static final String SHOW_NEWS = "show_news";
         static final String LIMIT_DATA_USAGE = "limit_data_usage";
         static final String IS_MYOFFRZ_ONBOARDING_ENABLED = "myoffrz_onboarding_enabled";
+        static final String START_COUNT = "start_count";
+        static final String MY_OFFRZ_ENABLED = "MY_OFFRZ_ENABLED";
+        static final String SEND_USAGE_DATA = "SEND_USAGE_DATA";
     }
 
     private final SharedPreferences mPrefs;
@@ -142,7 +148,9 @@ public class PreferenceManager {
      * @return true if adblocking is enabled, false otherwise
      */
     public boolean getAdBlockEnabled() {
-        return mPrefs.getBoolean(Name.BLOCK_ADS, BuildConfig.FLAVOR_api.equals("amazon"));
+        return mPrefs.getBoolean(Name.BLOCK_ADS,
+                "amazon".equals(BuildConfig.FLAVOR_api) ||
+                        "huawei".equals(BuildConfig.FLAVOR_api));
     }
 
     public boolean getOptimizedAdBlockEnabled() {
@@ -190,7 +198,7 @@ public class PreferenceManager {
     }
 
     public String getDownloadDirectory() {
-        return mPrefs.getString(Name.DOWNLOAD_DIRECTORY, DownloadHandler.DEFAULT_DOWNLOAD_PATH);
+        return DownloadHandler.DEFAULT_DOWNLOAD_PATH;
     }
 
     public int getFlashSupport() {
@@ -223,10 +231,6 @@ public class PreferenceManager {
 
     public boolean getJavaScriptEnabled() {
         return mPrefs.getBoolean(Name.JAVASCRIPT, true);
-    }
-
-    public boolean getLocationEnabled() {
-        return mPrefs.getBoolean(Name.LOCATION, false);
     }
 
     public String getMemoryUrl() {
@@ -377,6 +381,7 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.DISTRIBUTION_EXCEPTION, false);
     }
 
+    @NonNull
     public String getReferrerUrl() {
         return mPrefs.getString(Name.REFERRER_URL, "");
     }
@@ -461,6 +466,15 @@ public class PreferenceManager {
     public boolean isMyOffrzOnboardingEnabled() {
         return mPrefs.getBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, true);
     }
+
+    public boolean isBackgroundImageEnabled() {
+        return mPrefs.getBoolean(Name.SHOW_BACKGROUND_IMAGE, true);
+    }
+
+    public boolean isSendUsageDataEnabled() {
+        return mPrefs.getBoolean(Name.SEND_USAGE_DATA, true);
+    }
+
     private void putBoolean(String name, boolean value) {
         mPrefs.edit().putBoolean(name, value).apply();
     }
@@ -477,6 +491,13 @@ public class PreferenceManager {
         mPrefs.edit().putLong(name, value).apply();
     }
 
+    public void setSendUsageData(boolean value) {
+        mPrefs.edit().putBoolean(Name.SEND_USAGE_DATA, value).apply();
+    }
+
+    public void setShouldShowBackgroundImage(boolean value) {
+        putBoolean(Name.SHOW_BACKGROUND_IMAGE, value);
+    }
     public void setMyOffrzOnboardingEnabled(boolean value) {
         putBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, value);
     }
@@ -548,10 +569,6 @@ public class PreferenceManager {
         putBoolean(Name.COOKIES, enable);
     }
 
-    public void setDownloadDirectory(String directory) {
-        putString(Name.DOWNLOAD_DIRECTORY, directory);
-    }
-
     public void setFlashSupport(int n) {
         putInt(Name.ADOBE_FLASH_SUPPORT, n);
     }
@@ -582,10 +599,6 @@ public class PreferenceManager {
 
     public void setJavaScriptEnabled(boolean enable) {
         putBoolean(Name.JAVASCRIPT, enable);
-    }
-
-    public void setLocationEnabled(boolean enable) {
-        putBoolean(Name.LOCATION, enable);
     }
 
     public void setMemoryUrl(String url) {
@@ -860,5 +873,20 @@ public class PreferenceManager {
 
     public void setLimitDataUsage(boolean value) {
         putBoolean(Name.LIMIT_DATA_USAGE, value);
+    }
+
+    public int getStartsCount() {
+        final int startsCount = mPrefs.getInt(Name.START_COUNT, 1);
+        putInt(Name.START_COUNT, startsCount+1);
+        return startsCount;
+    }
+
+    public boolean isMyOffrzEnable(){
+        boolean defaultValue = OffrzConfig.isOffrzSupportedForLang();
+        return mPrefs.getBoolean(Name.MY_OFFRZ_ENABLED,defaultValue);
+    }
+
+    public void setMyOffrzEnable(boolean value){
+        putBoolean(Name.MY_OFFRZ_ENABLED,value);
     }
 }

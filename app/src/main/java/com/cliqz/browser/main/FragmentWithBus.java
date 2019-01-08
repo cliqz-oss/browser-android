@@ -1,11 +1,12 @@
 package com.cliqz.browser.main;
 
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
-import com.cliqz.browser.webview.CliqzBridge;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 
@@ -35,9 +36,6 @@ public abstract class FragmentWithBus extends Fragment {
 
     @Inject
     HistoryDatabase historyDatabase;
-
-    @Inject
-    CliqzBridge cliqzBridge;
 
     @Inject
     Engine engine;
@@ -72,5 +70,13 @@ public abstract class FragmentWithBus extends Fragment {
 
     protected void registerToBus() {
         bus.register(this);
+    }
+
+    protected void setDisplayHomeAsUpEnabled(boolean value) {
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        final ActionBar actionBar = activity != null ? activity.getSupportActionBar() : null;
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(value);
+        }
     }
 }

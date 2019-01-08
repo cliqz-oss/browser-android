@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Новая вкладка</string>
     <string name="action_copy">Копировать ссылку</string>
     <string name="settings">Настройки</string>
@@ -56,7 +55,6 @@
     <string name="clear_cookies_exit">Удалять куки при выходе</string>
     <string name="clear_history_exit">Очищать историю при выходе</string>
     <string name="untitled">Без названия</string>
-    <string name="mpl_license">Mozilla Public License v. 2.0</string>
     <string name="freeware">Бесплатное программное обеспечение</string>
     <string name="settings_general">Основные</string>
     <string name="settings_privacy">Приватность</string>
@@ -192,7 +190,7 @@
     <string name="problem_location_download">Невозможно загрузить по указанному пути</string>
     <string name="download_no_sdcard_dlg_msg">Необходимо USB хранилище, чтобы скачать файл.</string>
     <string name="download_sdcard_busy_dlg_msg">Хранилище переполнено. Чтобы разрешить загрузку, нажмите \"Выключить USB хранилище\" в уведомлении.</string>
-    <string name="licenses">Лицензии открытого программного обеспечения</string>
+    <string name="licenses">Политики и лицензии</string>
     <string name="android_open_source_project">Android Open Source Project</string>
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
     <string name="dark_theme">Тёмная тема</string>
@@ -242,8 +240,8 @@
     <string name="search_hint">Поиск</string>
     <string name="allow_write_permission">Пожалуйста, разрешите хранить данные для работы этой функции.</string>
     <string name="share_card_email_subject">Я узнал об этом, используя Cliqz Browser</string>
-    <string name="no_history">Здесь Вы найдёте свою историю.\n\nВы ещё не посещали никакие веб-сайты.</string>
-    <string name="no_favorites">Здесь вы найдёте свои закладки.\n\nВы ещё не добавили никакие веб-сайты в закладки.</string>
+    <string name="no_history">Здесь Вы найдёте свою историю.</string>
+    <string name="no_favorites">Здесь вы найдёте свои закладки.</string>
     <string name="download_pending">Загрузка ожидается</string>
     <string name="message_url_copied">Ссылка скопирована в буфер обмена</string>
     <string name="control_center_header_overview">ОБЗОР</string>
@@ -294,7 +292,7 @@
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="myoffrz_onboarding_description">Получайте скидки и интересные предложения с MyOffrz</string>
-    <string name="order_now_label">Заказать сейчас!</string>
+    <string name="order_now_label">Заказать!</string>
     <string name="tap_code_to_copy_label">Нажмите на код, чтобы скопировать</string>
     <string name="terms_and_conditions_label">Условия</string>
     <string name="message_code_copied">Код скопирован</string>
@@ -312,7 +310,39 @@
         <item quantity="one">%d элемент выбран</item>
         <item quantity="few">%d элементов выбрано</item>
         <item quantity="many">%d элементов выбрано</item>
-        <item quantity="other"/>
     </plurals>
     <string name="customer_interaction">Взаимодействие с клиентом</string>
+    <string name="welcome_cliqz">Добро пожаловать в Cliqz</string>
+    <string name="agree_privacy_policy_cliqz">Используя это приложение, вы соглашаетесь с
+        &lt;font color=\'#00aef0\'&gt;политикой конфиденциальности Cliqz &lt;/font&gt;</string>
+    <string name="accept">ПРИНЯТЬ</string>
+    <string name="settings_show_background_image">Показать фоновое изображение</string>
+    <string name="menu">Меню</string>
+    <string name="android_app_settings_title">Местоположение</string>
+    <string name="make_default_browser">Сделать браузером по умолчанию</string>
+    <string name="default_browser_title">Браузер по умолчанию</string>
+    <string name="default_browser_message">Кажется, Вам нравится Cliqz. Хотите сделать его браузером по умолчанию?</string>
+    <string name="proceed">ПРОДОЛЖИТЬ</string>
+    <string name="save">ОТМЕНА</string>
+    <string name="never">Нет</string>
+    <string name="save_password_text">Вы хотите, чтобы Cliqz сохранил пароль для этого сайта?</string>
+    <string name="privacy_policy">Политика безопасности</string>
+    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
+    <string name="eula">Пользовательское соглашение</string>
+    <string name="eula_text">Cliqz браузер для Android разработан на основе &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
+ Browser открытого программного обеспечения&lt;/a&gt; и доступен Вам на основе условий &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, лицензии
+ свободного ПО, которая даёт Вам право использовать программу для любых целей, изучать, как она работает, передавать копии Вашим друзьям и вносить в нее свои изменения. Отдельного лицензионного соглашениея с конечным пользователем (EULA) не существует.</string>
+    <string name="title_activity_eula_setting">Пользовательское соглашение</string>
+    <plurals name="topsite_deleted">
+        <item quantity="one">%d Ваши топ сайты удалены</item>
+        <item quantity="few">%d Ваши топ сайты удалены</item>
+        <item quantity="many">%d Ваши топ сайты удалены</item>
+    </plurals>
+    <string name="privacy_policy_title">Политика безопасности - Cliqz</string>
+<string name="settings_show_my_offrz">Показать MyOffrz</string>
+    <string name="settings_about_my_offrz">О MyOffrz</string>
+    <string name="myoffrz_activation_description">Активируйте MyOffrz, чтобы получать выгодные предложения и скидки.</string>
+    <string name="settings_category_user_data_choices">Выбор передачи данных</string>
+    <string name="send_usage_data">Отправлять пользовательские данные</string>
+    <string name="send_usage_data_summary">Помогите нам улучшить процесс просмотра веб-страниц. Cliqz собирает только анонимные пользовательские данные. Персональные данные не собираются ни при каких обстоятельствах.</string>
 </resources>

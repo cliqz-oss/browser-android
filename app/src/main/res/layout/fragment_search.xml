@@ -31,8 +31,8 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_alignParentTop="true"
-        custom:backgroundColor="#00000000"
         custom:bidirectionalAnimate="false"
-        custom:progressColor="@color/primary_color" />
+        custom:backgroundColor="@color/progress_bar_bg"
+        custom:progressColor="@color/progress_bar_color" />
 
 </RelativeLayout>

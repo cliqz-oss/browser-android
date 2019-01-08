@@ -21,11 +21,22 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_cliqz_tab">
         <CheckBoxPreference
+            android:key="cb_show_background_image"
+            android:title="@string/settings_show_background_image" />
+        <CheckBoxPreference
             android:key="cb_show_topsites"
             android:title="@string/settings_show_top_sites" />
         <CheckBoxPreference
             android:key="cb_show_news"
             android:title="@string/settings_show_news" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/myoffrz_label">
+        <CheckBoxPreference
+            android:key="cb_show_my_offrz"
+            android:title="@string/settings_show_my_offrz" />
+        <Preference
+            android:key="about_my_offrz"
+            android:title="@string/settings_about_my_offrz"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_notifications">
         <CheckBoxPreference
@@ -41,9 +52,6 @@
             android:key="cb_limit_data_usage"
             android:title="@string/limit_data_usage"
             android:summary="@string/limit_data_usage_summary"/>
-        <Preference
-            android:key="download_location"
-            android:title="@string/title_download_location" />
         <Preference
             android:key="onboarding"
             android:title="@string/show_onboarding_hints" />

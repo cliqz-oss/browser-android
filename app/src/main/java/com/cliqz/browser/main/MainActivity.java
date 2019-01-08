@@ -39,7 +39,6 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.connect.SyncEvents;
 import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.main.search.NewsFetcher;
 import com.cliqz.browser.main.search.SearchView;
@@ -65,6 +64,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 
@@ -173,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         } else {
             isRestored = tabsManager.restoreTabs();
         }
-
         new ABTestFetcher().fetchTestList();
         mOverViewFragment = new OverviewFragment();
         // Ignore intent if we are being recreated
@@ -285,6 +284,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             mCliqzShortcutsHelper = new CliqzShortcutsHelper(this, historyDatabase);
         }
+        if (mIsColdStart) {
+            final int startsCount = preferenceManager.getStartsCount();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && startsCount == 3) {
+                MakeDefaultBrowserDialog.show(this);
+            }
+            telemetry.sendStartingSignals("cards", "cold");
+        }
     }
 
     private void sendNotificationClickedTelemetry(Intent intent) {
@@ -375,12 +381,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         tabsManager.resumeAllTabs();
 
         timings.setAppStartTime();
-        //The idea is to reset all tabs if the app has been in background for 30mins
-        if (preferenceManager.getLocationEnabled()) {
-            locationCache.start();
-        } else {
-            locationCache.stop();
-        }
+        locationCache.start();
         showLookbackDialog();
     }
 
@@ -448,9 +449,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (preferenceManager.getClearHistoryExitEnabled()) {
             historyDatabase.clearHistory(false);
             preferenceManager.setShouldClearQueries(PreferenceManager.ClearQueriesOptions.CLEAR_HISTORY);
+            WebUtils.clearWebStorage(this);
+            final File file = new File(getApplicationInfo().dataDir+"/app_webview", "historyManager-journal");
+            if (file.exists()) {
+                file.delete();
+            }
         }
         if (preferenceManager.getClearCookiesExitEnabled()) {
             WebUtils.clearCookies(this);
+            final File file = new File(getApplicationInfo().dataDir+"/app_webview", "Cookies-journal");
+            if (file.exists()) {
+                file.delete();
+            }
+
         }
         if (preferenceManager.getCloseTabsExit()) {
             tabsManager.clearTabsData();
@@ -643,13 +654,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    void sendTabError(SyncEvents.SendTabError event) {
+    void sendTabError(CliqzMessages.NotifyTabError event) {
         SendTabErrorDialog.show(this, SendTabErrorTypes.GENERIC_ERROR);
     }
 
     @Subscribe
-    void sendTabSuccess(SyncEvents.SendTabSuccess event) {
-        final String message = getString(R.string.tab_send_success_msg, event.name);
+    void sendTabSuccess(CliqzMessages.NotifyTabSuccess event) {
+        String message;
+        try {
+            message = getString(R.string.tab_send_success_msg, event.json.getString("name"));
+        } catch (JSONException e) {
+            message = getString(R.string.tab_send_success_msg, "UNKOWN");
+            Log.e(TAG,e.getMessage(),e);
+        }
         bus.post(new BrowserEvents.ShowSnackBarMessage(message));
         telemetry.sendSendTabSuccessSignal();
     }
@@ -740,7 +757,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         PermissionsManager.getInstance().notifyPermissionsChange(permissions, grantResults);
         if (requestCode == Constants.LOCATION_PERMISSION && grantResults.length > 0 &&
                 grantResults[0] == PERMISSION_GRANTED) {
-            preferenceManager.setLocationEnabled(true);
             if (!locationCache.isGPSEnabled()) {
                 Toast.makeText(this, R.string.gps_permission, Toast.LENGTH_SHORT).show();
             }

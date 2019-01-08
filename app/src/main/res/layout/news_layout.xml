@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/news_list_divider"
+    android:background="@drawable/news_item_background_selector"
     android:paddingBottom="10dp"
     android:paddingEnd="5dp"
     android:paddingStart="5dp"
@@ -19,8 +19,6 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        app:roundWithOverlayColor="@color/white"
-        app:roundedCornerRadius="5dp"
         app:srcCompat="@color/secondary_color_settings"
         tools:ignore="ContentDescription" />
 
@@ -34,7 +32,7 @@
         android:maxLines="1"
         android:paddingLeft="10dp"
         android:paddingStart="10dp"
-        android:textColor="@color/gray_medium"
+        android:textColor="@color/secondary_color"
         android:textSize="12sp" />
 
     <TextView

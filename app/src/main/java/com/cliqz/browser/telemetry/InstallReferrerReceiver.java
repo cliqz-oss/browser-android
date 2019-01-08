@@ -43,6 +43,11 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         inject(context);
+        final String storedReferrerUrl= preferenceManager.getReferrerUrl();
+        if (!storedReferrerUrl.isEmpty()) {
+            // We have already a referrer url, do not send the signal twice
+            return;
+        }
         String referrer = intent.getStringExtra("referrer");
         preferenceManager.setReferrerUrl(referrer);
         try {

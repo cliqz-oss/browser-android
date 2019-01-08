@@ -14,19 +14,19 @@ import com.cliqz.browser.R;
 public class TopsitePlaceHolderView extends View {
 
     private static final int MAX_SIZE = 10000;
-    private static int sWidth = -1;
+    private static int sSize = -1;
 
     public TopsitePlaceHolderView(Context context) {
         super(context);
-        setBackground(ContextCompat.getDrawable(context,R.drawable.rounded_placeholder_bg));
-        if (sWidth < 0) {
+        setBackgroundColor(ContextCompat.getColor(context, R.color.fresh_tab_placeholder_color));
+        if (sSize < 0) {
             measurePlaceholder(context);
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(sWidth, sWidth);
+        setMeasuredDimension(sSize, sSize);
     }
 
     private static void measurePlaceholder(Context context) {
@@ -35,6 +35,6 @@ public class TopsitePlaceHolderView extends View {
         final View regularIcon = inflater.inflate(R.layout.topsites_layout, null);
         final int measureSpec = MeasureSpec.makeMeasureSpec(MAX_SIZE, MeasureSpec.AT_MOST);
         regularIcon.measure(measureSpec, measureSpec);
-        sWidth = regularIcon.getMeasuredWidth();
+        sSize = regularIcon.getMeasuredWidth();
     }
 }

@@ -79,20 +79,6 @@
             android:textAllCaps="false"
             android:textColor="@color/primary_color_dark"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/menu_btn"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:text="@string/menu"
-            android:textAllCaps="false"
-            android:textColor="@color/primary_color_dark"
-            android:textSize="12sp"
-            tools:drawableTint="@color/primary_color_dark"
-            tools:drawableTop="@drawable/ic_menu_overflow" />
     </LinearLayout>
 
     <View

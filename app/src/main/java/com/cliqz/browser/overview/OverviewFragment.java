@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -52,7 +53,8 @@ public class OverviewFragment extends Fragment {
     private int mCurrentPageIndex = -1;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.activity_overview, container, false);
         contextualToolBar = view.findViewById(R.id.history_contextual_menu);
         final View cancelButton = view.findViewById(R.id.action_cancel);
@@ -162,9 +164,9 @@ public class OverviewFragment extends Fragment {
         final TabFragment tab = tabsManager.getCurrentTab();
         if (tab != null) {
             if (tab.isResumed()) {
-                tab.openLink(event.url, false, true);
+                tab.openLink(event.url, false, true, null);
             } else {
-                tab.openFromOverview(event.url);
+                tab.openFromOverview(event);
             }
         }
     }

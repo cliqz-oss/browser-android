@@ -175,17 +175,8 @@ public class DownloadHandler {
         // or, should it be set to one of several Environment.DIRECTORY* dirs
         // depending on mimetype?
 
-        // Removed as version 1.0.2r2, restore if needed
-        String location = BrowserApp.getAppComponent().getPreferenceManager().getDownloadDirectory();
-        final Uri downloadFolder;
-        if (location != null) {
-            location = addNecessarySlashes(location);
-            downloadFolder = Uri.parse(location);
-        } else {
-            location = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
-            downloadFolder = Uri.parse(location);
-            BrowserApp.getAppComponent().getPreferenceManager().setDownloadDirectory(location);
-        }
+        final String location = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
+        final Uri downloadFolder = Uri.parse(location);;
 
         File dir = new File(downloadFolder.getPath());
         if (!dir.isDirectory() && !dir.mkdirs()) {

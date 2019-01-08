@@ -6,8 +6,7 @@
     android:layout_height="?attr/actionBarSize"
     android:layout_gravity="center_vertical"
     android:background="@color/fresh_tab_background"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:gravity="center_vertical">
 
     <FrameLayout
         android:id="@+id/overflow_menu"

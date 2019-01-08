@@ -48,7 +48,7 @@ class NewsViewHolder extends IconViewHolder implements View.OnClickListener {
         } else if (piece.breaking) {
             target = TelemetryKeys.BREAKINGNEWS;
         }
-        bus.post(new CliqzMessages.OpenLink(piece.url));
+        bus.post(CliqzMessages.OpenLink.open(piece.url));
         telemetry.sendTopnewsClickSignal(position, target);
     }
 }

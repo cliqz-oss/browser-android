@@ -1,27 +1,28 @@
 {
+  "info": "!!! THIS IS A STUB FILE, REPLACE THIS WITH THE REAL FILE !!!",
   "project_info": {
     "project_number": "00000000000",
-    "firebase_url": "https://cliqz-browser.firebaseio.com",
-    "project_id": "cliqz-browser",
-    "storage_bucket": "cliqz-browser.appspot.com"
+    "firebase_url": "https://example.firebaseio.com",
+    "project_id": "example",
+    "storage_bucket": "example.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "mobilesdk_app_id": "0:00000000000:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.cliqz.browser"
         }
       },
       "oauth_client": [
         {
-          "client_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "client_id": "00000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          "current_key": "0000000000-0000000000000000000000000000"
         }
       ],
       "services": {
@@ -39,20 +40,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "mobilesdk_app_id": "0:00000000000:android:0000000000000000",
         "android_client_info": {
           "package_name": "com.cliqz.browser.debug"
         }
       },
       "oauth_client": [
         {
-          "client_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "client_id": "00000000000-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          "current_key": "0000000000-0000000000000000000000000000"
         }
       ],
       "services": {
@@ -67,6 +68,32 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for ghostery",
+        "android_client_info": {
+          "package_name": "com.cliqz.ghostery.debug"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "debug stub for ghostery",
+        "android_client_info": {
+          "package_name": "com.cliqz.ghostery"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "stub"
+        }
+      ]
     },
     {
       "client_info": {

@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.search.SearchView;
-import com.cliqz.browser.offrz.OffrzConfig;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.widget.AutocompleteEditText;
@@ -96,9 +95,6 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     @Bind(R.id.favorites_btn)
     Button favoritesButton;
 
-    @Bind(R.id.menu_btn)
-    Button menuButton;
-
     @Inject
     Telemetry telemetry;
 
@@ -131,9 +127,6 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         final View quickBar = inflater.inflate(R.layout.quick_acces_bar, this);
 
         ButterKnife.bind(this, quickBar);
-        if (!OffrzConfig.isOffrzSupportedForLang()) {
-            offrzButton.setEnabled(false);
-        }
         // if Android less than 23 we have to tint the icons and possibly clone them
         final int count = accessBarContainer.getChildCount();
         final @ColorInt int tintColor = ContextCompat.getColor(context, R.color.primary_color_dark);
@@ -169,19 +162,10 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         tabsOverviewButton.setCompoundDrawablesWithIntrinsicBounds(null,tabOverviewDrawable,null,null);
         historyButton.setCompoundDrawablesWithIntrinsicBounds(null,historyDrawable,null,null);
         favoritesButton.setCompoundDrawablesWithIntrinsicBounds(null,favoriteDrawable,null,null);
-        if (OffrzConfig.isOffrzSupportedForLang()) {
-            final Drawable offrzDrawable =
-                    AppCompatResources.getDrawable(context, R.drawable.ic_offrz_black).mutate();
-            DrawableCompat.setTint(offrzDrawable, color);
-            offrzButton.setCompoundDrawablesWithIntrinsicBounds(null, offrzDrawable, null, null);
-            menuButton.setVisibility(GONE);
-        } else {
-            final Drawable menuDrawable =
-                    AppCompatResources.getDrawable(context, R.drawable.ic_menu_overflow).mutate();
-            DrawableCompat.setTint(menuDrawable, color);
-            menuButton.setCompoundDrawablesWithIntrinsicBounds(null, menuDrawable, null, null);
-            offrzButton.setVisibility(GONE);
-        }
+        final Drawable offrzDrawable =
+                AppCompatResources.getDrawable(context, R.drawable.ic_offrz_black).mutate();
+        DrawableCompat.setTint(offrzDrawable, color);
+        offrzButton.setCompoundDrawablesWithIntrinsicBounds(null, offrzDrawable, null, null);
     }
 
     @Override
@@ -294,12 +278,6 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     void onOffrzButtonClicked() {
         safeBusPost(new Messages.GoToOffrz());
         safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.OFFRZ);
-    }
-
-    @OnClick(R.id.menu_btn)
-    void onMenuButtonClicked() {
-        safeBusPost(new Messages.OnOpenMenuButton());
-        safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.MAIN_MENU);
     }
 
     private void safeBusPost(Object msg) {
