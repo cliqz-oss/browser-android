@@ -194,6 +194,9 @@ dependencies {
 
     // react native share card
     implementation project(':react-native-share')
+
+    // user agent
+    implementation project(':react-native-user-agent-react-native-user-agent')
     
     // Utils libraries
     implementation project(':utils')
