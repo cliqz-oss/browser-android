@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
-    "@cliqz/indexeddbshim": "3.4.1",
-    "browser-core": "http://cdn2.cliqz.com/update/edge/react-native/v3.26/3.26.2.tgz",
+    "@cliqz/indexeddbshim": "^4.1.1",
+    "browser-core": "http://cdn2.cliqz.com/update/edge/cliqz-ios/master/latest.tgz",
     "buffer": "5.0.7",
     "core-js": "2.5.3",
     "https-browserify": "1.0.0",
@@ -27,13 +27,13 @@
     "path-browserify": "0.0.0",
     "pouchdb-adapter-react-native-sqlite": "1.0.3",
     "pouchdb-react-native": "6.3.4",
-    "react": "16.0.0",
-    "react-native": "0.51.0",
+    "react": "16.6.3",
+    "react-native": "0.56.1",
     "react-native-collapsible": "0.8.1",
     "react-native-device-info": "0.10.2",
     "react-native-fs": "2.8.1",
     "react-native-share": "1.0.23",
-    "react-native-snap-carousel": "^3.3.4",
+    "react-native-snap-carousel": "3.7.5",
     "react-native-sqlite-2": "1.5.0",
     "react-native-view-shot": "2.2.0",
     "react-native-webrtc": "1.58.3",
@@ -48,5 +48,6 @@
     "**/errno/prr": "0.0.0",
     "**/fancy-log": "1.3.0",
     "**/uglify-es": "3.2.1"
-  }
+  },
+  "devDependencies": {}
 }
