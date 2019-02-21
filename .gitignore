@@ -67,3 +67,4 @@ app/src/main/assets/jsengine.bundle.js
 !/jsengine/.gitkeep
 node_modules/
 yarn.lock
+app/google-services.json

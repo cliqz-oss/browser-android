@@ -187,6 +187,5 @@ preBuild.doLast {
         final buildType = variant.buildType.debuggable ? BuildType.DEBUG : BuildType.RELEASE
         variant.resValue 'string', 'application_id', variant.applicationId
         variant.buildConfigField 'String', 'TELEMETRY_CHANNEL', "\"MA${channel.channel}${buildType.value}\""
-        println(variant.applicationId)
     }
 }
