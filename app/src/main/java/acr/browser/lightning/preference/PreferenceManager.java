@@ -21,6 +21,9 @@ import acr.browser.lightning.download.DownloadHandler;
 @Singleton
 public class PreferenceManager {
 
+    private static final String FLAVOR_API_AMAZON = "amazon";
+    private static final String FLAVOR_API_HUAWEI = "huawei";
+
     public enum ClearQueriesOptions {
         NO,
         CLEAR_HISTORY,
@@ -147,10 +150,11 @@ public class PreferenceManager {
      *
      * @return true if adblocking is enabled, false otherwise
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean getAdBlockEnabled() {
         return mPrefs.getBoolean(Name.BLOCK_ADS,
-                "amazon".equals(BuildConfig.FLAVOR_api) ||
-                        "huawei".equals(BuildConfig.FLAVOR_api));
+                FLAVOR_API_AMAZON.equals(BuildConfig.FLAVOR_api) ||
+                        FLAVOR_API_HUAWEI.equals(BuildConfig.FLAVOR_api));
     }
 
     public boolean getOptimizedAdBlockEnabled() {
@@ -383,7 +387,8 @@ public class PreferenceManager {
 
     @NonNull
     public String getReferrerUrl() {
-        return mPrefs.getString(Name.REFERRER_URL, "");
+        final String referrer = mPrefs.getString(Name.REFERRER_URL, "");
+        return referrer != null ? referrer : "";
     }
 
     public boolean shouldShowTopSites() {
@@ -459,6 +464,7 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.CLOSE_TABS_ON_EXIT, false);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isFirstSubscription() {
         return mPrefs.getBoolean(Name.IS_FIRST_SUBSCRIPTION, true);
     }

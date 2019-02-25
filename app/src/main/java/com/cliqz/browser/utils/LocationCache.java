@@ -18,19 +18,20 @@ import javax.inject.Singleton;
 
 /**
  * @author Stefano Pacifici
- * @date 2015/11/17
+ * date 2015/11/17
  */
 @Singleton
 public class LocationCache implements LocationListener {
 
     private static final String TAG = LocationCache.class.getSimpleName();
-    private static final long FIFTEEN_MINUTES = 900_000l;
+    private static final long FIFTEEN_MINUTES = 900_000L;
     private static final float FORTY_METERS = 40.0f;
 
     private final LocationManager locationManager;
     private final Context context;
 
     private Location mLastLocation = null;
+    private String mProvider = null;
 
     @Inject
     LocationCache(@NonNull Context context) {
@@ -41,21 +42,21 @@ public class LocationCache implements LocationListener {
     public void start() {
         final Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider == null) {
+        mProvider = locationManager.getBestProvider(criteria, true);
+        if (mProvider == null) {
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-            provider = locationManager.getBestProvider(criteria, true);
+            mProvider = locationManager.getBestProvider(criteria, true);
         }
-        if (provider == null) {
+        if (mProvider == null) {
             return;
         }
         if (PermissionsManager.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
             try {
-                locationManager.requestLocationUpdates(provider,
+                locationManager.requestLocationUpdates(mProvider,
                         FIFTEEN_MINUTES, FORTY_METERS, this);
                 mLastLocation = getLastLocation();
                 if(mLastLocation == null) {
-                    mLastLocation = locationManager.getLastKnownLocation(provider);
+                    mLastLocation = locationManager.getLastKnownLocation(mProvider);
                 }
             } catch (SecurityException e) {
                 Log.e(TAG, "Check permissions");
@@ -64,6 +65,7 @@ public class LocationCache implements LocationListener {
     }
 
     public void stop() {
+        mProvider = null;
         try {
             locationManager.removeUpdates(this);
         } catch (SecurityException e) {
@@ -117,14 +119,9 @@ public class LocationCache implements LocationListener {
                 provider.equals(oldProvider);
 
         // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
+        return isMoreAccurate ||
+                (isNewer && !isLessAccurate) ||
+                (isNewer && !isSignificantlyLessAccurate && isFromSameProvider);
     }
 
     @Override
@@ -139,6 +136,10 @@ public class LocationCache implements LocationListener {
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        if (provider != null && provider.equals(mProvider)) {
+            // Try to switch to another provider by restarting the instance
+            stop();
+            start();
+        }
     }
 }
