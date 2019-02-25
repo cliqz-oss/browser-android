@@ -1,5 +1,6 @@
 import 'react-native/Libraries/Core/InitializeCore';
 import { AppRegistry } from 'react-native';
+import setup from './setup';
 import React from 'react';
 import { startup, components } from 'browser-core';
 

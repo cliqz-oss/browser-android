@@ -60,7 +60,7 @@ allprojects {
 
     configurations.all {
         resolutionStrategy {
-            force 'com.facebook.react:react-native:0.51.0'
+            force 'com.facebook.react:react-native:0.56.1'
         }
     }
 }

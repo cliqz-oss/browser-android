@@ -14,3 +14,6 @@ project(':react-native-view-shot').projectDir = new File(settingsDir, 'node_modu
 
 include ':react-native-share'
 project(':react-native-share').projectDir = new File(settingsDir, 	'node_modules/react-native-share/android')
+
+include ':react-native-user-agent-react-native-user-agent'
+project(':react-native-user-agent-react-native-user-agent').projectDir = new File(settingsDir, 	'node_modules/react-native-user-agent/android')

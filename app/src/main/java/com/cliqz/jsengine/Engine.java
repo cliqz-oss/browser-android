@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.bebnev.RNUserAgentPackage;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.ReactSearchPackage;
 import com.cliqz.nove.Bus;
@@ -46,8 +47,9 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
                 .addPackage(new RNFSPackage())
                 .addPackage(new RNSqlite2Package())
                 .addPackage(new JSEngineReactPackage(this, bus))
-                .addPackage(new ReactSearchPackage())
+                .addPackage(new ReactSearchPackage(bus))
                 .addPackage(new RNSharePackage())
+                .addPackage(new RNUserAgentPackage())
                 .addPackage(new WebRTCModulePackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)

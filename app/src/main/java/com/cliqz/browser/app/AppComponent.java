@@ -24,6 +24,7 @@ import com.cliqz.browser.reactnative.BrowserActions;
 import com.cliqz.browser.reactnative.GeoLocationModule;
 import com.cliqz.browser.reactnative.PermissionManagerModule;
 import com.cliqz.browser.reactnative.QuerySuggestion;
+import com.cliqz.browser.reactnative.SearchEnginesModule;
 import com.cliqz.browser.reactnative.TelemetryModule;
 import com.cliqz.browser.settings.BaseSettingsFragment;
 import com.cliqz.browser.telemetry.InstallReferrerReceiver;
@@ -129,4 +130,6 @@ public interface AppComponent {
     void inject(TelemetryModule telemetryModule);
 
     void inject(GeoLocationModule geoLocationModule);
+
+    void inject(SearchEnginesModule searchEnginesModule);
 }

@@ -53,6 +53,7 @@ import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.cliqz.browser.webview.CliqzMessages;
+import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.ActivityUtils;
@@ -148,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Inject
     OnBoardingHelper onBoardingHelper;
+
+    @Inject
+    Engine engine;
 
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
 
@@ -383,6 +387,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         timings.setAppStartTime();
         locationCache.start();
         showLookbackDialog();
+        if (engine.reactInstanceManager != null) {
+            engine.reactInstanceManager.onHostResume(this);
+        }
     }
 
     @Override
@@ -430,6 +437,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             mCliqzShortcutsHelper.updateShortcuts();
         }
+
+        if (engine.reactInstanceManager != null) {
+            engine.reactInstanceManager.onHostPause(this);
+        }
     }
 
     @Override
@@ -439,6 +450,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         String context = getCurrentVisibleFragmentName();
         if (!context.isEmpty()) {
             telemetry.sendClosingSignals(TelemetryKeys.KILL, context);
+        }
+
+        if (engine.reactInstanceManager != null) {
+            engine.reactInstanceManager.onHostDestroy(this);
         }
     }
 
