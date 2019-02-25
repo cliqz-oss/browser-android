@@ -575,7 +575,9 @@ public class LightningView {
     }
 
     public synchronized void loadUrl(String url) {
-        mWebView.loadUrl(url, mRequestHeaders);
+        if (mWebView != null && url != null) {
+            mWebView.loadUrl(url, mRequestHeaders);
+        }
     }
 
     public String getTitle() {
