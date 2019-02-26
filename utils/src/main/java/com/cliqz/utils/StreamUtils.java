@@ -27,6 +27,7 @@ public final class StreamUtils {
         int read;
         try {
             while ((read = in.read(buffer)) > 0) {
+                //noinspection CharsetObjectCanBeUsed
                 builder.append(new String(buffer, 0, read, "UTF-8"));
             }
             return builder.toString();
