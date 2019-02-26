@@ -490,7 +490,7 @@ public final class Utils {
     }
 
     public static void updateUserLocation(final PreferenceManager preferenceManager) {
-        final String locationUrl = "https://newbeta.cliqz.com/api/v1/config";
+        final String locationUrl = "https://api.cliqz.com/api/v1/config";
         new Thread(new Runnable() {
             @Override
             public void run() {
