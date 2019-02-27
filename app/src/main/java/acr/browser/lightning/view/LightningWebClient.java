@@ -39,7 +39,6 @@ import com.cliqz.browser.main.Messages.ControlCenterStatus;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.WebRequest;
-import com.cliqz.nove.Bus;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -66,6 +65,13 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     @SuppressWarnings("unused")
     private static final String TAG = LightningWebClient.class.getSimpleName();
     private static final String CLIQZ_PATH = "/CLIQZ";
+    private static final String SCHEME_ABOUT = "about";
+    private static final String SCHEME_INTENT = "intent";
+    private static final String SCHEME_HTTP = "http";
+    private static final String SCHEME_HTTPS = "https";
+    private static final int CODE_CALL_SUPER = 1;
+    private static final int CODE_RETURN_FALSE = 2;
+    private static final int CODE_RETURN_TRUE = 3;
     private static Pattern SPIEGEL_REGEX = Pattern.compile(".*\\.spiegel\\.de/?.*");
     private static Set<String> SPIEGEL_FILTER = new HashSet<>(Arrays.asList(
             "http://ssl.p.jwpcdn.com/player/v/7.8.1/gapro.js",
@@ -146,13 +152,13 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                                 resources.openRawResource(R.raw.trampoline_forward));
             }
             if (handleSearchCommand(view, cmd, uri) ||
-                    handleCloseCommand(view, cmd, uri) ||
-                    handleHistoryCommand(view, cmd,uri)) {
+                    handleCloseCommand(view, cmd) ||
+                    handleHistoryCommand(view, cmd)) {
                 return createOKResponse();
             }
         } else if (cliqzPath.equals(path)) {
             // Urls with the special CLIQZ Path
-            if (uri.getHost().equals(mCurrentHost)) {
+            if (mCurrentHost != null && mCurrentHost.equals(uri.getHost())) {
                 // make sure that script is asking for password from same domain
                 lightningView.passwordManager.provideOrSavePassword(uri, view);
             }
@@ -161,7 +167,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         return null;
     }
 
-    private boolean handleHistoryCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
+    private boolean handleHistoryCommand(@NonNull WebView view, @Nullable String cmd) {
         if (TrampolineConstants.TRAMPOLINE_COMMAND_HISTORY.equals(cmd)) {
             lightningView.telemetry.sendBackPressedSignal("web", "history", 0);
             view.post(new Runnable() {
@@ -180,7 +186,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         return false;
     }
 
-    private boolean handleCloseCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
+    private boolean handleCloseCommand(@NonNull WebView view, @Nullable String cmd) {
         if (TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE.equals(cmd)) {
             view.post(new Runnable() {
                 @Override
@@ -196,7 +202,8 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     private boolean handleSearchCommand(@NonNull WebView view, @Nullable String cmd, @NonNull Uri uri) {
         if (TrampolineConstants.TRAMPOLINE_COMMAND_SEARCH.equals(cmd)) {
             final String query = uri.getQueryParameter(TrampolineConstants.TRAMPOLINE_QUERY_PARAM_NAME);
-            lightningView.telemetry.sendBackPressedSignal("web", "cards", query.length());
+            final int queryLen = query != null ? query.length() : 0;
+            lightningView.telemetry.sendBackPressedSignal("web", "cards", queryLen);
             view.post(new Runnable() {
                 @Override
                 public void run() {
@@ -477,27 +484,52 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         alert.show();
     }
 
-    @SuppressWarnings("deprecation")
-    @SuppressLint("ObsoleteSdkInt")
+    @TargetApi(Build.VERSION_CODES.N)
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        switch (internalShouldOverrideUrlLoading(view, request.getUrl())) {
+            case CODE_CALL_SUPER:
+                return super.shouldOverrideUrlLoading(view, request);
+            case CODE_RETURN_TRUE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        final Uri uri = Uri.parse(url);
+        switch (internalShouldOverrideUrlLoading(view, Uri.parse(url))) {
+            case CODE_CALL_SUPER:
+                return super.shouldOverrideUrlLoading(view, url);
+            case CODE_RETURN_TRUE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private int internalShouldOverrideUrlLoading(WebView view, Uri uri) {
+        if (uri == null) {
+            return CODE_RETURN_FALSE;
+        }
         final String scheme = uri.getScheme();
 
         if (lightningView.isIncognitoTab()) {
-            return super.shouldOverrideUrlLoading(view, url);
+            return CODE_CALL_SUPER;
         }
 
-        if (scheme.equals("about")) {
-            return super.shouldOverrideUrlLoading(view, url);
+        if (SCHEME_ABOUT.equals(scheme)) {
+            return CODE_CALL_SUPER;
         }
 
-        if (scheme.equals("intent")) {
+        final String url = uri.toString();
+        if (SCHEME_INTENT.equals(scheme)) {
             Intent intent;
             try {
                 intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
             } catch (URISyntaxException ex) {
-                return false;
+                return CODE_RETURN_FALSE;
             }
             if (intent != null) {
                 try {
@@ -506,26 +538,28 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 } catch (MalformedURLException e) {
                     // Silently ignore this
                 }
-                return true;
+                return CODE_RETURN_TRUE;
             }
         }
 
-        if (!scheme.equals("http") && !scheme.equals("https")) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> activites = packageManager.queryIntentActivities(intent, 0);
-            if (activites.size() > 0) {
+        if (!SCHEME_HTTP.equals(scheme) && !SCHEME_HTTPS.equals(scheme)) {
+            final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            final PackageManager packageManager = context.getPackageManager();
+            final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+            if (activities.size() > 0) {
                 context.startActivity(intent);
             } else {
                 Toast.makeText(context, context.getString(R.string.app_not_found), Toast.LENGTH_SHORT).show();
             }
-            return true;
+            return CODE_RETURN_TRUE;
         }
         if(!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             lightningView.telemetry.sendNavigationSignal(url.length());
         }
-        return false;
+        return CODE_RETURN_FALSE;
     }
+
+
 
     @Override
     public void onUrlProcessed(final String url, boolean isPhishing) {
@@ -546,7 +580,8 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         if (errorCode == ERROR_FAILED_SSL_HANDSHAKE && Build.VERSION.SDK_INT <
                 Build.VERSION_CODES.KITKAT) {
             final Uri uri = Uri.parse(failingUrl);
-            if (uri.isHierarchical() && uri.getHost().startsWith("amp.")) {
+            final String host = uri != null ? uri.getHost() : "";
+            if (uri != null && uri.isHierarchical() && host != null && host.startsWith("amp.")) {
                 final String newUrl = failingUrl.replace("amp", "www");
                 lightningView.setUrlSSLError(true);
                 view.loadData("", "", null);
