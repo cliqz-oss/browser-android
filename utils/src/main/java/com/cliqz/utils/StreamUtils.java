@@ -3,8 +3,8 @@ package com.cliqz.utils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
+@SuppressWarnings({"unused", "SameParameterValue"})
 public final class StreamUtils {
 
     private StreamUtils() {}
