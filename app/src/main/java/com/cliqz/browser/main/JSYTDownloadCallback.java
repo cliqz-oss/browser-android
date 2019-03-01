@@ -31,7 +31,7 @@ public class JSYTDownloadCallback implements JSBridge.Callback,Runnable {
     @Override
     public void callback(ReadableMap data) {
         try {
-            mData = Utils.convertMapToJson(data);
+            mData = Utils.convertMapToJson(data.getMap("result"));
             handler.post(this);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class JSYTDownloadCallback implements JSBridge.Callback,Runnable {
     @Override
     public void run() {
         try {
-            bus.post(new Messages.SetVideoUrls(mData.getJSONArray("result")));
+            bus.post(new Messages.SetVideoUrls(mData.getJSONArray("formats")));
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -125,7 +125,7 @@ public class SearchView extends FrameLayout {
     }
 
     public void fetchYouTubeUrls(String url) {
-        engine.callAction("video-downloader:findVideoLinks",new JSYTDownloadCallback(bus,handler),url);
+        engine.callAction("video-downloader:getVideoLinks", new JSYTDownloadCallback(bus,handler), url);
     }
 
     public void initExtensionPreferences() {
