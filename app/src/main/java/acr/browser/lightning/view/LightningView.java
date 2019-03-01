@@ -15,13 +15,9 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.LayoutAlgorithm;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
@@ -39,7 +35,6 @@ import com.cliqz.nove.Bus;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -47,7 +42,6 @@ import javax.inject.Inject;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
-import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
 
 /**
@@ -161,12 +155,12 @@ public class LightningView {
         LightningViewTouchHandler.attachTouchListener(this);
     }
 
-    /**
+    /* TODO: Do we need this with the GeckoView? *
      * Initialize the preference driven settings of the WebView
      *
      * @param settings the WebSettings object to use, you can pass in null
      *                 if you don't have a reference to them
-     */
+     * /
     @SuppressLint({"NewApi", "SetJavaScriptEnabled"})
     private synchronized void initializePreferences(@Nullable WebSettings settings) {
         if (settings == null && mWebView == null) {
@@ -282,6 +276,7 @@ public class LightningView {
         }
 
     }
+    */
 
     /**
      * Initialize the settings of the WebView that are intrinsic to Lightning and cannot
@@ -345,11 +340,11 @@ public class LightningView {
     }
 
     public synchronized void onResume() {
-        if (mWebView != null) {
-            Log.w(LightningView.class.getSimpleName(), "Resuming");
-            initializePreferences(mWebView.getSettings());
-            mWebView.onResume();
-        }
+//        if (mWebView != null) {
+//            Log.w(LightningView.class.getSimpleName(), "Resuming");
+//            initializePreferences(mWebView.getSettings());
+//            mWebView.onResume();
+//        }
     }
 
 
@@ -412,9 +407,9 @@ public class LightningView {
     }
 
     public synchronized void resumeTimers() {
-        if (mWebView != null) {
-            mWebView.onResume();
-        }
+//        if (mWebView != null) {
+//            mWebView.onResume();
+//        }
     }
 
     public void setVisibility(int visible) {
@@ -432,7 +427,8 @@ public class LightningView {
 
     @SuppressLint("NewApi")
     public synchronized void findInPage(String text) {
-            mWebView.findAllAsync(text);
+        // TODO: Restore this
+        // mWebView.findAllAsync(text);
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -446,15 +442,15 @@ public class LightningView {
                 parent.removeView(mWebView);
             }
             mWebView.stopLoading();
-            mWebView.onPause();
-            mWebView.clearHistory();
+            // mWebView.onPause();
+            // mWebView.clearHistory();
             mWebView.setVisibility(View.GONE);
             mWebView.removeAllViews();
             mWebView.destroyDrawingCache();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                //this is causing the segfault occasionally below 4.2
-                mWebView.destroy();
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//                //this is causing the segfault occasionally below 4.2
+//                mWebView.destroy();
+//            }
             mWebView = null;
         }
     }
@@ -468,7 +464,7 @@ public class LightningView {
 
     private String getUserAgent() {
         if (mWebView != null) {
-            return mWebView.getSettings().getUserAgentString();
+            return mWebView.getUserAgent();
         } else {
             return "";
         }
@@ -482,15 +478,15 @@ public class LightningView {
     }
 
     public synchronized void findNext() {
-        if (mWebView != null) {
-            mWebView.findNext(true);
-        }
+//        if (mWebView != null) {
+//            mWebView.findNext(true);
+//        }
     }
 
     public synchronized void findPrevious() {
-        if (mWebView != null) {
-            mWebView.findNext(false);
-        }
+//        if (mWebView != null) {
+//            mWebView.findNext(false);
+//        }
     }
 
     /**
@@ -508,29 +504,29 @@ public class LightningView {
      * thingy, if it is null, this method tries to deal with it and find a workaround
      */
     private void longClickPage(final String url) {
-        if (mWebView == null) {
-            return;
-        }
-        final WebView.HitTestResult result = mWebView.getHitTestResult();
-        if (url != null) {
-            if (result != null) {
-                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    final String imageUrl = result.getExtra();
-                    dialogBuilder.showLongPressImageDialog(url, imageUrl, getUserAgent());
-                } else {
-                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-                }
-            } else {
-                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-            }
-        } else if (result != null && result.getExtra() != null) {
-            final String newUrl = result.getExtra();
-            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(null, newUrl, getUserAgent());
-            } else {
-                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
-            }
-        }
+//        if (mWebView == null) {
+//            return;
+//        }
+//        final WebView.HitTestResult result = mWebView.getHitTestResult();
+//        if (url != null) {
+//            if (result != null) {
+//                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+//                    final String imageUrl = result.getExtra();
+//                    dialogBuilder.showLongPressImageDialog(url, imageUrl, getUserAgent());
+//                } else {
+//                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
+//                }
+//            } else {
+//                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
+//            }
+//        } else if (result != null && result.getExtra() != null) {
+//            final String newUrl = result.getExtra();
+//            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+//                dialogBuilder.showLongPressImageDialog(null, newUrl, getUserAgent());
+//            } else {
+//                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
+//            }
+//        }
     }
 
     public boolean canGoBack() {
@@ -542,7 +538,7 @@ public class LightningView {
     }
 
     @NonNull
-    public synchronized WebView getWebView() {
+    public synchronized CliqzWebView getWebView() {
         if (mWebView == null) {
             mWebView = new CliqzWebView(activity);
             mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
@@ -560,12 +556,12 @@ public class LightningView {
             mWebView.setBackgroundColor(Color.WHITE);
 
             mWebView.setSaveEnabled(true);
-            mWebView.setNetworkAvailable(true);
-            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-            mWebView.setWebViewClient(new LightningWebClient(activity, this));
-            mWebView.setDownloadListener(new LightningDownloadListener(activity));
-            initializeSettings(mWebView.getSettings(), activity);
-            persister.restore(id, mWebView);
+//            mWebView.setNetworkAvailable(true);
+//            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+//            mWebView.setWebViewClient(new LightningWebClient(activity, this));
+//            mWebView.setDownloadListener(new LightningDownloadListener(activity));
+//            initializeSettings(mWebView.getSettings(), activity);
+//            persister.restore(id, mWebView);
         }
         return mWebView;
     }
@@ -630,6 +626,7 @@ public class LightningView {
     }
 
     public void setDesktopUserAgent() {
+        /* TODO: Fix this
         if (mWebView == null) {
             return;
         }
@@ -642,9 +639,11 @@ public class LightningView {
         } else {
             mWebView.reload();
         }
+        */
     }
 
     public void setMobileUserAgent() {
+        /* TODO: Fix this
         if (mWebView == null) {
             return;
         }
@@ -652,9 +651,11 @@ public class LightningView {
         final WebSettings webSettings = mWebView.getSettings();
         webSettings.setUserAgentString(getMobileUserAgent());
         mWebView.reload();
+        */
     }
 
     private String getMobileUserAgent() {
+        /* TODO: Fix this
         final String defaultUserAgent = mWebView.getSettings().getUserAgentString();
         final Matcher matcher = USER_AGENT_PATTERN.matcher(defaultUserAgent);
         final String userAgent;
@@ -664,6 +665,8 @@ public class LightningView {
             userAgent = defaultUserAgent;
         }
         return userAgent;
+        */
+        return mWebView.getUserAgent();
     }
 
     // Weaker access suppressed, this class can not be private because of the obtainMessage(...)

@@ -11,6 +11,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         versionCode 102
         versionName "1.8"
@@ -170,9 +175,9 @@ dependencies {
     
     // dependency injection
     implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.google.dagger:dagger:2.11'
-    implementation 'com.google.dagger:dagger-android-support:2.11'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     compileOnly 'javax.annotation:jsr250-api:1.0'
     
     // view binding
@@ -228,6 +233,9 @@ dependencies {
     
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
+    x86Implementation "org.mozilla.geckoview:geckoview-${geckoviewChannel}-x86:${geckoviewVersion}"
+    armImplementation "org.mozilla.geckoview:geckoview-${geckoviewChannel}-armeabi-v7a:${geckoviewVersion}"
     
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'

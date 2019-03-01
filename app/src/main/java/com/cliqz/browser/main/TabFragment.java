@@ -6,9 +6,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -19,8 +17,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -43,7 +39,6 @@ import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -91,8 +86,8 @@ import javax.inject.Inject;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.UrlUtils;
-import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.view.AnimatedProgressBar;
+import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
 import butterknife.Bind;
@@ -312,7 +307,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
 
         TabFragmentListener.create(this);
-        final WebView webView = mLightningView.getWebView();
+        final CliqzWebView webView = mLightningView.getWebView();
         webView.setId(R.id.browser_view);
         ViewUtils.safelyAddView(localContainer, webView);
         if (webView.getVisibility() == View.VISIBLE &&
@@ -352,7 +347,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             searchView.onResume();
             searchView.setVisibility(View.VISIBLE);
         }
-        final WebView webView;
+        final CliqzWebView webView;
         if (mLightningView != null) {
             mLightningView.onResume();
             mLightningView.resumeTimers();
@@ -387,10 +382,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             // Repost the message
             bus.post(mOverviewEvent);
         } else if (newTabMessage != null && webView != null && newTabMessage.obj != null) {
+            /*
             final WebView.WebViewTransport transport = (WebView.WebViewTransport) newTabMessage.obj;
             transport.setWebView(webView);
             newTabMessage.sendToTarget();
             newTabMessage = null;
+            */
             bringWebViewToFront(null);
         } else if (mExternalQuery != null && !mExternalQuery.isEmpty()) {
             state.setMode(Mode.SEARCH);
@@ -506,7 +503,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     // TODO @Ravjit, the dialog should disappear if you pause the app
     @OnClick(R.id.control_center)
     void showControlCenter() {
-        final WebView webView = mLightningView.getWebView();
+        final CliqzWebView webView = mLightningView.getWebView();
         final ControlCenterDialog controlCenterDialog = ControlCenterDialog
                 .create(mStatusBar, mIsIncognito, webView.hashCode(), mLightningView.getUrl());
         controlCenterDialog.show(getChildFragmentManager(), Constants.CONTROL_CENTER);
@@ -642,7 +639,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 // visible content height + toolbar height
                 final AppBarLayout.LayoutParams params =
                         (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-                final WebView webView = mLightningView.getWebView();
+                final CliqzWebView webView = mLightningView.getWebView();
                 if (webView.getContentHeight() <= webView.getHeight()) {
                     disableUrlBarScrolling();
                 } else if (params.getScrollFlags() == 0) {
@@ -668,7 +665,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private void bringWebViewToFront(Animation animation) {
-        final WebView webView = mLightningView.getWebView();
+        final CliqzWebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
         searchBar.setTitle(webView.getTitle());
@@ -729,8 +726,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 final InputStream inputStream = getResources().openRawResource(R.raw.readability);
                 final String script = StreamUtils.readTextStream(inputStream);
                 inputStream.close();
-                final WebView webView = mLightningView.getWebView();
-                webView.evaluateJavascript(script, readabilityCallBack);
+                final CliqzWebView webView = mLightningView.getWebView();
+                // TODO webView.evaluateJavascript(script, readabilityCallBack);
             } catch (IOException e) {
                 Log.e(TAG, "Problem reading the file readability.js", e);
             }
@@ -916,7 +913,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void reloadPage(Messages.ReloadPage event) {
-        final WebView webView = mLightningView.getWebView();
+        final CliqzWebView webView = mLightningView.getWebView();
         webView.reload();
     }
 
@@ -945,9 +942,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void saveLink(Messages.SaveLink event) {
+        /* TODO
         final WebSettings settings = mLightningView.getWebView().getSettings();
         final String userAgent = settings != null ? settings.getUserAgentString() : null;
         Utils.downloadFile(getActivity(), mLightningView.getUrl(), userAgent, "attachment", false);
+        */
     }
 
     @Subscribe

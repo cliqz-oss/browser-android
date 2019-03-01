@@ -6,7 +6,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -312,10 +311,12 @@ public class TabsManager {
             if (tabFragment.mLightningView == null) {
                 continue;
             }
-            final WebView webView = tabFragment.mLightningView.getWebView();
+            /*
+            final CliqzWebView webView = tabFragment.mLightningView.getWebView();
             if (webView != null) {
                 webView.onPause();
             }
+            */
         }
     }
 
@@ -327,10 +328,12 @@ public class TabsManager {
             if (tabFragment.mLightningView == null) {
                 continue;
             }
+            /*
             final WebView webView = tabFragment.mLightningView.getWebView();
             if (webView != null) {
                 webView.onResume();
             }
+            */
         }
     }
 

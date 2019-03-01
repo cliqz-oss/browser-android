@@ -256,7 +256,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             //Inject javascript to check for id and pass fields in the page
             lightningView.passwordManager.injectJavascript(view);
         }
-        ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
+        // TODO ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
         post(view, new CliqzMessages.OnPageFinished());
     }
 

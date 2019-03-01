@@ -5,7 +5,6 @@ import android.os.Message;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.WebView;
 
 /**
  * Touches handler for the {@link LightningView}, directly extracted from it
@@ -19,10 +18,10 @@ class LightningViewTouchHandler {
 
     private LightningViewTouchHandler(LightningView lightningView) {
         this.lightningView = lightningView;
-        final WebView webView = lightningView.getWebView();
-        if (webView != null) {
-            webView.setOnTouchListener(new TouchListener());
-        }
+        final CliqzWebView webView = lightningView.getWebView();
+//        if (webView != null) {
+//            webView.setOnTouchListener(new TouchListener());
+//        }
         gestureDetector = new GestureDetector(lightningView.activity, new CustomGestureListener());
     }
 
@@ -55,10 +54,10 @@ class LightningViewTouchHandler {
         public void onLongPress(MotionEvent e) {
             if (mCanTriggerLongPress) {
                 Message msg = lightningView.webViewHandler.obtainMessage();
-                final WebView webView = lightningView.getWebView();
+                final CliqzWebView webView = lightningView.getWebView();
                 if (msg != null && webView != null) {
                     msg.setTarget(lightningView.webViewHandler);
-                    webView.requestFocusNodeHref(msg);
+                    // TODO webView.requestFocusNodeHref(msg);
                 }
             }
         }

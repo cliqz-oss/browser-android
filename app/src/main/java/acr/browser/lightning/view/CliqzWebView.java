@@ -3,18 +3,27 @@ package acr.browser.lightning.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
+
+import org.mozilla.geckoview.AllowOrDeny;
+import org.mozilla.geckoview.GeckoResult;
+import org.mozilla.geckoview.GeckoRuntime;
+import org.mozilla.geckoview.GeckoSession;
+import org.mozilla.geckoview.GeckoView;
+import org.mozilla.geckoview.WebRequestError;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,18 +37,28 @@ import javax.inject.Inject;
  * @author Moaz Rashad
  */
 @SuppressLint("ViewConstructor")
-public class CliqzWebView extends WebView implements NestedScrollingChild {
+public class CliqzWebView extends GeckoView implements NestedScrollingChild {
+    private static final String TAG = CliqzWebView.class.getSimpleName();
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
+
     @Inject
     Bus bus;
+
+    @Inject
+    GeckoRuntime geckoRuntime;
+
     private int mLastY;
     private NestedScrollingChildHelper mChildHelper;
     private boolean firstScroll = true;
     private int mNestedOffsetY;
+    private GeckoSession mSession;
 
     // Android 8.0 (Oreo) bug, we have to restore the client for each loadUrl request with a delay
     private static final long LOAD_URL_DELAY_SECONDS = 250L;
+    private String mCurrentUrl = null;
+    private boolean mCanGoBack = false;
+    private boolean mCanGoForward = false;
 
     public CliqzWebView(Activity activity) {
         super(activity);
@@ -49,6 +68,10 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
         }
         mChildHelper = new NestedScrollingChildHelper(this);
         setNestedScrollingEnabled(true);
+
+        mSession = new GeckoSession();
+        mSession.open(geckoRuntime);
+        setSession(mSession);
     }
 
     @Override
@@ -66,29 +89,13 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
         }
     }
 
-    @Override
+
     public void loadUrl(final String url) {
-        loadUrl(url, Collections.<String, String>emptyMap());
+        loadUrl(url, Collections.emptyMap());
     }
 
-    @Override
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CliqzWebView.super.loadUrl(url, additionalHttpHeaders);
-            }
-        }, LOAD_URL_DELAY_SECONDS);
-    }
-
-    protected final void executeJS(final String js) {
-        if (js != null && !js.isEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                this.evaluateJavascript(js, null);
-            } else {
-                this.loadUrl("javascript:" + js);
-            }
-        }
+        postDelayed(() -> mSession.loadUri(url), LOAD_URL_DELAY_SECONDS);
     }
 
     //Below code has been taken and modified from the GitHub repo takahirom/webview-in-coordinatorlayout
@@ -193,5 +200,52 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
     @Override
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
+    }
+
+    public void stopLoading() {
+        mSession.stop();
+    }
+
+    public void reload() {
+        mSession.reload();
+    }
+
+    public void goBack() {
+        mSession.goBack();
+    }
+
+    @NonNull
+    public String getUserAgent() {
+        try {
+            return mSession.getUserAgent().poll(100);
+        } catch (Throwable throwable) {
+            Log.e(TAG, "Error getting the user agent", throwable);
+            return "";
+        }
+    }
+
+    public void goForward() {
+        mSession.goForward();
+    }
+
+    public boolean canGoBack() {
+        return mCanGoBack;
+    }
+
+    public boolean canGoForward() {
+        return mCanGoForward;
+    }
+
+    @Nullable
+    public String getUrl() {
+        return mCurrentUrl;
+    }
+
+    public int getContentHeight() {
+        return 2000; // TODO
+    }
+
+    public String getTitle() {
+        return mCurrentUrl;
     }
 }

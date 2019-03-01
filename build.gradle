@@ -21,6 +21,9 @@ ext {
     minSdkVersion = 19
     buildToolsVersion = "28.0.3"
     supportLibVersion = "28.0.0"
+    geckoviewChannel = "beta"
+    geckoviewVersion = "65.0.20190120195210"
+    daggerVersion = "2.21"
 }
 
 subprojects { subproject ->
@@ -59,6 +62,9 @@ allprojects {
         maven {
             // Local Maven repo containing AARs with JSC library built for Android
             url "${rootProject.projectDir}/node_modules/jsc-android/dist"
+        }
+        maven {
+            url "https://maven.mozilla.org/maven2/"
         }
     }
 
