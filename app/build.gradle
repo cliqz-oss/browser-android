@@ -129,6 +129,16 @@ repositories {
 }
 
 configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.name == 'android-jsc') {
+                details.useTarget group: details.requested.group, name: 'android-jsc-intl', version: 'r236355'
+            }
+        }
+    }
+}
+
+configurations.all {
   resolutionStrategy {
       force "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
       force "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
