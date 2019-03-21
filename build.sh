@@ -3,7 +3,7 @@
 # Simple script to build all the flavors at once and put the apks in a single
 # folder (build/releases)
 
-readonly flavors="Standard Huawei Amazon"
+readonly flavors="Standard"
 readonly archs="Arm X86 Fat"
 targets=()
 for flavor in ${flavors[@]}

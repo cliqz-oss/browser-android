@@ -11,6 +11,7 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.overview.TabOverviewFragment;
 import com.cliqz.browser.utils.PasswordManager;
+import com.cliqz.browser.view.UserSurveyMessage;
 import com.cliqz.browser.webview.BaseWebView;
 import com.cliqz.browser.webview.CliqzBridge;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -71,4 +72,6 @@ public interface MainActivityComponent {
     void inject(PasswordManager passwordManager);
 
     void inject(Incognito incognito);
+
+    void inject(UserSurveyMessage userSurveyMessage);
 }

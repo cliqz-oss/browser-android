@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="support_url">https://cliqz.com/en/support</string>
     <string name="report_site_url">https://cliqz.com/en/report-url</string>
     <string name="tips_and_tricks_url">https://cliqz.com/en/tips-android</string>
@@ -12,4 +12,5 @@
     <string name="startpage_url" translatable="false">https://startpage.com/do/search?query=</string>
     <string name="qwant_url" translatable="false">https://www.qwant.com/?t=all&amp;q=</string>
     <string name="myoffrz_url">https://cliqz.com/en/myoffrz</string>
+    <string name="user_sentiment_survey_url" tools:ignore="MissingTranslation">https://www.surveymonkey.de/r/CliqzMobile</string>
 </resources>
