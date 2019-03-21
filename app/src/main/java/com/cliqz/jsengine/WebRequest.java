@@ -67,6 +67,8 @@ public class WebRequest extends ReactContextBaseJavaModule {
 
     private final Engine engine;
 
+    private int requestId = 1;
+
     WebRequest(ReactApplicationContext reactContext, final Engine engine) {
         super(reactContext);
         this.engine = engine;
@@ -145,6 +147,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
             return null;
         }
         final WritableMap requestInfo = Arguments.createMap();
+        requestInfo.putInt("requestId", ++requestId);
         requestInfo.putString("url", requestUrl.toString());
         requestInfo.putString("method", request.getMethod());
         requestInfo.putInt("tabId", view.hashCode());
@@ -152,7 +155,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putInt("frameId", tabId);
         requestInfo.putBoolean("isPrivate", isPrivateTab);
         requestInfo.putString("originUrl", originUrl);
-        requestInfo.putString("source", requestInfo.getString("originUrl"));
+        requestInfo.putString("sourceUrl", originUrl);
         requestInfo.putInt("type", contentPolicyType);
 
         final WritableMap requestHeaders = Arguments.createMap();
