@@ -39,6 +39,7 @@
         android:fullBackupContent="false"
         tools:replace="android:allowBackup"
         android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
         android:label="@string/app_name">
 
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
