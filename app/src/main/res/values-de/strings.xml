@@ -364,4 +364,8 @@ erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Progr
     <string name="send_usage_data">Nutzungsdaten senden</string>
     <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Cliqz sammelt streng anonyme Daten darüber, wie du Cliqz benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
     <string name="settings_category_user_data_choices">Datenübermittlung</string>
+    <string name="action_later">Später</string>
+    <string name="action_take_survey">Teilnehmen</string>
+    <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Cliqz Browser erfahren.</string>
+    <string name="user_sentiment_survey_second_line_msg">Die verwendete Umfragesoftware, SurveyMonkey, erfasst IP-Adressen.</string>
 </resources>

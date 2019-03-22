@@ -5,11 +5,15 @@ apply from: '../scripts/CliqzConfig.gradle'
 apply from: 'cliqz.gradle'
 
 android {
-    compileOptions.encoding = "UTF-8"
+    compileOptions {
+        encoding = "UTF-8"
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
-        versionCode 100
-        versionName "1.7.3.1"
+        versionCode 101
+        versionName "1.8"
         multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'

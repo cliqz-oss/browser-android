@@ -1,3 +1,3 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="react_debug_activity_label">React Debug Activity</string>
+    <string name="react_debug_activity_label" translatable="false">React Debug Activity</string>
 </resources>

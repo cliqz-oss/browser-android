@@ -8,8 +8,15 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <ViewStub
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_sentiment_survey_msg"
+            android:visibility="gone"
+            android:layout="@layout/user_sentiment_survey_view" />
 
         <TextView
             android:id="@+id/topsites_header"
@@ -39,7 +46,8 @@
             android:layout_marginBottom="20dp"
             android:elevation="3dp"
             android:orientation="vertical"
-            android:background="@null">
+            android:background="@null"
+            tools:targetApi="lollipop">
 
             <TextView
                 android:id="@+id/news_label"

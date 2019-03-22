@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/progress_bar_color"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/toolbar_padding"
+        android:background="@color/accent_color"
+        android:layout_marginBottom="2dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:id="@+id/user_sentiment_survey_first_line"
+            android:textSize="16sp"
+            android:text="@string/user_sentiment_survey_first_line_msg" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:id="@+id/user_sentiment_survey_second_line"
+            android:textSize="16sp"
+            android:text="@string/user_sentiment_survey_second_line_msg"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            style="?android:attr/buttonBarStyle">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/action_later"
+                android:text="@string/action_later"
+                android:textColor="@color/analytics"
+                android:background="@color/transparent"
+                style="?android:attr/buttonBarButtonStyle" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/action_take_survey"
+                android:text="@string/action_take_survey"
+                android:textColor="@color/white"
+                style="?android:attr/buttonBarButtonStyle" />
+        </LinearLayout>
+
+    </LinearLayout>
+</merge>

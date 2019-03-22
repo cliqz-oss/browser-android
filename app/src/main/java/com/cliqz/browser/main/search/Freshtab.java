@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -29,6 +30,7 @@ import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.LocationCache;
+import com.cliqz.browser.view.UserSurveyMessage;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -127,6 +129,12 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             component.inject(this);
         }
 
+        if (preferenceManager != null && preferenceManager.shouldShowUserSentimentSurvey()) {
+            final ViewStub viewStub = findViewById(R.id.user_sentiment_survey_msg);
+            final UserSurveyMessage userSentimetSurvey = (UserSurveyMessage) viewStub.inflate();
+            userSentimetSurvey.appear();
+        }
+
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 expandNewsIcon, null);
 
@@ -139,6 +147,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
         topsitesGridView.setOnTouchListener(topsitesEventsListener);
+
         updateFreshTab();
     }
 
