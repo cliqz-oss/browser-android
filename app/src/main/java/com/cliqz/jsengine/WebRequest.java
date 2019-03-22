@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -50,7 +51,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
     private static final Pattern RE_HTML = Pattern.compile("\\.html?", Pattern.CASE_INSENSITIVE);
     private static final Pattern RE_JSON = Pattern.compile("\\.json($|\\|?)", Pattern.CASE_INSENSITIVE);
 
-    private static final Set<String> SUPPORTED_SCHEMES = new HashSet<>(Arrays.asList(new String[]{"http", "https"}));
+    private static final Set<String> SUPPORTED_SCHEMES = new HashSet<>(Arrays.asList("http", "https"));
 
     private static final int NUM_OTHER = 1;
     private static final int NUM_SCRIPT = 2;
@@ -66,6 +67,8 @@ public class WebRequest extends ReactContextBaseJavaModule {
     private final SparseBooleanArray tabHasChanged = new SparseBooleanArray();
 
     private final Engine engine;
+
+    private AtomicInteger requestId = new AtomicInteger(1);
 
     WebRequest(ReactApplicationContext reactContext, final Engine engine) {
         super(reactContext);
@@ -145,6 +148,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
             return null;
         }
         final WritableMap requestInfo = Arguments.createMap();
+        requestInfo.putInt("requestId", requestId.getAndIncrement());
         requestInfo.putString("url", requestUrl.toString());
         requestInfo.putString("method", request.getMethod());
         requestInfo.putInt("tabId", view.hashCode());
@@ -152,7 +156,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putInt("frameId", tabId);
         requestInfo.putBoolean("isPrivate", isPrivateTab);
         requestInfo.putString("originUrl", originUrl);
-        requestInfo.putString("source", requestInfo.getString("originUrl"));
+        requestInfo.putString("sourceUrl", originUrl);
         requestInfo.putInt("type", contentPolicyType);
 
         final WritableMap requestHeaders = Arguments.createMap();
