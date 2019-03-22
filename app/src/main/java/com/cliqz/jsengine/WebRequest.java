@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -50,7 +51,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
     private static final Pattern RE_HTML = Pattern.compile("\\.html?", Pattern.CASE_INSENSITIVE);
     private static final Pattern RE_JSON = Pattern.compile("\\.json($|\\|?)", Pattern.CASE_INSENSITIVE);
 
-    private static final Set<String> SUPPORTED_SCHEMES = new HashSet<>(Arrays.asList(new String[]{"http", "https"}));
+    private static final Set<String> SUPPORTED_SCHEMES = new HashSet<>(Arrays.asList("http", "https"));
 
     private static final int NUM_OTHER = 1;
     private static final int NUM_SCRIPT = 2;
@@ -67,7 +68,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
 
     private final Engine engine;
 
-    private int requestId = 1;
+    private AtomicInteger requestId = new AtomicInteger(1);
 
     WebRequest(ReactApplicationContext reactContext, final Engine engine) {
         super(reactContext);
@@ -147,7 +148,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
             return null;
         }
         final WritableMap requestInfo = Arguments.createMap();
-        requestInfo.putInt("requestId", ++requestId);
+        requestInfo.putInt("requestId", requestId.getAndIncrement());
         requestInfo.putString("url", requestUrl.toString());
         requestInfo.putString("method", request.getMethod());
         requestInfo.putInt("tabId", view.hashCode());
