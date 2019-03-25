@@ -45,6 +45,7 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
                 final String uri = cursor.getString(localUriIndex);
                 final String mediaType = cursor.getString(mediaTypeIndex);
                 final Intent openFileIntent = createFileIntent(uri, mediaType);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 if (canIntentBeHandled(openFileIntent)) {
                     Utils.showSnackbar(mainActivity,
                             mainActivity.getString(R.string.download_successful),
