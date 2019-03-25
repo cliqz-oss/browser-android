@@ -402,7 +402,11 @@ public class PreferenceManager {
     }
 
     public boolean shouldShowUserSentimentSurvey() {
-        return (mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0) < MAX_SURVEY_MESSAGE_SHOW_COUNT);
+        final Locale locale = Locale.getDefault();
+        final String lang = locale.getLanguage();
+        final boolean isSupportedLanguage = Locale.ENGLISH.equals(lang) || Locale.GERMAN.equals(lang);
+        final int count = mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0);
+        return (isSupportedLanguage && count < MAX_SURVEY_MESSAGE_SHOW_COUNT);
     }
 
     public ClearQueriesOptions shouldClearQueries() {
