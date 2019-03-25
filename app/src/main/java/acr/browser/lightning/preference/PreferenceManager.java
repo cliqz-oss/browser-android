@@ -404,7 +404,9 @@ public class PreferenceManager {
     public boolean shouldShowUserSentimentSurvey() {
         final Locale locale = Locale.getDefault();
         final String lang = locale.getLanguage();
-        final boolean isSupportedLanguage = Locale.ENGLISH.equals(lang) || Locale.GERMAN.equals(lang);
+        final String english = Locale.ENGLISH.getLanguage();
+        final String german = Locale.GERMAN.getLanguage();
+        final boolean isSupportedLanguage = english.equals(lang) || german.equals(lang);
         final int count = mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0);
         return (isSupportedLanguage && count < MAX_SURVEY_MESSAGE_SHOW_COUNT);
     }
