@@ -366,6 +366,6 @@ erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Progr
     <string name="settings_category_user_data_choices">Datenübermittlung</string>
     <string name="action_later">Später</string>
     <string name="action_take_survey">Teilnehmen</string>
-    <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Cliqz Browser erfahren.</string>
+    <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Cliqz Browser erfahren. i</string>
     <string name="user_sentiment_survey_second_line_msg">Die verwendete Umfragesoftware, SurveyMonkey, erfasst IP-Adressen.</string>
 </resources>

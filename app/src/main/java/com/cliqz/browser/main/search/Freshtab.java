@@ -130,9 +130,10 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         }
 
         if (preferenceManager != null && preferenceManager.shouldShowUserSentimentSurvey()) {
+            preferenceManager.updateUserSurvey201903Count();
             final ViewStub viewStub = findViewById(R.id.user_sentiment_survey_msg);
-            final UserSurveyMessage userSentimetSurvey = (UserSurveyMessage) viewStub.inflate();
-            userSentimetSurvey.appear();
+            final UserSurveyMessage userSentimentSurvey = (UserSurveyMessage) viewStub.inflate();
+            userSentimentSurvey.appear();
         }
 
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
