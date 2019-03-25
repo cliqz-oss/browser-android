@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.view.View;
+import android.support.v4.content.FileProvider;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
+
+import java.io.File;
 
 import acr.browser.lightning.utils.Utils;
 
@@ -50,12 +53,7 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
                     Utils.showSnackbar(mainActivity,
                             mainActivity.getString(R.string.download_successful),
                             mainActivity.getString(R.string.action_open),
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mainActivity.startActivity(openFileIntent);
-                                }
-                            });
+                            v -> mainActivity.startActivity(openFileIntent));
                 } else {
                     Utils.showSnackbar(mainActivity,
                             mainActivity.getString(R.string.download_successful));
@@ -72,8 +70,11 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
 
     private Intent createFileIntent(String uri, String mediaType) {
         final Intent intent = new Intent();
+        final File file = new File(Uri.parse(uri).getPath());
+        final Uri fileUri = FileProvider.getUriForFile(mainActivity,
+                BuildConfig.APPLICATION_ID + ".provider", file);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(uri), mediaType);
+        intent.setDataAndType(fileUri, mediaType);
         return intent;
     }
 
