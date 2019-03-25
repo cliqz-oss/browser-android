@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.preference.PreferenceManager;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -41,6 +42,9 @@ public class UserSurveyMessage extends FrameLayout {
 
     @Inject
     Bus bus;
+
+    @Inject
+    PreferenceManager preferenceManager;
 
     @Bind(R.id.user_sentiment_survey_first_line)
     TextView msgFirstLine;
@@ -94,6 +98,7 @@ public class UserSurveyMessage extends FrameLayout {
     void onActionTakeSurvey() {
         final String url = getContext().getString(R.string.user_sentiment_survey_url);
         Objects.requireNonNull(bus).post(OpenLink.open(url));
+        preferenceManager.stopUserSurvey201903();
         disappear();
     }
 

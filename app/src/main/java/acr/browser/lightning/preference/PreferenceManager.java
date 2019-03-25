@@ -912,4 +912,8 @@ public class PreferenceManager {
         final int value = mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0);
         putInt(Name.USER_SENTIMENT_SURVEY_201903, value + 1);
     }
+
+    public void stopUserSurvey201903() {
+        putInt(Name.USER_SENTIMENT_SURVEY_201903, MAX_SURVEY_MESSAGE_SHOW_COUNT);
+    }
 }

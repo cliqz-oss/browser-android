@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.constant.Constants;
 
 /**
  * Handle download requests
@@ -41,6 +40,7 @@ public class DownloadHandler {
     private static final String TAG = DownloadHandler.class.getSimpleName();
     private static final String COOKIE_REQUEST_HEADER = "Cookie";
 
+    @Deprecated
     public static final String DEFAULT_DOWNLOAD_PATH =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     .getPath();
@@ -175,21 +175,20 @@ public class DownloadHandler {
         // or, should it be set to one of several Environment.DIRECTORY* dirs
         // depending on mimetype?
 
-        final String location = addNecessarySlashes(DEFAULT_DOWNLOAD_PATH);
-        final Uri downloadFolder = Uri.parse(location);;
-
-        File dir = new File(downloadFolder.getPath());
-        if (!dir.isDirectory() && !dir.mkdirs()) {
+        final File downloadDir = new File(Environment.getExternalStorageDirectory(), "Download");
+        if (!downloadDir.isDirectory()) {
             // Cannot make the directory
             eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_location_download));
             return;
         }
 
-        if (!isWriteAccessAvailable(downloadFolder)) {
+        if (!isWriteAccessAvailable(downloadDir)) {
             eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_location_download));
             return;
         }
-        request.setDestinationUri(Uri.parse(Constants.FILE + location + filename));
+
+        final Uri fileUri = Uri.fromFile(new File(downloadDir, filename));
+        request.setDestinationUri(fileUri);
         // let this downloaded file be scanned by MediaScanner - so that it can
         // show up in Gallery app, for example.
         request.setVisibleInDownloadsUi(true);
@@ -238,11 +237,11 @@ public class DownloadHandler {
      * @return returns true if the directory can be written to or is in a directory that can
      * be written to. false if there is no write access.
      */
-    public static boolean isWriteAccessAvailable(String directory) {
-        if (directory == null || directory.isEmpty()) {
+    public static boolean isWriteAccessAvailable(File directory) {
+        if (directory == null) {
             return false;
         }
-        String dir = addNecessarySlashes(directory);
+        File dir = directory;
         dir = getFirstRealParentDirectory(dir);
         File file = new File(dir + sFileName + sFileExtension);
         for (int n = 0; n < 100; n++) {
@@ -269,24 +268,17 @@ public class DownloadHandler {
      * @param directory the directory to find the first existent parent
      * @return the first existent parent
      */
-    private static String getFirstRealParentDirectory(String directory) {
-        if (directory == null || directory.isEmpty()) {
-            return "/";
+    private static File getFirstRealParentDirectory(File directory) {
+        if (directory == null) {
+            return new File("/");
         }
-        directory = addNecessarySlashes(directory);
-        File file = new File(directory);
+        File file = directory;
         if (!file.isDirectory()) {
-            int indexSlash = directory.lastIndexOf('/');
-            if (indexSlash > 0) {
-                String parent = directory.substring(0, indexSlash);
-                int previousIndex = parent.lastIndexOf('/');
-                if (previousIndex > 0) {
-                    return getFirstRealParentDirectory(parent.substring(0, previousIndex));
-                } else {
-                    return "/";
-                }
+            final File parent = file.getParentFile();
+            if (parent != null) {
+                return getFirstRealParentDirectory(parent);
             } else {
-                return "/";
+                return new File("/");
             }
         } else {
             return directory;
