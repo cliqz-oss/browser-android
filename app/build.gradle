@@ -183,7 +183,7 @@ dependencies {
     implementation project(':react-native-fs')
     
     // sqlite support for React-Native
-    implementation project(':react-native-sqlite2')
+    compile project(':react-native-sqlite-2')
     implementation project(':WebRTCModule')
 
     // react native screenshot view

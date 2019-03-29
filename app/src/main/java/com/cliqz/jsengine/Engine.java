@@ -15,13 +15,13 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import com.facebook.react.shell.MainReactPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
-import com.reactlibrary.RNSqlite2Package;
 import com.rnfs.RNFSPackage;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import cl.json.RNSharePackage;
+import dog.craftz.sqlite_2.RNSqlite2Package;
 
 /**
  * @author Sam Macbeth
@@ -35,6 +35,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
     private final EngineQueuingThread engineQueuingThread;
 
     Bus bus;
+    private JSBridge mJSBridge;
 
     public Engine(final Context context, final Application app, Bus bus) {
         this.bus = bus;
@@ -94,7 +95,10 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
 
     public JSBridge getBridge() throws EngineNotYetAvailable {
         if (mReactContext != null) {
-            return mReactContext.getNativeModule(JSBridge.class);
+            if (mJSBridge == null) {
+                mJSBridge = mReactContext.getNativeModule(JSBridge.class);
+            }
+            return mJSBridge;
         }
         throw new EngineNotYetAvailable();
     }

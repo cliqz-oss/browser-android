@@ -38,7 +38,7 @@
     "react-native-fs": "2.8.1",
     "react-native-share": "1.0.23",
     "react-native-snap-carousel": "3.7.5",
-    "react-native-sqlite-2": "1.5.0",
+    "react-native-sqlite-2": "^1.7.0",
     "react-native-user-agent": "^1.0.3",
     "react-native-view-shot": "2.2.0",
     "react-native-webrtc": "1.58.3",
