@@ -57,7 +57,7 @@ public class BrowserActions extends ReactContextBaseJavaModule {
     @ReactMethod
     @SuppressWarnings("unused")
     public void openMap(String mapUrl) {
-        openLink(mapUrl);
+        openLink(mapUrl, "");
     }
 
     @ReactMethod
@@ -79,7 +79,7 @@ public class BrowserActions extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void openLink(final String url) {
+    public void openLink(final String url, final String query) {
         if (url != null) {
             mHandler.post(new Runnable() {
                 @Override
