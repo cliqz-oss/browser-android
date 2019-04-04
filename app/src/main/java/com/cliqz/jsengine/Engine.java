@@ -35,6 +35,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
     private final EngineQueuingThread engineQueuingThread;
 
     Bus bus;
+    private JSBridge mJSBridge;
 
     public Engine(final Context context, final Application app, Bus bus) {
         this.bus = bus;
@@ -94,7 +95,10 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
 
     public JSBridge getBridge() throws EngineNotYetAvailable {
         if (mReactContext != null) {
-            return mReactContext.getNativeModule(JSBridge.class);
+            if (mJSBridge == null) {
+                mJSBridge = mReactContext.getNativeModule(JSBridge.class);
+            }
+            return mJSBridge;
         }
         throw new EngineNotYetAvailable();
     }

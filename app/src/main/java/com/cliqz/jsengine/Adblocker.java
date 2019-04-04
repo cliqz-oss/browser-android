@@ -28,9 +28,10 @@ public class Adblocker {
     }
 
     public void setEnabled(boolean enabled) throws EngineNotYetAvailable {
+        // module is always set as enabled and state managed via cliqz-adb pref
         this.engine.setPref("cliqz-adb-abtest", true);
         this.engine.setPref("cliqz-adb", enabled ? 1 : 0);
-        this.engine.setPref("modules.adblocker.enabled", enabled);
+        this.engine.setPref("modules.adblocker.enabled", true);
     }
 
     @Nullable
