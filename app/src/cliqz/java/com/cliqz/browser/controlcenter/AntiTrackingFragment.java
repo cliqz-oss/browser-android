@@ -156,7 +156,7 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
         view.setAlpha(0.97f);
         trackersList.setLayoutManager(new LinearLayoutManager(getContext()));
         trackersList.setAdapter(mAdapter);
-        final boolean isEnabled = !attrack.isWhitelisted(Uri.parse(mUrl).getHost());
+        final boolean isEnabled = !attrack.isWhitelisted(mUrl);
         enableAttrack.setChecked(isEnabled);
         enableAttrack.setText(Uri.parse(mUrl).getHost());
         enableAttrack.setOnCheckedChangeListener(this);

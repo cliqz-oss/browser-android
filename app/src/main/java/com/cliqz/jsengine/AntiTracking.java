@@ -41,7 +41,7 @@ public class AntiTracking {
 
     public boolean isWhitelisted(String url) {
         try {
-            ReadableMap response = this.engine.getBridge().callAction("antitracking:isSourceWhitelisted", url);
+            ReadableMap response = this.engine.getBridge().callAction("antitracking:isWhitelisted", url);
             return response.hasKey("result") && response.getBoolean("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException e) {
             Log.e("JSEngine", "isWhitelist error", e);
