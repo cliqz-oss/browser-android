@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 
 import static com.cliqz.browser.controlcenter.ControlCenterFragment.KEY_HASHCODE;
@@ -17,7 +16,6 @@ import static com.cliqz.browser.controlcenter.ControlCenterFragment.KEY_URL;
  * @author Ravjit Uppal
  * @author Stefano Pacifici
  */
-
 class ControlCenterAdapter extends FragmentPagerAdapter {
 
     private final FragmentEntry[] fragments;

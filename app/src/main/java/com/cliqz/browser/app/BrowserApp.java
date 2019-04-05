@@ -100,9 +100,9 @@ public class BrowserApp extends MultiDexApplication {
      * @return an {@link MainActivityComponent} instance or null
      */
     @Nullable
-    public static MainActivityComponent getActivityComponent(@NonNull Object object) {
-        if (ActivityComponentProvider.class.isInstance(object)) {
-            return ActivityComponentProvider.class.cast(object).getActivityComponent();
+    public static MainActivityComponent getActivityComponent(@Nullable Object object) {
+        if (object instanceof ActivityComponentProvider) {
+            return ((ActivityComponentProvider) object).getActivityComponent();
         }
         return null;
     }

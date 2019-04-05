@@ -29,7 +29,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -110,9 +109,11 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
-        mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
-        mUrl = arguments.getString(KEY_URL);
-        mHashCode = arguments.getInt(KEY_HASHCODE);
+        if (arguments != null) {
+            mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
+            mUrl = arguments.getString(KEY_URL);
+            mHashCode = arguments.getInt(KEY_HASHCODE);
+        }
     }
 
     @Override
@@ -200,11 +201,11 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
         final ControlCenterStatus status =
                 isEnabled ? ControlCenterStatus.ENABLED : ControlCenterStatus.DISABLED;
         if (isEnabled) {
-            attrackHeader.setText(getContext().getString(R.string.antitracking_header));
-            trackersBlocked.setText(getContext().getString(R.string.antitracking_datapoints));
+            attrackHeader.setText(getString(R.string.antitracking_header));
+            trackersBlocked.setText(getString(R.string.antitracking_datapoints));
         } else {
-            attrackHeader.setText(getContext().getString(R.string.antitracking_header_disabled));
-            trackersBlocked.setText(getContext().getString(R.string.antitracking_datapoints_disabled));
+            attrackHeader.setText(getString(R.string.antitracking_header_disabled));
+            trackersBlocked.setText(getString(R.string.antitracking_datapoints_disabled));
         }
         bus.post(new Messages.UpdateControlCenterIcon(status));
     }
@@ -271,12 +272,9 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
             mTrackerCount += trackersCount;
             trackerDetails.add(new TrackerDetailsModel(companyName, trackersCount));
         }
-        Collections.sort(trackerDetails, new Comparator<TrackerDetailsModel>() {
-            @Override
-            public int compare(TrackerDetailsModel lhs, TrackerDetailsModel rhs) {
-                final int count = rhs.trackerCount - lhs.trackerCount;
-                return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
-            }
+        Collections.sort(trackerDetails, (lhs, rhs) -> {
+            final int count = rhs.trackerCount - lhs.trackerCount;
+            return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
         });
         return trackerDetails;
     }

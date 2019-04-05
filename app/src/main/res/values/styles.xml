@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Theme.SettingsTheme" parent="Theme.AppCompat.Light">
 
@@ -88,11 +88,13 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="selectableItemBackground">@color/primary_color</item>
         <item name="colorAccent">@color/white</item>
+        <item name="colorPrimary">@color/primary_color</item>
     </style>
 
     <style name="Theme.ControlCenter.Dialog.Incognito"  parent="Theme.ControlCenter.Dialog">
         <item name="selectableItemBackground">@color/incognito_tab_primary_color</item>
         <item name="colorAccent">@color/white</item>
+        <item name="colorPrimary">@color/incognito_tab_primary_color</item>
     </style>
 
     <style name="Theme.ControlCenter.Fragment" parent="Theme.AppCompat.Light">

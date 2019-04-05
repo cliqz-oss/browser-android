@@ -1,5 +1,6 @@
 package com.cliqz.browser.controlcenter;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,10 +27,11 @@ import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -49,7 +51,6 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
 
     private static final String adBlockingHelpUrlDe = "https://cliqz.com/whycliqz/adblocking";
     private static final String adBlockingHelpUrlEn = "https://cliqz.com/en/whycliqz/adblocking";
-    private static final String KEY_IS_INCOGNITO = TAG + ".IS_INCOGNITO";
     private AdBlockListAdapter mAdapter;
     private String mUrl;
     private int mHashCode;
@@ -119,10 +120,11 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
-
-        mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
-        mUrl = arguments.getString(ControlCenterFragment.KEY_URL);
-        mHashCode = arguments.getInt(KEY_HASHCODE);
+        if (arguments != null) {
+            mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
+            mUrl = arguments.getString(ControlCenterFragment.KEY_URL);
+            mHashCode = arguments.getInt(KEY_HASHCODE);
+        }
     }
 
     @Override
@@ -169,7 +171,7 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
         adsBlocked.setText(getString(R.string.ad_blocker_disabled));
         enableAdBlock.setVisibility(View.GONE);
         antitrackingTable.setVisibility(View.GONE);
-        helpButton.setText(getContext().getString(R.string.activate));
+        helpButton.setText(Objects.requireNonNull(getContext()).getString(R.string.activate));
     }
 
     @Override
@@ -177,9 +179,10 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
         super.setEnabled(enabled);
         mAdapter.setEnabled(enabled);
         mAdapter.notifyDataSetChanged();
+        final Context context = Objects.requireNonNull(getContext());
         if (enabled) {
-            adblockHeader.setText(getContext().getString(R.string.adblocking_header));
-            adsBlocked.setText(getContext().getString(R.string.adblocking_ads_blocked));
+            adblockHeader.setText(context.getString(R.string.adblocking_header));
+            adsBlocked.setText(context.getString(R.string.adblocking_ads_blocked));
         } else {
             adblockHeader.setText(getContext().getString(R.string.adblocking_header_disabled));
             adsBlocked.setText(getContext().getString(R.string.adblocking_ads_blocked_disabled));
@@ -255,12 +258,9 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
                 final int count = advertisersList.getArray(companyName).size();
                 adsDetails.add(new AdBlockDetailsModel(companyName, count));
             }
-            Collections.sort(adsDetails, new Comparator<AdBlockDetailsModel>() {
-                @Override
-                public int compare(AdBlockDetailsModel lhs, AdBlockDetailsModel rhs) {
-                    final int count = rhs.adBlockCount - lhs.adBlockCount;
-                    return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
-                }
+            Collections.sort(adsDetails, (lhs, rhs) -> {
+                final int count = rhs.adBlockCount - lhs.adBlockCount;
+                return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
             });
         }
         return adsDetails;

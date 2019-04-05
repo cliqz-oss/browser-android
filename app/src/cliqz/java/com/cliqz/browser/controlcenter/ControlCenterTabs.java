@@ -2,7 +2,6 @@ package com.cliqz.browser.controlcenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
 
 import com.cliqz.browser.R;
 
