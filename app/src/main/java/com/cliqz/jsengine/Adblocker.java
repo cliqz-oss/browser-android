@@ -3,8 +3,10 @@ package com.cliqz.jsengine;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 
 
 /**
@@ -37,7 +39,7 @@ public class Adblocker {
     @Nullable
     public ReadableMap getAdBlockingInfo(final int hashCode) {
         try {
-            ReadableMap response = this.engine.getBridge().callAction("adblocker:getAdBlockInfo", hashCode);
+            ReadableMap response = this.engine.getBridge().callAction("adblocker:getAdBlockInfoForTab", hashCode);
             return response.getMap("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException |
                 NoSuchKeyException ignored) {
@@ -47,7 +49,7 @@ public class Adblocker {
 
     public boolean isBlacklisted(final String url) {
         try {
-            ReadableMap response = this.engine.getBridge().callAction("adblocker:isDomainInBlacklist", url);
+            ReadableMap response = this.engine.getBridge().callAction("adblocker:isWhitelisted", url);
             return response.hasKey("result") && response.getBoolean("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException e) {
             Log.e("JSEngine", "isBlacklisted error", e);
@@ -57,7 +59,16 @@ public class Adblocker {
 
     public void toggleUrl(final String url, final boolean domain) {
         try {
-            this.engine.getBridge().callAction("adblocker:toggleUrl", new JSBridge.NoopCallback(), url, domain);
+            final WritableMap event = Arguments.createMap();
+            event.putString("option", domain ? "domain" : "page");
+            event.putString("url", url);
+            if (this.isBlacklisted(url)) {
+                event.putString("status", "active");
+                this.engine.getBridge().publishEvent("control-center:adb-activator", event);
+            } else {
+                event.putString("status", "off");
+                this.engine.getBridge().publishEvent("control-center:adb-activator", event);
+            }
         } catch (EngineNotYetAvailable ignored) {}
     }
 

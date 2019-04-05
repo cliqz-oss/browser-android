@@ -157,6 +157,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putBoolean("isPrivate", isPrivateTab);
         requestInfo.putString("originUrl", originUrl);
         requestInfo.putString("sourceUrl", originUrl);
+        requestInfo.putString("frameUrl", originUrl);
         requestInfo.putInt("type", contentPolicyType);
 
         final WritableMap requestHeaders = Arguments.createMap();
