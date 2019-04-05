@@ -1,6 +1,6 @@
 package com.cliqz.browser.controlcenter;
 
-import android.content.ContextWrapper;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Build;
@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,6 @@ abstract class ControlCenterFragment extends Fragment {
     private int mColorEnabled;
     private int mColorDisabled;
 
-    @Nullable
     @Override
     final public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                    @Nullable Bundle savedInstanceState) {
@@ -50,12 +50,11 @@ abstract class ControlCenterFragment extends Fragment {
         @StyleRes final int theme = mIsIncognito ?
                 R.style.Theme_ControlCenter_Fragment_Incognito :
                 R.style.Theme_ControlCenter_Fragment;
-        final ContextWrapper contextWrapper = new ContextWrapper(inflater.getContext());
-        contextWrapper.setTheme(theme);
-        final Resources.Theme themeInstance = contextWrapper.getTheme();
+        final Context context = new ContextThemeWrapper(inflater.getContext(), theme);
+        final Resources.Theme themeInstance = context.getTheme();
         mColorEnabled = getThemeColor(themeInstance, R.attr.colorPrimary);
         mColorDisabled = getThemeColor(themeInstance, R.attr.colorSecondary);
-        final LayoutInflater themedLayoutInflater = inflater.cloneInContext(contextWrapper);
+        final LayoutInflater themedLayoutInflater = LayoutInflater.from(context);
         final View contentView = onCreateThemedView(themedLayoutInflater, container, savedInstanceState);
         mTaggedViews = ViewUtils.findAllViewByTag(contentView, R.id.enableable_view, null);
         updateColors();
@@ -90,13 +89,13 @@ abstract class ControlCenterFragment extends Fragment {
             color = mColorDisabled;
         }
         for (final View view: mTaggedViews) {
-            if (Button.class.isInstance(view)) {
+            if (view instanceof Button) {
                 ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(color));
-            } else if (TextView.class.isInstance(view)) {
-                TextView.class.cast(view).setTextColor(color);
-            } else if (ImageView.class.isInstance(view)) {
+            } else if (view instanceof TextView) {
+                ((TextView) view).setTextColor(color);
+            } else if (view instanceof ImageView) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ImageView.class.cast(view).setImageTintList(ColorStateList.valueOf(color));
+                    ((ImageView) view).setImageTintList(ColorStateList.valueOf(color));
                 }else {
                     ImageViewCompat.setImageTintList(((ImageView) view),ColorStateList.valueOf(color));
                 }

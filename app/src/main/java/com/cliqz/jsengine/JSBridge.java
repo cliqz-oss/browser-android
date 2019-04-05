@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 import com.facebook.react.bridge.Arguments;
@@ -63,77 +62,22 @@ public class JSBridge extends ReactContextBaseJavaModule {
      */
     private static Map<String, EventTranslator> forwardedEvents = new HashMap<>();
     static {
-        forwardedEvents.put("mobile-search:openUrl", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return CliqzMessages.OpenLink.open(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-search:copyValue", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.CopyData(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-search:call", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.CallNumber(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-search:map", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return CliqzMessages.OpenLink.open(args.getString(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:openTab", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.OpenTab(args.getMap(0));
-            }
-        });
+        forwardedEvents.put("mobile-search:openUrl", args -> CliqzMessages.OpenLink.open(args.getString(0)));
+        forwardedEvents.put("mobile-search:copyValue", args -> new CliqzMessages.CopyData(args.getString(0)));
+        forwardedEvents.put("mobile-search:call", args -> new CliqzMessages.CallNumber(args.getString(0)));
+        forwardedEvents.put("mobile-search:map", args -> CliqzMessages.OpenLink.open(args.getString(0)));
+        forwardedEvents.put("mobile-pairing:openTab", args -> new CliqzMessages.OpenTab(args.getMap(0)));
 
-        forwardedEvents.put("mobile-pairing:pushPairingData", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.PushPairingData(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyPairingSuccess", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyPairingSuccess(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyPairingError", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyPairingError(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyTabSuccess", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyTabSuccess(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:notifyTabError", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.NotifyTabError(args.getMap(0));
-            }
-        });
-        forwardedEvents.put("mobile-pairing:downloadVideo", new EventTranslator() {
-            @Override
-            public Object messageForEvent(ReadableArray args) {
-                return new CliqzMessages.DownloadVideo(args.getMap(0));
-            }
-        });
+        forwardedEvents.put("mobile-pairing:pushPairingData", args -> new CliqzMessages.PushPairingData(args.getMap(0)));
+        forwardedEvents.put("mobile-pairing:notifyPairingSuccess", args -> new CliqzMessages.NotifyPairingSuccess(args.getMap(0)));
+        forwardedEvents.put("mobile-pairing:notifyPairingError", args -> new CliqzMessages.NotifyPairingError(args.getMap(0)));
+        forwardedEvents.put("mobile-pairing:notifyTabSuccess", args -> new CliqzMessages.NotifyTabSuccess(args.getMap(0)));
+        forwardedEvents.put("mobile-pairing:notifyTabError", args -> new CliqzMessages.NotifyTabError(args.getMap(0)));
+        forwardedEvents.put("mobile-pairing:downloadVideo", args -> new CliqzMessages.DownloadVideo(args.getMap(0)));
     }
 
 
-    public JSBridge(ReactApplicationContext reactContext, Engine engine, Bus bus) {
+    JSBridge(ReactApplicationContext reactContext, Engine engine, Bus bus) {
         super(reactContext);
         this.context = reactContext;
         engine.setBridgeIsReady(this);
@@ -150,6 +94,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
+        //noinspection ConstantConditions
         constants.put("events", forwardedEvents.keySet().toArray());
         return constants;
     }
@@ -221,6 +166,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
         this.generateActionEvent(actionId, functionName, args);
 
         // check/wait for results
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (result) {
             if (result.getResult() == null) {
                 try {
@@ -273,10 +219,10 @@ public class JSBridge extends ReactContextBaseJavaModule {
     @ReactMethod
     public void pushEvent(final String event, final ReadableArray args) {
         if (forwardedEvents.containsKey(event)) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(forwardedEvents.get(event).messageForEvent(args));
+            handler.post(() -> {
+                final EventTranslator evtt = forwardedEvents.get(event);
+                if (evtt != null) {
+                    bus.post(evtt.messageForEvent(args));
                 }
             });
         } else {
@@ -286,20 +232,17 @@ public class JSBridge extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void registerAction(String actionName) {
-        this.registeredActions.add(actionName);
+        registeredActions.add(actionName);
 
-        synchronized (this.awaitingRegistration) {
-            if (this.awaitingRegistration.containsKey(actionName)) {
-                final List<WaitingAction> waitingList = this.awaitingRegistration.get(actionName);
-                this.callbackExecutor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (WaitingAction action : waitingList) {
-                            JSBridge.this.callAction(action.actionName, action.callback, action.args);
-                        }
+        synchronized (awaitingRegistration) {
+            final List<WaitingAction> waitingList = awaitingRegistration.get(actionName);
+            if (waitingList != null) {
+                callbackExecutor.submit(() -> {
+                    for (WaitingAction action : waitingList) {
+                        JSBridge.this.callAction(action.actionName, action.callback, action.args);
                     }
                 });
-                this.awaitingRegistration.remove(actionName);
+                awaitingRegistration.remove(actionName);
             }
         }
     }
@@ -308,22 +251,18 @@ public class JSBridge extends ReactContextBaseJavaModule {
     public void replyToAction(final int actionId, final ReadableMap result) {
         final FutureResult res = waitingForResults.get(actionId);
         if (res != null) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (res) {
                 res.setResult(result);
                 res.notifyAll();
             }
-        } else if (this.eventCallbacks.containsKey(actionId)) {
-            final Callback cb = this.eventCallbacks.get(actionId);
+        } else if (eventCallbacks.containsKey(actionId)) {
+            final Callback cb = eventCallbacks.get(actionId);
             // if cb is a noop we can skip the callback entirely
-            if (!(cb instanceof NoopCallback)) {
-                this.callbackExecutor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        cb.callback(result);
-                    }
-                });
+            if (cb != null && !(cb instanceof NoopCallback)) {
+                callbackExecutor.submit(() -> cb.callback(result));
             }
-            this.eventCallbacks.remove(actionId);
+            eventCallbacks.remove(actionId);
         }
     }
 
@@ -336,7 +275,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
     }
 
     private void generateActionEvent(int actionId, String functionName, Object... args) {
-        this.getEventEmitter().emit("callAction", this.createCallActionMessageBody(actionId, functionName, args));
+        getEventEmitter().emit("callAction", createCallActionMessageBody(actionId, functionName, args));
     }
 
 }

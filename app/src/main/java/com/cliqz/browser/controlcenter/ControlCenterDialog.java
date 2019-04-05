@@ -1,12 +1,16 @@
 package com.cliqz.browser.controlcenter;
 
-import android.content.ContextWrapper;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -90,10 +94,12 @@ public class ControlCenterDialog extends DialogFragment {
             component.inject(this);
         }
         final Bundle arguments = getArguments();
-        mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
-        mHashCode = arguments.getInt(KEY_HASHCODE, 0);
-        mUrl = arguments.getString(KEY_URL);
-        mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
+        if (arguments != null) {
+            mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
+            mHashCode = arguments.getInt(KEY_HASHCODE, 0);
+            mUrl = arguments.getString(KEY_URL);
+            mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
+        }
     }
 
     @Override
@@ -101,11 +107,11 @@ public class ControlCenterDialog extends DialogFragment {
         super.onResume();
         mSaveInstanceStateCalled = false;
         bus.register(this);
-        final DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        final Resources resources = getResources();
+        final DisplayMetrics metrics = resources.getDisplayMetrics();
         final int height = metrics.heightPixels;
-        final int resource = getContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
-        final int statusBarHeight = getContext().getResources().getDimensionPixelSize(resource);
+        final int resource = resources.getIdentifier("status_bar_height", "dimen", "android");
+        final int statusBarHeight = resources.getDimensionPixelSize(resource);
         final Window window = getDialog().getWindow();
         if (window != null) {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height - mAnchorHeight - statusBarHeight);
@@ -120,21 +126,23 @@ public class ControlCenterDialog extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         mSaveInstanceStateCalled = true;
         super.onSaveInstanceState(outState);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        final ContextWrapper wrapper = new ContextWrapper(inflater.getContext());
+    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        final ContextThemeWrapper themedContext;
+        final Context context = inflater.getContext();
         if (mIsIncognito) {
-            wrapper.setTheme(R.style.Theme_ControlCenter_Dialog_Incognito);
+            themedContext = new ContextThemeWrapper(context, R.style.Theme_ControlCenter_Dialog_Incognito);
         } else {
-            wrapper.setTheme(R.style.Theme_ControlCenter_Dialog);
+            themedContext = new ContextThemeWrapper(context, R.style.Theme_ControlCenter_Dialog);
         }
-        final View view = /* themedInflater */ inflater.inflate(R.layout.control_center_layout, container, false);
+        final LayoutInflater themedInflater = LayoutInflater.from(themedContext);
+        final View view = themedInflater.inflate(R.layout.control_center_layout, container, false);
         ButterKnife.bind(this, view);
         final ControlCenterAdapter controlCenterAdapter = new ControlCenterAdapter(getChildFragmentManager(),
                 mIsIncognito, mHashCode, mUrl);
@@ -180,8 +188,9 @@ public class ControlCenterDialog extends DialogFragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         dismissAllowingStateLoss();
-        if (!mSaveInstanceStateCalled) {
-            show(getFragmentManager(), Constants.CONTROL_CENTER);
+        final FragmentManager fragmentManager = getFragmentManager();
+        if (!mSaveInstanceStateCalled && fragmentManager != null) {
+            show(fragmentManager, Constants.CONTROL_CENTER);
         }
     }
 
