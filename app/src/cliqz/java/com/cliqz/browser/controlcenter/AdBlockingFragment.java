@@ -250,7 +250,7 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
     private ArrayList<AdBlockDetailsModel> getAdBlockDetails() {
         final ArrayList<AdBlockDetailsModel> adsDetails = new ArrayList<>();
         final ReadableMap adBlockData = adb.getAdBlockingInfo(mHashCode);
-        if (adBlockData != null) {
+        if (adBlockData != null && adBlockData.hasKey("advertisersList")) {
             final ReadableMap advertisersList = adBlockData.getMap("advertisersList");
             final ReadableMapKeySetIterator iterator = advertisersList.keySetIterator();
             while (iterator.hasNextKey()) {

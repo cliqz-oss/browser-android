@@ -41,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/attrack_icon"
+        android:textColor="?attr/textColorPrimary"
         tools:text="0"
         android:textSize="30sp" />
 
