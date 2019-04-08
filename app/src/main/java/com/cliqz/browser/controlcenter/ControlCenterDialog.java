@@ -1,8 +1,8 @@
 package com.cliqz.browser.controlcenter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.view.ContextThemeWrapper;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,14 +106,12 @@ public class ControlCenterDialog extends DialogFragment {
         super.onResume();
         mSaveInstanceStateCalled = false;
         bus.register(this);
-        final Resources resources = getResources();
-        final DisplayMetrics metrics = resources.getDisplayMetrics();
-        final int height = metrics.heightPixels;
-        final int resource = resources.getIdentifier("status_bar_height", "dimen", "android");
-        final int statusBarHeight = resources.getDimensionPixelSize(resource);
         final Window window = getDialog().getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height - mAnchorHeight - statusBarHeight);
+        final Activity activity = getActivity();
+        final View contentView = activity != null ? activity.findViewById(android.R.id.content) : null;
+
+        if (window != null && contentView != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, contentView.getHeight() - mAnchorHeight);
             window.setGravity(Gravity.BOTTOM);
         }
     }
