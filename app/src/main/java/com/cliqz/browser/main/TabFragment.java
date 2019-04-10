@@ -1,14 +1,11 @@
 package com.cliqz.browser.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -19,8 +16,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -116,7 +111,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public static final String KEY_TITLE = "tab_title";
     public static final String KEY_FORCE_RESTORE = "tab_force_restore";
 
-    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private OverFlowMenu mOverFlowMenu = null;
     protected boolean mIsIncognito = false;
     private String mInitialUrl = null; // Initial url coming from outside the browser
@@ -215,7 +209,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     @Override
-    public void setArguments(@NonNull Bundle args) {
+    public void setArguments(@Nullable Bundle args) {
+        if (args == null) {
+            return;
+        }
         newTabMessage = args.getParcelable(KEY_NEW_TAB_MESSAGE);
         // Remove asap the message from the bundle
         args.remove(KEY_NEW_TAB_MESSAGE);
@@ -412,7 +409,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
                 searchBar.setTitle(mLightningView.getTitle());
-                searchBar.switchIcon(false);
             }
         }
 
@@ -482,6 +478,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     void onOpenMenuMessage(Messages.OnOpenMenuButton event) {
         menuClicked();
@@ -587,12 +584,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void showKeyBoard(CliqzMessages.ShowKeyboard event) {
-        searchBar.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchBar.showKeyBoard();
-            }
-        }, 200);
+        searchBar.postDelayed(searchBar::showKeyBoard, 200);
     }
 
     // Hide the keyboard, used also in SearchFragmentListener
@@ -637,7 +629,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         if (!mLightningView.getUrl().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             if (event.progress == 100) {
-                searchBar.switchIcon(false);
                 // Re-adjust the layout in cases when height of content is not more than the
                 // visible content height + toolbar height
                 final AppBarLayout.LayoutParams params =
@@ -648,7 +639,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 } else if (params.getScrollFlags() == 0) {
                     enableUrlBarScrolling();
                 }
-                searchBar.switchIcon(true);
             }
         }
     }
@@ -885,6 +875,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     // Hide the OverFlowMenu if it is visible. Return true if it was, false otherwise.
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean hideOverFlowMenu() {
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();
