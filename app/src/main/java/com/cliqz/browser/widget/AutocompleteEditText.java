@@ -1,5 +1,6 @@
 package com.cliqz.browser.widget;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ import com.cliqz.nove.Bus;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -43,6 +45,8 @@ public class AutocompleteEditText extends AppCompatEditText {
     }
 
     private static final String TAG = AutocompleteEditText.class.getSimpleName();
+    private final Drawable clearIcon;
+    private final Drawable backIcon;
 
     @Inject
     Telemetry mTelemetry;
@@ -62,6 +66,9 @@ public class AutocompleteEditText extends AppCompatEditText {
 
     private AutocompleteRunnable autocompleteRunnable = null;
     private String mQuery = "";
+    private Callable<Void> mBackIconCallback = null;
+    private Callable<Void> mClearQueryCallback = null;
+    private float mLastTouchX = -1;
 
     public AutocompleteEditText(Context context) {
         this(context, null);
@@ -81,15 +88,20 @@ public class AutocompleteEditText extends AppCompatEditText {
         BrowserApp.getAppComponent().inject(this);
         setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_URI);
         setSelectHandDrawable();
-        setDrawable();
+        clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
+        backIcon = ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
+        setDrawable(false);
     }
 
-    private void setDrawable(){
-        final Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_cliqz_back);
-        final Drawable rightDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_clear_black_24dp);
-        setCompoundDrawablesWithIntrinsicBounds(leftDrawable,null,rightDrawable,null);
+    private void setDrawable(boolean showClearDrawable){
+        if (showClearDrawable) {
+            setCompoundDrawablesWithIntrinsicBounds(backIcon, null, clearIcon, null);
+        } else {
+            setCompoundDrawablesWithIntrinsicBounds(backIcon, null, null, null);
+        }
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     private void setSelectHandDrawable() {
         try {
             final Field fEditor = TextView.class.getDeclaredField("mEditor");
@@ -114,9 +126,11 @@ public class AutocompleteEditText extends AppCompatEditText {
     }
 
     private Drawable setDrawableColorFilter(int drawableId){
-        Drawable drawable =  ContextCompat.getDrawable(getContext(),drawableId);
-        drawable.setColorFilter(ContextCompat.getColor(getContext(),R.color.primary_color), PorterDuff.Mode.SRC_ATOP);
-        return  drawable;
+        final Drawable drawable =  ContextCompat.getDrawable(getContext(),drawableId);
+        if (drawable != null) {
+            drawable.setColorFilter(ContextCompat.getColor(getContext(), R.color.primary_color), PorterDuff.Mode.SRC_ATOP);
+        }
+        return drawable;
     }
 
     public boolean isAutocompleted() {
@@ -217,6 +231,7 @@ public class AutocompleteEditText extends AppCompatEditText {
                 watcher.afterTextChanged(s);
             }
             mQuery = s.toString();
+            setDrawable(!mQuery.isEmpty());
             mIsTyping = false;
         }
     }
@@ -241,12 +256,14 @@ public class AutocompleteEditText extends AppCompatEditText {
 
     @Override
     protected void onSelectionChanged(int selStart, int selEnd) {
-        if(selStart == 0 && selEnd == 0 && getText().length()!= 0) {
+        final Editable editable = getText();
+        final String text = editable != null ? editable.toString() : "";
+        if(selStart == 0 && selEnd == 0 && text.length() != 0) {
             boolean isUserTouch = false;
             final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 
-            for(int i = 0 ; i < stackTraceElements.length ;i++){
-                if("onTouchEvent".equals(stackTraceElements[i].getMethodName())){
+            for (StackTraceElement stackTraceElement : stackTraceElements) {
+                if ("onTouchEvent".equals(stackTraceElement.getMethodName())) {
                     isUserTouch = true;
                     break;
                 }
@@ -255,6 +272,44 @@ public class AutocompleteEditText extends AppCompatEditText {
             if(!isUserTouch)
                 setSelection(0, getText().length());
         }
+    }
+
+    public void setBackIconCallback(Callable<Void> callback) {
+        mBackIconCallback = callback;
+    }
+
+    public void setClearQueryCallback(Callable<Void> callback) {
+        mClearQueryCallback = callback;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mLastTouchX = event.getX();
+        return getVisibility() == VISIBLE && super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        final boolean isBackIconClicked = mLastTouchX <  getPaddingLeft() + backIcon.getIntrinsicWidth();
+        final boolean isClearIconClicked = mLastTouchX > getWidth() - getPaddingRight() - clearIcon.getIntrinsicWidth();
+        try {
+            if (isBackIconClicked && mBackIconCallback != null) {
+                mBackIconCallback.call();
+                return true;
+            }
+            if (isClearIconClicked) {
+                setText("");
+                if (mClearQueryCallback != null) {
+                    mClearQueryCallback.call();
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return super.performClick();
     }
 
     private class AutocompleteRunnable implements Runnable {

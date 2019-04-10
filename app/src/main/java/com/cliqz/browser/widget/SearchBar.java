@@ -30,6 +30,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.QueryManager;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -43,10 +44,6 @@ import butterknife.ButterKnife;
  */
 public class SearchBar extends FrameLayout {
 
-    public static final int ICON_STATE_CLEAR = 0;
-    //public static final int RELOAD = 1;
-    public static final int ICON_STATE_STOP = 2;
-    public static final int ICON_STATE_NONE = 3;
     private float scaleX;
     private float scaleY;
     private float pivotX;
@@ -81,10 +78,6 @@ public class SearchBar extends FrameLayout {
     @Bind(R.id.control_center)
     RelativeLayout antiTrackingDetails;
 
-    private final Drawable clearIcon, backIcon;
-    private int currentIcon;
-    private
-
     @Nullable
     Listener mListener;
 
@@ -101,16 +94,15 @@ public class SearchBar extends FrameLayout {
         BrowserApp.getAppComponent().inject(this);
         inflate(getContext(), R.layout.search_bar_widget, this);
         ButterKnife.bind(this);
-        clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
-        backIcon = ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
-        int clearIconHeight = clearIcon.getIntrinsicHeight();
+        final Drawable clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
+        final int clearIconHeight = Objects.requireNonNull(clearIcon).getIntrinsicHeight();
         titleBar.setHeight(clearIconHeight);
         if (trackerCounter != null) {
             trackerCounter.setFocusable(false);
             trackerCounter.setFocusableInTouchMode(false);
         }
         computeScales();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && antiTrackingDetails != null) {
             antiTrackingDetails.setVisibility(GONE);
         }
     }
@@ -139,30 +131,18 @@ public class SearchBar extends FrameLayout {
         final ListenerWrapper wrapper = new ListenerWrapper();
         this.searchEditText.addTextChangedListener(wrapper);
         this.searchEditText.setOnFocusChangeListener(wrapper);
-        // TODO Fix this by removing the OnTouchListener and overriding the performClick on
-        // AutocompleteEditText
-        this.searchEditText.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                if (event.getAction() != MotionEvent.ACTION_DOWN) {
-                    return false;
-                }
-                final boolean isBackIconClicked = event.getX() <  searchEditText.getPaddingLeft() + backIcon.getIntrinsicWidth();
-                final boolean isClearIconClicked = event.getX() > searchEditText.getWidth() - searchEditText.getPaddingRight() - clearIcon.getIntrinsicWidth();
-                if (isBackIconClicked) {
-                    showTitleBar();
-                    if (mListener != null) {
-                        mListener.onBackIconPressed();
-                    }
-                    return true;
-                } else if (isClearIconClicked) {
-                    searchEditText.setText("");
-                    if (mListener != null) {
-                        mListener.onQueryCleared(SearchBar.this);
-                    }
-                }
-                return false;
+        this.searchEditText.setBackIconCallback(() -> {
+            showTitleBar();
+            if (mListener != null) {
+                mListener.onBackIconPressed();
             }
+            return null;
+        });
+        this.searchEditText.setClearQueryCallback(() -> {
+            if (mListener != null) {
+                mListener.onQueryCleared(SearchBar.this);
+            }
+            return null;
         });
     }
 
@@ -180,7 +160,8 @@ public class SearchBar extends FrameLayout {
     }
 
     public String getSearchText() {
-        return searchEditText.getText().toString();
+        final Editable editable = searchEditText.getText();
+        return editable != null ? editable.toString() : "";
     }
 
     @NonNull
@@ -206,16 +187,19 @@ public class SearchBar extends FrameLayout {
 
     public void showSearchEditText() {
         progressBar.setVisibility(GONE);
-        switchIcon(true);
-        //Dont redo the animation if the edittext is already visible
+        //Don't redo the animation if the edittext is already visible
         if (searchEditText.getVisibility() == VISIBLE) {
             return;
         }
-        searchEditText.setVisibility(VISIBLE);
-        final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
-        animation.setDuration(150);
-        searchEditText.startAnimation(animation);
-        requestSearchFocus();
+        // Postpone the animation in order to avoid the SearchEditText to intercept the same
+        // touch event that shown it
+        post(() -> {
+            searchEditText.setVisibility(VISIBLE);
+            final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
+            animation.setDuration(150);
+            searchEditText.startAnimation(animation);
+            requestSearchFocus();
+        });
     }
 
     public void showTitleBar() {
@@ -249,12 +233,8 @@ public class SearchBar extends FrameLayout {
     }
 
     public void selectAllText() {
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchEditText.setSelection(0,searchEditText.getText().length());
-            }
-        }, 200);
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                searchEditText.setSelection(0,getSearchText().length()), 200);
     }
 
     public void setTitle(String title) {
@@ -326,25 +306,7 @@ public class SearchBar extends FrameLayout {
             return super.onInterceptTouchEvent(event);
         }
 
-        final View visibleView = titleBar.getVisibility() == VISIBLE ? titleBar : searchEditText;
-        final boolean isIconClicked = event.getX() > (visibleView.getWidth() - visibleView.getPaddingRight()) - clearIcon.getIntrinsicWidth();
-        if (isIconClicked && visibleView == searchEditText) {
-            switch (currentIcon) {
-                case ICON_STATE_CLEAR:
-                    showSearchEditText();
-                    searchEditText.setText("");
-                    if (mListener != null) {
-                        mListener.onQueryCleared(SearchBar.this);
-                    }
-                    break;
-                case ICON_STATE_STOP:
-                    if (mListener != null) {
-                        mListener.onStopClicked();
-                    }
-                    break;
-            }
-            return true;
-        } else if (titleBar.getVisibility() == VISIBLE) {
+        if (titleBar.getVisibility() == VISIBLE) {
             if (antiTrackingDetails != null) {
                 setAntiTrackingDetailsVisibility(GONE);
             }
@@ -355,26 +317,6 @@ public class SearchBar extends FrameLayout {
             return true;
         }
         return super.onInterceptTouchEvent(event);
-    }
-
-    /**
-     * Displays or hides the 'X' icon in the status bar
-     * If {@link #titleBar} is visible 'X' serves as Stop icon else if {@link #searchEditText} is visible
-     * 'X' serves as Clear icon
-     *
-     * @param showIcon true if icon should be visible
-     */
-    public void switchIcon(boolean showIcon) {
-        if ((currentIcon == ICON_STATE_CLEAR && showIcon) || (currentIcon == ICON_STATE_NONE && !showIcon)) {
-            return;
-        }
-        if (showIcon) {
-            searchEditText.setCompoundDrawablesWithIntrinsicBounds(backIcon, null, clearIcon, null);
-            currentIcon = ICON_STATE_CLEAR;
-        } else {
-            searchEditText.setCompoundDrawablesWithIntrinsicBounds(backIcon, null, null, null);
-            currentIcon = ICON_STATE_NONE;
-        }
     }
 
     /**
@@ -414,11 +356,6 @@ public class SearchBar extends FrameLayout {
         public void afterTextChanged(Editable s) {
             if (mListener != null) {
                 mListener.afterTextChanged(s);
-                if (s.length() == 0) {
-                    switchIcon(false);
-                } else {
-                    switchIcon(true);
-                }
             }
         }
 
@@ -429,12 +366,7 @@ public class SearchBar extends FrameLayout {
             }
 
             if (hasFocus) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        showKeyBoard();
-                    }
-                });
+                post(SearchBar.this::showKeyBoard);
             } else {
                 showTitleBar();
             }
