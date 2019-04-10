@@ -83,14 +83,14 @@ class TabFragmentListener implements SearchBar.Listener {
         final SearchView searchView = fragment.searchView;
         final boolean shouldSend = (((start + count) != before) ||
                 !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
-        if (searchView != null && shouldSend && !q.equals(fragment.mLightningView.getUrl())) {
+        if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.mLightningView.getUrl()))) {
             fragment.lastQuery = q;
             searchView.updateQuery(q, start, count);
         }
         // TODO Stefano Are we shure?
-        //        if (q.length() == 0 && fragment.querySuggestor != null) {
-//            fragment.querySuggestor.clearSuggestions();
-//        }
+        // if (q.length() == 0 && fragment.querySuggestor != null) {
+        //     fragment.querySuggestor.clearSuggestions();
+        // }
     }
 
     @Override
@@ -127,7 +127,7 @@ class TabFragmentListener implements SearchBar.Listener {
 
     @Override
     public void onQueryCleared(SearchBar searchBar) {
-        fragment.telemetry.sendCLearUrlBarSignal(fragment.mIsIncognito,
+        fragment.telemetry.sendClearUrlBarSignal(fragment.mIsIncognito,
                 searchBar.getSearchText().length(), fragment.getTelemetryView());
         fragment.state.setQuery("");
     }
