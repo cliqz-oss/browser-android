@@ -633,7 +633,7 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-    public void sendCLearUrlBarSignal(boolean isIncognito, int urlLength, String view) {
+    public void sendClearUrlBarSignal(boolean isIncognito, int urlLength, String view) {
         JSONObject signal = new JSONObject();
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
