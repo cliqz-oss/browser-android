@@ -147,16 +147,12 @@ public class PreferenceManager {
 
     /**
      * Is adblocking enabled?
-     * !!! As Richard asked on 2016/08/22 we should not enable adblocker by default !!!
-     * Enabled for apk submitted to Amazon appstore
      *
      * @return true if adblocking is enabled, false otherwise
      */
     @SuppressWarnings("ConstantConditions")
     public boolean getAdBlockEnabled() {
-        return mPrefs.getBoolean(Name.BLOCK_ADS,
-                FLAVOR_API_AMAZON.equals(BuildConfig.FLAVOR_api) ||
-                        FLAVOR_API_HUAWEI.equals(BuildConfig.FLAVOR_api));
+        return mPrefs.getBoolean(Name.BLOCK_ADS, true);
     }
 
     public boolean getOptimizedAdBlockEnabled() {

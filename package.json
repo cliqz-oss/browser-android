@@ -23,7 +23,7 @@
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "@cliqz/indexeddbshim": "^4.1.2",
-    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.08b3bcc.tgz",
+    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.8fda379.tgz",
     "buffer": "5.0.7",
     "core-js": "2.5.3",
     "https-browserify": "1.0.0",
