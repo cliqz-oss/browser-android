@@ -46,7 +46,7 @@
         android:layout_marginTop="10dp"
         android:background="@null"
         android:tint="@color/accent_color"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
+        app:srcCompat="@drawable/ic_clear_black" />
 
     <Button
         android:id="@+id/learn_more_btn"

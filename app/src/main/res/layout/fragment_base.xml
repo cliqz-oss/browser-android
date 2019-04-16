@@ -51,7 +51,7 @@
                     android:textColorHint="#aaaaaa"
                     android:textCursorDrawable="@drawable/custom_cursor"
                     tools:drawableLeft="@drawable/ic_cliqz_back"
-                    tools:drawableRight="@drawable/ic_clear_black_24dp"
+                    tools:drawableRight="@drawable/ic_clear_black"
                     tools:textSelectHandle="@drawable/text_select_handle_middle_material"
                     tools:textSelectHandleLeft="@drawable/text_select_handle_left_material"
                     tools:textSelectHandleRight="@drawable/text_select_handle_right_material"
@@ -93,7 +93,7 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_clear_black_24dp"
+            app:srcCompat="@drawable/ic_clear_black"
             android:id="@+id/in_page_search_cancel_button"
             android:contentDescription="@string/close_in_page_search"/>
     </LinearLayout>

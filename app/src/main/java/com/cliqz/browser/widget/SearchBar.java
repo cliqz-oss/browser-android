@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -94,7 +95,8 @@ public class SearchBar extends FrameLayout {
         BrowserApp.getAppComponent().inject(this);
         inflate(getContext(), R.layout.search_bar_widget, this);
         ButterKnife.bind(this);
-        final Drawable clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
+        final Drawable clearIcon = VectorDrawableCompat.create(
+                context.getResources(), R.drawable.ic_clear_black, null);
         final int clearIconHeight = Objects.requireNonNull(clearIcon).getIntrinsicHeight();
         titleBar.setHeight(clearIconHeight);
         if (trackerCounter != null) {
