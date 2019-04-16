@@ -2,6 +2,8 @@ package com.cliqz.browser.main;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
@@ -257,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             telemetry.sendLifeCycleSignal(TelemetryKeys.UPDATE);
         }
 
-        if (checkPlayServices()) {
+        if (checkPlayServices() && isImportantEnough()) {
             final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
             startService(registrationIntent);
         }
@@ -295,6 +297,20 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
             telemetry.sendStartingSignals("cards", "cold");
         }
+    }
+
+    // Workaround for a bug in Android 9 (Pie) as reported here
+    // https://issuetracker.google.com/issues/113122354
+    private boolean isImportantEnough() {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.P) {
+            return true;
+        }
+        final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        final List<RunningAppProcessInfo> list = am.getRunningAppProcesses();
+        if (list == null || list.size() < 1) {
+            return false;
+        }
+        return list.get(0).importance <= RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
     }
 
     private void sendNotificationClickedTelemetry(Intent intent) {

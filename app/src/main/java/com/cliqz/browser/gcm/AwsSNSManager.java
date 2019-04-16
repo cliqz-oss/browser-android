@@ -38,21 +38,28 @@ public class AwsSNSManager {
 
     public AwsSNSManager(PreferenceManager preferenceManager, Context context) {
         this.preferenceManager = preferenceManager;
+        AmazonSNSClient client;
         if (CliqzConfig.AMAZON_ACCOUNT_ID.isEmpty() ||
                 CliqzConfig.AMAZON_IDENTITY_POOL_ID.isEmpty() ||
                 CliqzConfig.AMAZON_UNAUTH_ROLE_ARN.isEmpty() ||
                 CliqzConfig.AMAZON_AUTH_ROLE_ARN.isEmpty()) {
-            this.client = null;
+            client = null;
         } else {
-            final CognitoCachingCredentialsProvider credentialsProvider =
-                    new CognitoCachingCredentialsProvider(context,
-                            CliqzConfig.AMAZON_ACCOUNT_ID,
-                            CliqzConfig.AMAZON_IDENTITY_POOL_ID,
-                            CliqzConfig.AMAZON_UNAUTH_ROLE_ARN,
-                            CliqzConfig.AMAZON_AUTH_ROLE_ARN,
-                            Regions.US_EAST_1);
-            this.client = new AmazonSNSClient(credentialsProvider);
+            try {
+                final CognitoCachingCredentialsProvider credentialsProvider =
+                        new CognitoCachingCredentialsProvider(context,
+                                CliqzConfig.AMAZON_ACCOUNT_ID,
+                                CliqzConfig.AMAZON_IDENTITY_POOL_ID,
+                                CliqzConfig.AMAZON_UNAUTH_ROLE_ARN,
+                                CliqzConfig.AMAZON_AUTH_ROLE_ARN,
+                                Regions.US_EAST_1);
+                client = new AmazonSNSClient(credentialsProvider);
+            } catch (Throwable t) {
+                client = null;
+                Log.w(TAG, "Error initializing AmazonSNSClient", t);
+            }
         }
+        this.client = client;
     }
 
     public void registerWithSNS(final String token) {
