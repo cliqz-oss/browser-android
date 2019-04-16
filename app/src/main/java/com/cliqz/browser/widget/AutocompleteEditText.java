@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.AppCompatEditText;
@@ -88,9 +91,25 @@ public class AutocompleteEditText extends AppCompatEditText {
         BrowserApp.getAppComponent().inject(this);
         setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_URI);
         setSelectHandDrawable();
-        clearIcon = ContextCompat.getDrawable(context, R.drawable.ic_clear_search);
-        backIcon = ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
+        clearIcon = VectorDrawableCompat.create(
+                context.getResources(), R.drawable.ic_clear_black, null);
+        backIcon = createBackIcon(context); // ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
         setDrawable(false);
+    }
+
+    // Needed for back compatibility with Android < 21
+    private static Drawable createBackIcon(Context context) {
+        final Resources resources = context.getResources();
+        final Drawable backDrawable = VectorDrawableCompat.create(
+                resources, R.drawable.ic_action_back, null);
+        final Drawable logoDrawable = VectorDrawableCompat.create(
+                resources, R.drawable.ic_cliqz_search, null);
+        final int backWidth = backDrawable.getIntrinsicWidth();
+        final int logoWidth = logoDrawable.getIntrinsicWidth();
+        final LayerDrawable out = new LayerDrawable(new Drawable[] { backDrawable, logoDrawable });
+        out.setLayerInset(0, 0, 0, logoWidth, 0);
+        out.setLayerInset(1, backWidth, 0, 0, 0);
+        return out;
     }
 
     private void setDrawable(boolean showClearDrawable){
