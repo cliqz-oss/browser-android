@@ -208,14 +208,14 @@ dependencies {
     androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     
     // Google Play Services
-    implementation 'com.google.android.gms:play-services-gcm:16.0.0'
+    implementation 'com.google.android.gms:play-services-gcm:16.1.0'
     
     // React-Native
     implementation 'com.facebook.react:react-native:+'
     
     // AWS SNS SDK
-    implementation 'com.amazonaws:aws-android-sdk-sns:2.+'
-    implementation 'com.amazonaws:aws-android-sdk-cognito:2.+'
+    implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
     
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
