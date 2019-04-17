@@ -44,25 +44,8 @@ public class BrowserApp extends MultiDexApplication {
      * This is usefull for testing purposes.
      */
     protected void installSupportLibraries() {
-        installMultidex();
-
         LeakCanary.install(this);
         LookbackWrapper.init(this);
-    }
-
-    private void installMultidex() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return; // Nothing to do, multidex is supported natively by ART
-        }
-
-        try {
-            Class clazz = Class.forName("android.support.multidex.MultiDex");
-            @SuppressWarnings("unchecked") Method method = clazz.getMethod("install", Context.class);
-            method.invoke(null, this);
-        } catch (Throwable e) {
-            // We must crash here, we can not recover from not finding the support library
-            throw new RuntimeException("Can't install multidex support", e);
-        }
     }
 
     @Override

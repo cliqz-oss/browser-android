@@ -1,6 +1,7 @@
 package com.cliqz.browser.app;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.gcm.AwsSNSManager;
@@ -14,7 +15,6 @@ import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
-import com.google.gson.Gson;
 
 import javax.inject.Singleton;
 
@@ -32,20 +32,20 @@ public class AppModule {
 
     private final BrowserApp app;
 
-    public AppModule(BrowserApp app) {
+    public AppModule(@NonNull BrowserApp app) {
         this.app = app;
     }
 
     @Provides
     Context provideContext() {
-        return app.getApplicationContext();
+        return app;
     }
 
     @Provides
     @Singleton
     Telemetry providesTelemetry(PreferenceManager preferenceManager,
                      HistoryDatabase historyDatabase, Timings timings) {
-        return new Telemetry(app.getApplicationContext(), preferenceManager, historyDatabase, timings);
+        return new Telemetry(app, preferenceManager, historyDatabase, timings);
     }
 
     @Provides
@@ -55,25 +55,20 @@ public class AppModule {
     }
 
     @Provides
-    Gson providesGson() {
-        return new Gson();
+    @Singleton
+    HistoryDatabase providesHistoryDatabase() {
+        return new HistoryDatabase(app);
     }
 
     @Provides
     @Singleton
-    HistoryDatabase providesHistoryDatabase(Context context) {
-        return new HistoryDatabase(context);
+    PasswordDatabase providesPasswordDatabase() {
+        return new PasswordDatabase(app);
     }
 
     @Provides
-    @Singleton
-    PasswordDatabase providesPasswordDatabase(Context context) {
-        return new PasswordDatabase(context);
-    }
-
-    @Provides
-    AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager, Context context) {
-        return new AwsSNSManager(preferenceManager, context);
+    AwsSNSManager providesAwsSNSManager(PreferenceManager preferenceManager) {
+        return new AwsSNSManager(preferenceManager, app);
     }
 
     @Provides
@@ -90,8 +85,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Engine provideJSEngine(Context context, Bus bus) {
-          return new Engine(context, this.app, bus);
+    Engine provideJSEngine(Bus bus) {
+          return new Engine(app, bus);
     }
 
     @Provides
@@ -125,7 +120,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public QueryManager provideQueryManager(HistoryDatabase historyDatabase) {
+    QueryManager provideQueryManager(HistoryDatabase historyDatabase) {
         return new QueryManager(historyDatabase);
     }
 }

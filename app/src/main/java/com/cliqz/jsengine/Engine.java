@@ -1,7 +1,6 @@
 package com.cliqz.jsengine;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.bebnev.RNUserAgentPackage;
@@ -34,12 +33,10 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
     private ReactContext mReactContext = null;
     private final EngineQueuingThread engineQueuingThread;
 
-    Bus bus;
     private JSBridge mJSBridge;
 
-    public Engine(final Context context, final Application app, Bus bus) {
-        this.bus = bus;
-        reactRootView = new ReactRootView(context);
+    public Engine(final Application app, Bus bus) {
+        reactRootView = new ReactRootView(app);
         reactInstanceManager = ReactInstanceManager.builder()
                 .setApplication(app)
                 .setBundleAssetName("jsengine.bundle.js")
@@ -58,7 +55,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
 
         // increase database space (default is 6MB), as suggested by https://github.com/stockulus/pouchdb-react-native
         long size = 50L * 1024L * 1024L; // 50 MB
-        ReactDatabaseSupplier.getInstance(context).setMaximumSize(size);
+        ReactDatabaseSupplier.getInstance(app).setMaximumSize(size);
 
         reactInstanceManager.addReactInstanceEventListener(this);
         reactInstanceManager.createReactContextInBackground();
@@ -68,27 +65,21 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
     }
 
     public void callAction(final String functionName, final JSBridge.Callback callback, final Object... args) {
-        engineQueuingThread.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getBridge().callAction(functionName, callback, args);
-                } catch (EngineNotYetAvailable engineNotYetAvailable) {
-                    Log.e(TAG, "Engine not available", engineNotYetAvailable);
-                }
+        engineQueuingThread.getHandler().post(() -> {
+            try {
+                getBridge().callAction(functionName, callback, args);
+            } catch (EngineNotYetAvailable engineNotYetAvailable) {
+                Log.e(TAG, "Engine not available", engineNotYetAvailable);
             }
         });
     }
 
     public void publishEvent(final String eventName, final Object... args) {
-        engineQueuingThread.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    getBridge().publishEvent(eventName, args);
-                } catch (EngineNotYetAvailable engineNotYetAvailable) {
-                    Log.e(TAG, "Engine not available", engineNotYetAvailable);
-                }
+        engineQueuingThread.getHandler().post(() -> {
+            try {
+                getBridge().publishEvent(eventName, args);
+            } catch (EngineNotYetAvailable engineNotYetAvailable) {
+                Log.e(TAG, "Engine not available", engineNotYetAvailable);
             }
         });
     }
@@ -110,11 +101,11 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
         throw new EngineNotYetAvailable();
     }
 
-    public void setPref(String pref, Object value) {
+    void setPref(String pref, Object value) {
         this.callAction("core:setPref", new JSBridge.NoopCallback(), pref, value);
     }
 
-    void setBridgeIsReady(JSBridge bridge) {
+    void setBridgeIsReady() {
         for (Runnable cb : this.startupCallbacks) {
             cb.run();
         }

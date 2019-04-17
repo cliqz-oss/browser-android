@@ -80,7 +80,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
     JSBridge(ReactApplicationContext reactContext, Engine engine, Bus bus) {
         super(reactContext);
         this.context = reactContext;
-        engine.setBridgeIsReady(this);
+        engine.setBridgeIsReady();
         this.handler = new Handler(Looper.getMainLooper());
         this.bus = bus;
     }
