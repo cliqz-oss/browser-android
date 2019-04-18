@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../scripts/CliqzConfig.gradle'
@@ -252,6 +254,7 @@ dependencies {
     androidTestImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
     androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
     testImplementation 'org.apache.velocity:velocity:1.7'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 preBuild.doLast {
