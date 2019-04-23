@@ -39,6 +39,7 @@ import acr.browser.lightning.utils.UrlUtils;
  * @author Anthony C. Restaino
  * @author Stefano Pacifici
  */
+@Deprecated
 class LightningChromeClient extends WebChromeClient {
 
     private static final String TAG = LightningChromeClient.class.getSimpleName();
