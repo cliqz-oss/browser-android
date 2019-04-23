@@ -2,20 +2,17 @@ package com.cliqz.browser.app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
+import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
-
-import java.lang.reflect.Method;
 
 public class BrowserApp extends MultiDexApplication {
 
@@ -53,6 +50,7 @@ public class BrowserApp extends MultiDexApplication {
         super.attachBaseContext(base);
         sContext = base;
         MultiDex.install(this);
+        TLSProviderInstaller.install(base);
     }
 
     public static Context getAppContext() {
