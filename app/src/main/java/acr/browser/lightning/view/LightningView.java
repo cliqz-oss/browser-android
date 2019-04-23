@@ -556,6 +556,7 @@ public class LightningView {
             mWebView.setBackgroundColor(Color.WHITE);
 
             mWebView.setSaveEnabled(true);
+            mWebView.setWebChromeClient(new CliqzChromeClient(activity, this));
 //            mWebView.setNetworkAvailable(true);
 //            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
 //            mWebView.setWebViewClient(new LightningWebClient(activity, this));

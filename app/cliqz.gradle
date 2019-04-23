@@ -93,9 +93,9 @@ if (props['Browser.playStoreCert']) {
 
 def extPath = file('../external/extension')
 
-def createBloomFilter(File outputDir) {
+def createBloomFilter(Directory outputDir) {
     def blackList = new File('app/blacklist.txt')
-    def lineCount = 0;
+    def lineCount = 0
     blackList.eachLine { line ->
         lineCount++;
     }
@@ -103,14 +103,14 @@ def createBloomFilter(File outputDir) {
     blackList.eachLine { line ->
         bloomFilter.put(line.substring(1, line.indexOf("\"", 1)));
     }
-    new File(outputDir.absolutePath+"/bloomfilter.data").withObjectOutputStream { stream ->
+    outputDir.file("bloomfilter.data").asFile.withObjectOutputStream { stream ->
         stream.writeObject(bloomFilter)
     }
 }
 
-def copyJsEngine(File outputDir) {
+def copyJsEngine(Directory outputDir) {
     final src = new File('./jsengine/')
-    FileUtils.copyDirectory(src, outputDir);
+    FileUtils.copyDirectory(src, outputDir.asFile)
 }
 
 def compileAdHostsList(File outputDir) {
@@ -151,8 +151,9 @@ afterEvaluate { project ->
         }
         if (tazk.name =~ /merge.*Assets/ && !tazk.name.endsWith('TestAssets')) {
             tazk.doLast {
-                createBloomFilter(tazk.outputDir)
-                copyJsEngine(tazk.outputDir)
+                println(tazk.class)
+                createBloomFilter(tazk.outputDir.get())
+                copyJsEngine(tazk.outputDir.get())
             }
         }
     }
