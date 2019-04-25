@@ -11,6 +11,8 @@ import com.cliqz.jsengine.Engine;
 
 import org.mozilla.geckoview.GeckoRuntime;
 
+import javax.inject.Singleton;
+
 import acr.browser.lightning.preference.PreferenceManager;
 import dagger.Module;
 import dagger.Provides;
@@ -78,11 +80,5 @@ public class MainActivityModule {
     @Provides
     AppBackgroundManager provideBackgroundManager() {
         return new AppBackgroundManager(activity);
-    }
-
-    @PerActivity
-    @Provides
-    GeckoRuntime provideGeckoRuntime() {
-        return GeckoRuntime.create(activity);
     }
 }

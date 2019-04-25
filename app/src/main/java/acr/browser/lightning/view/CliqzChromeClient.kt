@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog
 import com.anthonycr.grant.PermissionsManager
 import com.anthonycr.grant.PermissionsResultAction
 import com.cliqz.browser.R
+import com.cliqz.browser.main.FileChooserHelper
 import com.cliqz.browser.main.Messages
 import org.mozilla.geckoview.*
 
@@ -34,8 +35,12 @@ class CliqzChromeClient(private val activity: Activity,
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onFilePrompt(session: GeckoSession?, title: String?, type: Int, mimeTypes: Array<out String>?, callback: GeckoSession.PromptDelegate.FileCallback?) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onFilePrompt(session: GeckoSession?,
+                              title: String?,
+                              type: Int,
+                              mimeTypes: Array<out String>?,
+                              callback: GeckoSession.PromptDelegate.FileCallback?) {
+        FileChooserHelper.prompt(activity, title, type, mimeTypes, callback)
     }
 
     override fun onColorPrompt(session: GeckoSession?, title: String?, value: String?, callback: GeckoSession.PromptDelegate.TextCallback?) {
@@ -68,21 +73,20 @@ class CliqzChromeClient(private val activity: Activity,
     }
 
     override fun onSecurityChange(session: GeckoSession?, securityInfo: GeckoSession.ProgressDelegate.SecurityInformation?) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO("not implemented")
+        // Implement this for the urlbar lock
     }
 
     override fun onPageStart(session: GeckoSession?, url: String?) {
         // Nothing to do?
     }
 
-    /* WebChromeClient.onProgressChanged(WebView view, int newProgress); */
     override fun onProgressChange(session: GeckoSession?, progress: Int) {
         if (lightningView.isShown) {
             eventBus.post(BrowserEvents.UpdateProgress(progress))
         }
     }
 
-    /* WebChromeClient.onGeolocationPermissionsSHowPrompt(); */
     override fun onContentPermissionRequest(
             session: GeckoSession?,
             uri: String?,

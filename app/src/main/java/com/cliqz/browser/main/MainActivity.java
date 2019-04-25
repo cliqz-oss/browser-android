@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private boolean mIsColdStart = true;
     private boolean mShouldShowLookbackDialog = true;
     private final HashSet<Long> downloadIds = new HashSet<>();
-    private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
     private ProgressDialog progressDialog = null;
 
@@ -522,11 +521,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    public void showFileChooser(BrowserEvents.ShowFileChooser event) {
-        fileChooserHelper.showFileChooser(event);
-    }
-
-    @Subscribe
     public void sendTabToDesctop(Messages.SentTabToDesktop event) {
         final TabFragment tabFragment = tabsManager.getCurrentTab();
         final LightningView lightningView = tabFragment != null ? tabFragment.mLightningView : null;
@@ -756,11 +750,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FILE_UPLOAD_REQUEST_CODE) {
             if (resultCode != Activity.RESULT_OK) {
-                fileChooserHelper.notifyResultCancel();
+                FileChooserHelper.notifyResultCancel();
                 return;
             }
 
-            fileChooserHelper.notifyResultOk(data);
+            FileChooserHelper.notifyResultOk(this, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

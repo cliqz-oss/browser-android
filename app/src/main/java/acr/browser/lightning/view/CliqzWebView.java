@@ -253,5 +253,6 @@ public class CliqzWebView extends GeckoView implements NestedScrollingChild {
         mSession.setProgressDelegate(cliqzChromeClient);
         mSession.setContentDelegate(cliqzChromeClient);
         mSession.setPermissionDelegate(cliqzChromeClient);
+        mSession.setPromptDelegate(cliqzChromeClient);
     }
 }

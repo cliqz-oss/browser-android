@@ -26,13 +26,9 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
 import acr.browser.lightning.utils.UrlUtils;
 
 /**
@@ -173,23 +169,23 @@ class LightningChromeClient extends WebChromeClient {
 
     @SuppressWarnings("unused")
     public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-        eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, null, null));
+        // eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, null, null));
     }
 
     @SuppressWarnings("unused")
     public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-        eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, acceptType, null));
+        // eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, acceptType, null));
     }
 
     @SuppressWarnings("unused")
     public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
-        eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, acceptType, null));
+        // eventBus.post(new ShowFileChooser(Uri.class, uploadMsg, acceptType, null));
     }
 
     public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
                                      WebChromeClient.FileChooserParams fileChooserParams) {
-        eventBus.post(new ShowFileChooser(Uri[].class, filePathCallback,
-                null, fileChooserParams));
+        // eventBus.post(new ShowFileChooser(Uri[].class, filePathCallback,
+        //         null, fileChooserParams));
         return true;
     }
 

@@ -16,6 +16,8 @@ import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 import com.google.gson.Gson;
 
+import org.mozilla.geckoview.GeckoRuntime;
+
 import javax.inject.Singleton;
 
 import acr.browser.lightning.database.HistoryDatabase;
@@ -127,5 +129,11 @@ public class AppModule {
     @Singleton
     public QueryManager provideQueryManager(HistoryDatabase historyDatabase) {
         return new QueryManager(historyDatabase);
+    }
+
+    @Singleton
+    @Provides
+    GeckoRuntime provideGeckoRuntime() {
+        return GeckoRuntime.create(app);
     }
 }

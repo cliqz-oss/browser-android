@@ -1,13 +1,12 @@
 package acr.browser.lightning.bus;
 
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import org.jetbrains.annotations.Nullable;
 import android.view.View;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebChromeClient.FileChooserParams;
+
+import org.mozilla.geckoview.GeckoSession;
 
 import acr.browser.lightning.view.LightningView;
 
@@ -132,32 +131,6 @@ public final class BrowserEvents {
         }
     }
 
-    /**
-     * Tell the browser to show a file chooser.
-     *
-     * This is called to handle HTML forms with 'file' input type, in response to the
-     * user pressing the "Select File" button.
-     */
-    public static class ShowFileChooser {
-
-        @NonNull
-        public final Class callbackParamType;
-        @NonNull
-        public final ValueCallback valueCallback;
-        @Nullable
-        public final String acceptType;
-        @Nullable
-        public final FileChooserParams fileChooserParams;
-
-        public ShowFileChooser(@NonNull Class callbackParamType,
-                               @NonNull  ValueCallback valueCallback, @Nullable String acceptType,
-                               @Nullable FileChooserParams fileChooserParams) {
-            this.callbackParamType = callbackParamType;
-            this.valueCallback = valueCallback;
-            this.acceptType = acceptType;
-            this.fileChooserParams = fileChooserParams;
-        }
-    }
 
     /**
      * Notify the browser that the current page has exited full
