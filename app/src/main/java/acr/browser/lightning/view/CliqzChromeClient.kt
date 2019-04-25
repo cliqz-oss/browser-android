@@ -2,8 +2,10 @@ package acr.browser.lightning.view
 
 import acr.browser.lightning.bus.BrowserEvents
 import acr.browser.lightning.utils.UrlUtils
-import android.Manifest
+import acr.browser.lightning.view.DomainPermissions.State.DENIED
+import acr.browser.lightning.view.DomainPermissions.State.GRANTED
 import android.app.Activity
+import android.net.Uri
 import android.support.v7.app.AlertDialog
 import com.anthonycr.grant.PermissionsManager
 import com.anthonycr.grant.PermissionsResultAction
@@ -86,38 +88,45 @@ class CliqzChromeClient(private val activity: Activity,
             uri: String?,
             type: Int,
             callback: GeckoSession.PermissionDelegate.Callback?) {
-        if (type == GeckoSession.PermissionDelegate.PERMISSION_GEOLOCATION) {
-            val origin = uri ?: ""
-            PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(
-                    activity,
-                    object : PermissionsResultAction() {
-                override fun onGranted() {
-                    val builder = AlertDialog.Builder(activity)
-                    builder.setTitle(activity.getString(R.string.location))
-                    val org: String = if (origin.length > 50) {
-                        "${origin.subSequence(0, 50)}..."
-                    } else {
-                        origin
-                    }
-                    builder.setMessage(org + activity.getString(R.string.message_location))
-                            .setCancelable(true)
-                            .setPositiveButton(activity.getString(R.string.action_allow))
-                                { _, _ -> callback?.grant() }
-                            .setNegativeButton(activity.getString(R.string.action_dont_allow))
-                                { _, _ -> callback?.reject() }
-                    val alert = builder.create()
-                    alert.show()
-                }
-
-                override fun onDenied(permission: String) {
-                    //TODO show message and/or turn off setting
-                }
-            }, Manifest.permission.ACCESS_FINE_LOCATION)
+        when (DomainPermissions.checkPermissionForDomain(uri, type)) {
+            DENIED -> callback?.reject()
+            GRANTED -> callback?.grant()
+            else -> {
+                val origin = if (uri == null) "" else Uri.parse(uri).host!!
+                val message = activity.resources
+                        .getStringArray(R.array.message_domain_permissions)[type]
+                        .format(origin)
+                AlertDialog.Builder(activity)
+                        .setMessage(message)
+                        .setCancelable(true)
+                        .setPositiveButton(activity.getString(R.string.action_allow)) { _, _ ->
+                            DomainPermissions.setPermissionForDomain(uri, type, GRANTED)
+                            callback?.grant()
+                        }
+                        .setNegativeButton(activity.getString(R.string.action_dont_allow)) { _, _ ->
+                            DomainPermissions.setPermissionForDomain(uri, type, DENIED)
+                            callback?.reject()
+                        }
+                        .show()
+            }
         }
     }
 
     override fun onAndroidPermissionsRequest(session: GeckoSession?, permissions: Array<out String>?, callback: GeckoSession.PermissionDelegate.Callback?) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(
+                activity,
+                object : PermissionsResultAction() {
+                    override fun onGranted() {
+                        callback?.grant()
+                    }
+
+                    override fun onDenied(permission: String?) {
+                        callback?.reject()
+                    }
+
+                },
+                *permissions.orEmpty()
+        )
     }
 
     override fun onMediaPermissionRequest(session: GeckoSession?, uri: String?, video: Array<out GeckoSession.PermissionDelegate.MediaSource>?, audio: Array<out GeckoSession.PermissionDelegate.MediaSource>?, callback: GeckoSession.PermissionDelegate.MediaCallback?) {

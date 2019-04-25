@@ -13,4 +13,9 @@
         <item>@string/dark_theme</item>
         <item>@string/black_theme</item>
     </string-array>
+    <string-array name="message_domain_permissions">
+        <item>@string/msg_domain_location_permission</item>
+        <item>@string/msg_domain_notification_permission</item>
+        <item>@string/msg_domain_autoplay_permission</item>
+    </string-array>
 </resources>

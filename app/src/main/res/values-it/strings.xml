@@ -59,7 +59,6 @@
     <string name="block_ads">Blocca Pubblicità</string>
     <string name="title_form_resubmission">Reinvio modulo</string>
     <string name="message_form_resubmission">Vuoi inviare nuovamente i dati?</string>
-    <string name="message_location">\nVorrebbe usare la tua posizione</string>
     <string name="action_allow">Consenti</string>
     <string name="action_dont_allow">Non consentire</string>
     <string name="title_sign_in">Registrati</string>

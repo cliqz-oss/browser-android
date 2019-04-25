@@ -54,8 +54,6 @@ Continuar?</string>
     <string name="message_certificate_untrusted">certificado não confiável</string>
     <string name="title_form_resubmission">Submissão de formulário</string>
     <string name="message_form_resubmission">Gostaria de reenviar os dados?</string>
-    <string name="message_location">
-Gostaria de utilizar a sua localização</string>
     <string name="action_allow">Sim</string>
     <string name="action_dont_allow">Não</string>
     <string name="title_sign_in">Iniciar sessão</string>

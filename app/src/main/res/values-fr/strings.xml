@@ -69,7 +69,6 @@ Continuer tout de même ?</string>
     <string name="message_certificate_untrusted">Le certificat n\'est pas approuvé</string>
     <string name="title_form_resubmission">Formulaire de soumission</string>
     <string name="message_form_resubmission">Souhaitez-vous renvoyer les données ?</string>
-    <string name="message_location">\nSouhaite acceder à votre position</string>
     <string name="action_allow">Autoriser</string>
     <string name="action_dont_allow">Ne pas autoriser</string>
     <string name="title_sign_in">Se connecter</string>

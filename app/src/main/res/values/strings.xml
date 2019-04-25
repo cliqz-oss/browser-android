@@ -70,7 +70,6 @@
     <string name="message_certificate_untrusted">certificate is not trusted</string>
     <string name="title_form_resubmission">Form Resubmission</string>
     <string name="message_form_resubmission">Would you like to resend the data?</string>
-    <string name="message_location">\nWould like to use your location</string>
     <string name="action_allow">Allow</string>
     <string name="action_dont_allow">Don\'t Allow</string>
     <string name="title_sign_in">Sign In</string>
@@ -377,4 +376,7 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="action_take_survey" tools:ignore="MissingTranslation">Take Survey</string>
     <string name="user_sentiment_survey_first_line_msg" tools:ignore="MissingTranslation">Hello! We’d like to know your opinion about the Cliqz Browser. i</string>
     <string name="user_sentiment_survey_second_line_msg" tools:ignore="MissingTranslation">Please note: the service used for this survey, SurveyMonkey, records user IPs.</string>
+    <string name="msg_domain_location_permission">%s would like to access to your location</string>
+    <string name="msg_domain_notification_permission">%s would like to send you notifications</string>
+    <string name="msg_domain_autoplay_permission">%s would like to autoplay media contet</string>
 </resources>

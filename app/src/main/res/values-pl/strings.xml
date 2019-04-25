@@ -53,7 +53,6 @@
     <string name="message_certificate_untrusted">certyfikat jest niezaufany</string>
     <string name="title_form_resubmission">Ponowne wysłanie formularza</string>
     <string name="message_form_resubmission">Czy chcesz ponownie wysłać dane?</string>
-    <string name="message_location">Ta strona prosi o dostęp do Twojej geolokalizacji</string>
     <string name="action_allow">Zezwól</string>
     <string name="action_dont_allow">Zablokuj</string>
     <string name="title_sign_in">Zaloguj się</string>

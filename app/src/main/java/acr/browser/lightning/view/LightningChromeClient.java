@@ -131,7 +131,7 @@ class LightningChromeClient extends WebChromeClient {
                 } else {
                     org = origin;
                 }
-                builder.setMessage(org + activity.getString(R.string.message_location))
+                builder.setMessage(org)
                         .setCancelable(true)
                         .setPositiveButton(activity.getString(R.string.action_allow),
                                 new DialogInterface.OnClickListener() {

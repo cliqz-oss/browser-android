@@ -58,7 +58,6 @@
     <string name="block_ads">Werbung blockieren</string>
     <string name="title_form_resubmission">Formularneuzustellung</string>
     <string name="message_form_resubmission">Daten erneut senden?</string>
-    <string name="message_location">\nMeine Position verwenden?</string>
     <string name="action_allow">Erlauben</string>
     <string name="action_dont_allow">Nicht erlauben</string>
     <string name="title_sign_in">Anmelden</string>

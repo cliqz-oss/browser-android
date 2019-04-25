@@ -53,7 +53,6 @@
     <string name="message_certificate_untrusted">El certificado no es de confianza</string>
     <string name="title_form_resubmission">Reenviar formulario</string>
     <string name="message_form_resubmission">¿Queries volver a enviar la información?</string>
-    <string name="message_location">le gustaría utilizar tu ubicación</string>
     <string name="action_allow">Permitir</string>
     <string name="action_dont_allow">Cancelar</string>
     <string name="title_sign_in">Iniciar sesión</string>

@@ -44,7 +44,6 @@
     <string name="title_form_resubmission">Повторная отправка формы</string>
     <string name="message_form_resubmission">Вы действительно хотите повторно отправить данные?</string>
     <string name="message_certificate_untrusted">сертификат не является доверенным</string>
-    <string name="message_location">Хочет использовать ваше местоположение</string>
     <string name="action_allow">Разрешить</string>
     <string name="action_dont_allow">Не разрешать</string>
     <string name="title_sign_in">Вход</string>
