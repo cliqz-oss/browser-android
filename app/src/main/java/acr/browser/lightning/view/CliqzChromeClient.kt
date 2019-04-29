@@ -4,18 +4,18 @@ import acr.browser.lightning.bus.BrowserEvents
 import acr.browser.lightning.utils.UrlUtils
 import acr.browser.lightning.view.DomainPermissions.State.DENIED
 import acr.browser.lightning.view.DomainPermissions.State.GRANTED
-import android.app.Activity
 import android.net.Uri
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import com.anthonycr.grant.PermissionsManager
 import com.anthonycr.grant.PermissionsResultAction
 import com.cliqz.browser.R
 import com.cliqz.browser.main.FileChooserHelper
 import com.cliqz.browser.main.Messages
+import com.cliqz.nove.Bus
 import org.mozilla.geckoview.*
 
-class CliqzChromeClient(private val activity: Activity,
-                        private val lightningView: LightningView):
+abstract class CliqzChromeClient:
         GeckoSession.ContentDelegate,
         GeckoSession.MediaDelegate,
         GeckoSession.NavigationDelegate,
@@ -23,12 +23,27 @@ class CliqzChromeClient(private val activity: Activity,
         GeckoSession.ProgressDelegate,
         GeckoSession.PromptDelegate {
 
-    private val eventBus = lightningView.eventBus
+    abstract val isIncognitoTab: Boolean
+    protected abstract val url: String
+    protected abstract val eventBus: Bus
+    protected abstract val activity: FragmentActivity
+    abstract val isShown: Boolean
+
     private var mLastUrl: String? = null
     private var mLastTitle: String? = null
 
     override fun onButtonPrompt(session: GeckoSession?, title: String?, msg: String?, btnMsg: Array<out String>?, callback: GeckoSession.PromptDelegate.ButtonCallback?) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val builder = AlertDialog.Builder(activity)
+        builder.setTitle(title)
+                .setMessage(msg)
+                .setCancelable(true)
+        builder.setItems(btnMsg) { _, i: Int ->
+            callback?.confirm(i)
+        }
+        builder.setOnCancelListener {
+            callback?.dismiss()
+        }
+        builder.show()
     }
 
     override fun onDateTimePrompt(session: GeckoSession?, title: String?, type: Int, value: String?, min: String?, max: String?, callback: GeckoSession.PromptDelegate.TextCallback?) {
@@ -82,7 +97,7 @@ class CliqzChromeClient(private val activity: Activity,
     }
 
     override fun onProgressChange(session: GeckoSession?, progress: Int) {
-        if (lightningView.isShown) {
+        if (isShown) {
             eventBus.post(BrowserEvents.UpdateProgress(progress))
         }
     }
@@ -156,7 +171,7 @@ class CliqzChromeClient(private val activity: Activity,
 
     /* WebChromeClient.onCreateWindow(); */
     override fun onNewSession(session: GeckoSession, uri: String): GeckoResult<GeckoSession>? {
-        eventBus.post(BrowserEvents.CreateWindow(lightningView, null))
+        eventBus.post(BrowserEvents.CreateWindow(null, null))
         return GeckoResult.fromValue(null)
     }
 
@@ -188,37 +203,39 @@ class CliqzChromeClient(private val activity: Activity,
 
     /* WebChromeClient.onCloseWindow(WebView window) */
     override fun onCloseRequest(session: GeckoSession?) {
-        eventBus.post(BrowserEvents.CloseWindow(lightningView))
+        eventBus.post(BrowserEvents.CloseWindow(null))
     }
 
     /* WebChromeClient.onReceivedTitle(WebView view, String title); */
     override fun onTitleChange(session: GeckoSession?, title: String?) {
-        val url = lightningView.url
         if (title != null && !title.isEmpty() &&
-                !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) &&
-                !lightningView.isUrlSSLError) {
-            lightningView.mTitle.title = title
+                !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+            // lightningView.mTitle.title = title
             eventBus.post(Messages.UpdateTitle())
         }
-        if (!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) && !lightningView.isIncognitoTab) {
+        if (!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) && !isIncognitoTab) {
             if (url != mLastUrl) {
-                lightningView.addItemToHistory(title, url)
+                addItemToHistory(title, url)
                 mLastUrl = url
                 mLastTitle = title
             } else if (title != null && !title.isEmpty() && title != mLastTitle) {
                 // urlView is the same but the titleView changed
-                lightningView.updateHistoryItemTitle(title)
+                updateHistoryItemTitle(title)
                 mLastTitle = title
             }
         }
-        lightningView.isHistoryItemCreationEnabled = true
+        // isHistoryItemCreationEnabled = true
         if (UrlUtils.isYoutubeVideo(url)) {
             eventBus.post(Messages.FetchYoutubeVideoUrls())
         } else {
             eventBus.post(Messages.SetVideoUrls(null))
         }
-        lightningView.isUrlSSLError = false
+        // lightningView.isUrlSSLError = false
     }
+
+    protected abstract fun updateHistoryItemTitle(title: String)
+
+    protected abstract fun addItemToHistory(title: String?, url: String)
 
     override fun onFocusRequest(session: GeckoSession?) {
         // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

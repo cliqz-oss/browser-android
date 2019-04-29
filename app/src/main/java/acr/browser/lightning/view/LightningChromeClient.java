@@ -86,8 +86,7 @@ class LightningChromeClient extends WebChromeClient {
             url = "";
         }
         if (title != null && !title.isEmpty() &&
-                !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) &&
-                !lightningView.isUrlSSLError()) {
+                !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             lightningView.mTitle.setTitle(title);
             eventBus.post(new Messages.UpdateTitle());
         }
@@ -109,7 +108,7 @@ class LightningChromeClient extends WebChromeClient {
         } else {
             eventBus.post(new Messages.SetVideoUrls(null));
         }
-        lightningView.setUrlSSLError(false);
+        // lightningView.setUrlSSLError(false);
     }
 
     @Override
@@ -130,19 +129,9 @@ class LightningChromeClient extends WebChromeClient {
                 builder.setMessage(org)
                         .setCancelable(true)
                         .setPositiveButton(activity.getString(R.string.action_allow),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        callback.invoke(origin, true, remember);
-                                    }
-                                })
+                                (dialog, id) -> callback.invoke(origin, true, remember))
                         .setNegativeButton(activity.getString(R.string.action_dont_allow),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        callback.invoke(origin, false, remember);
-                                    }
-                                });
+                                (dialog, id) -> callback.invoke(origin, false, remember));
                 AlertDialog alert = builder.create();
                 alert.show();
             }

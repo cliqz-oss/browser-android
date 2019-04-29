@@ -1,12 +1,9 @@
 package acr.browser.lightning.view;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +31,8 @@ import com.cliqz.jsengine.Engine;
 import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.nove.Bus;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -49,7 +49,7 @@ import acr.browser.lightning.preference.PreferenceManager;
  * @author Stefano Pacifici
  * @author Ravjit Uppal
  */
-public class LightningView {
+public class LightningView extends CliqzChromeClient {
 
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
@@ -61,7 +61,7 @@ public class LightningView {
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
-    final Activity activity;
+    final FragmentActivity activity;
     private final Paint mPaint = new Paint();
     private boolean mInvertPage = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
@@ -90,12 +90,16 @@ public class LightningView {
 
     LightingViewListener lightingViewListenerListener;
 
-    public void setUrlSSLError(boolean urlSSLError) {
-        this.urlSSLError = urlSSLError;
+    @NotNull
+    @Override
+    protected Bus getEventBus() {
+        return eventBus;
     }
 
-    public boolean isUrlSSLError() {
-        return urlSSLError;
+    @NotNull
+    @Override
+    protected FragmentActivity getActivity() {
+        return activity;
     }
 
     public interface LightingViewListener {
@@ -142,7 +146,7 @@ public class LightningView {
     WebViewPersister persister;
 
     @SuppressLint("NewApi")
-    public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
+    public LightningView(final FragmentActivity activity, boolean isIncognito, String uniqueId) {
         final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
@@ -335,7 +339,7 @@ public class LightningView {
         }
     }
 
-    boolean isShown() {
+    public boolean isShown() {
         return mWebView != null && mWebView.isShown();
     }
 
@@ -352,58 +356,6 @@ public class LightningView {
         if (mWebView != null) {
             mWebView.stopLoading();
         }
-    }
-
-    private void setHardwareRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, mPaint);
-    }
-
-    private void setNormalRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
-    }
-
-    private void setColorMode(int mode) {
-        mInvertPage = false;
-        switch (mode) {
-            case 0:
-                mPaint.setColorFilter(null);
-                // setSoftwareRendering(); // Some devices get segfaults
-                // in the WebView with Hardware Acceleration enabled,
-                // the only fix is to disable hardware rendering
-                setNormalRendering();
-                mInvertPage = false;
-                break;
-            case 1:
-                ColorMatrixColorFilter filterInvert = new ColorMatrixColorFilter(
-                        mNegativeColorArray);
-                mPaint.setColorFilter(filterInvert);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-            case 2:
-                ColorMatrix cm = new ColorMatrix();
-                cm.setSaturation(0);
-                ColorMatrixColorFilter filterGray = new ColorMatrixColorFilter(cm);
-                mPaint.setColorFilter(filterGray);
-                setHardwareRendering();
-                break;
-            case 3:
-                ColorMatrix matrix = new ColorMatrix();
-                matrix.set(mNegativeColorArray);
-                ColorMatrix matrixGray = new ColorMatrix();
-                matrixGray.setSaturation(0);
-                ColorMatrix concat = new ColorMatrix();
-                concat.setConcat(matrix, matrixGray);
-                ColorMatrixColorFilter filterInvertGray = new ColorMatrixColorFilter(concat);
-                mPaint.setColorFilter(filterInvertGray);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-
-        }
-
     }
 
     public synchronized void resumeTimers() {
@@ -556,7 +508,7 @@ public class LightningView {
             mWebView.setBackgroundColor(Color.WHITE);
 
             mWebView.setSaveEnabled(true);
-            mWebView.setWebChromeClient(new CliqzChromeClient(activity, this));
+            mWebView.setWebChromeClient(this);
 //            mWebView.setNetworkAvailable(true);
 //            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
 //            mWebView.setWebViewClient(new LightningWebClient(activity, this));
@@ -690,13 +642,15 @@ public class LightningView {
         }
     }
 
-    void addItemToHistory(@Nullable final String title, @NonNull final String url) {
+    @Override
+    protected void addItemToHistory(@Nullable final String title, @NonNull final String url) {
         if (!url.startsWith(Constants.FILE)) {
             LightningView.this.historyId = historyDatabase.visitHistoryItem(url, title);
         }
     }
 
-    void updateHistoryItemTitle(@NonNull final String title) {
+    @Override
+    protected void updateHistoryItemTitle(@NonNull final String title) {
         if (historyId < 0) {
             return;
         }

@@ -583,7 +583,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             final String host = uri != null ? uri.getHost() : "";
             if (uri != null && uri.isHierarchical() && host != null && host.startsWith("amp.")) {
                 final String newUrl = failingUrl.replace("amp", "www");
-                lightningView.setUrlSSLError(true);
+                // lightningView.setUrlSSLError(true);
                 view.loadData("", "", null);
                 view.loadUrl(newUrl, null);
                 return;
