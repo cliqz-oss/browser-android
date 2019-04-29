@@ -174,7 +174,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 @Override
                 public void run() {
                     lightningView.eventBus.post(new Messages.GoToHistory());
-                    if (lightningView.canGoBack()) {
+                    if (lightningView.getCanGoBack()) {
                         lightningView.goBack();
                     } else {
                         lightningView.eventBus.post(new Messages.ShowSearch(""));

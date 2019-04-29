@@ -465,7 +465,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         } else {
             final String url = mLightningView.getUrl();
             mOverFlowMenu = new OverFlowMenu(getActivity());
-            mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
+            mOverFlowMenu.setCanGoForward(mLightningView.getCanGoForward());
             mOverFlowMenu.setAnchorView(overflowMenuButton);
             mOverFlowMenu.setIncognitoMode(mIsIncognito);
             mOverFlowMenu.setUrl(url);
@@ -841,7 +841,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
             if (readerModeWebview.getVisibility() == View.VISIBLE) {
                 toggleReaderMode();
-            } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
+            } else if (mode == Mode.WEBPAGE && mLightningView.getCanGoBack()) {
                 telemetry.backPressed = true;
                 telemetry.showingCards = false;
                 mLightningView.goBack();
@@ -867,7 +867,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 if (UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
                     fetchYoutubeVideo(null);
                 }
-            } else if (mLightningView.canGoBack()) {
+            } else if (mLightningView.getCanGoBack()) {
                 // In any case the trampoline will be current page predecessor
                 if (mode == Mode.SEARCH) {
                     bringWebViewToFront(null);
@@ -893,7 +893,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void onGoForward(Messages.GoForward event) {
-        if (mLightningView.canGoForward()) {
+        if (mLightningView.getCanGoForward()) {
             mLightningView.goForward();
             if (state.getMode() == Mode.SEARCH) {
                 bringWebViewToFront(null);

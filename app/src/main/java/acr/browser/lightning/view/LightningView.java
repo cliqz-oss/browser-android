@@ -481,14 +481,6 @@ public class LightningView extends CliqzChromeClient {
 //        }
     }
 
-    public boolean canGoBack() {
-        return mWebView != null && mWebView.canGoBack();
-    }
-
-    public boolean canGoForward() {
-        return mWebView != null && mWebView.canGoForward();
-    }
-
     @NonNull
     public synchronized CliqzWebView getWebView() {
         if (mWebView == null) {

@@ -23,6 +23,11 @@ abstract class CliqzChromeClient:
         GeckoSession.ProgressDelegate,
         GeckoSession.PromptDelegate {
 
+    var canGoForward: Boolean = false
+        private set
+    var canGoBack: Boolean = false
+        private set
+
     abstract val isIncognitoTab: Boolean
     protected abstract val url: String
     protected abstract val eventBus: Bus
@@ -162,11 +167,11 @@ abstract class CliqzChromeClient:
     }
 
     override fun onCanGoForward(session: GeckoSession?, canGoForward: Boolean) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.canGoForward = canGoForward
     }
 
     override fun onCanGoBack(session: GeckoSession?, canGoBack: Boolean) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.canGoBack = canGoBack
     }
 
     /* WebChromeClient.onCreateWindow(); */
