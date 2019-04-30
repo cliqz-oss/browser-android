@@ -650,7 +650,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final CliqzWebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        searchBar.setTitle(webView.getTitle());
+        searchBar.setTitle(mLightningView.getTitle());
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
         webView.bringToFront();

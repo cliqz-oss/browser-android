@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
@@ -53,9 +52,6 @@ public class CliqzWebView extends GeckoView implements NestedScrollingChild {
 
     // Android 8.0 (Oreo) bug, we have to restore the client for each loadUrl request with a delay
     private static final long LOAD_URL_DELAY_SECONDS = 250L;
-    private String mCurrentUrl = null;
-    private boolean mCanGoBack = false;
-    private boolean mCanGoForward = false;
 
     public CliqzWebView(Activity activity) {
         super(activity);
@@ -225,25 +221,8 @@ public class CliqzWebView extends GeckoView implements NestedScrollingChild {
         mSession.goForward();
     }
 
-    public boolean canGoBack() {
-        return mCanGoBack;
-    }
-
-    public boolean canGoForward() {
-        return mCanGoForward;
-    }
-
-    @Nullable
-    public String getUrl() {
-        return mCurrentUrl;
-    }
-
     public int getContentHeight() {
         return 2000; // TODO
-    }
-
-    public String getTitle() {
-        return mCurrentUrl;
     }
 
     public void setWebChromeClient(CliqzChromeClient cliqzChromeClient) {

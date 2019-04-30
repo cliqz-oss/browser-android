@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -35,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -61,8 +59,8 @@ public class LightningView extends CliqzChromeClient {
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
+    private String mUrl ="";
     final FragmentActivity activity;
-    private final Paint mPaint = new Paint();
     private boolean mInvertPage = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
     private final String id;
@@ -111,6 +109,11 @@ public class LightningView extends CliqzChromeClient {
     @Override
     public String getTitle() {
         return mTitle.getTitle();
+    }
+
+    @Override
+    protected void setUrl(@NonNull String url) {
+        mUrl = url;
     }
 
     public interface LightingViewListener {
@@ -533,12 +536,9 @@ public class LightningView extends CliqzChromeClient {
     }
 
     @NonNull
+    @Override
     public String getUrl() {
-        if (mWebView != null && mWebView.getUrl() != null) {
-            return mWebView.getUrl();
-        } else {
-            return "";
-        }
+        return mUrl;
     }
 
     public String getId() {

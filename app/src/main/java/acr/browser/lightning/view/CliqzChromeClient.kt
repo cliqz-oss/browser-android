@@ -29,7 +29,9 @@ abstract class CliqzChromeClient:
         private set
 
     abstract val isIncognitoTab: Boolean
-    protected abstract val url: String
+    abstract var url: String
+        protected set
+
     protected abstract val eventBus: Bus
     protected abstract val activity: FragmentActivity
     abstract var title: String
@@ -101,7 +103,7 @@ abstract class CliqzChromeClient:
     }
 
     override fun onPageStart(session: GeckoSession?, url: String?) {
-        // Nothing to do?
+        this.url = url ?: ""
     }
 
     override fun onProgressChange(session: GeckoSession?, progress: Int) {
@@ -166,7 +168,7 @@ abstract class CliqzChromeClient:
     }
 
     override fun onLocationChange(session: GeckoSession?, url: String?) {
-        // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.url = url ?: ""
     }
 
     override fun onCanGoForward(session: GeckoSession?, canGoForward: Boolean) {
