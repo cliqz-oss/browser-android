@@ -23,7 +23,6 @@ import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
-import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 
 import javax.inject.Inject;
@@ -59,13 +58,10 @@ public class ControlCenterDialog extends DialogFragment {
     @Bind(R.id.control_center_pager)
     ViewPager controlCenterPager;
 
-    @Inject
-    Bus bus;
-
-    @Inject
     Telemetry telemetry;
 
-    public static ControlCenterDialog create(View source, boolean isIncognito, int hashCode, String url) {
+    public static ControlCenterDialog create(View source, boolean isIncognito, int hashCode,
+                                             String url) {
         final ControlCenterDialog dialog = new ControlCenterDialog();
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
@@ -88,10 +84,6 @@ public class ControlCenterDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
-        if (component != null) {
-            component.inject(this);
-        }
         final Bundle arguments = getArguments();
         if (arguments != null) {
             mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
@@ -105,7 +97,6 @@ public class ControlCenterDialog extends DialogFragment {
     public void onResume() {
         super.onResume();
         mSaveInstanceStateCalled = false;
-        bus.register(this);
         final Window window = getDialog().getWindow();
         final Activity activity = getActivity();
         final View contentView = activity != null ? activity.findViewById(android.R.id.content) : null;
@@ -114,12 +105,6 @@ public class ControlCenterDialog extends DialogFragment {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, contentView.getHeight() - mAnchorHeight);
             window.setGravity(Gravity.BOTTOM);
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        bus.unregister(this);
     }
 
     @Override
@@ -197,4 +182,7 @@ public class ControlCenterDialog extends DialogFragment {
         dismissAllowingStateLoss();
     }
 
+    public void setTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 }

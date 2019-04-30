@@ -1,6 +1,5 @@
 package com.cliqz.browser.main;
 
-import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.main.search.Incognito;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
@@ -39,8 +38,6 @@ interface MainActivityComponent {
     void inject(OnBoardingHelper onBoardingHelper);
 
     void inject(BaseWebView webView);
-
-    void inject(ControlCenterDialog controlCenterDialog);
 
     void inject(SearchView searchView);
 
