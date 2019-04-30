@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/control_center_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/ultimate_protection_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bond_dashboard_ultimate_protection"
+            android:textColor="@color/white" />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/ultimate_protection_switch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/control_center_tab_layout"
+        style="@style/tab_layout_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ultimate_protection_container"
+        tools:ignore="UnknownId" />
+
+    <com.cliqz.browser.controlcenter.ControlCenterViewPager
+        android:id="@+id/control_center_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/control_center_tab_layout"
+        android:background="@android:color/transparent" />
+
+</RelativeLayout>

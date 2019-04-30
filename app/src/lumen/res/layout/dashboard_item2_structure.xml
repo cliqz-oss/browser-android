@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © Cliqz 2019 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="250dp"
+    android:id="@+id/dashboard_item_layout"
+    android:background="@drawable/dashboard_item_background"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/item_measurement"
+        style="@style/dashboard_measurement_value"
+        tools:text="225 \nMIN"
+        android:textSize="25sp"
+        tools:background="@drawable/ic_time_circle_enabled" />
+
+    <TextView
+        android:layout_marginTop="16dp"
+        android:id="@+id/item_title"
+        style="@style/dashboard_item_title"
+        tools:text="Item Title" />
+
+    <TextView
+        android:id="@+id/item_content"
+        style="@style/dashboard_item_content"
+        tools:text="Item content is written here" />
+
+</LinearLayout>

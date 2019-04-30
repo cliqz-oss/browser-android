@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="bond_dashboard_clear_dialog_title">Clear Dashboard</string>
+    <string name="bond_dashboard_clear_dialog_message">Clear the dashboard</string>
+    <string name="cancel">Cancel</string>
+    <string name="button_ok">OK</string>
+    <string name="bond_dashboard_ultimate_protection">Ultimate Protection:</string>
+    <string name="bond_dashboard_contols_pause">Pause</string>
+    <string name="bond_dashboard_contols_vpn">VPN</string>
+    <string name="bond_dashboard_contols_clear">Clear</string>
+    <string name="bond_dashboard_contols_on">ON</string>
+    <string name="bond_dashboard_contols_off">OFF</string>
+    <string name="bond_dashboard_today_title">Today</string>
+    <string name="bond_dashboard_week_title">Last 7 Days</string>
+    <string name="bond_dashboard_time_saved_title">Time Saved</string>
+    <string name="bond_dashboard_time_saved_description">for things that really matter</string>
+    <string name="bond_dashboard_ads_blocked_title">Ads Blocked</string>
+    <string name="bond_dashboard_ads_blocked_description">Enjoy clutter-free browsing</string>
+    <string name="bond_dashboard_data_saved_title">Data Volume Saved</string>
+    <string name="bond_dashboard_data_saved_description">No data wasted on ads</string>
+    <string name="bond_dashboard_phishing_protection_title">Phishing Protection</string>
+    <string name="bond_dashboard_phishing_protection_description">prevents identity theft by fraudulent websites</string>
+    <string name="bond_dashboard_tracking_companies_unit">COMPANIES</string>
+    <string name="bond_dashboard_tracking_companies_title">Data Collectors Detained</string>
+    <string name="bond_dashboard_tracking_companies_description">Number of tracker companies that tried to spy on you</string>
+    <string name="bond_dashboard_units_seconds">SEC</string>
+    <string name="bond_dashboard_units_minutes">"MIN"</string>
+    <string name="bond_dashboard_units_hours">"HRS"</string>
+    <string name="bond_dashboard_units_days">DAYS"</string>
+    <string name="bond_dashboard_units_kb">"KB"</string>
+    <string name="bond_dashboard_units_mb">"MB"</string>
+    <string name="bond_dashboard_units_gb">"GB"</string>
+    <string name="bond_dashboard_ultimate_protection_pause_dialog_negative_button">Cancel</string>
+    <string name="bond_dashboard_ultimate_protection_pause_dialog">Pause Ultimate Protection on %1$s</string>
+    <string name="bond_dashboard_ultimate_protection_pause_dialog_positive_button">Pause</string>
+    <string name="bond_dashboard_contols_start">Start</string>
+    <string name="bond_dashboard_protection_off">Protection is off</string>
+
+</resources>

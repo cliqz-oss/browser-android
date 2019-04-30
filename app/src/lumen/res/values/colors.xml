@@ -32,4 +32,9 @@
     <color name="result_view">#b0000000</color>
     <color name="viewfinder_laser">#ffcc0000</color>
     <color name="possible_result_points">#c0ffbd21</color>
+
+    <color name="bond_general_color_blue">#3073DB</color>
+    <color name="bond_disabled_text_color">#993073DB</color>
+    <color name="dark_transparent_overlay">#99000000</color>
+    <color name="bond_disabled_state_color">#BDC0CE</color>
 </resources>
