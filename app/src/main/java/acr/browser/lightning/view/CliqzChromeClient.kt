@@ -32,6 +32,9 @@ abstract class CliqzChromeClient:
     protected abstract val url: String
     protected abstract val eventBus: Bus
     protected abstract val activity: FragmentActivity
+    abstract var title: String
+        protected set
+
     abstract val isShown: Boolean
 
     private var mLastUrl: String? = null
@@ -215,7 +218,7 @@ abstract class CliqzChromeClient:
     override fun onTitleChange(session: GeckoSession?, title: String?) {
         if (title != null && !title.isEmpty() &&
                 !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
-            // lightningView.mTitle.title = title
+            this.title = title
             eventBus.post(Messages.UpdateTitle())
         }
         if (!url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) && !isIncognitoTab) {

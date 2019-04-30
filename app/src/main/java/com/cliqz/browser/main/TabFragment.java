@@ -1,6 +1,5 @@
 package com.cliqz.browser.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -38,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -68,18 +66,10 @@ import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.ActivityUtils;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
-import com.cliqz.utils.StreamUtils;
 import com.cliqz.utils.ViewUtils;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 import javax.inject.Inject;
 
@@ -111,7 +101,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public static final String KEY_TITLE = "tab_title";
     public static final String KEY_FORCE_RESTORE = "tab_force_restore";
 
-    private static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private OverFlowMenu mOverFlowMenu = null;
     protected boolean mIsIncognito = false;
     private String mInitialUrl = null; // Initial url coming from outside the browser
@@ -210,16 +199,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     @Override
-    public void setArguments(@NonNull Bundle args) {
+    public void setArguments(Bundle args) {
         newTabMessage = args.getParcelable(KEY_NEW_TAB_MESSAGE);
         // Remove asap the message from the bundle
         args.remove(KEY_NEW_TAB_MESSAGE);
         mId = args.getString(KEY_TAB_ID);
 
-        @SuppressWarnings("ConstantConditions")
         final String url = args.getString(KEY_URL);
         final String title = args.getString(KEY_TITLE);
-        @SuppressWarnings("ConstantConditions")
         final boolean incognito = args.getBoolean(MainActivity.EXTRA_IS_PRIVATE, false);
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
@@ -584,12 +571,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void showKeyBoard(CliqzMessages.ShowKeyboard event) {
-        searchBar.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchBar.showKeyBoard();
-            }
-        }, 200);
+        searchBar.postDelayed(() -> searchBar.showKeyBoard(), 200);
     }
 
     // Hide the keyboard, used also in SearchFragmentListener
@@ -721,19 +703,23 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void onPageFinished(CliqzMessages.OnPageFinished event) {
+        // TODO Inject the readability script
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 final InputStream inputStream = getResources().openRawResource(R.raw.readability);
                 final String script = StreamUtils.readTextStream(inputStream);
                 inputStream.close();
                 final CliqzWebView webView = mLightningView.getWebView();
-                // TODO webView.evaluateJavascript(script, readabilityCallBack);
+                webView.evaluateJavascript(script, readabilityCallBack);
             } catch (IOException e) {
                 Log.e(TAG, "Problem reading the file readability.js", e);
             }
         }
+        */
     }
 
+    /*
     private ValueCallback<String> readabilityCallBack = new ValueCallback<String>() {
         @Override
         public void onReceiveValue(String s) {
@@ -760,14 +746,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         }
     };
+    */
 
     //This function adds the title to the page content and resizes the images to fit the screen
+    /*
     private String getFormattedHtml(String title, String bodyHTML) {
         final String head = "<head><style>img{max-width: 100%; height: auto;}</style></head>";
         final String titleHTML = "<h2>" + title + "</h2>";
         return "<html>" + head + "<body>" +
                 titleHTML + bodyHTML + "</body></html>";
     }
+    */
 
     public void openLink(String eventUrl, boolean reset, boolean fromHistory, Animation animation) {
 
@@ -882,6 +871,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     // Hide the OverFlowMenu if it is visible. Return true if it was, false otherwise.
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean hideOverFlowMenu() {
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();

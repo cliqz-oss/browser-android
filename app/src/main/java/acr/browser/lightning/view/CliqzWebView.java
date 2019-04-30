@@ -18,12 +18,9 @@ import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
-import org.mozilla.geckoview.AllowOrDeny;
-import org.mozilla.geckoview.GeckoResult;
 import org.mozilla.geckoview.GeckoRuntime;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoView;
-import org.mozilla.geckoview.WebRequestError;
 
 import java.util.Collections;
 import java.util.Map;
@@ -254,5 +251,7 @@ public class CliqzWebView extends GeckoView implements NestedScrollingChild {
         mSession.setContentDelegate(cliqzChromeClient);
         mSession.setPermissionDelegate(cliqzChromeClient);
         mSession.setPromptDelegate(cliqzChromeClient);
+        mSession.setNavigationDelegate(cliqzChromeClient);
+        mSession.setMediaDelegate(cliqzChromeClient);
     }
 }

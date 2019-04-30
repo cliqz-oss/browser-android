@@ -51,12 +51,12 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 public class LightningView extends CliqzChromeClient {
 
-    private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
-    private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
-    private static final String HEADER_DNT = "DNT";
-    private static final String TAG = LightningView.class.getSimpleName();
-    private static final Pattern USER_AGENT_PATTERN =
-            Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
+//    private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
+//    private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
+//    private static final String HEADER_DNT = "DNT";
+//    private static final String TAG = LightningView.class.getSimpleName();
+//    private static final Pattern USER_AGENT_PATTERN =
+//            Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
@@ -76,12 +76,12 @@ public class LightningView extends CliqzChromeClient {
      */
     boolean isHistoryItemCreationEnabled = true;
 
-    private static final float[] mNegativeColorArray = {
-            -1.0f, 0, 0, 0, 255, // red
-            0, -1.0f, 0, 0, 255, // green
-            0, 0, -1.0f, 0, 255, // blue
-            0, 0, 0, 1.0f, 0 // alpha
-    };
+//    private static final float[] mNegativeColorArray = {
+//            -1.0f, 0, 0, 0, 255, // red
+//            0, -1.0f, 0, 0, 255, // green
+//            0, 0, -1.0f, 0, 255, // blue
+//            0, 0, 0, 1.0f, 0 // alpha
+//    };
     final WebViewHandler webViewHandler = new WebViewHandler(this);
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
@@ -100,6 +100,17 @@ public class LightningView extends CliqzChromeClient {
     @Override
     protected FragmentActivity getActivity() {
         return activity;
+    }
+
+    @Override
+    protected void setTitle(@NonNull String title) {
+        mTitle.setTitle(title);
+    }
+
+    @NonNull
+    @Override
+    public String getTitle() {
+        return mTitle.getTitle();
     }
 
     public interface LightingViewListener {
@@ -154,7 +165,7 @@ public class LightningView extends CliqzChromeClient {
         this.activity = activity;
         id = uniqueId;
         mIsIncognitoTab = isIncognito;
-        Boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
+        final boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
         mTitle = new LightningViewTitle(activity, useDarkTheme);
         LightningViewTouchHandler.attachTouchListener(this);
     }
@@ -519,10 +530,6 @@ public class LightningView extends CliqzChromeClient {
         if (mWebView != null && url != null) {
             mWebView.loadUrl(url, mRequestHeaders);
         }
-    }
-
-    public String getTitle() {
-        return mTitle.getTitle();
     }
 
     @NonNull
