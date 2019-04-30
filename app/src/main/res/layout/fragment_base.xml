@@ -50,7 +50,7 @@
                     android:textColorHighlight="@color/text_highlight_color"
                     android:textColorHint="@color/url_bar_hint_text_color"
                     android:textCursorDrawable="@drawable/custom_cursor"
-                    tools:drawableLeft="@drawable/ic_action_back"
+                    tools:drawableLeft="@drawable/ic_clear_black"
                     tools:drawableRight="@drawable/ic_clear_black"
                     tools:textSelectHandle="@drawable/text_select_handle_middle_material"
                     tools:textSelectHandleLeft="@drawable/text_select_handle_left_material"
@@ -68,6 +68,12 @@
             tools:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/search_edit_text_h"
+        layout="@layout/control_center_container" />
 
     <!--add views which are fixed to the bottom of the screen here-->
 

@@ -51,7 +51,8 @@ import android.widget.Toast;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.controlcenter.ControlCenterDialog;
+import com.cliqz.browser.controlcenter.ControlCenterHelper;
+import com.cliqz.browser.controlcenter.ControlCenterActions;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.Messages.ControlCenterStatus;
 import com.cliqz.browser.main.search.SearchView;
@@ -66,6 +67,8 @@ import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
+import com.cliqz.jsengine.Adblocker;
+import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.ActivityUtils;
 import com.cliqz.utils.FragmentUtilsV4;
@@ -158,6 +161,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @BindView(R.id.progress_view)
     AnimatedProgressBar progressBar;
 
+    ControlCenterHelper mControlCenterHelper;
+
     @BindView(R.id.search_bar)
     SearchBar searchBar;
 
@@ -206,6 +211,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     AppCompatImageView ccIcon;
 
     private View mVpnPanelButton;
+
+    @Inject
+    Adblocker adblocker;
+
+    @Inject
+    AntiTracking antiTracking;
+
+    private String mDomainName = "";
 
     @NonNull
     public final String getTabId() {
@@ -314,9 +327,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (component != null) {
             component.inject(this);
         }
+
+        mControlCenterHelper =
+                new ControlCenterHelper(getChildFragmentManager(), getContext(), view);
+
         if (openTabsCounter != null) {
             openTabsCounter.setText(Integer.toString(tabsManager.getTabCount()));
         }
+
         updateUI();
         inPageSearchBar.setVisibility(View.GONE);
         state.setIncognito(mIsIncognito);
@@ -529,9 +547,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @OnClick(R.id.control_center)
     void showControlCenter() {
         final WebView webView = mLightningView.getWebView();
-        final ControlCenterDialog controlCenterDialog = ControlCenterDialog
-                .create(mStatusBar, mIsIncognito, webView.hashCode(), mLightningView.getUrl());
-        controlCenterDialog.show(getChildFragmentManager(), Constants.CONTROL_CENTER);
+        mControlCenterHelper.setControlCenterData(mStatusBar, mIsIncognito, webView.hashCode(),
+                mLightningView.getUrl());
+        mControlCenterHelper.toggleControlCenter();
         telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
     }
 
@@ -1175,7 +1193,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         mLightningView.reload();
     }
 
-
     @Subscribe
     public void enableAttrack(Messages.EnableAttrack event) {
         preferenceManager.setAttrackEnabled(true);
@@ -1365,4 +1382,5 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void openFromOverview(CliqzMessages.OpenLink event) {
         mOverviewEvent = event;
     }
+
 }
