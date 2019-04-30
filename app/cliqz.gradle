@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils
 
 
 enum DistributionChannel {
-    STANDARD(~/standard.*/, 0), AMAZON(~/amazon.*/, 2), GHOSTERY(~/ghostery.*/, 3), HUAWEI(~/huawei.*/, 4)
+    STANDARD(~/standard.*/, 0), LUMEN(~/lumen.*/, 1), AMAZON(~/amazon.*/, 2), GHOSTERY(~/ghostery.*/, 3), HUAWEI(~/huawei.*/, 4)
 
     final regexp
     final channel

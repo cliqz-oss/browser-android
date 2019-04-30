@@ -1,9 +1,6 @@
 package com.cliqz.browser.main;
 
 import com.cliqz.browser.annotations.PerActivity;
-import com.cliqz.browser.controlcenter.AdBlockingFragment;
-import com.cliqz.browser.controlcenter.AntiPhishingFragment;
-import com.cliqz.browser.controlcenter.AntiTrackingFragment;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.main.search.Freshtab;
 import com.cliqz.browser.main.search.Incognito;
@@ -52,12 +49,6 @@ public interface MainActivityComponent {
     void inject(OnBoardingHelper onBoardingHelper);
 
     void inject(BaseWebView webView);
-
-    void inject(AntiTrackingFragment antiTrackingFragment);
-
-    void inject(AdBlockingFragment adBlockingFragment);
-
-    void inject(AntiPhishingFragment antiPhishingFragment);
 
     void inject(ControlCenterDialog controlCenterDialog);
 

@@ -60,6 +60,14 @@ android {
                     'src/cliqz/java',
             ]
         }
+        lumen {
+            java.srcDirs += [
+                    'src/standard/java',
+            ]
+            res.srcDirs += [
+                    'src/standard/res',
+            ]
+        }
         amazon {
             java.srcDirs += [
                     'src/standard/java',
@@ -86,6 +94,10 @@ android {
         standard {
             dimension "api"
             versionCode 5
+        }
+        lumen {
+            dimension "api"
+            versionCode 6
         }
         amazon {
             dimension "api"
