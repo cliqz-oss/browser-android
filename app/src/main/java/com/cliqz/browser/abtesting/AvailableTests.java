@@ -5,7 +5,7 @@ package com.cliqz.browser.abtesting;
  */
 public enum AvailableTests {
 
-    QUERYS_UGGESTIONS(1089, "Mobile query suggestions", "QUERY_SUGGESTION"),
+    QUERY_SUGGESTIONS(1089, "Mobile query suggestions", "QUERY_SUGGESTION"),
     CONNECT(1095, "Connect - DMO pairing", "CONNECT_PAIRING");
 
     public final int testId;

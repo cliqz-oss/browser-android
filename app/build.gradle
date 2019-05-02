@@ -63,14 +63,14 @@ android {
                     'src/cliqz/res',
             ]
         }
-        huawei {
-            java.srcDirs += [
-                    'src/cliqz/java',
-            ]
-            res.srcDirs += [
-                    'src/cliqz/res',
-            ]
-        }
+//        huawei {
+//            java.srcDirs += [
+//                    'src/cliqz/java',
+//            ]
+//            res.srcDirs += [
+//                    'src/cliqz/res',
+//            ]
+//        }
     }
 
     flavorDimensions "api", "abi"
@@ -106,11 +106,11 @@ android {
             dimension "abi"
             versionCode 1
         }
-        huawei {
-            dimension "api"
-            versionCode 5
-            applicationIdSuffix ".huawei"
-        }
+//        huawei {
+//            dimension "api"
+//            versionCode 5
+//            applicationIdSuffix ".huawei"
+//        }
     }
 }
 
@@ -213,7 +213,7 @@ dependencies {
     // AWS SNS SDK
     implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
-    
+
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
 
@@ -225,22 +225,22 @@ dependencies {
     
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    
+
     // Testing-only dependencies
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:1.10.19'
-    testImplementation 'org.robolectric:robolectric:3.3.2'
-    testImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
-    
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+    testCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+
     // Forcing version
-    androidTestImplementation "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
-    androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'com.android.support.test:rules:0.5'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-web:2.2.2'
-    androidTestImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
-    testImplementation 'org.apache.velocity:velocity:1.7'
+    androidTestCompile 'com.android.support:support-annotations:25.0.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
+    androidTestCompile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
 }
 
 preBuild.doLast {
