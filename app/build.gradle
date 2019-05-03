@@ -71,6 +71,15 @@ android {
                     'src/cliqz/res',
             ]
         }
+        lumen {
+            java.srcDirs += [
+                    'src/standard/java',
+                    'src/cliqz/java'
+            ]
+            res.srcDirs += [
+                    'src/standard/res'
+            ]
+        }
     }
 
     flavorDimensions "api", "abi"
@@ -225,6 +234,9 @@ dependencies {
     
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
+    // vpn module
+    lumenImplementation project(':vpn')
     
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'
@@ -258,5 +270,4 @@ preBuild.doLast {
 play {
     track = 'alpha'
 }
-
 apply plugin: 'com.google.gms.google-services'
