@@ -228,6 +228,9 @@ dependencies {
     
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
+    // Google Play Billing Library
+    implementation 'com.android.billingclient:billing:1.2.2'
     
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'
