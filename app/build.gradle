@@ -55,27 +55,20 @@ android {
                     "${rootDir}/jsengine"
             ]
         }
-        standard {
-            java.srcDirs += [
-                    'src/cliqz/java',
-            ]
-        }
         amazon {
             java.srcDirs += [
-                    'src/standard/java',
                     'src/cliqz/java',
             ]
             res.srcDirs += [
-                    'src/standard/res',
+                    'src/cliqz/res',
             ]
         }
         huawei {
             java.srcDirs += [
-                    'src/standard/java',
                     'src/cliqz/java',
             ]
             res.srcDirs += [
-                    'src/standard/res',
+                    'src/cliqz/res',
             ]
         }
     }
@@ -83,9 +76,13 @@ android {
     flavorDimensions "api", "abi"
 
     productFlavors {
-        standard {
+        cliqz {
             dimension "api"
             versionCode 5
+        }
+        lumen {
+            dimension "api"
+            versionCode 6
         }
         amazon {
             dimension "api"
