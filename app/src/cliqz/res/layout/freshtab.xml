@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:fillViewport="true"
-    android:background="@null"
+    android:background="@drawable/tab_fragment_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/freshtab_no_topsites"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <GridView
             android:id="@+id/topsites_grid"

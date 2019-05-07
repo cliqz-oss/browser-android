@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivity;
 
 /**

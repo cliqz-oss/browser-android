@@ -42,7 +42,6 @@ import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.gcm.RegistrationIntentService;
-import com.cliqz.browser.main.search.NewsFetcher;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.main.search.Topnews;
 import com.cliqz.browser.overview.OverviewFragment;
@@ -91,7 +90,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
  * @author Stefano Pacifici
  * @author Moaz Rashad
  */
-public class MainActivity extends AppCompatActivity implements ActivityComponentProvider, NewsFetcher.OnTaskCompleted {
+public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
 
     //Keys for arguments in intents/bundles
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -196,7 +195,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setIndeterminate(true);
                 progressDialog.show();
-                new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
+		// TODO This break the news on Cliqz. Please, move the loader to the proper, flavor dependent spot
+                // new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
             } else if (intent.getDataString() != null && intent.getDataString().equals("cliqz://LAST_SITE_SHORTCUT_INTENT")) {
                 isNotificationClicked = false;
                 isIncognito = false;
@@ -918,11 +918,4 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return result == PERMISSION_GRANTED;
     }
 
-    @Override
-    public void onTaskCompleted(List<Topnews> topnewses, int breakingNewsCount, int topNewsCount, String newsVersion) {
-        progressDialog.dismiss();
-        if (topnewses.size() >= 1 && topnewses.get(0).url != null) {
-            tabsManager.buildTab().setUrl(topnewses.get(0).url).show();
-        }
-    }
 }
