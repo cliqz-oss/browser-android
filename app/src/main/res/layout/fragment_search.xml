@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/tools"
-    android:background="@color/white"
     android:elevation="2dp"
     app:ignore="NamespaceTypo">
 
@@ -12,7 +11,7 @@
         android:id="@+id/local_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true">
+        android:layout_gravity="top">
 
         <include layout="@layout/onboarding_helper" />
         <!-- include layout="@layout/loading_screen" android:id="@+id/loading_screen" / -->
@@ -30,9 +29,9 @@
         android:id="@+id/progress_view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
         custom:bidirectionalAnimate="false"
         custom:backgroundColor="@color/progress_bar_bg"
         custom:progressColor="@color/progress_bar_color" />
 
-</RelativeLayout>
+</FrameLayout>

@@ -34,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
@@ -45,9 +46,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
@@ -170,7 +171,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Nullable
     @Bind(R.id.control_center)
-    RelativeLayout antiTrackingDetails;
+    ViewGroup antiTrackingDetails;
 
     @Bind(R.id.open_tabs_count)
     AppCompatTextView openTabsCounter;
@@ -178,6 +179,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Bind(R.id.toolbar_container)
     ViewGroup toolBarContainer;
 
+    @Nullable
     @Bind(R.id.quick_access_bar)
     QuickAccessBar quickAccessBar;
 
@@ -218,10 +220,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         args.remove(KEY_NEW_TAB_MESSAGE);
         mId = args.getString(KEY_TAB_ID);
 
-        @SuppressWarnings("ConstantConditions")
         final String url = args.getString(KEY_URL);
         final String title = args.getString(KEY_TITLE);
-        @SuppressWarnings("ConstantConditions")
         final boolean incognito = args.getBoolean(MainActivity.EXTRA_IS_PRIVATE, false);
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
@@ -282,6 +282,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        if ((!"lumen".equals(BuildConfig.FLAVOR_api))) {
+            final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
+            stub.inflate();
+        }
         ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
@@ -290,6 +295,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 BrowserApp.getActivityComponent(activity) : null;
         if (component != null) {
             component.inject(this);
+        }
+        if (component != null && quickAccessBar != null) {
             component.inject(quickAccessBar);
         }
         final TabsManager tabsManager = activity != null ? activity.tabsManager : null;
@@ -319,8 +326,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         searchView.setCurrentTabState(state);
         ViewUtils.safelyAddView(localContainer, searchView);
         searchBar.setTrackerCount(mTrackerCount);
-        quickAccessBar.setSearchTextView(searchEditText);
-        quickAccessBar.hide();
+        if (quickAccessBar != null) {
+            quickAccessBar.setSearchTextView(searchEditText);
+            quickAccessBar.hide();
+        }
         //way to handle links in the readermode article
         readerModeWebview.setWebViewClient(new WebViewClient(){
             @Override
@@ -606,7 +615,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 final String view = getTelemetryView();
                 telemetry.sendKeyboardSignal(false, mIsIncognito, getTelemetryView());
                 telemetry.sendQuickAccessBarSignal(TelemetryKeys.HIDE, null, view);
-                quickAccessBar.hide();
+                if (quickAccessBar != null) {
+                    quickAccessBar.hide();
+                }
             }
         } catch (NoInstanceException e) {
             Log.e(TAG, "Null context", e);
@@ -791,7 +802,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         mLightningView.loadUrl(url);
         searchBar.setTitle(eventUrl);
         bringWebViewToFront(animation);
-        quickAccessBar.hide();
+        if (quickAccessBar != null) {
+            quickAccessBar.hide();
+        }
         telemetry.sendQuickAccessBarSignal(TelemetryKeys.HIDE, null, getTelemetryView());
     }
 
@@ -1315,12 +1328,5 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             return;
         }
         ytDownloadIcon.setVisibility(View.GONE);
-    }
-
-    // TODO: dirty hack due to the Oreo multi-process WebView
-    // Due to the loading page delay introduced to fix the multi-process WebView, we have to
-    // open urls from history and favorites like they are initial urls (meaning similar logic).
-    public void openFromOverview(CliqzMessages.OpenLink event) {
-        mOverviewEvent = event;
     }
 }
