@@ -24,7 +24,7 @@
             android:process=":openvpn"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="org.mozilla.gecko.vpn.api.IOpenVPNAPIService" />
+                <action android:name="com.cliqz.browser.vpn.api.IOpenVPNAPIService" />
             </intent-filter>
         </service>
         <service

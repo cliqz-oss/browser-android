@@ -61,6 +61,7 @@ import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
 import com.cliqz.browser.utils.EnableNotificationDialog;
 import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -514,6 +515,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 .create(mStatusBar, mIsIncognito, webView.hashCode(), mLightningView.getUrl());
         controlCenterDialog.show(getChildFragmentManager(), Constants.CONTROL_CENTER);
         telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
+    }
+
+    @OnClick(R.id.vpn_panel_button)
+    void showVpnPanel() {
+        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
+        vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
     }
 
     @OnClick(R.id.yt_download_icon)

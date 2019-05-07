@@ -15,18 +15,26 @@ import com.cliqz.browser.utils.LookbackWrapper;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
 
-public class BrowserApp extends MultiDexApplication {
+/**
+ * @author Ravjit Uppal
+ */
+public abstract class BaseBrowserApp extends MultiDexApplication {
 
     @SuppressLint("StaticFieldLeak")
     private static Context sContext;
     private static AppComponent sAppComponent;
     private static boolean sTestInProgress;
     @SuppressLint("StaticFieldLeak")
-    private static volatile BrowserApp sBrowserApp = null;
+    private static volatile BaseBrowserApp sBaseBrowserApp = null;
 
-    public BrowserApp() {
-        sBrowserApp = this;
+    public BaseBrowserApp() {
+        sBaseBrowserApp = this;
     }
+
+    /**
+     * All the flavour specific library initializations should be done here.
+     */
+    public abstract void init();
 
     @Override
     public void onCreate() {
@@ -35,6 +43,7 @@ public class BrowserApp extends MultiDexApplication {
         buildDepencyGraph();
         installSupportLibraries();
         sTestInProgress = testInProgres();
+        init();
     }
 
     /**
@@ -95,10 +104,10 @@ public class BrowserApp extends MultiDexApplication {
 
     @NonNull
     public static FlavoredActivityComponent createActivityComponent(@NonNull MainActivity activity) {
-        if (sBrowserApp == null) {
+        if (sBaseBrowserApp == null) {
             throw new RuntimeException("Null Browser App");
         }
-        final MainActivityModule module = sBrowserApp.createMainActivityModule(activity);
+        final MainActivityModule module = sBaseBrowserApp.createMainActivityModule(activity);
         return sAppComponent.plus(module);
     }
 
