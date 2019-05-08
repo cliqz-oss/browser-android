@@ -98,6 +98,7 @@ class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             title = view.findViewById(R.id.history_title);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             favorites_view_parent = view.findViewById(R.id.history_view_parent);
+            favorites_view_parent.setId(R.id.favorites_view_parent);
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) favorites_view_parent.getLayoutParams();
             layoutParams.setMargins(sideMargin, topMargin, sideMargin, topMargin);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
