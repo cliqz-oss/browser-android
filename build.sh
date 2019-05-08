@@ -3,6 +3,13 @@
 # Simple script to build all the flavors at once and put the apks in a single
 # folder (build/releases)
 
+rm -rf jsengine/*
+rm -rf node_modules
+rm -rf artifacts/*.apk
+
+npm ci
+npm run bundle
+
 readonly flavors="Standard"
 readonly archs="Arm X86 Fat"
 targets=()
@@ -15,5 +22,4 @@ do
 done
 
 ./gradlew clean ${targets[@]}
-rm -rf artifacts/*.apk
 find app/build -iname "*.apk" -exec cp -v '{}' artifacts ';'
