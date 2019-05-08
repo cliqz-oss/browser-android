@@ -39,4 +39,5 @@
     <item name="trash_topsites_id" type="id" />
     <item name="background_manager_listener_key" type="id" />
     <item name="background_manager_mode_key" type="id" />
+    <item name="favorites_view_parent" type="id" />
 </resources>
