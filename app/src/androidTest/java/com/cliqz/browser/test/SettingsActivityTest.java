@@ -13,8 +13,8 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.utils.WebHelpers;
+import com.cliqz.browser.utils.ViewHelpers;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -80,8 +79,8 @@ public class SettingsActivityTest {
         Log.d("AUTOBOTS", testName.getMethodName());
         Espresso.setFailureHandler(new CustomFailureHandler(mActivityRule.launchActivity(null)));
         mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
-        onView(withContentDescription("More options")).perform(click());
-        onView(withText("Close All Tabs")).perform(click());
+        ViewHelpers.onView(withContentDescription("More options")).perform(click());
+        ViewHelpers.onView(withText("Close All Tabs")).perform(click());
         mActivityRule.getActivity().goToSettings(new Messages.GoToSettings());
     }
 
@@ -107,22 +106,24 @@ public class SettingsActivityTest {
                 pressKey(KeyEvent.KEYCODE_ENTER));
         try {
             WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
-                    .withTimeout(15, TimeUnit.SECONDS)
+                    .withTimeout(10, TimeUnit.SECONDS)
                     .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString(url)));
+            onView(withId(R.id.title_bar)).perform(click());
+            onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
+                    .check(matches(withText(containsString(url))));
         } catch(Exception e) {
             try {
-                onView(withText(equalToIgnoringCase("Location access"))).check(matches(isDisplayed()));
-                onView(withText(equalToIgnoringCase("DON'T ALLOW"))).perform(click());
+                ViewHelpers.onView(withText(equalToIgnoringCase("DON'T ALLOW"))).perform(click());
             } catch(Exception e2) {
                 Log.e("AUTOBOTS", e.getMessage() + e2.getMessage());
             }
             WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
-                    .withTimeout(15, TimeUnit.SECONDS)
+                    .withTimeout(5, TimeUnit.SECONDS)
                     .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString(url)));
+            onView(withId(R.id.title_bar)).perform(click());
+            onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
+                    .check(matches(withText(containsString(url))));
         }
-        onView(withId(R.id.title_bar)).perform(click());
-        onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
-                .check(matches(withText(containsString(url))));
         return null;
     }
 

@@ -2,93 +2,103 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+jobs:
 
-pool:
-  vmImage: 'macOS 10.13'
+  # Job to Build the Browsers
+  - job: Cliqz_Android_CI_Build
 
-steps:
+    timeoutInMinutes: 60
 
-- task: NodeTool@0
-  displayName: 'Define Node to v9.11.2'
-  inputs:
-    versionSpec: '9.11.2'
+    pool:
+      vmImage: 'macOS 10.13'
 
-- bash: |
-    npm i -g npm@6.5
-    /usr/local/bin/npm ci
-    npm run bundle
-  displayName: 'Build ReactNative'
+    steps:
 
-- bash: ./gradlew assembleCliqzX86Debug
-  displayName: 'Build Browser'
+    - task: NodeTool@0
+      displayName: 'Define Node to v9.11.2'
+      inputs:
+        versionSpec: '9.11.2'
 
-- bash: |
-    source scripts/azure-scripts/setup.sh
-    source scripts/azure-scripts/launch-emu.sh
-    source scripts/azure-scripts/start-video-logcat.sh
-    ./gradlew connectedCliqzX86DebugAndroidTest
-    source scripts/azure-scripts/clean-up.sh
-    source scripts/azure-scripts/videos-screenshots.sh
-  displayName: 'Run Tests'
+    - bash: |
+        npm i -g npm@6.5
+        /usr/local/bin/npm ci
+        npm run bundle
+      displayName: 'Build ReactNative'
 
-- bash: source scripts/azure-scripts/parse-reports.sh 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/'
-  displayName: 'Parse Results'
+    - bash: ./gradlew $(gradle.flavor)
+      env:
+        DISABLE_GOOGLE_SERVICES: true
+      displayName: 'Build Browser'
 
-- task: PublishTestResults@2
-  condition: always()
-  displayName: 'Publish JUnit Test'
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/*.xml'
+    - bash: |
+        source scripts/azure-scripts/copy-builds.sh
+        mv builds/ $(Build.ArtifactStagingDirectory)
+      displayName: 'Archive Builds'
 
-- task: ArchiveFiles@2
-  condition: always()
-  displayName: 'Archive APK'
-  inputs:
-    rootFolderOrFile: 'app/build/outputs/apk/cliqzX86/debug'
-    archiveType: 'zip'
-    tarCompression: 'none'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/build.zip'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Builds'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)/builds'
+        artifactName: '$(Build.BuildId).Builds'
+        publishLocation: 'Container'
 
-- task: ArchiveFiles@2
-  condition: always()
-  displayName: 'Archive Videos'
-  inputs:
-    rootFolderOrFile: 'recording'
-    archiveType: 'zip'
-    tarCompression: 'none'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/videos.zip'
+  # Job to Test the Cliqz Browser
+  - job: Cliqz_Android_CI_Test
+    condition: eq(variables['run.tests'], 'true')
 
-- task: ArchiveFiles@2
-  condition: always()
-  displayName: 'Archive Screenshots'
-  inputs:
-    rootFolderOrFile: 'screenshots'
-    archiveType: 'zip'
-    tarCompression: 'none'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/screenshots.zip'
+    timeoutInMinutes: 60
 
-- task: ArchiveFiles@2
-  condition: always()
-  displayName: 'Archive Logs'
-  inputs:
-    rootFolderOrFile: 'logs'
-    archiveType: 'zip'
-    tarCompression: 'none'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/logs.zip'
+    pool:
+      vmImage: 'macOS 10.13'
 
-- task: PublishBuildArtifacts@1
-  condition: always()
-  displayName: 'Publish Artifacts'
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: '$(Build.BuildId)'
-    publishLocation: 'Container'
+    steps:
 
-- task: PublishBuildArtifacts@1
-  condition: always()
-  displayName: 'Publish APK'
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/build.zip'
-    artifactName: '$(Build.BuildId).BuildAPK'
-    publishLocation: 'Container'
+    - task: NodeTool@0
+      displayName: 'Define Node to v9.11.2'
+      inputs:
+        versionSpec: '9.11.2'
+
+    - bash: |
+        npm i -g npm@6.5
+        /usr/local/bin/npm ci
+        npm run bundle
+      displayName: 'Build ReactNative'
+
+    - bash: |
+        source scripts/azure-scripts/setup.sh
+        source scripts/azure-scripts/launch-emu.sh
+        source scripts/azure-scripts/start-video-logcat.sh
+        ./gradlew assembleCliqzX86Debug
+        ./gradlew connectedCliqzX86DebugAndroidTest
+        source scripts/azure-scripts/clean-up.sh
+        source scripts/azure-scripts/videos-screenshots.sh
+      env:
+        DISABLE_GOOGLE_SERVICES: true
+      displayName: 'Run Tests'
+
+    - bash: source scripts/azure-scripts/parse-reports.sh 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/'
+      displayName: 'Parse Results'
+
+    - task: PublishTestResults@2
+      condition: always()
+      displayName: 'Publish JUnit Test'
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/*.xml'
+
+    - task: ArchiveFiles@2
+      condition: always()
+      displayName: 'Archive Logs'
+      inputs:
+        rootFolderOrFile: 'logs'
+        archiveType: 'zip'
+        tarCompression: 'none'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/logs.zip'
+
+    - task: PublishBuildArtifacts@1
+      condition: always()
+      displayName: 'Publish Logs'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)/logs.zip'
+        artifactName: '$(Build.BuildId).TestLogs'
+        publishLocation: 'Container'
