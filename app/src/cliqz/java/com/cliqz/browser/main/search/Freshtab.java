@@ -1,7 +1,6 @@
 package com.cliqz.browser.main.search;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -41,7 +40,6 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import acr.browser.lightning.utils.Utils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

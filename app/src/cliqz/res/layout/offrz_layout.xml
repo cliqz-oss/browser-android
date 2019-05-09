@@ -18,7 +18,7 @@
 
         <include
             android:id="@+id/offrz_activation_container"
-            layout="@layout/activation_template"
+            layout="@layout/offrz_activation_template"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />

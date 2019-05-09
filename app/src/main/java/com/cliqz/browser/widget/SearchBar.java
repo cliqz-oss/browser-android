@@ -18,12 +18,12 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
@@ -77,7 +77,7 @@ public class SearchBar extends FrameLayout {
 
     @Nullable
     @Bind(R.id.control_center)
-    RelativeLayout antiTrackingDetails;
+    ViewGroup antiTrackingDetails;
 
     @Nullable
     Listener mListener;
@@ -262,20 +262,10 @@ public class SearchBar extends FrameLayout {
     }
 
     public void setAntiTrackingDetailsVisibility(int visibility) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || antiTrackingDetails == null) {
             return;
         }
-        if (antiTrackingDetails != null) {
-            antiTrackingDetails.setVisibility(visibility);
-            if (visibility == VISIBLE) {
-                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.left_corners_rounded_bg));
-                antiTrackingDetails.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.right_corners_rounded_bg));
-            } else {
-                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
-            }
-        } else {
-            titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
-        }
+        antiTrackingDetails.setVisibility(visibility);
     }
 
     public void setTrackerCount(int count) {

@@ -58,19 +58,9 @@ public class OverviewFragment extends Fragment {
         final View view = inflater.inflate(R.layout.activity_overview, container, false);
         contextualToolBar = view.findViewById(R.id.history_contextual_menu);
         final View cancelButton = view.findViewById(R.id.action_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bus.post(new Messages.OnContextualBarCancelPressed());
-            }
-        });
+        cancelButton.setOnClickListener(v -> bus.post(new Messages.OnContextualBarCancelPressed()));
         final View deleteButton = view.findViewById(R.id.action_delete);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bus.post(new Messages.OnContextualBarDeletePressed());
-            }
-        });
+        deleteButton.setOnClickListener(v -> bus.post(new Messages.OnContextualBarDeletePressed()));
         final int themeResId = R.style.Theme_Cliqz_Overview;
         final TypedArray typedArray = getActivity().getTheme()
                 .obtainStyledAttributes(themeResId, new int[]{R.attr.colorPrimaryDark});

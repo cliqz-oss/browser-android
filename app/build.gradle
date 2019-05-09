@@ -4,6 +4,9 @@ apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../scripts/CliqzConfig.gradle'
 apply from: 'cliqz.gradle'
 
+
+def useGoogleServices = System.getenv("DISABLE_GOOGLE_SERVICES") == null
+
 android {
     compileOptions {
         encoding = "UTF-8"
@@ -82,7 +85,9 @@ android {
         }
         lumen {
             dimension "api"
+            applicationId "com.cliqz.lumen"
             versionCode 6
+            useGoogleServices = false
         }
         amazon {
             dimension "api"
@@ -259,4 +264,6 @@ play {
     track = 'alpha'
 }
 
-apply plugin: 'com.google.gms.google-services'
+if (useGoogleServices) {
+    apply plugin: 'com.google.gms.google-services'
+}

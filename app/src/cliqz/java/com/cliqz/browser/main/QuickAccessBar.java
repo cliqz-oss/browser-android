@@ -124,7 +124,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     private void init(Context context) {
 
         final LayoutInflater inflater = LayoutInflater.from(context);
-        final View quickBar = inflater.inflate(R.layout.quick_acces_bar, this);
+        final View quickBar = inflater.inflate(R.layout.quick_acces_bar_layout, this);
 
         ButterKnife.bind(this, quickBar);
         // if Android less than 23 we have to tint the icons and possibly clone them

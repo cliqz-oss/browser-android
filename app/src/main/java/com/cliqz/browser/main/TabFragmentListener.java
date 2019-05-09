@@ -51,7 +51,9 @@ class TabFragmentListener implements SearchBar.Listener {
             if (!ResumeTabDialog.isShown()) {
                 fragment.telemetry.sendQuickAccessBarSignal(TelemetryKeys.SHOW, null,
                         fragment.getTelemetryView());
-                fragment.quickAccessBar.show();
+                if (fragment.quickAccessBar != null) {
+                    fragment.quickAccessBar.show();
+                }
             }
             fragment.disableUrlBarScrolling();
             fragment.inPageSearchBar.setVisibility(View.GONE);
