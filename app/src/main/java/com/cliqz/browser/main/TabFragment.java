@@ -1329,4 +1329,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         ytDownloadIcon.setVisibility(View.GONE);
     }
+
+    // TODO: dirty hack due to the Oreo multi-process WebView
+    // Due to the loading page delay introduced to fix the multi-process WebView, we have to
+    // open urls from history and favorites like they are initial urls (meaning similar logic).
+    public void openFromOverview(CliqzMessages.OpenLink event) {
+        mOverviewEvent = event;
+    }
 }
