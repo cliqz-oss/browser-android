@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.SubscriptionsManager;
@@ -69,7 +69,7 @@ public abstract class BaseWebView extends AbstractionWebView {
 
     @Override
     protected  void setup() {
-        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }

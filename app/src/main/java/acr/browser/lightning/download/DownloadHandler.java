@@ -22,7 +22,7 @@ import android.webkit.URLUtil;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 import com.cliqz.utils.WebAddress;
@@ -143,7 +143,7 @@ public class DownloadHandler {
             return;
         }
 
-        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         final Bus eventBus = component != null ? component.getBus() : new Bus();
         final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
 

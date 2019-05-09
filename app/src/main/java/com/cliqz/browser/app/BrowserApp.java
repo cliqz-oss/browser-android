@@ -6,9 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.view.ContextThemeWrapper;
 
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
 import com.cliqz.browser.utils.LookbackWrapper;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -75,21 +76,25 @@ public class BrowserApp extends MultiDexApplication {
     protected boolean testInProgres() { return false; }
 
     /**
-     * Given an object, it checks if an {@link MainActivityComponent} is retrievable from it.
+     * Given an object, it checks if an {@link FlavoredActivityComponent} is retrievable from it.
      *
      * @param object any, non-null, object
-     * @return an {@link MainActivityComponent} instance or null
+     * @return an {@link FlavoredActivityComponent} instance or null
      */
     @Nullable
-    public static MainActivityComponent getActivityComponent(@Nullable Object object) {
+    public static FlavoredActivityComponent getActivityComponent(@Nullable Object object) {
         if (object instanceof ActivityComponentProvider) {
             return ((ActivityComponentProvider) object).getActivityComponent();
+        }
+
+        if (object instanceof ContextThemeWrapper) {
+            return getActivityComponent(((ContextThemeWrapper) object).getBaseContext());
         }
         return null;
     }
 
     @NonNull
-    public static MainActivityComponent createActivityComponent(@NonNull MainActivity activity) {
+    public static FlavoredActivityComponent createActivityComponent(@NonNull MainActivity activity) {
         if (sBrowserApp == null) {
             throw new RuntimeException("Null Browser App");
         }

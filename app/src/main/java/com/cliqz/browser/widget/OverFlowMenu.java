@@ -40,7 +40,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.qrscanner.CodeScannerActivity;
 import com.cliqz.browser.telemetry.Telemetry;
@@ -214,7 +214,7 @@ public class OverFlowMenu extends FrameLayout {
         listView = new ListView(activity);
         listView.setId(R.id.overflow_menu_list);
         this.addView(listView);
-        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }

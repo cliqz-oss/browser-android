@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
@@ -122,7 +122,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         this.setVisibility(View.VISIBLE);
         ButterKnife.bind(this, this);
 
-        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }

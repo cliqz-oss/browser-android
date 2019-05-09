@@ -8,7 +8,7 @@ import com.cliqz.browser.controlcenter.ControlCenterModule;
 import com.cliqz.browser.gcm.MessageListenerService;
 import com.cliqz.browser.gcm.NotificationDismissedReceiver;
 import com.cliqz.browser.gcm.RegistrationIntentService;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.SearchModule;
@@ -67,7 +67,7 @@ public interface AppComponent {
      */
     Engine getEngine();
 
-    MainActivityComponent plus(MainActivityModule module);
+    FlavoredActivityComponent plus(MainActivityModule module);
 
     ControlCenterComponent plus(ControlCenterModule dialog);
 

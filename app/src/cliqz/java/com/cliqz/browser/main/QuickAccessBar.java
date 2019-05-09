@@ -31,12 +31,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.nove.Bus;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -122,6 +124,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     }
 
     private void init(Context context) {
+        Objects.requireNonNull(BrowserApp.getActivityComponent(context)).inject(this);
 
         final LayoutInflater inflater = LayoutInflater.from(context);
         final View quickBar = inflater.inflate(R.layout.quick_acces_bar_layout, this);

@@ -19,7 +19,7 @@ import android.view.Window;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -88,7 +88,7 @@ public class ControlCenterDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
-        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
         if (component != null) {
             component.inject(this);
         }

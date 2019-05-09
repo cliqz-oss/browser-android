@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.telemetry.Telemetry;
@@ -87,7 +87,7 @@ public class TabOverviewFragment extends Fragment implements TabsDeckView.TabsDe
     @Override
     public void onStart() {
         super.onStart();
-        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
         if (component != null) {
             component.inject(this);
             deckView.scrollToCard(tabsManager.getCurrentTabPosition());
