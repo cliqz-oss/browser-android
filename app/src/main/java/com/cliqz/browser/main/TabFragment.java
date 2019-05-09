@@ -291,13 +291,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();
-        final MainActivityComponent component = activity != null ?
+        final FlavoredActivityComponent component = activity != null ?
                 BrowserApp.getActivityComponent(activity) : null;
         if (component != null) {
             component.inject(this);
-        }
-        if (component != null && quickAccessBar != null) {
-            component.inject(quickAccessBar);
         }
         final TabsManager tabsManager = activity != null ? activity.tabsManager : null;
         final int tabCount = tabsManager != null ? tabsManager.getTabCount() : 0;

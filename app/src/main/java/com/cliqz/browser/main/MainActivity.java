@@ -43,7 +43,6 @@ import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.main.search.SearchView;
-import com.cliqz.browser.main.search.Topnews;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.reactnative.ReactMessages;
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
 
-    private MainActivityComponent mMainActivityComponent;
+    private FlavoredActivityComponent mMainActivityComponent;
 
 
     private TabsManager.Builder firstTabBuilder;
@@ -796,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Nullable
     @Override
-    public MainActivityComponent getActivityComponent() {
+    public FlavoredActivityComponent getActivityComponent() {
         return mMainActivityComponent;
     }
 

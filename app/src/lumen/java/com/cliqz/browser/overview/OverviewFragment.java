@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.main.TabsManager;
 import com.cliqz.nove.Bus;
@@ -67,7 +67,7 @@ public class OverviewFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }

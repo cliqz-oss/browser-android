@@ -50,7 +50,7 @@ public abstract class FragmentWithBus extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        final MainActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
         if (component != null) {
             component.inject(this);
         }

@@ -26,7 +26,7 @@ import android.webkit.WebView;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
@@ -149,7 +149,7 @@ public class LightningView {
 
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }

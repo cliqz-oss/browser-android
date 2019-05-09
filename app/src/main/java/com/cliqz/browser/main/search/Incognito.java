@@ -5,7 +5,7 @@ import android.widget.RelativeLayout;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
@@ -22,7 +22,7 @@ public class Incognito extends RelativeLayout {
     public Incognito(Context context) {
         super(context);
         init();
-        final MainActivityComponent component = BrowserApp.getActivityComponent(getContext());
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getContext());
         if (component != null) {
             component.inject(this);
         }

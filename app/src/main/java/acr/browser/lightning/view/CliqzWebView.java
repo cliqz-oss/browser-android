@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
@@ -43,7 +43,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
 
     public CliqzWebView(Activity activity) {
         super(activity);
-        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }

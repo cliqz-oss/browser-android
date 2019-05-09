@@ -12,8 +12,8 @@ import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.JSYTDownloadCallback;
-import com.cliqz.browser.main.MainActivityComponent;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -68,7 +68,7 @@ public class SearchView extends FrameLayout {
 
     public SearchView(Context context, Engine engine) {
         super(context);
-        final MainActivityComponent component = BrowserApp.getActivityComponent(context);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
