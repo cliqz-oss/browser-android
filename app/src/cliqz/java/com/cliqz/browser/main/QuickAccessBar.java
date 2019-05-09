@@ -173,9 +173,14 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int nhms = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED);
+        final int nhms;
+        if (isKeyboardVisible()) {
+            nhms = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED);
+            postDelayed(positionUpdater, POSITION_UPDATER_DELAY);
+        } else {
+            nhms = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY);
+        }
         super.onMeasure(widthMeasureSpec, nhms);
-        postDelayed(positionUpdater, POSITION_UPDATER_DELAY);
     }
 
     public void showSuggestions(String[] suggestions, String originalQuery) {
@@ -213,13 +218,10 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
             tv.setSingleLine(true);
             tv.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             tv.setLayoutParams(params);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    bus.post(new Messages.UpdateQuery(suggestion));
-                    //Dividing by 2 to get the 0 based index of the TextViews excluding the Separator
-                    telemetry.sendQuerySuggestionClickSignal(querySuggestionContainer.indexOfChild(tv) / 2);
-                }
+            tv.setOnClickListener(v -> {
+                bus.post(new Messages.UpdateQuery(suggestion));
+                //Dividing by 2 to get the 0 based index of the TextViews excluding the Separator
+                telemetry.sendQuerySuggestionClickSignal(querySuggestionContainer.indexOfChild(tv) / 2);
             });
             final int beginIndex;
             if (originalQuery != null && suggestion.startsWith(originalQuery)) {
@@ -259,28 +261,38 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         }
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        final int maxY = ((ViewGroup) getParent()).getHeight();
+        if (!hasWindowFocus && maxY != mY) {
+            setY(maxY);
+            mY = maxY;
+        }
+    }
+
     @OnClick(R.id.tabs_overview_btn)
     void onTabsOverviewButtonClicked() {
         safeBusPost(new Messages.GoToOverview());
-        safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.OPEN_TABS);
+        safeTelemetry(TelemetryKeys.OPEN_TABS);
     }
 
     @OnClick(R.id.history_btn)
     void onHistoryButtonClicked() {
         safeBusPost(new Messages.GoToHistory());
-        safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.HISTORY);
+        safeTelemetry(TelemetryKeys.HISTORY);
     }
 
     @OnClick(R.id.favorites_btn)
     void onFavoritesButtonClicked() {
         safeBusPost(new Messages.GoToFavorites());
-        safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.FAVORITES);
+        safeTelemetry(TelemetryKeys.FAVORITES);
     }
 
     @OnClick(R.id.offrz_btn)
     void onOffrzButtonClicked() {
         safeBusPost(new Messages.GoToOffrz());
-        safeTelemetry(TelemetryKeys.CLICK, TelemetryKeys.OFFRZ);
+        safeTelemetry(TelemetryKeys.OFFRZ);
     }
 
     private void safeBusPost(Object msg) {
@@ -289,11 +301,11 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         }
     }
 
-    private void safeTelemetry(@NonNull String action, @Nullable String target) {
+    private void safeTelemetry(@Nullable String target) {
         if (telemetry != null) {
             final String view = searchView != null && searchView.isFreshTabVisible() ?
                     TelemetryKeys.HOME : TelemetryKeys.CARDS;
-            telemetry.sendQuickAccessBarSignal(action, target, view);
+            telemetry.sendQuickAccessBarSignal(TelemetryKeys.CLICK, target, view);
         }
     }
 

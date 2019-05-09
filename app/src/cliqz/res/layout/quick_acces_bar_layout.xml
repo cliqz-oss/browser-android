@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/query_suggestion_bg">
 
 
@@ -10,10 +10,10 @@
         android:layout_marginTop="5dp"
         android:id="@+id/query_suggestion_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="invisible"
-        android:gravity="center" />
+        android:gravity="center|bottom" />
 
     <LinearLayout
         android:id="@+id/access_bar_container"
@@ -81,10 +81,4 @@
             android:textSize="12sp" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:background="@color/query_suggestion_bg"
-        android:layout_below="@id/access_bar_container"/>
-
-</RelativeLayout>
+</FrameLayout>
