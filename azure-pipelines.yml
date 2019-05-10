@@ -44,7 +44,7 @@ jobs:
 
   # Job to Test the Cliqz Browser
   - job: Cliqz_Android_CI_Test
-    condition: eq(variables['run.tests'], 'true')
+    condition: and(eq(variables['run.tests'], 'true'), ne(variables['Build.Reason'], 'Schedule'))
 
     timeoutInMinutes: 60
 
@@ -67,11 +67,11 @@ jobs:
     - bash: |
         source scripts/azure-scripts/setup.sh
         source scripts/azure-scripts/launch-emu.sh
-        source scripts/azure-scripts/start-video-logcat.sh
         ./gradlew assembleCliqzX86Debug
+        source scripts/azure-scripts/start-video-logcat.sh
         ./gradlew connectedCliqzX86DebugAndroidTest
-        source scripts/azure-scripts/clean-up.sh
         source scripts/azure-scripts/videos-screenshots.sh
+        source scripts/azure-scripts/clean-up.sh
       env:
         DISABLE_GOOGLE_SERVICES: true
       displayName: 'Run Tests'
@@ -88,17 +88,17 @@ jobs:
 
     - task: ArchiveFiles@2
       condition: always()
-      displayName: 'Archive Logs'
+      displayName: 'Archive Test Results'
       inputs:
-        rootFolderOrFile: 'logs'
+        rootFolderOrFile: 'testresults'
         archiveType: 'zip'
         tarCompression: 'none'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/logs.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/testsarchive.zip'
 
     - task: PublishBuildArtifacts@1
       condition: always()
-      displayName: 'Publish Logs'
+      displayName: 'Publish Tests Archive'
       inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)/logs.zip'
-        artifactName: '$(Build.BuildId).TestLogs'
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.BuildId).TestsArchive'
         publishLocation: 'Container'
