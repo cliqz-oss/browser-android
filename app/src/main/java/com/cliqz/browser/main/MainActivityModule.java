@@ -50,7 +50,7 @@ public class MainActivityModule {
 
     @PerActivity
     @Provides
-    SearchView providesSearchView(Activity activity, Engine engine) {
+    SearchView providesSearchView(Engine engine) {
         return new SearchView(activity, engine);
     }
 
