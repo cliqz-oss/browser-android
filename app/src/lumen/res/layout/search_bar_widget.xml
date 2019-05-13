@@ -72,6 +72,6 @@
         android:layout_height="26dp"
         android:paddingLeft="5dp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_info_black"/>
+        app:srcCompat="@drawable/ic_action_add_white"/>
 
 </LinearLayout>

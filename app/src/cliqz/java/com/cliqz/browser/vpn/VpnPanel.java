@@ -1,5 +1,6 @@
 package com.cliqz.browser.vpn;
 
+import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 
@@ -10,7 +11,7 @@ import android.view.View;
  */
 public class VpnPanel {
 
-    public static VpnPanel create(View view) {
+    public static VpnPanel create(View view, Activity activity) {
         return null;
     }
 
