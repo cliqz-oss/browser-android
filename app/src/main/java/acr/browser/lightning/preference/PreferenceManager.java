@@ -330,7 +330,7 @@ public class PreferenceManager {
     }
 
     public boolean getRemoveIdentifyingHeadersEnabled() {
-        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, false);
+        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, true);
     }
 
     public boolean getOnBoardingComplete() {
