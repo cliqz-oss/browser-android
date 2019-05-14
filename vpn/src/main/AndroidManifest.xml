@@ -1,17 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.cliqz.browser">
+    package="com.cliqz.library">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
         <activity
-            android:name=".vpn.DisconnectVPN"
+            android:name="com.cliqz.library.vpn.DisconnectVPN"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:taskAffinity=".DisconnectVPN"/>
 
         <service
-            android:name=".vpn.core.OpenVPNService"
+            android:name="com.cliqz.library.vpn.core.OpenVPNService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:process=":openvpn">
             <intent-filter>
@@ -20,15 +20,15 @@
         </service>
 
         <service
-            android:name=".vpn.api.ExternalOpenVPNService"
+            android:name="com.cliqz.library.vpn.api.ExternalOpenVPNService"
             android:process=":openvpn"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="com.cliqz.browser.vpn.api.IOpenVPNAPIService" />
+                <action android:name="com.cliqz.library.vpn.api.IOpenVPNAPIService" />
             </intent-filter>
         </service>
         <service
-            android:name=".vpn.core.OpenVPNStatusService"
+            android:name="com.cliqz.library.vpn.core.OpenVPNStatusService"
             android:exported="false"
             android:process=":openvpn" />
     </application>

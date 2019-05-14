@@ -15,10 +15,12 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.vpn.core.IOpenVPNServiceInternal;
-import com.cliqz.browser.vpn.core.OpenVPNService;
-import com.cliqz.browser.vpn.core.ProfileManager;
-import com.cliqz.browser.vpn.core.VpnStatus;
+import com.cliqz.library.vpn.core.IOpenVPNServiceInternal;
+import com.cliqz.library.vpn.LaunchVPN;
+import com.cliqz.library.vpn.VpnProfile;
+import com.cliqz.library.vpn.core.OpenVPNService;
+import com.cliqz.library.vpn.core.ProfileManager;
+import com.cliqz.library.vpn.core.VpnStatus;
 
 /**
  * @author Ravjit Uppal

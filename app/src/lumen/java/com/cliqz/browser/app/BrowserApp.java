@@ -2,9 +2,9 @@ package com.cliqz.browser.app;
 
 import android.net.Uri;
 
-import com.cliqz.browser.vpn.ConfigConverter;
-import com.cliqz.browser.vpn.core.ProfileManager;
-import com.cliqz.browser.vpn.core.StatusListener;
+import com.cliqz.library.vpn.ConfigConverter;
+import com.cliqz.library.vpn.core.ProfileManager;
+import com.cliqz.library.vpn.core.StatusListener;
 
 /**
  * @author Ravjit Uppal

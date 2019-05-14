@@ -24,8 +24,8 @@ import android.widget.Toast;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.vpn.core.ConnectionStatus;
-import com.cliqz.browser.vpn.core.VpnStatus;
+import com.cliqz.library.vpn.core.ConnectionStatus;
+import com.cliqz.library.vpn.core.VpnStatus;
 
 import javax.inject.Inject;
 
