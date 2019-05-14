@@ -41,6 +41,7 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
+        public static final String VPN_START_TIME = "vpn_start_time";
         static final String USER_SENTIMENT_SURVEY_201903 = "userSentimentSurvey201903Count";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
@@ -911,5 +912,13 @@ public class PreferenceManager {
 
     public void stopUserSurvey201903() {
         putInt(Name.USER_SENTIMENT_SURVEY_201903, MAX_SURVEY_MESSAGE_SHOW_COUNT);
+    }
+
+    public void setVpnStartTime(long currentTimeMillis) {
+        putLong(Name.VPN_START_TIME, currentTimeMillis);
+    }
+
+    public long getVpnStartTime() {
+        return mPrefs.getLong(Name.VPN_START_TIME, System.currentTimeMillis());
     }
 }

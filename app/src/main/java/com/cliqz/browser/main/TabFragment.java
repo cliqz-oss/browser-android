@@ -61,6 +61,7 @@ import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
 import com.cliqz.browser.utils.EnableNotificationDialog;
 import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -199,6 +200,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Bind(R.id.cc_icon)
     AppCompatImageView ccIcon;
 
+    private View mVpnPanelButton;
+
     @NonNull
     public final String getTabId() {
         return mId;
@@ -288,6 +291,16 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             stub.inflate();
         }
         ButterKnife.bind(this, view);
+        //TODO Upgrade the butterknife library(or change to Data binding library?)
+        // This can be done gracefully using latest version of butterknife. It has the annotation @Optional
+        // by which we can avaoid flavour check and use normal @Bind or @OnClick annotations.
+        if ("lumen".equals(BuildConfig.FLAVOR_api)) {
+            mVpnPanelButton = view.findViewById(R.id.vpn_panel_button);
+            mVpnPanelButton.setOnClickListener(view1 -> {
+                final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
+                vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
+            });
+        }
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();

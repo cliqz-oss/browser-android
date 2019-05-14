@@ -30,9 +30,9 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private final BrowserApp app;
+    private final BaseBrowserApp app;
 
-    public AppModule(@NonNull BrowserApp app) {
+    public AppModule(@NonNull BaseBrowserApp app) {
         this.app = app;
     }
 
