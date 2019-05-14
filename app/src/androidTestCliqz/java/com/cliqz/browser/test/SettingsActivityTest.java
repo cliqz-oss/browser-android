@@ -8,6 +8,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
@@ -15,6 +16,7 @@ import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.utils.WebHelpers;
 import com.cliqz.browser.utils.ViewHelpers;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -64,16 +66,6 @@ public class SettingsActivityTest {
     public ActivityTestRule<MainActivity>
             mActivityRule = new ActivityTestRule<>(MainActivity.class, false, false);
 
-    @BeforeClass
-    public static void setUpClass() {
-        recorder = DeviceShellHelper.recordVideo("SettingsActivityTest");
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        recorder.destroy();
-    }
-
     @Before
     public void setUp() {
         Log.d("AUTOBOTS", testName.getMethodName());
@@ -84,6 +76,11 @@ public class SettingsActivityTest {
         mActivityRule.getActivity().goToSettings(new Messages.GoToSettings());
     }
 
+    @After
+    public void tearDown() {
+        DeviceShellHelper.takeScreenshot(testName.getMethodName());
+    }
+
     @Test
     public void viewSettings() {
         onView(withText("FAQs & Support")).check(matches(isDisplayed()));
@@ -92,7 +89,7 @@ public class SettingsActivityTest {
         onView(withText("Human Web")).check(matches(isDisplayed()));
     }
 
-    public ViewActions setAndConfirmSearchEngine(final String engine, final String url) {
+    public void setAndConfirmSearchEngine(final String engine, final String url) {
         String query = randomStringGenerator();
         onView(withId(R.id.action_bar_root)).check(matches(isDisplayed()));
         onView(withText(equalToIgnoringCase("General"))).check(matches(isDisplayed()))
@@ -108,15 +105,11 @@ public class SettingsActivityTest {
             WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                     .withTimeout(10, TimeUnit.SECONDS)
                     .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString(url)));
-            onView(withId(R.id.title_bar)).perform(click());
+            ViewHelpers.onView(withId(R.id.title_bar)).perform(click());
             onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
                     .check(matches(withText(containsString(url))));
         } catch(Exception e) {
-            try {
-                ViewHelpers.onView(withText(equalToIgnoringCase("DON'T ALLOW"))).perform(click());
-            } catch(Exception e2) {
-                Log.e("AUTOBOTS", e.getMessage() + e2.getMessage());
-            }
+            mActivityRule.launchActivity(null);
             WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                     .withTimeout(5, TimeUnit.SECONDS)
                     .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString(url)));
@@ -124,7 +117,6 @@ public class SettingsActivityTest {
             onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
                     .check(matches(withText(containsString(url))));
         }
-        return null;
     }
 
     public String randomStringGenerator() {

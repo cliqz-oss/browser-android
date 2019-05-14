@@ -4,6 +4,10 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralClickAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Tap;
 import android.util.Log;
 import android.view.View;
 
@@ -12,7 +16,6 @@ import com.cliqz.browser.R;
 import org.hamcrest.Matcher;
 
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.cliqz.browser.test.MainActivityTest.clickXY;
 
 /**
  * @author Ravjit
@@ -27,6 +30,23 @@ public class ViewHelpers {
 
     public static ViewInteractionWrapper onView(Matcher<View> matcher) {
         return new ViewInteractionWrapper(Espresso.onView(matcher));
+    }
+
+    public static ViewAction clickXY(final int x, final int y) {
+        return new GeneralClickAction(
+                Tap.SINGLE,
+                new CoordinatesProvider() {
+                    @Override
+                    public float[] calculateCoordinates(View view) {
+                        final int[] screenPos = new int[2];
+                        view.getLocationOnScreen(screenPos);
+                        final float screenX = screenPos[0] + x;
+                        final float screenY = screenPos[1] + y;
+
+                        return new float[]{screenX, screenY};
+                    }
+                },
+                Press.FINGER);
     }
 
     public static class ViewInteractionWrapper {

@@ -26,3 +26,4 @@ echo ""
 echo "Installing Android SDK Dependencies"
 export IMG_NAME='system-images;android-23;google_apis;x86'
 $ANDROID_HOME/tools/bin/sdkmanager "${IMG_NAME}"
+mkdir -p testresults

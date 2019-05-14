@@ -1,5 +1,5 @@
 echo "*** Get Videos and Screenshots ***"
-mkdir -p recording screenshots
-$ANDROID_HOME/platform-tools/adb pull /mnt/sdcard/Movies recording/ || true
-$ANDROID_HOME/platform-tools/adb pull /mnt/sdcard/test-screenshots screenshots/ || true
+kill -9 $(cat video.pid) || true
+$ANDROID_HOME/platform-tools/adb pull /mnt/sdcard/DCIM/ testresults/ || true
+#$ANDROID_HOME/platform-tools/adb pull /mnt/sdcard/test-screenshots testresults/ || true
 echo "*** Done ***"

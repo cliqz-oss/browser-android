@@ -3,11 +3,6 @@ package com.cliqz.browser.test;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.action.CoordinatesProvider;
-import android.support.test.espresso.action.GeneralClickAction;
-import android.support.test.espresso.action.Press;
-import android.support.test.espresso.action.Tap;
 import android.support.test.espresso.web.assertion.WebViewAssertions;
 import android.support.test.espresso.web.matcher.DomMatchers;
 import android.support.test.espresso.web.webdriver.Locator;
@@ -15,7 +10,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
@@ -58,6 +52,7 @@ import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.getText;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
+import static com.cliqz.browser.utils.ViewHelpers.clickXY;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -81,24 +76,14 @@ public class MainActivityTest {
     public ActivityTestRule<MainActivity>
             mActivityRule = new ActivityTestRule<>(MainActivity.class, false, false);
 
-    @BeforeClass
-    public static void setUpClass() {
-        recorder = DeviceShellHelper.recordVideo("MainActivityTest");
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        recorder.destroy();
-    }
-
     @Before
     public void setUp() {
-        Log.d("AUTOBOTS", testName.getMethodName());
         Espresso.setFailureHandler(new CustomFailureHandler(mActivityRule.launchActivity(null)));
     }
 
     @After
     public void tearDown() {
+        DeviceShellHelper.takeScreenshot(testName.getMethodName());
         mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
         onView(withContentDescription("More options")).perform(click());
         onView(withText("Close All Tabs")).perform(click());
@@ -204,23 +189,6 @@ public class MainActivityTest {
         onView(withClassName(equalTo(OverFlowMenu.class.getName()))).perform(pressBack());
     }
 
-    public static ViewAction clickXY(final int x, final int y) {
-        return new GeneralClickAction(
-                Tap.SINGLE,
-                new CoordinatesProvider() {
-                    @Override
-                    public float[] calculateCoordinates(View view) {
-                        final int[] screenPos = new int[2];
-                        view.getLocationOnScreen(screenPos);
-                        final float screenX = screenPos[0] + x;
-                        final float screenY = screenPos[1] + y;
-
-                        return new float[]{screenX, screenY};
-                    }
-                },
-                Press.FINGER);
-    }
-
     /*  Disabled as this Test is broken. o/
     @Test
     public void actionableButtonsWebPage() {
@@ -306,6 +274,7 @@ public class MainActivityTest {
         onView(withId(R.id.menu_overview)).perform(click());
         onView(withText(equalToIgnoringCase("FAVORITES"))).perform(click());
         onView(withId(R.id.favorites_view_parent)).perform(swipeLeft());
+        onView(withText(equalToIgnoringCase("OPEN TABS"))).perform(click());
         onView(withId(R.id.toolbar)).perform(pressBack());
         onView(withId(R.id.overflow_menu)).perform(click());
         onView(withId(R.id.toggle_favorite)).check(matches(not(isChecked()))).perform(pressBack());
