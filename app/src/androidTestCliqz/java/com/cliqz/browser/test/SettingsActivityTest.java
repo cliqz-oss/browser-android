@@ -73,6 +73,7 @@ public class SettingsActivityTest {
         mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
         ViewHelpers.onView(withContentDescription("More options")).perform(click());
         ViewHelpers.onView(withText("Close All Tabs")).perform(click());
+        Espresso.closeSoftKeyboard();
         mActivityRule.getActivity().goToSettings(new Messages.GoToSettings());
     }
 
@@ -246,7 +247,7 @@ public class SettingsActivityTest {
 
     @Test
     public void viewReportWebsiteSettings() {
-        onView(withText("Report Website")).perform(click());
+        ViewHelpers.onView(withText("Report Website")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)
                 .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("report-url")));
@@ -257,7 +258,7 @@ public class SettingsActivityTest {
 
     @Test
     public void viewImprintSettings() {
-        onView(withText("Imprint")).perform(click());
+        ViewHelpers.onView(withText("Imprint")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)
                 .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("legal")));
@@ -268,7 +269,7 @@ public class SettingsActivityTest {
 
     @Test
         public void viewTipsAndTricksSettings() {
-        onView(withText("Get the best out of Cliqz")).perform(click());
+        ViewHelpers.onView(withText("Get the best out of Cliqz")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)
                 .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("tips-android")));
@@ -279,7 +280,7 @@ public class SettingsActivityTest {
 
     @Test
     public void viewSupportSettings() {
-        onView(withText("FAQs & Support")).perform(click());
+        ViewHelpers.onView(withText("FAQs & Support")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)
                 .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("support")));

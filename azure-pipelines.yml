@@ -70,13 +70,16 @@ jobs:
         ./gradlew assembleCliqzX86Debug
         source scripts/azure-scripts/start-video-logcat.sh
         ./gradlew connectedCliqzX86DebugAndroidTest
+        ./gradlew connectedLumenX86DebugAndroidTest
         source scripts/azure-scripts/videos-screenshots.sh
         source scripts/azure-scripts/clean-up.sh
       env:
         DISABLE_GOOGLE_SERVICES: true
       displayName: 'Run Tests'
 
-    - bash: source scripts/azure-scripts/parse-reports.sh 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/'
+    - bash: |
+        source scripts/azure-scripts/parse-reports.sh 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/'
+        source scripts/azure-scripts/parse-reports.sh 'app/build/outputs/androidTest-results/connected/flavors/LUMENX86/'
       displayName: 'Parse Results'
 
     - task: PublishTestResults@2
@@ -84,7 +87,7 @@ jobs:
       displayName: 'Publish JUnit Test'
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: 'app/build/outputs/androidTest-results/connected/flavors/CLIQZX86/*.xml'
+        testResultsFiles: 'app/build/outputs/androidTest-results/connected/flavors/*X86/*.xml'
 
     - task: ArchiveFiles@2
       condition: always()
