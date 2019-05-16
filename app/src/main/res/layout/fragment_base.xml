@@ -48,7 +48,7 @@
                     android:selectAllOnFocus="true"
                     android:textColor="#333333"
                     android:textColorHighlight="@color/text_highlight_color"
-                    android:textColorHint="#aaaaaa"
+                    android:textColorHint="@color/url_bar_hint_text_color"
                     android:textCursorDrawable="@drawable/custom_cursor"
                     tools:drawableLeft="@drawable/ic_action_back"
                     tools:drawableRight="@drawable/ic_clear_black"
