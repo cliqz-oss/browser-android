@@ -17,4 +17,5 @@
     <color name="secondary_color_settings_dark">#2E2E2E</color>
     <color name="toolbar_icon_color_incognito">#ffffff</color>
     <color name="onboarding_background">#b8dfee</color>
+    <color name="url_bar_hint_text_color">#AAAAAA</color>
 </resources>

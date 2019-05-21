@@ -20,6 +20,7 @@
             android:background="@drawable/tab_item_bg_normal"
             android:gravity="start|center_vertical"
             android:hint="@string/cliqz_search_hint"
+            android:textColorHint="@color/url_bar_hint_text_color"
             android:singleLine="true"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
