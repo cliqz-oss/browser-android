@@ -93,23 +93,8 @@ public class AutocompleteEditText extends AppCompatEditText {
         setSelectHandDrawable();
         clearIcon = VectorDrawableCompat.create(
                 context.getResources(), R.drawable.ic_clear_black, null);
-        backIcon = createBackIcon(context); // ContextCompat.getDrawable(context, R.drawable.ic_cliqz_back);
+        backIcon = AutocompleteBackIcon.create(context);
         setDrawable(false);
-    }
-
-    // Needed for back compatibility with Android < 21
-    private static Drawable createBackIcon(Context context) {
-        final Resources resources = context.getResources();
-        final Drawable backDrawable = VectorDrawableCompat.create(
-                resources, R.drawable.ic_action_back, null);
-        final Drawable logoDrawable = VectorDrawableCompat.create(
-                resources, R.drawable.ic_cliqz_search, null);
-        final int backWidth = backDrawable.getIntrinsicWidth();
-        final int logoWidth = logoDrawable.getIntrinsicWidth();
-        final LayerDrawable out = new LayerDrawable(new Drawable[] { backDrawable, logoDrawable });
-        out.setLayerInset(0, 0, 0, logoWidth, 0);
-        out.setLayerInset(1, backWidth, 0, 0, 0);
-        return out;
     }
 
     private void setDrawable(boolean showClearDrawable){
