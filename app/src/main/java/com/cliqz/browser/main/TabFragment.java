@@ -475,7 +475,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
             if (state.getMode() == Mode.SEARCH) {
                 //showToolBar(null);
-                delayedPostOnBus(new Messages.ShowSearch(query));
+                if (!query.isEmpty()) {
+                    delayedPostOnBus(new Messages.ShowSearch(query));
+                } else {
+                    searchBar.setTitle(searchBar.getQuery());
+                    searchBar.showTitleBar();
+                    progressBar.setVisibility(View.GONE);
+                }
             } else {
                 mLightningView.getWebView().bringToFront();
                 enableUrlBarScrolling();
