@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="#aaa">
 
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|left"
+        android:layout_marginEnd="31dp"
+        android:layout_marginRight="31dp"
+        android:gravity="center_vertical"
         android:contentDescription="@string/descr_search_bar"
+        android:background="@drawable/tab_item_bg_normal"
         android:focusable="true"
         android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/title_bar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="@dimen/title_bar_h"
-            android:background="@drawable/tab_item_bg_normal"
+            android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:hint="@string/cliqz_search_hint"
             android:textColorHint="@color/url_bar_hint_text_color"
@@ -29,50 +34,46 @@
             android:textColor="#333333"
             android:textSize="15sp" />
 
-    </FrameLayout>
-
-    <RelativeLayout
-        android:id="@+id/control_center"
-        android:layout_width="@dimen/control_center_layout_w"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:background="#ffffff"
-        android:visibility="gone">
-
-        <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/cc_icon"
-            android:layout_width="26dp"
-            android:layout_height="20dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp"
-            android:scaleType="fitXY"
-            app:srcCompat="@drawable/ic_control_center" />
-
-        <TextView
-            android:id="@+id/tracker_counter"
+        <LinearLayout
+            android:id="@+id/control_center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:focusable="false"
-            android:paddingRight="5dp"
-            android:paddingEnd="5dp"
-            android:text="@string/zero"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-    </RelativeLayout>
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/cc_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_control_center"
+                tools:src="@drawable/ic_control_center"/>
+
+            <TextView
+                android:id="@+id/tracker_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                tools:text="@string/zero"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                tools:ignore="RtlHardcoded" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/vpn_panel_button"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:paddingLeft="5dp"
         android:scaleType="fitXY"
+        android:layout_gravity="end|right|center_vertical"
         app:srcCompat="@drawable/ic_action_add_white"/>
 
-</LinearLayout>
+</FrameLayout>
