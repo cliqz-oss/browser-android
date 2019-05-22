@@ -73,7 +73,6 @@ import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StreamUtils;
 import com.cliqz.utils.ViewUtils;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

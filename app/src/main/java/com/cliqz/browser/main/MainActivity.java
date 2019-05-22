@@ -46,12 +46,15 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.subscription.PurchaseFragment;
+import com.cliqz.browser.subscription.TrialPeriodHandler;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
+import com.cliqz.browser.utils.PremiumSubscriptionManager;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -60,6 +63,10 @@ import com.cliqz.utils.ActivityUtils;
 import com.cliqz.utils.StringUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.revenuecat.purchases.PurchaserInfo;
+import com.revenuecat.purchases.Purchases;
+import com.revenuecat.purchases.PurchasesError;
+import com.revenuecat.purchases.interfaces.ReceivePurchaserInfoListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,7 +96,8 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
  * @author Stefano Pacifici
  * @author Moaz Rashad
  */
-public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
+public class MainActivity extends AppCompatActivity implements ActivityComponentProvider,
+        TrialPeriodHandler.TrialPeriodResponseListener {
 
     //Keys for arguments in intents/bundles
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -102,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     protected static final String TAB_FRAGMENT_TAG = "tab_fragment";
     private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
+
+    private static final String DIALOG_TAG = "dialog";
 
     private FlavoredActivityComponent mMainActivityComponent;
 
@@ -116,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
     private ProgressDialog progressDialog = null;
+
+    private PurchaseFragment purchaseFragment;
 
     @Inject
     CrashDetector crashDetector;
@@ -152,6 +164,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Inject
     Engine engine;
+
+    @Inject
+    PremiumSubscriptionManager premiumSubscriptionManager;
 
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
 
@@ -242,6 +257,29 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         }
 
+        if ("lumen".equals(BuildConfig.FLAVOR_api)) {
+            // Check if subscribed.
+            Purchases.getSharedInstance().getPurchaserInfo(new ReceivePurchaserInfoListener() {
+                @Override
+                public void onReceived(@androidx.annotation.NonNull PurchaserInfo purchaserInfo) {
+                    if (!purchaserInfo.getActiveSubscriptions().isEmpty()) {
+                        // If subscribed, enable features.
+                        for (String sku : purchaserInfo.getActiveSubscriptions()) {
+                            premiumSubscriptionManager.setVpnEnabled(sku.contains("vpn"));
+                            premiumSubscriptionManager.setDashboardEnabled(sku.contains("basic"));
+                        }
+                    } else {
+                        // Check if in trial period.
+                        new TrialPeriodHandler.TrialPeriodHandlerTask(MainActivity.this).execute();
+                    }
+                }
+
+                @Override
+                public void onError(@androidx.annotation.NonNull PurchasesError error) {
+                    Log.w(TAG, error.getMessage());
+                }
+            });
+        }
         setupContentView();
 
         if (preferenceManager.getSessionId() == null) {
@@ -915,6 +953,37 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final int result = ContextCompat
                 .checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
         return result == PERMISSION_GRANTED;
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @Subscribe
+    public void goToPurchase(Messages.GoToPurchase event) {
+        if (purchaseFragment == null) {
+            purchaseFragment = new PurchaseFragment();
+        }
+        if (!isPurchaseFragmentVisible()) {
+            purchaseFragment.show(getSupportFragmentManager(), DIALOG_TAG);
+        }
+    }
+
+    private boolean isPurchaseFragmentVisible() {
+        return purchaseFragment != null && purchaseFragment.isVisible();
+    }
+
+    @Override
+    public void onTrialPeriodResponse(boolean isInTrial, int trialDaysLeft) {
+        premiumSubscriptionManager.setVpnEnabled(isInTrial);
+        premiumSubscriptionManager.setDashboardEnabled(isInTrial);
+        String trialPeriodMessage;
+        if (trialDaysLeft > 0) {
+            trialPeriodMessage = "You have " + trialDaysLeft + " days left of free usage";
+        } else {
+            trialPeriodMessage = "Your trail period is expired";
+        }
+        Log.i(TAG, trialPeriodMessage);
+        Toast.makeText(this, trialPeriodMessage, Toast.LENGTH_LONG).show();
+
+        goToPurchase(null);
     }
 
 }
