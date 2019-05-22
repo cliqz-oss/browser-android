@@ -202,8 +202,9 @@ dependencies {
     implementation project(':android_utils')
     
     // On-boarding
-    implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
-    
+    cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+
     // memory leak analysis
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
