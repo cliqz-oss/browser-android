@@ -1,9 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../scripts/CliqzConfig.gradle'
 apply from: 'cliqz.gradle'
-
 
 def useGoogleServices = System.getenv("DISABLE_GOOGLE_SERVICES") == null
 
@@ -22,6 +24,16 @@ android {
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
 
+        if (this.hasProperty("VPN_API_KEY")) {
+            buildConfigField 'String', 'VPN_API_KEY', com.cliqz.lumen.vpnApiKey
+        } else {
+            buildConfigField 'String', 'VPN_API_KEY', "\"\""
+        }
+        if (this.hasProperty("REVENUECAT_API_KEY")) {
+            buildConfigField 'String', 'REVENUECAT_API_KEY', com.cliqz.lumen.revenuecatApiKey
+        } else {
+            buildConfigField 'String', 'REVENUECAT_API_KEY', "\"\""
+        }
         applicationId "com.cliqz.browser"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
         vectorDrawables.useSupportLibrary = true
@@ -132,6 +144,7 @@ repositories {
     maven {
         url "https://maven.google.com"
     }
+    mavenCentral()
 }
 
 configurations.all {
@@ -231,6 +244,9 @@ dependencies {
     
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+
+    // RevenueCat for subscription
+    lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
 
     // vpn module
     lumenImplementation project(':vpn')

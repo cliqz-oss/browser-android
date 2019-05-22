@@ -9,6 +9,7 @@ import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.peercomm.ChunkedFileManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
+import com.cliqz.browser.utils.PremiumSubscriptionManager;
 import com.cliqz.browser.utils.SubscriptionsManager;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
@@ -123,4 +124,11 @@ public class AppModule {
     QueryManager provideQueryManager(HistoryDatabase historyDatabase) {
         return new QueryManager(historyDatabase);
     }
+
+    @Provides
+    @Singleton
+    PremiumSubscriptionManager providePremiumSubscriptionManager() {
+        return new PremiumSubscriptionManager();
+    }
+
 }
