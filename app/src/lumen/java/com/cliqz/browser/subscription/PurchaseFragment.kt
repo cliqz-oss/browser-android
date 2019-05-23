@@ -76,7 +76,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
             }
 
             override fun onError(error: PurchasesError) {
-                Log.w(TAG, error.message)
+                Log.e(TAG, error.message)
                 // TODO: Display error
             }
         })

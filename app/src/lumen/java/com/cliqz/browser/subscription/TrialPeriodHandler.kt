@@ -1,8 +1,11 @@
 package com.cliqz.browser.subscription
 
+import android.content.Context
 import android.os.AsyncTask
+import android.provider.Settings
 import com.cliqz.browser.BuildConfig
 import com.cliqz.browser.utils.HttpHandler
+import android.provider.Settings.Secure
 import com.revenuecat.purchases.Purchases
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -13,24 +16,26 @@ private val LUMEN_CREDENTIAL_URL = URL("https://auth-staging.lumenbrowser.com/ge
 
 private val HEADERS = mapOf("x-api-key" to BuildConfig.VPN_API_KEY)
 
-private val REQUEST_BODY = JSONObject()
-        .put("device_id", Purchases.sharedInstance.appUserID)
-        .put("revenue_cat_token", BuildConfig.REVENUECAT_API_KEY)
-        .toString()
-
 object TrialPeriodHandler {
 
     class TrialPeriodHandlerTask() : AsyncTask<Void, Void, Int>() {
 
-        lateinit var trialPeriodResponseListener: TrialPeriodResponseListener
+        private lateinit var requestBody: String
 
-        constructor(trialPeriodResponseListener: TrialPeriodResponseListener): this() {
+        private lateinit var trialPeriodResponseListener: TrialPeriodResponseListener
+
+        constructor(context: Context, trialPeriodResponseListener: TrialPeriodResponseListener): this() {
             this.trialPeriodResponseListener = trialPeriodResponseListener
+            requestBody = JSONObject()
+                    .put("device_id", Settings.Secure.getString(context.contentResolver, Secure.ANDROID_ID))
+                    .put("revenue_cat_token", Purchases.sharedInstance.appUserID)
+                    .toString()
+
         }
 
         override fun doInBackground(vararg params: Void): Int {
             val responseJSON =
-                    HttpHandler.sendRequest("POST", LUMEN_CREDENTIAL_URL, CONTENT_TYPE_JSON, HEADERS, REQUEST_BODY)
+                    HttpHandler.sendRequest("POST", LUMEN_CREDENTIAL_URL, CONTENT_TYPE_JSON, HEADERS, requestBody)
             var trialDaysLeft = 0
             responseJSON?.let {
                 trialDaysLeft = when (it.get("status_code")) {

@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                         }
                     } else {
                         // Check if in trial period.
-                        new TrialPeriodHandler.TrialPeriodHandlerTask(MainActivity.this).execute();
+                        new TrialPeriodHandler.TrialPeriodHandlerTask(MainActivity.this, MainActivity.this).execute();
                     }
                 }
 
