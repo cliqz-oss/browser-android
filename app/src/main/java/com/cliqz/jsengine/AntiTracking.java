@@ -2,6 +2,7 @@ package com.cliqz.jsengine;
 
 import android.util.Log;
 
+import com.cliqz.browser.controlcenter.InsightsDataCallback;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -19,6 +20,15 @@ public class AntiTracking {
 
     public void setEnabled(boolean enabled) throws EngineNotYetAvailable {
         this.engine.setPref("modules.antitracking.enabled", enabled);
+    }
+
+    public void getInsightsData(InsightsDataCallback callback, String period) {
+        try {
+            this.engine.getBridge().callAction("insights:getDashboardStats", result ->
+                    callback.updateViews(result), period);
+        } catch (EngineNotYetAvailable engineNotYetAvailable) {
+            engineNotYetAvailable.printStackTrace();
+        }
     }
 
     public ReadableMap getTabBlockingInfo(final int tabId) {

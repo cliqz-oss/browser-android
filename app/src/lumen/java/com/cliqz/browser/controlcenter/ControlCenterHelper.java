@@ -10,12 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewStub;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.cliqz.browser.R;
-import com.cliqz.nove.Bus;
 
 /**
  * Copyright © Cliqz 2019
@@ -106,6 +102,9 @@ public class ControlCenterHelper implements ControlCenterActions {
             mControlCenterContainer.setVisibility(View.GONE);
         } else {
             mControlCenterContainer.setVisibility(View.VISIBLE);
+            for(ControlCenterFragment fragment : mControlCenterPagerAdapter.mFragmentList) {
+                fragment.updateUI();
+            }
         }
     }
 
