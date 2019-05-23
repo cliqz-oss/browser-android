@@ -35,12 +35,6 @@ public abstract class BaseControlCenterPagerAdapter extends FragmentPagerAdapter
         return mFragmentList.get(position).getTitle(mContext,position);
     }
 
-    public void setTrackingData(final GeckoBundle message) {
-        for(ControlCenterFragment fragment : mFragmentList) {
-            fragment.updateUI(message);
-        }
-    }
-
     void updateCurrentView(int position) {
         mFragmentList.get(position).refreshUI();
     }

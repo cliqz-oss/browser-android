@@ -1,6 +1,7 @@
 package com.cliqz.browser.main;
 
 import com.cliqz.browser.annotations.PerActivity;
+import com.cliqz.browser.controlcenter.DashboardFragment;
 import com.cliqz.browser.vpn.VpnPanel;
 
 import dagger.Subcomponent;
@@ -14,4 +15,5 @@ public interface FlavoredActivityComponent extends MainActivityComponent {
 
     void inject(VpnPanel vpnPanel);
 
+    void inject(DashboardFragment dashboardFragment);
 }

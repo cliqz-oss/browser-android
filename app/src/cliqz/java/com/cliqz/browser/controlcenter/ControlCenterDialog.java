@@ -58,6 +58,7 @@ public class ControlCenterDialog extends DialogFragment {
     @Bind(R.id.control_center_pager)
     ViewPager controlCenterPager;
 
+    @Inject
     Telemetry telemetry;
 
     public static ControlCenterDialog create(View source, boolean isIncognito, int hashCode,
@@ -84,6 +85,10 @@ public class ControlCenterDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
+        if (component != null) {
+            component.inject(this);
+        }
         final Bundle arguments = getArguments();
         if (arguments != null) {
             mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
@@ -180,9 +185,5 @@ public class ControlCenterDialog extends DialogFragment {
     @Subscribe
     public void dismissControlCenter(Messages.DismissControlCenter event) {
         dismissAllowingStateLoss();
-    }
-
-    public void setTelemetry(Telemetry telemetry) {
-        this.telemetry = telemetry;
     }
 }
