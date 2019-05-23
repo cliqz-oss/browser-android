@@ -1,4 +1,4 @@
-package com.cliqz.browser.subscription.productlist
+package com.cliqz.browser.purchases.productlist
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater

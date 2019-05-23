@@ -1,4 +1,4 @@
-package com.cliqz.browser.subscription
+package com.cliqz.browser.purchases
 
 class SubscriptionConstants {
 

@@ -36,13 +36,13 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
 
     private final OnTaskCompleted listener;
 
-    public NewsFetcher(OnTaskCompleted listener) {
+    NewsFetcher(OnTaskCompleted listener) {
         this.listener = listener;
     }
 
     @Override
     protected JSONObject doInBackground(URL... params) {
-        return HttpHandler.sendRequest("PUT", params[0], CONTENT_TYPE_JSON, NEWS_PAYLOAD);
+        return HttpHandler.sendRequest("PUT", params[0], CONTENT_TYPE_JSON, null, NEWS_PAYLOAD);
     }
 
     protected void onPostExecute(@Nullable JSONObject result) {
@@ -89,8 +89,9 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
     }
 
     @Nullable
-    public static URL getTopNewsUrl(PreferenceManager preferenceManager, int newsCount,
-                                    LocationCache locationCache) {
+    static URL getTopNewsUrl(PreferenceManager preferenceManager,
+                             @SuppressWarnings("SameParameterValue") int newsCount,
+                             LocationCache locationCache) {
         String locale = Locale.getDefault().toString().replace("_", "-");
         final String[] parts = locale.split("-");
         String lang = null;

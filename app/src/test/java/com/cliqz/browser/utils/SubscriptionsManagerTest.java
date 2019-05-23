@@ -5,7 +5,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class SubscriptionManagerTest {
+public class SubscriptionsManagerTest {
 
     private static final String SOCCER = "soccer";
     private static final String TEAM = "team";
@@ -57,7 +56,7 @@ public class SubscriptionManagerTest {
     @Test(timeout = 1000L)
     public void canCreateInstance() {
         WritableMap map = mSubscriptionsManager.toWritableMap();
-        assertEquals(false, map.keySetIterator().hasNextKey());
+        assertFalse(map.keySetIterator().hasNextKey());
     }
 
     @Test(timeout = 10000L)
@@ -65,10 +64,10 @@ public class SubscriptionManagerTest {
         mSubscriptionsManager.addSubscription(SOCCER, TEAM, TEAM_ID);
         mSubscriptionsManager.addSubscription(SOCCER, MATCH, MATCH_ID);
         final WritableMap subscriptions = mSubscriptionsManager.toWritableMap();
-        assertEquals(true, subscriptions.hasKey(SOCCER));
+        assertTrue(subscriptions.hasKey(SOCCER));
         final ReadableMap soccer = subscriptions.getMap(SOCCER);
-        assertEquals(true, soccer.hasKey(TEAM));
-        assertEquals(true, soccer.hasKey(MATCH));
+        assertTrue(soccer.hasKey(TEAM));
+        assertTrue(soccer.hasKey(MATCH));
         final ReadableArray teams = soccer.getArray(TEAM);
         final ReadableArray matches = soccer.getArray(MATCH);
         assertEquals(1, teams.size());
@@ -99,7 +98,7 @@ public class SubscriptionManagerTest {
     }
 
     @Test
-    public void canRemoveSubscription() throws JSONException {
+    public void canRemoveSubscription() {
         mSubscriptionsManager.addSubscription(SOCCER, TEAM, TEAM_ID);
         mSubscriptionsManager.addSubscription(SOCCER, TEAM, TEAM_ID_2);
         mSubscriptionsManager.removeSubscription(SOCCER, TEAM, TEAM_ID);

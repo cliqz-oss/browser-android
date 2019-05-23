@@ -1,4 +1,4 @@
-package com.cliqz.browser.subscription
+package com.cliqz.browser.purchases
 
 import android.app.Activity
 import android.os.Bundle
@@ -13,10 +13,9 @@ import com.android.billingclient.api.BillingClient
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.MainActivity
-import com.cliqz.browser.subscription.productlist.OnBuyClickListener
-import com.cliqz.browser.subscription.productlist.ProductListAdapter
-import com.cliqz.browser.subscription.productlist.ProductRowData
-import com.cliqz.browser.utils.PremiumSubscriptionManager
+import com.cliqz.browser.purchases.productlist.OnBuyClickListener
+import com.cliqz.browser.purchases.productlist.ProductListAdapter
+import com.cliqz.browser.purchases.productlist.ProductRowData
 import com.revenuecat.purchases.Entitlement
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesError
@@ -32,7 +31,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     private lateinit var mAdapter: ProductListAdapter
 
     @set:Inject
-    lateinit var premiumSubscriptionManager: PremiumSubscriptionManager
+    lateinit var purchasesManager: PurchasesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,10 +95,10 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     },
                     { _, purchaseInfo ->
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("vpn") }) {
-                            premiumSubscriptionManager.isVpnEnabled = true
+                            purchasesManager.isVpnEnabled = true
                         }
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("basic") }) {
-                            premiumSubscriptionManager.isDashboardEnabled = true
+                            purchasesManager.isDashboardEnabled = true
                         }
                         this@PurchaseFragment.dismiss()
                     }

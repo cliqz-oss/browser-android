@@ -1,4 +1,4 @@
-package com.cliqz.browser.subscription.productlist
+package com.cliqz.browser.purchases.productlist
 
 class ProductRowData(
         val sku: String,
