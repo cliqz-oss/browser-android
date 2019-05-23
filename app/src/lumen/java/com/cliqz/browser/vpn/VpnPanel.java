@@ -25,7 +25,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.utils.PremiumSubscriptionManager;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.library.vpn.core.ConnectionStatus;
 import com.cliqz.library.vpn.core.VpnStatus;
 import com.cliqz.nove.Bus;
@@ -59,7 +59,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     private VpnHandler mVpnHandler;
 
     @Inject
-    PremiumSubscriptionManager premiumSubscriptionManager;
+    PurchasesManager purchasesManager;
 
     @Inject
     Bus bus;
@@ -144,8 +144,8 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
             //VpnCountriesDialog.show(getContext(), this);
             Toast.makeText(getContext(), "In progress", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.vpn_connect_button) {
-            if (!premiumSubscriptionManager.isVpnEnabled()) {
-                bus.post(new Messages.GoToPurchase());
+            if (!purchasesManager.isVpnEnabled()) {
+                bus.post(new Messages.GoToPurchase(0));
                 return;
             }
             if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {

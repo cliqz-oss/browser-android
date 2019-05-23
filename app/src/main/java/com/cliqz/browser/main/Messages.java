@@ -47,6 +47,11 @@ public final class Messages {
     }
 
     public static class GoToPurchase {
+        public final int trialDaysLeft;
+
+        public GoToPurchase(int trialDaysLeft) {
+            this.trialDaysLeft = trialDaysLeft;
+        }
     }
 
     /**

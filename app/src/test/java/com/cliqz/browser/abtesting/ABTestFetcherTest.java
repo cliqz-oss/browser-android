@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -40,19 +39,16 @@ public class ABTestFetcherTest {
     public void testABTestExit() {
         final PreferenceManager mockPreferenceManager = mock(PreferenceManager.class);
         when(mockPreferenceManager.getABTestList()).thenReturn(oldList);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                if (args[0].equals(AvailableTests.QUERYS_UGGESTIONS.preferenceName)
-                        && !((Boolean) args[1])) {
-                    didQuerySuggestionExit = true;
-                } else if (args[0].equals(AvailableTests.CONNECT.preferenceName)
-                        && !((Boolean) args[1])) {
-                    didConnectExit = true;
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            Object[] args = invocation.getArguments();
+            if (args[0].equals(AvailableTests.QUERY_SUGGESTIONS.preferenceName)
+                    && !((Boolean) args[1])) {
+                didQuerySuggestionExit = true;
+            } else if (args[0].equals(AvailableTests.CONNECT.preferenceName)
+                    && !((Boolean) args[1])) {
+                didConnectExit = true;
             }
+            return null;
         }).when(mockPreferenceManager).setABTestPreference(anyString(), anyBoolean());
         try {
             new ABTestFetcher().findExitingTests(new JSONObject(newList), mockPreferenceManager);

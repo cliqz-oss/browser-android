@@ -1,11 +1,11 @@
-package com.cliqz.browser.subscription
+package com.cliqz.browser.purchases
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.AsyncTask
-import android.provider.Settings
+import android.provider.Settings.Secure
 import com.cliqz.browser.BuildConfig
 import com.cliqz.browser.utils.HttpHandler
-import android.provider.Settings.Secure
 import com.revenuecat.purchases.Purchases
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -24,10 +24,11 @@ object TrialPeriodHandler {
 
         private lateinit var trialPeriodResponseListener: TrialPeriodResponseListener
 
+        @SuppressLint("HardwareIds")
         constructor(context: Context, trialPeriodResponseListener: TrialPeriodResponseListener): this() {
             this.trialPeriodResponseListener = trialPeriodResponseListener
             requestBody = JSONObject()
-                    .put("device_id", Settings.Secure.getString(context.contentResolver, Secure.ANDROID_ID))
+                    .put("device_id", Secure.getString(context.contentResolver, Secure.ANDROID_ID))
                     .put("revenue_cat_token", Purchases.sharedInstance.appUserID)
                     .toString()
 
@@ -55,7 +56,7 @@ object TrialPeriodHandler {
     }
 
     interface TrialPeriodResponseListener {
-        fun onTrialPeriodResponse(isInTrail: Boolean, trialDaysLeft: Int)
+        fun onTrialPeriodResponse(isInTrial: Boolean, trialDaysLeft: Int)
     }
 
 }

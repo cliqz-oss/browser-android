@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -105,6 +106,7 @@ public class SubscriptionsTest {
         assertEquals(1, notifications.size());
         final Notification notification = notifications.get(0);
         final Intent intent = shadowOf(notification.contentIntent).getSavedIntents()[0];
+        assertNotNull(intent.getData());
         assertEquals(SAMPLE_EVENT_LINK, intent.getData().toString());
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(MainActivity.class, shadowOf(intent).getIntentClass());
