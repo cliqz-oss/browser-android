@@ -12,8 +12,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 105
-        versionName "1.8.3"
+        versionCode 106
+        versionName "1.8.4"
         multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
