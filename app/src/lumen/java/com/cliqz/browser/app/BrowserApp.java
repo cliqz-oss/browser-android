@@ -1,7 +1,6 @@
 package com.cliqz.browser.app;
 
 import android.net.Uri;
-import android.provider.Settings.Secure;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.library.vpn.ConfigConverter;
@@ -35,8 +34,7 @@ public class BrowserApp extends BaseBrowserApp {
 
     private void setupSubscriptionSDK() {
         Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
-        final String androidId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-        Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY, androidId);
+        Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY);
     }
 
 }
