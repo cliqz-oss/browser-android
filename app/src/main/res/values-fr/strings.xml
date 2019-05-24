@@ -25,7 +25,7 @@
     <string name="clear_cache">Vider le cache lors de la fermeture</string>
     <string name="enable_cookies">Autoriser les cookies</string>
     <string name="recommended">Recommandé</string>
-    <string name="cliqz_search_hint">Rechercher avec Cliqz</string>
+    <string name="url_bar_search_hint">Rechercher avec Cliqz</string>
     <string name="fullScreenOption">Cacher la barre de status lors de la navigation</string>
     <string name="action_download">Télécharger</string>
     <string name="action_open">Ouvrir</string>
@@ -164,7 +164,7 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="rate_us">Noter le navigateur Cliqz</string>
     <string name="autocompletion_enabled">Activer Autocomplétion</string>
     <string name="request_desktop_site">Version ordinateur</string>
-    <string name="contact_cliqz">FAQ &amp; Support</string>
+    <string name="title_faq_and_support">FAQ &amp; Support</string>
     <string name="activate">Activer</string>
     <string name="adblocking_ad_counts">Pubs</string>
     <string name="ad_blocker_disabled">Bloqueur de Pubs est désactivé</string>
@@ -289,7 +289,7 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="settings_category_clear_data">Supprimer les données</string>
     <string name="settings_category_browsing">En cours de navigation</string>
     <string name="settings_category_search">Recherche</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Abonnements &amp; Notifications</string>
     <string name="settings_category_others">Autres</string>
     <string name="settings_show_top_sites">Afficher vos sites web les plus visités</string>
@@ -352,8 +352,8 @@ Lightning Browser&lt;/a&gt; et est mis à votre disposition selon les termes de 
         <item quantity="one">%d Site supprimé</item>
         <item quantity="other">%d Sites supprimé</item>
     </plurals>
-    <string name="welcome_cliqz">Bienvenu sur Cliqz !</string>
-    <string name="agree_privacy_policy_cliqz">Em utilisant cette application, vous acceptez les termes la &lt;font color="#00aef0"&gt;politique de confidentialié de Cliqz&lt;/font&gt;</string>
+    <string name="welcome_message">Bienvenu sur Cliqz !</string>
+    <string name="agree_privacy_policy_message">Em utilisant cette application, vous acceptez les termes la &lt;font color="#00aef0"&gt;politique de confidentialié de Cliqz&lt;/font&gt;</string>
     <string name="accept">ACCEPTER</string>
     <string name="privacy_policy_title">Politique de confidentialité - Cliqz</string>
 <string name="settings_show_my_offrz">Montrer MyOffrz</string>

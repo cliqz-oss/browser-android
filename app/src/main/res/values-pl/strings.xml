@@ -44,7 +44,7 @@
     <string name="version">Wersja aplikacji</string>
     <string name="clear_cache">Wyczyść pamięć podręczną przy zamykaniu</string>
     <string name="recommended">Zalecane</string>
-    <string name="cliqz_search_hint">Wyszukiwarka Cliqz</string>
+    <string name="url_bar_search_hint">Wyszukiwarka Cliqz</string>
     <string name="fullScreenOption">Ukryj pasek statusu przy przeglądaniu</string>
     <string name="title_download_location">Wybierz folder pobranych plików</string>
     <string name="cannot_download">Pliki mogą być pobierane tylko z linków rozpoczynających się od \"http\" lub \"https\".</string>
@@ -148,7 +148,7 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="rate_us">Oceń przeglądarkę Cliqz</string>
     <string name="autocompletion_enabled">Włącz autouzupełnianie</string>
     <string name="request_desktop_site">Tryb stacjonarny</string>
-    <string name="contact_cliqz">FAQ i pomoc techniczna</string>
+    <string name="title_faq_and_support">FAQ i pomoc techniczna</string>
     <string name="control_center_header_adblocking">Blokowanie reklam</string>
     <string name="adblocking_header">Przeglądasz internet bez reklam</string>
     <string name="adblocking_header_disabled">Przeglądasz internet z reklamami</string>
@@ -271,7 +271,7 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="settings_category_clear_data">Kasowanie informacji</string>
     <string name="settings_category_browsing">Przeglądanie</string>
     <string name="settings_category_search">Szukaj</string>
-    <string name="settings_category_cliqz_tab">Zakładka Cliqz</string>
+    <string name="settings_category_tab">Zakładka Cliqz</string>
     <string name="settings_category_notifications">Subskrypcja i powiadomienia</string>
     <string name="settings_category_others">Inne</string>
     <string name="settings_show_top_sites">Najbardziej odwiedzane strony</string>
@@ -315,8 +315,8 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
         <item quantity="many">wybranych elementów</item>
         <item quantity="other">wybranych elementów</item>
     </plurals>
-    <string name="welcome_cliqz">Witamy w Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Używając tej aplikacji, akceptujesz
+    <string name="welcome_message">Witamy w Cliqz!</string>
+    <string name="agree_privacy_policy_message">Używając tej aplikacji, akceptujesz
          &lt;font color=\'#00aef0\'&gt;Politykę Prywatności Cliqz &lt;/font&gt;</string>
     <string name="accept">Akceptuj</string>
     <string name="settings_show_background_image">Pokaż tapetę</string>

@@ -10,7 +10,7 @@
     <string name="clear_cache">Limpar cache ao sair</string>
     <string name="enable_cookies">Permitir cookies</string>
     <string name="recommended">Recomendado</string>
-    <string name="cliqz_search_hint">Pesquisar com Cliqz</string>
+    <string name="url_bar_search_hint">Pesquisar com Cliqz</string>
     <string name="fullScreenOption">Oculta a barra de status enquanto estiver a navegar</string>
     <string name="action_delete">Apagar</string>
     <string name="action_download">Baixar</string>
@@ -146,7 +146,7 @@ Gostaria de utilizar a sua localização</string>
     <string name="rate_us">Classifica o navegador Cliqz</string>
     <string name="autocompletion_enabled">Autocompleção ativada</string>
     <string name="request_desktop_site">Pedir site de computador</string>
-    <string name="contact_cliqz">Perguntas frequentes &amp; Ajuda</string>
+    <string name="title_faq_and_support">Perguntas frequentes &amp; Ajuda</string>
     <string name="control_center_header_adblocking">Bloqueador de anúncios</string>
     <string name="adblocking_header">Navega sem anúncios</string>
     <string name="adblocking_header_disabled">Navega com anúncios</string>
@@ -277,7 +277,7 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="settings_category_clear_data">Excluir dados</string>
     <string name="settings_category_browsing">Navegação</string>
     <string name="settings_category_search">Pesquisar</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Assinaturas e notificações</string>
     <string name="settings_category_others">Outros</string>
     <string name="settings_show_top_sites">Mostrar as páginas mais visitadas</string>
@@ -330,8 +330,8 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
         <item quantity="one">%d Página excluída</item>
         <item quantity="other">%d Páginas excluídas</item>
     </plurals>
-    <string name="welcome_cliqz">Bem-vindo ao Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Ao usar este aplicativo, você aceita a
+    <string name="welcome_message">Bem-vindo ao Cliqz!</string>
+    <string name="agree_privacy_policy_message">Ao usar este aplicativo, você aceita a
  &lt;font color="#00aef0"&gt;política de privacidade de Cliqz.&lt;/font&gt;</string>
     <string name="accept">ACEITAR</string>
     <string name="privacy_policy_title">Política de privacidade - Cliqz</string>

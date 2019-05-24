@@ -6,7 +6,7 @@
     <string name="clear_cache">Eliminar caché al salir</string>
     <string name="enable_cookies">Permitir cookies</string>
     <string name="recommended">Recomendado</string>
-    <string name="cliqz_search_hint">Buscar con Cliqz</string>
+    <string name="url_bar_search_hint">Buscar con Cliqz</string>
     <string name="fullScreenOption">Ocultar barra de estado al navegar</string>
     <string name="action_delete">Eliminar</string>
     <string name="settings">Ajustes</string>
@@ -153,7 +153,7 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="rate_us">Valora el navegador Cliqz</string>
     <string name="autocompletion_enabled">Autocompletar</string>
     <string name="request_desktop_site">Ver como ordenador</string>
-    <string name="contact_cliqz">Preguntas frequentes y ayuda</string>
+    <string name="title_faq_and_support">Preguntas frequentes y ayuda</string>
     <string name="control_center_header_adblocking">AdBlocker</string>
     <string name="adblocking_header">Navegas sin publicidad</string>
     <string name="adblocking_header_disabled">Navegas con publicidad</string>
@@ -272,7 +272,7 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="settings_category_clear_data">Eliminar datos</string>
     <string name="settings_category_browsing">Navegación</string>
     <string name="settings_category_search">Búsqueda</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Subscripciones y notificaciones</string>
     <string name="settings_category_others">Otros</string>
     <string name="settings_show_top_sites">Mostrar las páginas más visitadas</string>
@@ -316,8 +316,8 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">Noticias</string>
-    <string name="welcome_cliqz">¡Bienvenido a Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Al usar esta apliación, aceptas
+    <string name="welcome_message">¡Bienvenido a Cliqz!</string>
+    <string name="agree_privacy_policy_message">Al usar esta apliación, aceptas
          &lt;font color=\'#00aef0\'&gt;la política de privacidad de Cliqz &lt;/font&gt;</string>
     <string name="accept">ACEPTAR</string>
     <string name="settings_show_background_image">Mostrar imagen de fondo</string>

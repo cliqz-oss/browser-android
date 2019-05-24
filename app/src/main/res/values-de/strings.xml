@@ -25,7 +25,7 @@
     <string name="clear_cache">Cache beim Beenden leeren</string>
     <string name="enable_cookies">Cookies erlauben</string>
     <string name="recommended">(Empfohlen)</string>
-    <string name="cliqz_search_hint">Cliqz Suche</string>
+    <string name="url_bar_search_hint">Cliqz Suche</string>
     <string name="fullScreenOption">Statusleiste beim Surfen ausblenden</string>
     <string name="action_download">Herunterladen</string>
     <string name="action_open">Öffnen</string>
@@ -94,7 +94,7 @@
     <string name="problem_location_download">Kann nicht an den eingestellten Ort herunterladen</string>
     <string name="complementary_search_engine">Ergänzende Suchmaschine</string>
     <string name="next">Weiter</string>
-    <string name="contact_cliqz">FAQs &amp; Support</string>
+    <string name="title_faq_and_support">FAQs &amp; Support</string>
     <string name="go">Los</string>
     <string name="history">Verlauf</string>
     <string name="block_adult_content">Nicht-jugendfreie Inhalte blockieren</string>
@@ -264,7 +264,7 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="no_history">Hier findest du in Zukunft deine Suchen und besuchten Seiten.</string>
     <string name="no_favorites">Hier findest du in Zukunft deine Favoriten.</string>
     <string name="settings_category_search">Suche</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_others">Sonstiges</string>
     <string name="settings_show_top_sites">Meistbesuchte Seiten anzeigen</string>
     <string name="settings_show_news">News anzeigen</string>
@@ -353,8 +353,8 @@ erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Progr
         <item quantity="one">%d Topseite gelöscht</item>
         <item quantity="other">%d Topseiten gelöscht</item>
     </plurals>
-    <string name="welcome_cliqz">Willkommen bei Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Cliqz zu.&lt;/font&gt;</string>
+    <string name="welcome_message">Willkommen bei Cliqz!</string>
+    <string name="agree_privacy_policy_message">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Cliqz zu.&lt;/font&gt;</string>
     <string name="accept">AKZEPTIEREN</string>
     <string name="privacy_policy_title">Datenschutzerklärung - Cliqz</string>
     <string name="settings_show_my_offrz">MyOffrz anzeigen</string>

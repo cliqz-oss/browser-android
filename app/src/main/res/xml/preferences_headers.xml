@@ -33,6 +33,6 @@
         android:title="@string/tips_and_tricks"
         android:id="@+id/tips_and_tricks" />
     <header
-        android:title="@string/contact_cliqz"
+        android:title="@string/title_faq_and_support"
         android:id="@+id/feedback" />
 </preference-headers>

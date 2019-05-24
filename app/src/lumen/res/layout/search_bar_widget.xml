@@ -24,7 +24,7 @@
             android:layout_height="@dimen/title_bar_h"
             android:layout_weight="1"
             android:gravity="start|center_vertical"
-            android:hint="@string/cliqz_search_hint"
+            android:hint="@string/url_bar_search_hint"
             android:textColorHint="@color/url_bar_hint_text_color"
             android:singleLine="true"
             android:paddingEnd="8dp"

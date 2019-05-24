@@ -208,7 +208,7 @@ public class SearchBar extends FrameLayout {
         final String query = searchEditText.getQuery();
         if (query.length() == 0) {
             titleBar.setText("");
-            titleBar.setHint(R.string.cliqz_search_hint);
+            titleBar.setHint(R.string.url_bar_search_hint);
         } else {
             titleBar.setText(query);
         }

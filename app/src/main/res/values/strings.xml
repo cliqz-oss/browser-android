@@ -26,7 +26,7 @@
     <string name="clear_cache">Clear cache on exit</string>
     <string name="enable_cookies">Enable cookies</string>
     <string name="recommended">Recommended</string>
-    <string name="cliqz_search_hint">Cliqz Search</string>
+    <string name="url_bar_search_hint">Cliqz Search</string>
     <string name="fullScreenOption">Hide status bar while browsing</string>
     <string name="action_delete">Delete</string>
     <string name="action_download">Download</string>
@@ -171,7 +171,7 @@ Phishing websites disguise as other sites you may trust in order to trick you in
     <string name="rate_us">Rate Cliqz Browser</string>
     <string name="autocompletion_enabled">Enable Autocompletion</string>
     <string name="request_desktop_site">Desktop Site</string>
-    <string name="contact_cliqz">FAQs &amp; Support</string>
+    <string name="title_faq_and_support">FAQs &amp; Support</string>
     <string name="control_center_header_antitracking" translatable="false">Anti-Tracking</string>
     <string name="control_center_header_adblocking">Ad-Blocking</string>
     <string name="control_center_header_antiphishing" translatable="false">Anti-Phishing</string>
@@ -295,7 +295,7 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="settings_category_clear_data">Clear Data</string>
     <string name="settings_category_browsing">Browsing</string>
     <string name="settings_category_search">Search</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications"><![CDATA[Subscriptions & Notifications]]></string>
     <string name="settings_category_others">Other</string>
     <string name="settings_show_top_sites">Show most visited websites</string>
@@ -345,7 +345,7 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="save">SAVE</string>
     <string name="never">NEVER</string>
     <string name="save_password_text">Do you want Cliqz to save your password for this site?</string>
-    <string name="cliqz_tab_default_url" translatable="false">Cliqz Tab</string>
+    <string name="tab_default_url" translatable="false">Cliqz Tab</string>
     <plurals name="items">
         <item quantity="one">%d item selected</item>
         <item quantity="other">%d items selected</item>
@@ -361,8 +361,8 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
         <item quantity="one">%d topsite deleted</item>
         <item quantity="other">%d topsites deleted</item>
     </plurals>
-    <string name="welcome_cliqz">Welcome to Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">By using this application, you agree to the
+    <string name="welcome_message">Welcome to Cliqz!</string>
+    <string name="agree_privacy_policy_message">By using this application, you agree to the
         &lt;font color=\'#00aef0\'>Cliqz Privacy Policy &lt;/font></string>
     <string name="accept">ACCEPT</string>
     <string name="privacy_policy_title">Privacy Policy - Cliqz</string>

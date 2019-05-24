@@ -25,7 +25,7 @@
     <string name="clear_cache">Cancella cache in chiusura</string>
     <string name="enable_cookies">Consenti cookie</string>
     <string name="recommended">Consigliato</string>
-    <string name="cliqz_search_hint">Cerca con Cliqz</string>
+    <string name="url_bar_search_hint">Cerca con Cliqz</string>
     <string name="fullScreenOption">Nascondi la barra di stato mentre navighi</string>
     <string name="action_download">Scarica</string>
     <string name="action_open">Apri</string>
@@ -86,7 +86,7 @@
     <string name="black_theme">Tema nero (AMOLED)</string>
     <string name="complementary_search_engine">Motore di ricerca complementare</string>
     <string name="go">Vai</string>
-    <string name="contact_cliqz">FAQ &amp; Assistenza</string>
+    <string name="title_faq_and_support">FAQ &amp; Assistenza</string>
     <string name="history">Cronologia</string>
     <string name="message_certificate_date_invalid">La data del certificato non è valida</string>
     <string name="message_certificate_domain_mismatch">Il dominio del certificato non è lo stesso del sito</string>
@@ -263,7 +263,7 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="no_history">Qui puoi trovare la tua cronologia.</string>
     <string name="no_favorites">Qui puoi trovare i tuoi segnalibri.</string>
     <string name="settings_category_search">Ricerca</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Iscrizioni &amp; Notifiche</string>
     <string name="settings_category_others">Altro</string>
     <string name="settings_show_top_sites">Mostra i siti più visitati</string>
@@ -344,7 +344,7 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
         <item quantity="one">%d Sito eliminato</item>
         <item quantity="other">%d Siti eliminati</item>
     </plurals>
-    <string name="agree_privacy_policy_cliqz">Utilizzando questa applicazione l\'utente accetta il testo dell\'&lt;font color="#00aef0"&gt;Informativa sulla privacy di Cliqz.&lt;/font&gt;</string>
+    <string name="agree_privacy_policy_message">Utilizzando questa applicazione l\'utente accetta il testo dell\'&lt;font color="#00aef0"&gt;Informativa sulla privacy di Cliqz.&lt;/font&gt;</string>
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Permessi geolocalizzazione</string>
     <string name="make_default_browser">Imposta browser predefinito</string>
@@ -353,7 +353,7 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="proceed">PROCEDI</string>
     <string name="save">SALVA</string>
     <string name="never">MAI</string>
-    <string name="welcome_cliqz">Cliqz ti dà il benvenuto!</string>
+    <string name="welcome_message">Cliqz ti dà il benvenuto!</string>
     <string name="accept">ACCETTA</string>
     <string name="privacy_policy_title">Informativa sulla Privacy - Cliqz</string>
 <string name="settings_show_my_offrz">Visualizza MyOffrz</string>

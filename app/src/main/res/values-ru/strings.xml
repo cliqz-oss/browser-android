@@ -9,7 +9,7 @@
     <string name="version">Версия приложения</string>
     <string name="clear_cache">Очищать кэш при выходе</string>
     <string name="enable_cookies">Разрешить куки</string>
-    <string name="cliqz_search_hint">Cliqz поиск</string>
+    <string name="url_bar_search_hint">Cliqz поиск</string>
     <string name="fullScreenOption">Скрывать строку статуса во время просмотра веб-страниц</string>
     <string name="action_delete">Удалить</string>
     <string name="action_download">Скачать</string>
@@ -119,7 +119,7 @@
     <string name="rate_us">Оценить Cliqz браузер</string>
     <string name="autocompletion_enabled">Включить автозаполнение</string>
     <string name="request_desktop_site">Полная версия сайта</string>
-    <string name="contact_cliqz">FAQ &amp; Поддержка</string>
+    <string name="title_faq_and_support">FAQ &amp; Поддержка</string>
     <string name="control_center_header_adblocking">Ad-Blocking</string>
     <string name="adblocking_ads_blocked">Реклама была заблокирована</string>
     <string name="adblocking_ads_blocked_disabled">Ad-Blocking выключен для этого сайта</string>
@@ -268,7 +268,7 @@
     <string name="settings_category_clear_data">Очистить данные</string>
     <string name="settings_category_browsing">Просмотр</string>
     <string name="settings_category_search">Поиск</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Подписки и уведомления</string>
     <string name="settings_category_others">Другое</string>
     <string name="settings_show_top_sites">Показывать наиболее посещаемые сайты</string>
@@ -312,8 +312,8 @@
         <item quantity="many">%d элементов выбрано</item>
     </plurals>
     <string name="customer_interaction">Взаимодействие с клиентом</string>
-    <string name="welcome_cliqz">Добро пожаловать в Cliqz</string>
-    <string name="agree_privacy_policy_cliqz">Используя это приложение, вы соглашаетесь с
+    <string name="welcome_message">Добро пожаловать в Cliqz</string>
+    <string name="agree_privacy_policy_message">Используя это приложение, вы соглашаетесь с
         &lt;font color=\'#00aef0\'&gt;политикой конфиденциальности Cliqz &lt;/font&gt;</string>
     <string name="accept">ПРИНЯТЬ</string>
     <string name="settings_show_background_image">Показать фоновое изображение</string>
