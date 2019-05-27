@@ -11,13 +11,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.jsengine.AntiTracking;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Copyright © Cliqz 2019
@@ -29,13 +34,22 @@ public class DashboardFragment extends ControlCenterFragment {
     private DashboardAdapter mDashboardAdapter;
     private boolean mIsDailyView;
     private final int[] tabsTitleIds = {
-            R.string.bond_dashboard_today_title, R.string.bond_dashboard_week_title };
+            R.string.bond_dashboard_today_title, R.string.bond_dashboard_week_title};
+
+    @Inject
+    AntiTracking antiTracking;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
         if (arguments != null) {
             mIsDailyView = arguments.getBoolean(ControlCenterPagerAdapter.IS_TODAY);
+        }
+        final FlavoredActivityComponent component = getActivity() != null ?
+                BrowserApp.getActivityComponent(getActivity()) : null;
+        if (component != null) {
+            component.inject(this);
         }
     }
 
@@ -54,13 +68,13 @@ public class DashboardFragment extends ControlCenterFragment {
                 .setTitle(R.string.bond_dashboard_clear_dialog_title)
                 .setMessage(R.string.bond_dashboard_clear_dialog_message)
                 .setPositiveButton(R.string.button_ok, (dialogInterface, i) -> {
-                    updateUI(new GeckoBundle());
+                    updateUI();
                     //mControlCenterPagerAdapter.setTrackingData(new GeckoBundle());
                     //EventDispatcher.getInstance().dispatch("Privacy:ClearInsightsData", null);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show());
-        updateUI(new GeckoBundle());
+        updateUI();
         dashBoardListView.setAdapter(mDashboardAdapter);
         dashBoardListView.setLayoutManager(new LinearLayoutManager(getContext()));
         changeDashboardState(true); // @TODO should change with real state
@@ -99,15 +113,20 @@ public class DashboardFragment extends ControlCenterFragment {
     }
 
     @Override
-    public void updateUI(GeckoBundle data) {
+    public void updateUI() {
         if (mDashboardAdapter == null) {
             return;
         }
         if (mIsDailyView) {
-            updateViews(GeckoBundleUtils.safeGetBundle(data, "data/day"));
+            antiTracking.getInsightsData((data) -> {
+                updateViews(data.getMap("result"));
+            }, "day");
         } else {
-            updateViews(GeckoBundleUtils.safeGetBundle(data, "data/week"));
+            antiTracking.getInsightsData((data) -> {
+                updateViews(data.getMap("result"));
+            }, "week");
         }
+
     }
 
     @Override
@@ -120,17 +139,17 @@ public class DashboardFragment extends ControlCenterFragment {
 
     @Override
     public void refreshUIComponent(boolean optionValue) {
-            changeDashboardState(optionValue);
+        changeDashboardState(optionValue);
     }
 
-    public void updateViews(GeckoBundle data) {
+    public void updateViews(ReadableMap data) {
         if (data == null) {
             return;
         }
-        final MeasurementWrapper timeSaved = ValuesFormatterUtil.formatTime(data.getInt("timeSaved", 0));
-        final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(data.getInt("dataSaved", 0));
-        final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(data.getInt("adsBlocked", 0));
-        final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(data.getInt("trackersDetected", 0));
+        final MeasurementWrapper timeSaved = ValuesFormatterUtil.formatTime(data.getInt("timeSaved"));
+        final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(data.getInt("dataSaved"));
+        final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(data.getInt("adsBlocked"));
+        final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(data.getInt("trackersDetected"));
         final List<DashboardItemEntity> dashboardItems = new ArrayList<>();
         dashboardItems.add(new DashboardItemEntity(timeSaved.getValue(),
                 timeSaved.getUnit() == 0 ? "" : getString(timeSaved.getUnit()),

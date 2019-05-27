@@ -54,7 +54,6 @@ public class ControlCenterHelper implements ControlCenterActions {
     public void toggleControlCenter() {
         controlCenterDialog = ControlCenterDialog
                 .create(mSource, mIsIncognito, mHashCode, mUrl);
-        controlCenterDialog.setTelemetry(telemetry);
         controlCenterDialog.show(mFragmentManager, Constants.CONTROL_CENTER);
     }
 
