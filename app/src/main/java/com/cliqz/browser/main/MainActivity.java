@@ -46,12 +46,14 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -85,9 +87,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * Flat navigation browser
- *
- * @author Stefano Pacifici
- * @author Moaz Rashad
  */
 public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
 
@@ -103,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
 
+    private static final String DIALOG_TAG = "dialog";
+
     private FlavoredActivityComponent mMainActivityComponent;
 
 
@@ -116,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
     private ProgressDialog progressDialog = null;
+
+    private PurchaseFragment purchaseFragment;
 
     @Inject
     CrashDetector crashDetector;
@@ -152,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Inject
     Engine engine;
+
+    @Inject
+    PurchasesManager purchasesManager;
 
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
 
@@ -194,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setIndeterminate(true);
                 progressDialog.show();
-		// TODO This break the news on Cliqz. Please, move the loader to the proper, flavor dependent spot
+                // TODO This break the news on Cliqz. Please, move the loader to the proper, flavor dependent spot
                 // new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
             } else if (intent.getDataString() != null && intent.getDataString().equals("cliqz://LAST_SITE_SHORTCUT_INTENT")) {
                 isNotificationClicked = false;
@@ -242,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         }
 
+        purchasesManager.checkPurchases();
         setupContentView();
 
         if (preferenceManager.getSessionId() == null) {
@@ -917,4 +924,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return result == PERMISSION_GRANTED;
     }
 
+    @SuppressWarnings("UnusedParameters")
+    @Subscribe
+    public void goToPurchase(Messages.GoToPurchase event) {
+        // TODO @Jayesh: if event.trialDaysLeft > 0 display a toast else go to the fragment and remove the unused parameter suppression
+        if (purchaseFragment == null) {
+            purchaseFragment = new PurchaseFragment();
+        }
+        if (!isPurchaseFragmentVisible()) {
+            purchaseFragment.show(getSupportFragmentManager(), DIALOG_TAG);
+        }
+    }
+
+    private boolean isPurchaseFragmentVisible() {
+        return purchaseFragment != null && purchaseFragment.isVisible();
+    }
 }

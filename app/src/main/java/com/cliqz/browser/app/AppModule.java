@@ -7,6 +7,7 @@ import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.peercomm.ChunkedFileManager;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.SubscriptionsManager;
@@ -116,6 +117,12 @@ public class AppModule {
     @Singleton
     SubscriptionsManager provideSubscriptionsManager(Context context) {
         return new SubscriptionsManager(context);
+    }
+
+    @Provides
+    @Singleton
+    PurchasesManager providePurchasesManager(Context context, Bus bus) {
+        return new PurchasesManager(context, bus);
     }
 
     @Provides

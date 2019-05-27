@@ -46,6 +46,14 @@ public final class Messages {
     public static class BackPressed {
     }
 
+    public static class GoToPurchase {
+        public final int trialDaysLeft;
+
+        public GoToPurchase(int trialDaysLeft) {
+            this.trialDaysLeft = trialDaysLeft;
+        }
+    }
+
     /**
      * This message is fired by the web view client when we navigate back to search from web
      * navigation, it is not a transaction between different app statuses.

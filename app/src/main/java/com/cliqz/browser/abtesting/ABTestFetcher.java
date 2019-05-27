@@ -43,7 +43,7 @@ public class ABTestFetcher {
                 try {
                     final JSONObject response = HttpHandler.sendRequest("GET", new URL(AB_TEST_ENDPOINT
                                     + URLEncoder.encode(preferenceManager.getSessionId(), "UTF-8")),
-                            "CONTENT_TYPE_JSON", null);
+                            "CONTENT_TYPE_JSON", null, null);
                     parseResponse(response);
                 } catch (MalformedURLException | UnsupportedEncodingException e) {
                     e.printStackTrace();
