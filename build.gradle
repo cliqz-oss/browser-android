@@ -23,6 +23,7 @@ ext {
     minSdkVersion = 19
     buildToolsVersion = "28.0.3"
     supportLibVersion = "28.0.0"
+    reactNativeVersion = "0.59.8"
 }
 
 subprojects { subproject ->
@@ -66,7 +67,7 @@ allprojects {
 
     configurations.all {
         resolutionStrategy {
-            force 'com.facebook.react:react-native:0.59.8'
+            force "com.facebook.react:react-native:${reactNativeVersion}"
         }
     }
 }
