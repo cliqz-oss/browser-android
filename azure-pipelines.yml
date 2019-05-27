@@ -122,16 +122,16 @@ jobs:
         tasks: 'connectedCliqzX86DebugAndroidTest'
       displayName: 'Run Tests on Cliqz'
 
-    - task: Gradle@2
-      condition: or(succeeded(), failed())
-      inputs:
-        gradleWrapperFile: 'gradlew'
-        options: '--continue'
-        publishJUnitResults: true
-        testResultsFiles: '$(TESTS_XML_DIR)/**/LUMENX86/TEST-*.xml'
-        testRunTitle: 'LumenX86AndroidTest'
-        tasks: 'connectedLumenX86DebugAndroidTest'
-      displayName: 'Run Tests on Lumen'
+#    - task: Gradle@2
+#      condition: or(succeeded(), failed())
+#      inputs:
+#        gradleWrapperFile: 'gradlew'
+#        options: '--continue'
+#        publishJUnitResults: true
+#        testResultsFiles: '$(TESTS_XML_DIR)/**/LUMENX86/TEST-*.xml'
+#        testRunTitle: 'LumenX86AndroidTest'
+#        tasks: 'connectedLumenX86DebugAndroidTest'
+#      displayName: 'Run Tests on Lumen'
 
     - bash: |
         kill -9 $(cat video.pid) || true

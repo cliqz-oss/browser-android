@@ -71,8 +71,14 @@ public class SettingsActivityTest {
         Log.d("AUTOBOTS", testName.getMethodName());
         Espresso.setFailureHandler(new CustomFailureHandler(mActivityRule.launchActivity(null)));
         mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
-        ViewHelpers.onView(withContentDescription("More options")).perform(click());
-        ViewHelpers.onView(withText("Close All Tabs")).perform(click());
+        try {
+            ViewHelpers.onView(withContentDescription("More options")).perform(click());
+            ViewHelpers.onView(withText("Close All Tabs")).perform(click());
+        } catch(Exception e) {
+            Log.e("AUTOBOTS", e.getMessage());
+            ViewHelpers.onView(withContentDescription("More options")).perform(click());
+            ViewHelpers.onView(withText("Close All Tabs")).perform(click());
+        }
         Espresso.closeSoftKeyboard();
         mActivityRule.getActivity().goToSettings(new Messages.GoToSettings());
     }
