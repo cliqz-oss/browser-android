@@ -18,7 +18,5 @@ public interface FlavoredActivityComponent extends MainActivityComponent {
 
     void inject(QuickAccessBar quickAccessBar);
 
-    void inject(Incognito incognito);
-
     void inject(UserSurveyMessage userSurveyMessage);
 }

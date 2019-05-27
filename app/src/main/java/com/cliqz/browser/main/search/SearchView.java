@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -16,6 +17,7 @@ import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.JSYTDownloadCallback;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.QueryManager;
+import com.cliqz.browser.starttab.StartTabContainer;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.SubscriptionsManager;
 import com.cliqz.browser.webview.ExtensionEvents;
@@ -42,7 +44,7 @@ public class SearchView extends FrameLayout {
 
     private ReactRootView mReactView;
 
-    public Freshtab freshtab;
+    public StartTabContainer startTabContainer;
 
     @Inject
     PreferenceManager preferenceManager;
@@ -66,7 +68,7 @@ public class SearchView extends FrameLayout {
     private final Engine engine;
     private CliqzBrowserState state;
 
-    public SearchView(Context context, Engine engine) {
+    public SearchView(AppCompatActivity context, Engine engine) {
         super(context);
         final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
@@ -75,7 +77,8 @@ public class SearchView extends FrameLayout {
         this.context = context;
         this.engine = engine;
         mReactView = engine.reactRootView;
-        freshtab = new Freshtab(this.context);
+        startTabContainer = new StartTabContainer(this.context);
+        startTabContainer.init(context.getSupportFragmentManager());
         incognito = new Incognito(this.context);
         // mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
         mReactView.setLayoutParams(
@@ -86,7 +89,7 @@ public class SearchView extends FrameLayout {
         }
         addView(mReactView);
         addView(incognito);
-        addView(freshtab);
+        addView(startTabContainer);
 
     }
 
@@ -98,17 +101,17 @@ public class SearchView extends FrameLayout {
             if (state.isIncognito()) {
                 incognito.bringToFront();
                 incognito.setVisibility(View.VISIBLE);
-                freshtab.setVisibility(View.GONE);
+                startTabContainer.setVisibility(View.GONE);
             } else {
-                freshtab.bringToFront();
-                freshtab.setVisibility(View.VISIBLE);
+                startTabContainer.bringToFront();
+                startTabContainer.setVisibility(View.VISIBLE);
                 incognito.setVisibility(View.GONE);
             }
             mReactView.setVisibility(View.GONE);
 
         } else {
             mReactView.bringToFront();
-            freshtab.setVisibility(View.GONE);
+            startTabContainer.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
             final Context context = getContext();
             if (state.isIncognito()) {
@@ -163,13 +166,13 @@ public class SearchView extends FrameLayout {
             }
             incognito.bringToFront();
             incognito.setVisibility(View.VISIBLE);
-            freshtab.setVisibility(View.GONE);
+            startTabContainer.setVisibility(View.GONE);
         } else {
-            if (freshtab.getVisibility() == VISIBLE) {
+            if (startTabContainer.getVisibility() == VISIBLE) {
                 return;
             }
-            freshtab.bringToFront();
-            freshtab.setVisibility(View.VISIBLE);
+            startTabContainer.bringToFront();
+            startTabContainer.setVisibility(View.VISIBLE);
             incognito.setVisibility(View.GONE);
         }
     }
@@ -196,11 +199,11 @@ public class SearchView extends FrameLayout {
     }
 
     public boolean isFreshTabVisible() {
-        return freshtab.getVisibility() == VISIBLE;
+        return startTabContainer.getVisibility() == VISIBLE;
     }
 
     public void updateFreshTab() {
-        freshtab.updateFreshTab();
+        startTabContainer.updateFreshTab();
     }
 
     public void handleUrlbarFocusChange(boolean hasFocus) {

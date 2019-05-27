@@ -4,7 +4,8 @@
     android:id="@+id/history_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/tab_fragment_background">
 
     <include layout="@layout/emty_history_layout"
         android:id="@+id/no_history_ll"

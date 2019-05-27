@@ -22,9 +22,9 @@ import java.util.ArrayList;
 /**
  * @author Ravjit Uppal
  */
-class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    interface ClickListener {
+    public interface ClickListener {
         void onClick(View view, int position);
 
         void onLongPress(View view, int position);
@@ -37,8 +37,8 @@ class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ArrayList<Integer> multiSelectList = new ArrayList<>();
 
-    FavoritesAdapter(ArrayList<FavoriteModel> favoriteList, Engine engine, Handler handler,
-                     ClickListener clickListener) {
+    public FavoritesAdapter(ArrayList<FavoriteModel> favoriteList, Engine engine, Handler handler,
+                            ClickListener clickListener) {
         this.favoriteList = favoriteList;
         this.engine = engine;
         this.handler = handler;

@@ -3,12 +3,12 @@ package com.cliqz.browser.main;
 /**
  * @author Ravjit Uppal
  */
-class FavoriteModel {
+public class FavoriteModel {
 
     private String url;
     private String title;
 
-    FavoriteModel(String url, String title) {
+    public FavoriteModel(String url, String title) {
         this.url = url;
         this.title = title;
     }
