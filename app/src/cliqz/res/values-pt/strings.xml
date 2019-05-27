@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="url_bar_search_hint">Pesquisar com Cliqz</string>
+    <string name="app_name">Navegador Cliqz</string>
+    <string name="shared_using">Compartilhado com Cliqz para Android</string>
+    <string name="rate_us">Classifica o navegador Cliqz</string>
+    <string name="tips_and_tricks">Truques de Cliqz</string>
+    <string name="optimized_block_ads_description">O bloqueador de anúncios de Cliqz está na sua fase Beta. A versão final vai incluir as opções seguintes: Permitir anúncios justos (opção padrão), bloquear todos os anúncios, permitir todos os anúncios. Mais https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Cliqz bloqueou acesso ao página %1$s porque foi reportado como site enganoso. Sites enganosos são desenhados para o induzir a fazer algo perigoso, como revelar a sua informação pessoal, como palavras-passe ou dados de login. [Saiba mais|https://cliqz.com/en/whycliqz/anti-phishing]</string>
+    <string name="summary_adblock_data">Por favor nota que o navegador Cliqz precisa descarregar alguns pacotes de dados primeiro para que o bloqueador de anúncios funciona eficiente. Por isso, a aplicação dever ser ligada com WIFI.</string>
+    <string name="msg_pairing_instructions_dialog">Abra o navegador Cliqz no seu computador (ou descarregue de cliqz.com).</string>
+    <string name="pairing_information">"Conecte Cliqz no seu  \ttelemóvel com Cliqz no seu computador e pode mandar separadores entre seus dispositivos. Alem disso, também pode descarregar vídeos desde o navegador do seu computador e seu telemóvel."</string>
+    <string name="request_location_access">Partilhe a localização aproximada com o navegador Cliqz?</string>
+    <string name="msg_new_icon">Olha, o logotipo de Cliqz agora é azul. Confira a nova versão da aplicação!</string>
+    <string name="send_tab_no_connection_error_msg">Você não está ligado com nenhum navegador Cliqz no computador. Vai para o menu do \"Connect\" e adiciona uma nova ligação.</string>
+    <string name="share_card_email_subject">Descobri isso no navegador Cliqz</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
+    <string name="clear_data_summary">Cliqz irá excluir automaticamente seus dados pessoais quando você selecionar \"Sair\" no menu principal.</string>
+    <string name="default_browser_message">Parece que você gosta de usar Cliqz. Você quer que seja seu navegador padrão?</string>
+    <string name="welcome_message">Bem-vindo ao Cliqz!</string>
+    <string name="agree_privacy_policy_message">Ao usar este aplicativo, você aceita a &lt;font color="#00aef0"&gt;política de privacidade de Cliqz.&lt;/font&gt;</string>
+    <string name="privacy_policy_title">Política de privacidade - Cliqz</string>
+    <string name="save_password_text">Você quer Cliqz salva suas senhas para esta página?</string>
+    <string name="eula_text">O Navegador Cliqz para Android é desenvolvido com a utilização do &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;projeto open source Lightning Browser&lt;/a&gt;, à nossa disposição nós temos da &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, uma licença para software livre que concedem aos usuários a liberdade de controle na execução, análise, alterações e permite compartilhar com amigos. Não existe um Acordo de Licença do Usuário Final (EULA) separado.</string>
+    <string name="send_usage_data_summary">Ajude-nos a melhorar sua experiência de navegação. Cliqz coleta dados de uso estritamente anônimos. Em nenhuma ocasião, qualquer informação pessoal seja coletada.</string>
+</resources>
