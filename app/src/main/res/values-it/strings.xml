@@ -25,7 +25,6 @@
     <string name="clear_cache">Cancella cache in chiusura</string>
     <string name="enable_cookies">Consenti cookie</string>
     <string name="recommended">Consigliato</string>
-    <string name="url_bar_search_hint">Cerca con Cliqz</string>
     <string name="fullScreenOption">Nascondi la barra di stato mentre navighi</string>
     <string name="action_download">Scarica</string>
     <string name="action_open">Apri</string>
@@ -106,7 +105,6 @@ Procedere comunque?</string>
     <string name="what_is_humanweb">Cos\'è \"Human Web\"?</string>
     <string name="enable_human_web">Attiva \"Human Web\"</string>
     <string name="share_link">Condividi con</string>
-    <string name="shared_using">Condiviso con Cliqz per Android</string>
     <string name="clear_favorites">Cancella segnalibri</string>
     <string name="clear_history">Cancella cronologia</string>
     <string name="deleting_in_progress_message">Cancellazione in corso…</string>
@@ -126,16 +124,11 @@ Procedere comunque?</string>
     <string name="settings_block_ads">Blocca Pubblicità (Beta)</string>
     <string name="optimized_block_ads">Blocca solo alcune pubblicità</string>
     <string name="what_does_optimized_mean">Cosa significa \"solo alcune pubblicità\"?</string>
-    <string name="optimized_block_ads_description">La tecnologia Blocca Pubblicità di Cliqz è ancora in fase Beta. La versione definitiva permetterà all\'utente di scegliere fra le seguenti opzioni: \"Blocca solo alcune pubblicità\" (impostazione predefinita), \"Blocca tutte le pubblicità\", \"Consenti tutte le pubblicità\".\n
-Per saperne di più: https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Guarda video offline</string>
     <string name="close_in_page_search">Chiudi la ricerca nella pagina</string>
     <string name="in_page_search_next_result">Prossimo risultato nella pagina</string>
     <string name="in_page_search_prev_result">Risultato precedente nella pagina</string>
     <string name="antiphishing_dialog_title">Attenzione: sito fraudolento!</string>
-    <string name="antiphishing_message">Cliqz ha bloccato %1$s perché il dominio è stato segnalato come phishing.\n
-Il phishing è la pratica truffaldina di apparire come un sito affidabile, per poi estorcerti il nome utente, la password o altre informazioni sensibili.\n
-[Per saperne di più|https://cliqz.com/en/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Torna al sito sicuro</string>
     <string name="antiphishing_ignore_danger">Continua comunque</string>
     <string name="antitracking_header">I tuoi dati personali sono protetti</string>
@@ -155,17 +148,12 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="showcase_search_message">I risultati più rilevanti appariranno all\'istante durante la tua ricerca.</string>
     <string name="got_it">Ho capito</string>
     <string name="show_onboarding_hints">Mostra suggerimenti</string>
-    <string name="showcase_antitracking_message">Il controllo è nelle tue mani: Cliqz Anti-Tracking protegge la tua privacy.&lt;br&gt;&lt;br&gt;
- \t\t![cc_enabled](ic_cc_enabled_white_bg) Protezione attivata
- \t\t![cc_disabled](ic_cc_whitelisted_white_bg) Protezione disattivata</string>
     <string name="showcace_search_title">Schede dei risultati</string>
     <string name="upload_file_title">Carica file</string>
-    <string name="rate_us">Valuta il browser Cliqz</string>
     <string name="autocompletion_enabled">Attiva autocompletamento</string>
     <string name="request_desktop_site">Modalità Desktop</string>
     <string name="learn_more"><u>Per saperne di più</u></string>
     <string name="switched_to_forget">Modalità Oblio automatica attivata</string>
-    <string name="summary_adblock_data">Nota: per far funzionare correttamente Blocca Pubblicità, il browser Cliqz deve scaricare una considerevole quantità di dati. Questi vengono scaricati solo se è disponibile una connessione Wi-Fi.</string>
     <string name="open_link_new_tab">Apri link in nuovo tab</string>
     <string name="open_link_forget_tab">Apri link in nuovo tab Modalità Oblio</string>
     <string name="open_image_new_tab">Apri immagine in nuovo tab</string>
@@ -196,8 +184,6 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="usa">Stati Uniti</string>
     <string name="regional_settings">Risultati di ricerca per</string>
     <string name="report_site">Segnala un sito web</string>
-    <string name="tips_and_tricks">Sfrutta Cliqz al meglio</string>
-    <string name="app_name">Browser Cliqz</string>
     <string name="incognito_tab_title">Modalità Oblio</string>
     <string name="incognito_tab_description">Stai navigando in Modalità Oblio: i siti web che visiti in questa modalità non saranno salvati nella tua cronologia e i tuoi dati locali, cookie inclusi, non verranno salvati.</string>
     <string name="humanweb">Human Web</string>
@@ -210,8 +196,6 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="qrcode_scanner_pairing_instructions">Clicca su ![the firefox menu](firefox_menu) e seleziona \"Connect\" per leggere il codice QR.</string>
     <string name="clear_passwords">Cancella password</string>
     <string name="clear_passwords_message">Vuoi cancellare le password salvate?</string>
-    <string name="msg_pairing_instructions_dialog">Apri il browser Cliqz sul tuo computer (o scaricalo da cliqz.com).</string>
-    <string name="pairing_information">Connetti Cliqz sul tuo smartphone con Cliqz sul tuo computer. In questo modo potrai inviare tab o scaricare video dal tuo computer direttamente sul tuo telefono.</string>
     <string name="pairing_error_message">Purtroppo i dispositivi non possono essere connessi. Riprova più tardi.</string>
     <string name="pairing_error_title">Connessione fallita</string>
     <string name="action_retry">Riprova</string>
@@ -222,7 +206,6 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="pairing_device_rename_message">Scegli un nuovo nome per la connessione:</string>
     <string name="pairing_device_rename_hint">Nuovo nome</string>
     <string name="query_suggestion">Suggerimenti di ricerca</string>
-    <string name="request_location_access">Consenti al browser Cliqz di accedere alle informazioni sulla posizione</string>
     <string name="msg_connecting_to_desktop">Connessione in corso…</string>
     <string name="freshtab_no_topsites">Qui appariranno i tuoi siti più visitati</string>
     <string name="action_done">Fatto</string>
@@ -231,7 +214,6 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="resume_tab_dialog_msg">Vuoi ripristinare i tab precedentemente aperti?</string>
     <string name="action_resume">Ripristina</string>
     <string name="action_close_all_tabs">Chiudi tutti i tab</string>
-    <string name="msg_new_icon">Ehi, guarda, il logo di Cliqz adesso è blu! Scopri la nuova versione!</string>
     <string name="auto_forget_tab">Modalità Oblio automatica</string>
     <string name="showcase_youtube_title">Downloader video</string>
     <string name="showcase_youtube_message">Scarica video da YouTube direttamente sul tuo smartphone.</string>
@@ -241,7 +223,6 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="send_tab_generic_error_msg">Ops, l\'invio del tab non è riuscito. Verifica lo stato della tua connessione.</string>
     <string name="action_go_to_connect">Vai a Connect</string>
     <string name="send_tab_no_connection_error_title">Nessuna connessione</string>
-    <string name="send_tab_no_connection_error_msg">Non sei connesso a Cliqz sul computer. Vai al menu di Connect per aggiungere una nuova connessione.</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Invia tab al computer</string>
     <string name="code_scanner">Lettore codice QR</string>
@@ -259,11 +240,9 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="dialog_notification_disabled_msg">Attiva le notifiche per usare questa funzionalità. Vai alle impostazioni di Android, abilita le notifiche per questa app e riprova.</string>
     <string name="search_hint">Cerca</string>
     <string name="allow_write_permission">Abilita la scrittura per usare questa funzionalità.</string>
-    <string name="share_card_email_subject">Ho scoperto questo usando Cliqz Browser</string>
     <string name="no_history">Qui puoi trovare la tua cronologia.</string>
     <string name="no_favorites">Qui puoi trovare i tuoi segnalibri.</string>
     <string name="settings_category_search">Ricerca</string>
-    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Iscrizioni &amp; Notifiche</string>
     <string name="settings_category_others">Altro</string>
     <string name="settings_show_top_sites">Mostra i siti più visitati</string>
@@ -327,39 +306,28 @@ Il phishing è la pratica truffaldina di apparire come un sito affidabile, per p
     <string name="cache">Cache</string>
     <string name="action_set">Imposta</string>
     <string name="clear_private_data">Cancella dati personali in chiusura</string>
-    <string name="clear_data_summary">Selezionando \"Esci\" dal menù principale, il browser Cliqz cancellerà automaticamente i tuoi dati personali.</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">News</string>
     <string name="settings_show_background_image">Mostra immagine di sfondo</string>
     <string name="eula">EULA</string>
-    <string name="eula_text">Il browser Cliqz per Android è basato sul &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;progetto
- open source Lightning Browser&lt;/a&gt; ed è reso disponibile all\'utente sotto i termini della &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0.&lt;/a&gt; Tale licenza
- di software libero ti dà il diritto di condividere, eseguire, studiare e modificare il programma per qualsiasi scopo e per soddisfare al meglio le tue esigenze. Non esiste un ulteriore accordo di licenza con l\'utente finale (EULA).</string>
     <string name="title_activity_eula_setting">EULA</string>
     <string name="privacy_policy">Norme sulla privacy</string>
-    <string name="save_password_text">Vuoi che Cliqz ricordi la password per questo sito?</string>
     <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Sito eliminato</item>
         <item quantity="other">%d Siti eliminati</item>
     </plurals>
-    <string name="agree_privacy_policy_message">Utilizzando questa applicazione l\'utente accetta il testo dell\'&lt;font color="#00aef0"&gt;Informativa sulla privacy di Cliqz.&lt;/font&gt;</string>
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Permessi geolocalizzazione</string>
     <string name="make_default_browser">Imposta browser predefinito</string>
-    <string name="default_browser_title">Cliqz come browser predefinito</string>
-    <string name="default_browser_message">Cliqz sembra piacerti. Vorresti che fosse il tuo browser predefinito?</string>
     <string name="proceed">PROCEDI</string>
     <string name="save">SALVA</string>
     <string name="never">MAI</string>
-    <string name="welcome_message">Cliqz ti dà il benvenuto!</string>
     <string name="accept">ACCETTA</string>
-    <string name="privacy_policy_title">Informativa sulla Privacy - Cliqz</string>
 <string name="settings_show_my_offrz">Visualizza MyOffrz</string>
     <string name="settings_about_my_offrz">Informazioni su MyOffrz</string>
     <string name="myoffrz_activation_description">Attiva MyOffrz per ricevere accattivanti sconti e offerte.</string>
     <string name="settings_category_user_data_choices">Invio dei dati</string>
     <string name="send_usage_data">Invia dati sull\'utilizzo dell\'</string>
-    <string name="send_usage_data_summary">Aiutaci a migliorare la tua esperienza di navigazione. Cliqz raccoglie dati di utilizzo in forma anonima. In nessun caso vengono raccolte informazioni personali.</string>
 </resources>
