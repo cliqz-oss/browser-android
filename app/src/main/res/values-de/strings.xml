@@ -25,7 +25,6 @@
     <string name="clear_cache">Cache beim Beenden leeren</string>
     <string name="enable_cookies">Cookies erlauben</string>
     <string name="recommended">(Empfohlen)</string>
-    <string name="url_bar_search_hint">Cliqz Suche</string>
     <string name="fullScreenOption">Statusleiste beim Surfen ausblenden</string>
     <string name="action_download">Herunterladen</string>
     <string name="action_open">Öffnen</string>
@@ -104,7 +103,6 @@
     <string name="what_is_humanweb">Was ist Human Web?</string>
     <string name="enable_human_web">Human Web erlauben</string>
     <string name="share_link">Teilen über</string>
-    <string name="shared_using">Geteilt mit Cliqz für Android</string>
     <string name="gps_permission">Für bessere Suchergebnisse aktivieren Sie bitte GPS</string>
     <string name="open_in_new_tab">In neuem Tab öffnen</string>
     <string name="open_in_incognito_tab">In neuem Vergessen-Tab öffnen</string>
@@ -124,8 +122,6 @@
     <string name="settings_block_ads">Werbung blockieren (Beta)</string>
     <string name="optimized_block_ads">Faires blockieren</string>
     <string name="what_does_optimized_mean">Was bedeutet \'Faires\'?</string>
-    <string name="optimized_block_ads_description">Der Werbeblocker von Cliqz ist noch in der Entwicklung (Beta). Die Wahlmöglichkeiten der fertigen Version werden sein: Faire Werbung zulassen (Voreinstellung), jegliche Werbung blockieren, jegliche Werbung akzeptieren.
-Mehr https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Video offline ansehen</string>
     <string name="overview">Überblick</string>
     <string name="open_tabs">Offene Tabs</string>
@@ -134,9 +130,6 @@ Mehr https://cliqz.com/whycliqz/adblocking</string>
     <string name="in_page_search_prev_result">Seitensuche vorheriges Ergebnis</string>
     <string name="close_in_page_search">Seitensuche schließen</string>
     <string name="antiphishing_dialog_title">Warnung: betrügerische Website!</string>
-    <string name="antiphishing_message">Cliqz hat den Zugriff auf %1$s blockiert, weil diese Seite als Phishing-Website gemeldet wurde.
-Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldedaten, dein Passwort oder andere vertrauliche Informationen preisgibst.
-[Mehr erfahren|Link to https://cliqz.com/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Zurück zu sicherer</string>
     <string name="antiphishing_ignore_danger">Trotz der Warnung fortfahren</string>
     <string name="antitracking_header">Deine Daten sind geschützt</string>
@@ -157,7 +150,6 @@ Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldeda
     <string name="got_it">Verstanden</string>
     <string name="showcace_search_title">Ergebniskarten</string>
     <string name="upload_file_title">Datei hochladen</string>
-    <string name="rate_us">Cliqz Browser bewerten</string>
     <string name="autocompletion_enabled">Auto-Vervollständigung aktivieren</string>
     <string name="request_desktop_site">Desktop-Version</string>
     <string name="control_center_header_adblocking">Werbeblocker</string>
@@ -170,8 +162,6 @@ Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldeda
     <string name="antiphishing_desc">Potentiell betrügerische Webseites, die es auf deine Passwörter und Kontodaten abgesehen haben, werden mit der Anti-Phishing Technologie vorzeitig erkannt und blockiert.</string>
     <string name="learn_more"><u>mehr erfahren</u></string>
     <string name="switched_to_forget">Vergessen-Tab automatisch aktiviert</string>
-    <string name="summary_adblock_data">Bitte beachte: Cliqz Browser muss größere Informationspakete laden bevor der Werbeblocker effizient funktioniert. Dazu muss die App mit einem WLAN verbunden sein.</string>
-    <string name="tips_and_tricks">Hol dir das Beste aus Cliqz</string>
     <string name="download_image">Bild herunterladen</string>
     <string name="open_link_new_tab">Link in neuem Tab öffnen</string>
     <string name="open_link_forget_tab">Link in Vergessen-Tab öffnen</string>
@@ -200,11 +190,9 @@ Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldeda
     <string name="device_paired_and_connected">Verbunden</string>
     <string name="device_paired_but_offline">Desktop offline</string>
     <string name="qrcode_scanner_pairing_instructions">Gehe zu ![firefox menu](firefox_menu) und wähle \'Connect\', um den QR-Code zu scannen.</string>
-    <string name="msg_pairing_instructions_dialog">Öffne den Cliqz Browser auf deinem Computer (oder lade ihn von cliqz.com herunter).</string>
     <string name="incognito_tab_title">Vergessen Tab</string>
     <string name="incognito_tab_description">Du surfst im Vergessen-Modus: Webseiten, die du in diesem Modus besuchst, werden nicht in deinem Verlauf auftauchen. Auch werden lokale Daten, Cookies mit eingeschlossen, nicht gespeichert.</string>
     <string name="action_retry">Erneut versuchen</string>
-    <string name="app_name">Cliqz Browser</string>
     <string name="descr_search_bar">Suchleiste</string>
     <string name="humanweb">Human Web</string>
     <string name="msg_camera_framework_bug">Entschuldigung, es gab leider ein Problem mit der Android-Kamera. Eventuell musst du dein Gerät neu starten.</string>
@@ -213,14 +201,12 @@ Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldeda
     <string name="pairing_device_rename_title">Verbindung umbenennen</string>
     <string name="pairing_error_message">Leider konnte keine Verbindung hergestellt werden. Bitte versuche es erneut.</string>
     <string name="pairing_error_title">Verbindung fehlgeschlagen</string>
-    <string name="pairing_information">Verbinde Cliqz auf deinem mobilen Endgerät mit Cliqz auf deinem Computer. Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicken. Du kannst außerdem Videos direkt auf dein mobiles Gerät herunterladen.</string>
     <string name="pairing_successful_message">Du hast dein erstes Gerät verbunden!
 
 Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicken. Du kannst außerdem Videos direkt auf dein mobiles Gerät herunterladen.</string>
     <string name="pairing_successful_title">Verbindung erfolgreich</string>
     <string name="query_suggestion">Suchwort-Vorschläge</string>
     <string name="rename_paired_device">Umbenennen</string>
-    <string name="request_location_access">Darf Cliqz Browser auf deine Standortinformationen zugreifen?</string>
     <string name="title_connect">Connect</string>
     <string name="freshtab_no_topsites">Hier erscheinen deine meistbesuchten Seiten</string>
     <string name="action_done">Fertig</string>
@@ -231,14 +217,12 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="resume_tab_dialog_msg">Möchtest du vorher geöffnete Tabs wiederherstellen?</string>
     <string name="action_resume">Wiederherstellen</string>
     <string name="action_close_all_tabs">Alle Tabs schließen</string>
-    <string name="msg_new_icon">Hey, das Cliqz-logo ist jetzt blau. Schau doch mal in die neue Version rein!</string>
     <string name="send_tab_generic_error_msg">Oops, der Tab konnte nicht gesendet werden. Überprüfe den Verbindungsstatus.</string>
     <string name="action_go_to_connect">Gehe zu Connect</string>
     <string name="send_tab_generic_error_title">Tab konnte nicht gesendet werden</string>
     <string name="tab_send_success_msg">Tab wurde an %1$s gesendet</string>
     <string name="send_tab_device_picker_title">Wähle eine Verbindung aus:</string>
     <string name="send_tab_no_connection_error_title">Keine Verbindung</string>
-    <string name="send_tab_no_connection_error_msg">Du bist mit keinem Cliqz Desktop-Browser verbunden. Gehe ins \'Connect\'-Menu, um eine neue Verbindung hinzuzufügen.</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Tab an Desktop senden</string>
     <string name="showcase_youtube_title">Video Downloader</string>
@@ -255,7 +239,6 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="subscribe">Abonnieren</string>
     <string name="dialog_notification_disabled_title">Benachrichtigungen sind für diese App deaktiviert.</string>
     <string name="dialog_notification_disabled_msg">Aktiviere Benachrichtigungen für diese App, um diese Funktion zu nutzen. Gehe in deine Systemeinstellungen, um Push-Benachrichtigungen zu erlauben und versuche es dann erneut.</string>
-    <string name="share_card_email_subject">Ich habe das hier im Cliqz Browser entdeckt</string>
     <string name="subscribe_soccer_league">Liga</string>
     <string name="allow_write_permission">Erlaube Schreibzugriff , um diese Funktion zu nutzen.</string>
     <string name="search_hint">Suchen</string>
@@ -264,7 +247,6 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="no_history">Hier findest du in Zukunft deine Suchen und besuchten Seiten.</string>
     <string name="no_favorites">Hier findest du in Zukunft deine Favoriten.</string>
     <string name="settings_category_search">Suche</string>
-    <string name="settings_category_tab">Cliqz Tab</string>
     <string name="settings_category_others">Sonstiges</string>
     <string name="settings_show_top_sites">Meistbesuchte Seiten anzeigen</string>
     <string name="settings_show_news">News anzeigen</string>
@@ -305,7 +287,6 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="cache">Cache</string>
     <string name="action_set">Übernehmen</string>
     <string name="clear_private_data">Private Daten beim Beenden löschen</string>
-    <string name="clear_data_summary">Cliqz löscht die Daten automatisch beim Verwenden der Funktion \"Beenden\" aus dem Hauptmenü.</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="message_url_copied">URL kopiert</string>
@@ -333,8 +314,6 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="hosting">Hosting</string>
     <string name="loading_failed">Es konnten keine Infos zu dieser Seite geladen werden</string>
     <string name="make_default_browser">Als Standardbrowser festlegen</string>
-    <string name="default_browser_title">Cliqz als Standardbrowser</string>
-    <string name="default_browser_message">Du scheinst Cliqz gerne zu verwenden. Möchtest du Cliqz zu deinem Standardbrowser machen?</string>
     <string name="proceed">FORTFAHREN</string>
     <string name="privacy_policy_url">https://cliqz.com/privacy-browser</string>
     <string name="settings_show_background_image">Hintergrundbild anzeigen</string>
@@ -342,30 +321,21 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="android_app_settings_title">Standortberechtigungen</string>
     <string name="save">SPEICHERN</string>
     <string name="never">NIE</string>
-    <string name="save_password_text">Soll Cliqz dein Passwort für diese Webseite speichern?</string>
     <string name="privacy_policy">Datenschutzerklärung</string>
     <string name="eula">Endnutzer-Lizenzvertrag (EULA)</string>
-    <string name="eula_text">Cliqz für Android basiert auf dem Open-Source-Projekt &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Open-Source-Projekt
-Lightning Browser&lt;/a&gt; und wird unter der &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; bereitgestellt - einer freien Softwarelizenz, die es dir 
-erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Programms zu untersuchen, das Programm an Freunde weiterzugeben und das Programm nach deinen Bedürfnissen zu modifizieren. Es bestehen keine zusätzlichen Bestimmungen für diese Endnutzer-Lizenzvereinbarung.</string>
     <string name="title_activity_eula_setting">Endnutzer-Lizenzvertrag (EULA)</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Topseite gelöscht</item>
         <item quantity="other">%d Topseiten gelöscht</item>
     </plurals>
-    <string name="welcome_message">Willkommen bei Cliqz!</string>
-    <string name="agree_privacy_policy_message">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Cliqz zu.&lt;/font&gt;</string>
     <string name="accept">AKZEPTIEREN</string>
-    <string name="privacy_policy_title">Datenschutzerklärung - Cliqz</string>
     <string name="settings_show_my_offrz">MyOffrz anzeigen</string>
     <string name="settings_about_my_offrz">Über MyOffrz</string>
     <string name="myoffrz_activation_description">Aktiviere MyOffrz und sichere dir attraktive
         Rabatte und Schnäppchen.</string>
     <string name="send_usage_data">Nutzungsdaten senden</string>
-    <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Cliqz sammelt streng anonyme Daten darüber, wie du Cliqz benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
     <string name="settings_category_user_data_choices">Datenübermittlung</string>
     <string name="action_later">Später</string>
     <string name="action_take_survey">Teilnehmen</string>
-    <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Cliqz Browser erfahren. i</string>
     <string name="user_sentiment_survey_second_line_msg">Die verwendete Umfragesoftware, SurveyMonkey, erfasst IP-Adressen.</string>
 </resources>
