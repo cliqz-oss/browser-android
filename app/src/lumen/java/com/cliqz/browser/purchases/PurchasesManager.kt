@@ -47,6 +47,10 @@ class PurchasesManager @JvmOverloads constructor(
         internal set
 
     fun checkPurchases() {
-        Purchases.sharedInstance.getPurchaserInfo(this)
+        try {
+            Purchases.sharedInstance.getPurchaserInfo(this)
+        } catch (_: UninitializedPropertyAccessException) {
+            Log.w(PurchasesManager::class.java.simpleName, "RevenueCat is not initialized")
+        }
     }
 }

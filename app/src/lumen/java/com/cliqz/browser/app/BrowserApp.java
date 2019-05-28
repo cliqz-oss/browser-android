@@ -33,8 +33,11 @@ public class BrowserApp extends BaseBrowserApp {
     }
 
     private void setupSubscriptionSDK() {
-        Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
-        Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY);
+        //noinspection ConstantConditions
+        if (!BuildConfig.REVENUECAT_API_KEY.isEmpty()) {
+            Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
+            Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY);
+        }
     }
 
 }
