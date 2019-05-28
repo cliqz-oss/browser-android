@@ -8,7 +8,7 @@
     android:paddingLeft="8dp"
     android:background="@color/onboarding_background">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/activation_feature_icon_iv"
         android:layout_width="40dp"
         android:layout_height="40dp"

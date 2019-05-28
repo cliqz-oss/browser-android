@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/empty_offers_icon_iv"
         android:layout_width="@dimen/overview_placeholder_icon_w"
         android:layout_height="@dimen/overview_placeholder_icon_h"

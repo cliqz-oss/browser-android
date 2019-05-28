@@ -1,7 +1,7 @@
 package com.cliqz.browser.main.search;
 
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.cliqz.browser.utils.HttpHandler;

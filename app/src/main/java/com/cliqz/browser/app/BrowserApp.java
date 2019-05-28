@@ -2,10 +2,10 @@ package com.cliqz.browser.app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityComponent;

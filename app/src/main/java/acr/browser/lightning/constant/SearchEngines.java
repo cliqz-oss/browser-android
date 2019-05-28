@@ -1,6 +1,6 @@
 package acr.browser.lightning.constant;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.cliqz.browser.R;
 

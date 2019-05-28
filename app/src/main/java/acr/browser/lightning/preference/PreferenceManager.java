@@ -2,7 +2,7 @@ package acr.browser.lightning.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.Countries;

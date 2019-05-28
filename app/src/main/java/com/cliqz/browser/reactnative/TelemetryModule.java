@@ -1,6 +1,6 @@
 package com.cliqz.browser.reactnative;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.cliqz.browser.app.AppComponent;

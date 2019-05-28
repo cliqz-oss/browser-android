@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/onboarding_background">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/onboarding_feature_icon_iv"
         android:layout_width="40dp"
         android:layout_height="40dp"

@@ -5,7 +5,8 @@
   "scripts": {
     "dev-server": "node node_modules/react-native/local-cli/cli.js start --reset-cache",
     "dev-bundle": "node node_modules/react-native/local-cli/cli.js bundle --reset-cache --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/",
-    "bundle": "node node_modules/react-native/local-cli/cli.js bundle --reset-cache --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ --dev false && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/"
+    "bundle": "node node_modules/react-native/local-cli/cli.js bundle --reset-cache --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ --dev false && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/",
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
@@ -17,12 +18,13 @@
     "url": "https://github.com/cliqz-oss/android-browser/issues"
   },
   "devDependencies": {
-    "jsc-android": "^236355.1.1",
     "@babel/core": "7.4.5",
     "@babel/runtime": "7.4.5",
     "babel-jest": "24.8.0",
     "jest": "24.8.0",
+    "jsc-android": "^236355.1.1",
     "metro-react-native-babel-preset": "0.54.1",
+    "patch-package": "^6.1.2",
     "react-test-renderer": "16.8.3"
   },
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",

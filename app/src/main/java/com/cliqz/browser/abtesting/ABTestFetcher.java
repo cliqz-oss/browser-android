@@ -1,6 +1,6 @@
 package com.cliqz.browser.abtesting;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.utils.HttpHandler;

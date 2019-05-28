@@ -3,7 +3,7 @@ package com.cliqz.browser.main.search;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;

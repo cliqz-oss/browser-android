@@ -1,8 +1,8 @@
 package com.cliqz.browser.offrz;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.AsyncTaskLoader;
+import androidx.annotation.NonNull;
+import androidx.loader.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.cliqz.utils.FileUtils;

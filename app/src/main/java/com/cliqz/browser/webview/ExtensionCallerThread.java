@@ -3,7 +3,7 @@ package com.cliqz.browser.webview;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.R;
 

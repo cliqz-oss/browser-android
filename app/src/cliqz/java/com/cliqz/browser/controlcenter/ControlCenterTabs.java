@@ -1,7 +1,7 @@
 package com.cliqz.browser.controlcenter;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import com.cliqz.browser.R;
 

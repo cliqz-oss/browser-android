@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -39,7 +39,7 @@ public class SyncActivity extends AppCompatActivity implements ServiceConnection
     @SuppressLint("PrivateResource")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(android.support.v7.appcompat.R.style.Theme_AppCompat_Light);
+        setTheme(androidx.appcompat.R.style.Theme_AppCompat_Light);
         super.onCreate(savedInstanceState);
         setupActionBar();
 

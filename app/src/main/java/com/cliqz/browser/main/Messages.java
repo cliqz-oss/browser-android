@@ -1,6 +1,6 @@
 package com.cliqz.browser.main;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

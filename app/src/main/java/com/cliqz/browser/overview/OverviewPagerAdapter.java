@@ -1,10 +1,10 @@
 package com.cliqz.browser.overview;
 
 import android.content.res.Resources;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import android.util.SparseArray;
 
 import com.cliqz.browser.app.BrowserApp;

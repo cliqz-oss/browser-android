@@ -8,7 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;

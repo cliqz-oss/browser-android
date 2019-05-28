@@ -1,7 +1,7 @@
 package com.cliqz.browser.webview;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 

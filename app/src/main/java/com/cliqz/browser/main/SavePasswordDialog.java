@@ -1,7 +1,7 @@
 package com.cliqz.browser.main;
 
 import android.app.Activity;
-import android.support.design.widget.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
