@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,12 +23,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.cliqz.browser.controlcenter.DashboardItemEntity.VIEW_TYPE_ICON;
+import static com.cliqz.browser.controlcenter.DashboardItemEntity.VIEW_TYPE_SHIELD;
+
 /**
  * Copyright © Cliqz 2019
  */
 public class DashboardFragment extends ControlCenterFragment {
 
-    private TextView mDashboardStateTextView;
     private View mDisableDashboardView;
     private DashboardAdapter mDashboardAdapter;
     private boolean mIsDailyView;
@@ -60,7 +61,6 @@ public class DashboardFragment extends ControlCenterFragment {
         final View view = inflater.inflate(R.layout.bond_dashboard_fragment, container,
                 false);
         RecyclerView dashBoardListView = (RecyclerView) view.findViewById(R.id.dash_board_list_view);
-        mDashboardStateTextView = (TextView) view.findViewById(R.id.dashboard_state_text);
         mDisableDashboardView = view.findViewById(R.id.dashboard_disable_view);
         mDashboardAdapter = new DashboardAdapter(getContext());
         TextView resetButton = view.findViewById(R.id.reset);
@@ -82,29 +82,15 @@ public class DashboardFragment extends ControlCenterFragment {
     }
 
     public void changeDashboardState(boolean isEnabled) {
-        final int stateTextId;
         final int overlayVisibility;
-        final int stateTextColorId;
         if (isEnabled) {
-            stateTextId = R.string.bond_dashboard_contols_on;
             overlayVisibility = View.GONE;
-            stateTextColorId = R.color.bond_general_color_blue;
         } else {
-            stateTextId = R.string.bond_dashboard_contols_off;
             overlayVisibility = View.VISIBLE;
-            stateTextColorId = R.color.bond_disabled_state_color;
         }
         mDashboardAdapter.setIsDashboardEnabled(isEnabled);
 
         mDisableDashboardView.setVisibility(overlayVisibility);
-        final StringBuilder stateText = new StringBuilder();
-        stateText.append(getString(R.string.bond_dashboard_ultimate_protection));
-        stateText.append(" ");
-        stateText.append(getString(stateTextId));
-
-        mDashboardStateTextView.setTextColor(ContextCompat.getColorStateList(getContext(),
-                stateTextColorId));
-        mDashboardStateTextView.setText(stateText);
     }
 
     @Override
@@ -146,38 +132,22 @@ public class DashboardFragment extends ControlCenterFragment {
         if (data == null) {
             return;
         }
-        final MeasurementWrapper timeSaved = ValuesFormatterUtil.formatTime(data.getInt("timeSaved"));
         final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(data.getInt("dataSaved"));
         final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(data.getInt("adsBlocked"));
         final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(data.getInt("trackersDetected"));
+        final MeasurementWrapper pagesVisited = ValuesFormatterUtil.formatBlockCount(data.getInt("pages"));
         final List<DashboardItemEntity> dashboardItems = new ArrayList<>();
-        dashboardItems.add(new DashboardItemEntity(timeSaved.getValue(),
-                timeSaved.getUnit() == 0 ? "" : getString(timeSaved.getUnit()),
-                R.drawable.ic_time_circle, getString(R.string.bond_dashboard_time_saved_title),
-                getString(R.string.bond_dashboard_time_saved_description), -1));
+
         dashboardItems.add(new DashboardItemEntity(adsBlocked.getValue(),
                 adsBlocked.getUnit() == 0 ? "" : getString(adsBlocked.getUnit()),
-                R.drawable.ic_ad_blocking_shiel, getString(R.string.bond_dashboard_ads_blocked_title),
-                getString(R.string.bond_dashboard_ads_blocked_description), -1));
+                R.drawable.ic_ad_blocking_shiel, getString(R.string.bond_dashboard_ads_blocked_title), -1, VIEW_TYPE_SHIELD));
+        dashboardItems.add(new DashboardItemEntity(trackersDetected.getValue(), "",
+                R.drawable.ic_eye, getString(R.string.bond_dashboard_tracking_companies_title), -1, VIEW_TYPE_ICON));
         dashboardItems.add(new DashboardItemEntity(dataSaved.getValue(),
-                dataSaved.getUnit() == 0 ? "" : getString(dataSaved.getUnit()), -1,
-                getString(R.string.bond_dashboard_data_saved_title),
-                getString(R.string.bond_dashboard_data_saved_description), -1));
-        dashboardItems.add(new DashboardItemEntity("", "", R.drawable.ic_anti_phishing_hook,
-                getString(R.string.bond_dashboard_phishing_protection_title),
-                getString(R.string.bond_dashboard_phishing_protection_description), -1));
-        dashboardItems.add(new DashboardItemEntity(trackersDetected.getValue(),
-                getString(R.string.bond_dashboard_tracking_companies_unit),
-                R.drawable.ic_eye, getString(R.string.bond_dashboard_tracking_companies_title),
-                getString(R.string.bond_dashboard_tracking_companies_description), -1));
-
-        /* @TODO decide how to calculate battery saved then unhide
-        dashboardItems.add(new DashboardItemEntity("255", "MIN", R.drawable.ic_battery,
-                getString(R.string.bond_dashboard_battery_saved_title),getString(R.string
-                .bond_dashboard_battery_saved_description), -1));
-        @todo unhide the money item
-        dashboardItems.add(new DashboardItemEntity("261","EUR",-1,"Money saved",
-                "...how much is your time worth per h", AVERAGE_MONEY_BAR_VALUE));*/
+                dataSaved.getUnit() == 0 ? "" : getString(dataSaved.getUnit()), R.drawable.ic_ad_blocking_shiel,
+                getString(R.string.bond_dashboard_data_saved_title), -1, VIEW_TYPE_SHIELD));
+        dashboardItems.add(new DashboardItemEntity(pagesVisited.getValue(), "", R.drawable.ic_anti_phishing_hook,
+                getString(R.string.bond_dashboard_phishing_protection_title), -1, VIEW_TYPE_ICON));
         mDashboardAdapter.addItems(dashboardItems);
     }
 }

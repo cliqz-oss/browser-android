@@ -4,36 +4,32 @@ package com.cliqz.browser.controlcenter;
  * Copyright © Cliqz 2019
  */
 public class DashboardItemEntity {
+
+    static final int VIEW_TYPE_SHIELD = 1;
+    static final int VIEW_TYPE_ICON = 2;
+
     private String mMeasurementValue;
     private String mMeasurementUnit;
     private int mIconResId;
     private String mTitle;
-    private String mContent;
     private int mOptionValue;
+    private int mViewType;
 
-    DashboardItemEntity(String measurementValue, String measurementUnit, int iconResId, String title, String content, int optionValue) {
+    DashboardItemEntity(String measurementValue, String measurementUnit, int iconResId, String title, int optionValue, int viewType) {
         this.mMeasurementValue = measurementValue;
         this.mMeasurementUnit = measurementUnit;
         this.mIconResId = iconResId;
         this.mTitle = title;
-        this.mContent = content;
         this.mOptionValue = optionValue;
+        this.mViewType = viewType;
     }
 
     String getMeasurementValue() {
         return mMeasurementValue;
     }
 
-    public void setMeasurementValue(String measurementValue) {
-        this.mMeasurementValue = measurementValue;
-    }
-
     String getMeasurementUnit() {
         return mMeasurementUnit;
-    }
-
-    public void setMeasurementUnit(String measurementUnit) {
-        this.mMeasurementUnit = measurementUnit;
     }
 
     int getIconResId() {
@@ -52,19 +48,7 @@ public class DashboardItemEntity {
         this.mTitle = title;
     }
 
-    public String getContent() {
-        return mContent;
-    }
-
-    public void setContent(String content) {
-        this.mContent = content;
-    }
-
-    int getOptionValue() {
-        return mOptionValue;
-    }
-
-    public void setOptionValue(int optionValue) {
-        this.mOptionValue = optionValue;
+    public int getmViewType() {
+        return mViewType;
     }
 }
