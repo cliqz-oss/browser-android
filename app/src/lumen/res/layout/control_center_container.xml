@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            app:theme="@style/BrandedSwitch.control" />
+            app:theme="@style/dashboard_switch_style" />
 
     </LinearLayout>
 

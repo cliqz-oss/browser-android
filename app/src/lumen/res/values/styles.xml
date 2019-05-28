@@ -42,8 +42,7 @@
         <item name="android:fontFamily">@string/roboto_regular</item>
         <item name="android:textSize">@dimen/dashboard_item_content_size</item>
     </style>
-    <style name="BrandedSwitch.control" parent="Theme.AppCompat.Light">
-        <!-- active thumb & track color (30% transparency) -->
+    <style name="dashboard_switch_style" parent="Theme.AppCompat.Light">
         <item name="colorControlActivated">#1B9CFC</item>
         <item name="colorSwitchThumbNormal">#7189B0</item>
     </style>

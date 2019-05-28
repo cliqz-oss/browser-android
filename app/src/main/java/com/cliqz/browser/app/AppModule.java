@@ -15,6 +15,7 @@ import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.Engine;
+import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Singleton;
@@ -101,6 +102,13 @@ public class AppModule {
     Adblocker provideAdblocker(Engine engine, final PreferenceManager prefs) {
         return new Adblocker(engine, prefs.getAdBlockEnabled());
     }
+
+    @Provides
+    @Singleton
+    Insights provideInsights(Engine engine) {
+        return new Insights(engine);
+    }
+
 
     @Provides
     ChunkedFileManager providesChunkedFileManaget(Context context) {

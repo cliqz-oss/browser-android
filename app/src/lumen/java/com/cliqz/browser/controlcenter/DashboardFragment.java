@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.jsengine.AntiTracking;
+import com.cliqz.jsengine.Insights;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class DashboardFragment extends ControlCenterFragment {
             R.string.bond_dashboard_today_title, R.string.bond_dashboard_week_title};
 
     @Inject
-    AntiTracking antiTracking;
+    Insights insights;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,11 +104,11 @@ public class DashboardFragment extends ControlCenterFragment {
             return;
         }
         if (mIsDailyView) {
-            antiTracking.getInsightsData((data) -> {
+            insights.getInsightsData((data) -> {
                 updateViews(data.getMap("result"));
             }, "day");
         } else {
-            antiTracking.getInsightsData((data) -> {
+            insights.getInsightsData((data) -> {
                 updateViews(data.getMap("result"));
             }, "week");
         }
