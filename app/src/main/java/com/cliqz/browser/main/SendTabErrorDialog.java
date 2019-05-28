@@ -3,7 +3,7 @@ package com.cliqz.browser.main;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.connect.SyncActivity;

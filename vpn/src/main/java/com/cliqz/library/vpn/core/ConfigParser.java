@@ -5,8 +5,9 @@
 
 package com.cliqz.library.vpn.core;
 
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
+
+import androidx.core.util.Pair;
 
 import com.cliqz.library.vpn.VpnProfile;
 

@@ -14,12 +14,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.*;
 import android.security.KeyChainException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
 import com.cliqz.library.vpn.api.ExternalCertificateProvider;
 
 import java.io.ByteArrayInputStream;

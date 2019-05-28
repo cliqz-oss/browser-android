@@ -1,6 +1,6 @@
 package com.cliqz.browser.main.search;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 import java.util.regex.Matcher;

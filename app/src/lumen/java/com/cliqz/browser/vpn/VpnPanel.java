@@ -8,8 +8,6 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +18,10 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -120,7 +122,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.home_vpn_panel, container, false);
         mSelectedCountry = view.findViewById(R.id.vpn_country);
         //mSelectedCountry.setText(PreferenceManager.getInstance(getContext()).getVpnSelectedCountry());

@@ -1,7 +1,7 @@
 package com.cliqz.browser.overview;
 
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.FavoritesFragment;

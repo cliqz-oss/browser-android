@@ -1,6 +1,6 @@
 package com.cliqz.utils;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 /**
  * This is used when a method should return null.<br>

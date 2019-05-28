@@ -3,11 +3,12 @@ package com.cliqz.browser.main.search;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
@@ -37,8 +38,6 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 @SuppressLint("ViewConstructor")
 public class SearchView extends FrameLayout {
-
-    private static final String TAG = SearchView.class.getSimpleName();
 
     private final Incognito incognito;
 

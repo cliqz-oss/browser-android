@@ -1,8 +1,9 @@
 package com.cliqz.browser.vpn;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
+
+import androidx.fragment.app.FragmentManager;
 
 /**
  * @author Ravjit Uppal

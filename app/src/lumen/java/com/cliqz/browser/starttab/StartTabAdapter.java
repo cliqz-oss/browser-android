@@ -1,8 +1,8 @@
 package com.cliqz.browser.starttab;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 

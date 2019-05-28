@@ -1,13 +1,15 @@
 package com.cliqz.browser.starttab;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.R;
 
@@ -15,10 +17,13 @@ public class Freshtab extends StartTabFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final FrameLayout frameLayout = new FrameLayout(getContext());
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        final Context context = inflater.getContext();
+        final FrameLayout frameLayout = new FrameLayout(context);
         frameLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        frameLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tab_fragment_background));
+        frameLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.tab_fragment_background));
         return frameLayout;
     }
 

@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.annotation.NonNull;
-import android.support.graphics.drawable.VectorDrawableCompat;
+
+import androidx.annotation.NonNull;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.cliqz.browser.R;
 

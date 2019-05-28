@@ -3,8 +3,8 @@ package com.cliqz.browser.main.search;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.cliqz.browser.R;

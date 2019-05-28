@@ -5,10 +5,10 @@ import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.os.EnvironmentCompat;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.os.EnvironmentCompat;
+
 import android.webkit.URLUtil;
 
 import com.cliqz.utils.StringUtils;

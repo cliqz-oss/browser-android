@@ -1,6 +1,6 @@
 package com.cliqz.browser.overview;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.view.View;
 import android.widget.ImageView;
 

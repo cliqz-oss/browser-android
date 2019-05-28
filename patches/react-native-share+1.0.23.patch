@@ -1,0 +1,24 @@
+diff --git a/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java b/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java
+index 961d5fe..c8a38d7 100644
+--- a/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java
++++ b/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java
+@@ -1,17 +1,14 @@
+ package cl.json;
+ 
+-import android.content.Intent;
+ import android.content.ActivityNotFoundException;
+-import android.net.Uri;
+-import android.support.annotation.Nullable;
++
++import androidx.annotation.Nullable;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+ import com.facebook.react.bridge.ReactMethod;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.bridge.Callback;
+ 
+-import java.sql.SQLOutput;
+-import java.util.ArrayList;
+ import java.util.HashMap;
+ 
+ import cl.json.social.EmailShare;

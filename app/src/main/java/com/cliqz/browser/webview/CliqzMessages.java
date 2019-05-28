@@ -1,6 +1,6 @@
 package com.cliqz.browser.webview;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.animation.Animation;
 import android.webkit.URLUtil;
 

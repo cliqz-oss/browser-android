@@ -1,6 +1,6 @@
 package com.cliqz.browser.app;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.cliqz.browser.main.FlavoredActivityComponent;
 

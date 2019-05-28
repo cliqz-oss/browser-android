@@ -1,7 +1,7 @@
 package com.cliqz.browser.starttab;
 
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.DrawableRes;
+import androidx.fragment.app.Fragment;
 
 /**
  * @author Ravjit Uppal
@@ -10,5 +10,6 @@ abstract class StartTabFragment extends Fragment {
 
     abstract String getTitle();
 
-    abstract @DrawableRes int getIconId();
+    abstract @DrawableRes
+    int getIconId();
 }

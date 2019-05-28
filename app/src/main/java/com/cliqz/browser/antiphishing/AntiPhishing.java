@@ -1,6 +1,6 @@
 package com.cliqz.browser.antiphishing;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.cliqz.utils.StringUtils;
