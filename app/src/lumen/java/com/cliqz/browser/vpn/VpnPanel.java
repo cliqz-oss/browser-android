@@ -146,15 +146,17 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
             //VpnCountriesDialog.show(getContext(), this);
             Toast.makeText(getContext(), "In progress", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.vpn_connect_button) {
-            if (!purchasesManager.isVpnEnabled()) {
-                bus.post(new Messages.GoToPurchase(0));
-                return;
-            }
-            if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
-                mVpnHandler.disconnectVpn();
-                updateStateToConnect();
+            boolean isVpnEnabled = purchasesManager.getPurchase() != null && purchasesManager.getPurchase().isVpnEnabled();
+            boolean isInTrial = purchasesManager.getTrialPeriod() != null && purchasesManager.getTrialPeriod().isInTrial();
+            if (isVpnEnabled || isInTrial) {
+                if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
+                    mVpnHandler.disconnectVpn();
+                    updateStateToConnect();
+                } else {
+                    mVpnHandler.connectVpn();
+                }
             } else {
-                mVpnHandler.connectVpn();
+                bus.post(new Messages.GoToPurchase(0));
             }
         }
     }

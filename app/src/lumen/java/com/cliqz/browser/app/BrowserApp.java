@@ -3,15 +3,21 @@ package com.cliqz.browser.app;
 import android.net.Uri;
 
 import com.cliqz.browser.BuildConfig;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.library.vpn.ConfigConverter;
 import com.cliqz.library.vpn.core.ProfileManager;
 import com.cliqz.library.vpn.core.StatusListener;
 import com.revenuecat.purchases.Purchases;
 
+import javax.inject.Inject;
+
 /**
  * @author Ravjit Uppal
  */
 public class BrowserApp extends BaseBrowserApp {
+
+    @Inject
+    PurchasesManager purchasesManager;
 
     @Override
     public void init() {
@@ -19,6 +25,7 @@ public class BrowserApp extends BaseBrowserApp {
         final StatusListener mStatus = new StatusListener();
         mStatus.init(getApplicationContext());
 
+        getAppComponent().inject(this);
         setupSubscriptionSDK();
     }
 
@@ -37,6 +44,7 @@ public class BrowserApp extends BaseBrowserApp {
         if (!BuildConfig.REVENUECAT_API_KEY.isEmpty()) {
             Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
             Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY);
+            purchasesManager.checkPurchases();
         }
     }
 

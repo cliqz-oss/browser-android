@@ -1,5 +1,7 @@
 package com.cliqz.browser.purchases;
 
+import acr.browser.lightning.preference.PreferenceManager;
+
 import android.content.Context;
 
 import com.cliqz.nove.Bus;
@@ -10,11 +12,7 @@ import com.cliqz.nove.Bus;
 public class PurchasesManager {
 
     @SuppressWarnings("unused")
-    public PurchasesManager(Context context, Bus bus) {
-        // No-op
-    }
-
-    public void checkPurchases() {
+    public PurchasesManager(Context context, Bus bus, PreferenceManager preferenceManager) {
         // No-op
     }
 }

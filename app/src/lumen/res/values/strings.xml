@@ -28,4 +28,17 @@
     <string name="privacy_policy_title">Privacy Policy - Lumen</string>
     <string name="send_usage_data_summary">Help us improve your browsing experience. Lumen collects strictly anonymous usage data. At no occasion is any PII collected.</string>
     <string name="user_sentiment_survey_first_line_msg" tools:ignore="MissingTranslation">Hello! We’d like to know your opinion about the Lumen Browser. i</string>
+
+    <!-- Start Tab -->
+    <string name="start_tab_welcome_message">Welcome to Lumen!</string>
+    <string name="trial_over_upgrade_lumen_title">Your Trial is Over</string>
+    <string name="trial_over_upgrade_lumen_description">You can still use Lumen, but without ultimate protection and VPN. Or go premium.</string>
+    <string name="trial_over_upgrade_lumen_dismiss">No, Thanks</string>
+    <string name="trial_over_upgrade_lumen_proceed">Learn More</string>
+    <plurals name="trial_period_upgrade_description">
+        <item quantity="one">1 more day in the Test-Version</item>
+        <item quantity="other">%d more days in the Test-Version</item>
+    </plurals>
+    <string name="upgrade_button">Upgrade</string>
+    <string name="made_in_germany">Made in Germany</string>
 </resources>

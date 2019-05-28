@@ -163,12 +163,12 @@ public class FavoritesFragment extends StartTabFragment {
     }
 
     @Override
-    String getTitle() {
+    public String getTitle() {
         return "";
     }
 
     @Override
-    int getIconId() {
+    public int getIconId() {
         return R.drawable.ic_star_white;
     }
 }

@@ -121,8 +121,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    PurchasesManager providePurchasesManager(Context context, Bus bus) {
-        return new PurchasesManager(context, bus);
+    PurchasesManager providePurchasesManager(Context context, Bus bus, PreferenceManager prefs) {
+        return new PurchasesManager(context, bus, prefs);
     }
 
     @Provides

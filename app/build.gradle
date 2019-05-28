@@ -189,21 +189,21 @@ dependencies {
     // event bus
     implementation 'com.cliqz:nove:0.3.0'
     annotationProcessor 'com.cliqz:nove-compiler:0.3.0'
-    
+
     // dependency injection
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'com.google.dagger:dagger:2.11'
     implementation 'com.google.dagger:dagger-android-support:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     compileOnly 'javax.annotation:jsr250-api:1.0'
-    
+
     // view binding
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
     implementation 'com.jakewharton:butterknife:7.0.1'
 
     // native fs support for React-Native
     implementation project(':react-native-fs')
-    
+
     // sqlite support for React-Native
     implementation project(':react-native-sqlite2')
     implementation project(':WebRTCModule')
@@ -216,11 +216,11 @@ dependencies {
 
     // user agent
     implementation project(':react-native-user-agent-react-native-user-agent')
-    
+
     // Utils libraries
     implementation project(':utils')
     implementation project(':android_utils')
-    
+
     // On-boarding
     cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
     amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
@@ -229,13 +229,13 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    
+
     // Google Play Services
     implementation 'com.google.android.gms:play-services-gcm:16.1.0'
-    
+
     // React-Native
     implementation "com.facebook.react:react-native:${reactNativeVersion}"
-    
+
     // AWS SNS SDK
     implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
@@ -248,7 +248,7 @@ dependencies {
 
     // MiniBloomFilter
     implementation 'com.github.cliqz-oss:minibloomfilter:1.0'
-    
+
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
@@ -257,7 +257,7 @@ dependencies {
 
     // vpn module
     lumenImplementation project(':vpn')
-    
+
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:3.8'
