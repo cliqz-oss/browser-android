@@ -5,7 +5,7 @@
   "scripts": {
     "dev-server": "node node_modules/react-native/local-cli/cli.js start --reset-cache",
     "dev-bundle": "node node_modules/react-native/local-cli/cli.js bundle --reset-cache --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/",
-    "bundle": "node node_modules/react-native/local-cli/cli.js bundle --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ --dev false && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/"
+    "bundle": "node node_modules/react-native/local-cli/cli.js bundle --reset-cache --platform android --entry-file index.js --bundle-output ./jsengine/jsengine.bundle.js --assets-dest ./jsengine/ --dev false && cp -R ./node_modules/browser-core/build/assets/ ./jsengine/assets/"
   },
   "repository": {
     "type": "git",
@@ -17,11 +17,16 @@
     "url": "https://github.com/cliqz-oss/android-browser/issues"
   },
   "devDependencies": {
-    "jsc-android": "^236355.1.1"
+    "jsc-android": "^236355.1.1",
+    "@babel/core": "7.4.5",
+    "@babel/runtime": "7.4.5",
+    "babel-jest": "24.8.0",
+    "jest": "24.8.0",
+    "metro-react-native-babel-preset": "0.54.1",
+    "react-test-renderer": "16.8.3"
   },
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
-    "@babel/runtime": "^7.2.0",
     "@cliqz/indexeddbshim": "^4.1.2",
     "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.ae0e3c1.tgz",
     "buffer": "5.0.7",
@@ -31,7 +36,7 @@
     "path-browserify": "0.0.0",
     "pouchdb-adapter-react-native-sqlite": "1.0.3",
     "pouchdb-react-native": "6.3.4",
-    "react": "16.6.3",
+    "react": "16.8.3",
     "react-native": "0.59.8",
     "react-native-collapsible": "0.8.1",
     "react-native-device-info": "0.10.2",

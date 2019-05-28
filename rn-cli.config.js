@@ -19,5 +19,5 @@ module.exports = {
         require.resolve('number-to-locale-string'),
       ].concat(getPolyfills({ platform }));
     },
-  }
+  },
 };
