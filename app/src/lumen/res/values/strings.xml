@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="bond_dashboard_clear_dialog_title">Clear Dashboard</string>
-    <string name="bond_dashboard_clear_dialog_message">Clear the dashboard</string>
+    <string name="bond_dashboard_clear_dialog_title">Clear Dashboard Data?</string>
+    <string name="bond_dashboard_clear_dialog_message">This will delete all your dashboard data and cannot be undone.</string>
     <string name="cancel">Cancel</string>
-    <string name="button_ok">OK</string>
+    <string name="button_ok">Clear</string>
     <string name="bond_dashboard_ultimate_protection">Ultimate Protection:</string>
     <string name="bond_dashboard_contols_pause">Pause</string>
     <string name="bond_dashboard_contols_vpn">VPN</string>
@@ -19,7 +19,7 @@
     <string name="bond_dashboard_ads_blocked_description">Enjoy clutter-free browsing</string>
     <string name="bond_dashboard_data_saved_title">Data Volume Saved</string>
     <string name="bond_dashboard_data_saved_description">No data wasted on ads</string>
-    <string name="bond_dashboard_phishing_protection_title">Phishing Protection</string>
+    <string name="bond_dashboard_phishing_protection_title">Websites checked</string>
     <string name="bond_dashboard_phishing_protection_description">prevents identity theft by fraudulent websites</string>
     <string name="bond_dashboard_tracking_companies_unit">COMPANIES</string>
     <string name="bond_dashboard_tracking_companies_title">Data Collectors Detained</string>
@@ -36,7 +36,6 @@
     <string name="bond_dashboard_ultimate_protection_pause_dialog_positive_button">Pause</string>
     <string name="bond_dashboard_contols_start">Start</string>
     <string name="bond_dashboard_protection_off">Protection is off</string>
-
-    <string name="reset_subscription">Reset Subscription</string>
+    <string name="reset_subscription">Reset statistics</string>
     <string name="button_buy_subscription">Buy</string>
 </resources>

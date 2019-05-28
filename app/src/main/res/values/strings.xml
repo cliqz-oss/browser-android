@@ -357,5 +357,4 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="settings_category_user_data_choices">Data Choices</string>
     <string name="send_usage_data">Send usage data</string>
     <string name="send_usage_data_summary">Help us improve your browsing experience. Cliqz collects strictly anonymous usage data. At no occasion is any PII collected.</string>
-    <string name="reset_subscription">Reset Subscription</string>
 </resources>
