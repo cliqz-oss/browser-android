@@ -4,7 +4,7 @@
 # folder (build/releases)
 
 readonly flavors="Standard"
-readonly archs="Arm X86 Fat"
+readonly archs="Arm Arm64 X86 X86_64 Fat"
 targets=()
 for flavor in ${flavors[@]}
 do
