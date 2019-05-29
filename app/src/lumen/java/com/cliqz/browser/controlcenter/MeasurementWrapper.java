@@ -1,6 +1,7 @@
 package com.cliqz.browser.controlcenter;
 
-import android.support.annotation.StringRes;
+
+import androidx.annotation.StringRes;
 
 /**
  * Copyright © Cliqz 2019
@@ -10,7 +11,8 @@ import android.support.annotation.StringRes;
 class MeasurementWrapper {
 
     private final String mValue;
-    private final @StringRes int mUnit;
+    private final @StringRes
+    int mUnit;
 
     MeasurementWrapper(String value, @StringRes int unit) {
         mValue = value;

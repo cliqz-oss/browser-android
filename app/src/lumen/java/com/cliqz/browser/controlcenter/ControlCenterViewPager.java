@@ -1,10 +1,9 @@
 package com.cliqz.browser.controlcenter;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
-import com.cliqz.browser.controlcenter.ControlCenterPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Copyright © Cliqz 2019

@@ -2,7 +2,8 @@ package com.cliqz.browser.controlcenter;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Copyright © Cliqz 2019

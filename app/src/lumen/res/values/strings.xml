@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bond_dashboard_clear_dialog_title">Clear Dashboard Data?</string>
     <string name="bond_dashboard_clear_dialog_message">This will delete all your dashboard data and cannot be undone.</string>
     <string name="cancel">Cancel</string>
