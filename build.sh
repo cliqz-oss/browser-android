@@ -11,7 +11,7 @@ npm ci
 npm run bundle
 
 readonly flavors="Standard"
-readonly archs="Arm X86 Fat"
+readonly archs="Arm Arm64 X86 X86_64"
 targets=()
 for flavor in ${flavors[@]}
 do
