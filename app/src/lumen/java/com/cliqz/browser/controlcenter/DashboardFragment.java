@@ -100,17 +100,13 @@ public class DashboardFragment extends ControlCenterFragment {
 
     @Override
     public void updateUI() {
-        if (mDashboardAdapter == null) {
+        if (mDashboardAdapter == null || getView() == null) {
             return;
         }
         if (mIsDailyView) {
-            insights.getInsightsData((data) -> {
-                updateViews(data.getMap("result"));
-            }, "day");
+            insights.getInsightsData((data) -> getView().post(() -> updateViews(data.getMap("result"))), "day");
         } else {
-            insights.getInsightsData((data) -> {
-                updateViews(data.getMap("result"));
-            }, "week");
+            insights.getInsightsData((data) -> getView().post(() -> updateViews(data.getMap("result"))), "week");
         }
 
     }

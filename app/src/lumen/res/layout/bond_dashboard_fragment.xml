@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/reset"
-        android:layout_below="@+id/dashboard_state_text"
+        android:layout_alignParentTop="true"
         android:padding="16dp" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:id="@+id/dashboard_disable_view"
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:layout_below="@+id/dashboard_state_text"
+        android:layout_alignParentTop="true"
         android:background="@color/dark_transparent_overlay"
         android:visibility="gone" />
 
