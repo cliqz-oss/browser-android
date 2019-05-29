@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <string name="url_bar_search_hint">Lumen Suche</string>
+    <string name="shared_using">Geteilt mit Lumen für Android</string>
+    <string name="optimized_block_ads_description">Der Werbeblocker von Lumen ist noch in der Entwicklung (Beta). Die Wahlmöglichkeiten der fertigen Version werden sein: Faire Werbung zulassen (Voreinstellung), jegliche Werbung blockieren, jegliche Werbung akzeptieren. Mehr https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Lumen hat den Zugriff auf %1$s blockiert, weil diese Seite als Phishing-Website gemeldet wurde. Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldedaten, dein Passwort oder andere vertrauliche Informationen preisgibst. [Mehr erfahren|Link to https://cliqz.com/whycliqz/anti-phishing]</string>
+    <string name="rate_us">Lumen Browser bewerten</string>
+    <string name="summary_adblock_data">Bitte beachte: Lumen Browser muss größere Informationspakete laden bevor der Werbeblocker effizient funktioniert. Dazu muss die App mit einem WLAN verbunden sein.</string>
+    <string name="tips_and_tricks">Hol dir das Beste aus Lumen</string>
+    <string name="msg_pairing_instructions_dialog">Öffne den Lumen Browser auf deinem Computer (oder lade ihn von cliqz.com herunter).</string>
+    <string name="app_name">Lumen Browser</string>
+    <string name="pairing_information">Verbinde Lumen auf deinem mobilen Endgerät mit Lumen auf deinem Computer. Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicken. Du kannst außerdem Videos direkt auf dein mobiles Gerät herunterladen.</string>
+    <string name="request_location_access">Darf Lumen Browser auf deine Standortinformationen zugreifen?</string>
+    <string name="msg_new_icon">Hey, das Lumen-logo ist jetzt blau. Schau doch mal in die neue Version rein!</string>
+    <string name="send_tab_no_connection_error_msg">Du bist mit keinem Lumen Desktop-Browser verbunden. Gehe ins \'Connect\'-Menu, um eine neue Verbindung hinzuzufügen.</string>
+    <string name="share_card_email_subject">Ich habe das hier im Lumen Browser entdeckt</string>
+    <string name="settings_category_tab">Lumen Tab</string>
+    <string name="clear_data_summary">Lumen löscht die Daten automatisch beim Verwenden der Funktion \"Beenden\" aus dem Hauptmenü.</string>
+    <string name="default_browser_title">Lumen als Standardbrowser</string>
+    <string name="default_browser_message">Du scheinst Lumen gerne zu verwenden. Möchtest du Lumen zu deinem Standardbrowser machen?</string>
+    <string name="save_password_text">Soll Lumen dein Passwort für diese Webseite speichern?</string>
+    <string name="eula_text">Lumen für Android basiert auf dem Open-Source-Projekt &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Open-Source-Projekt Lightning Browser&lt;/a&gt; und wird unter der &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; bereitgestellt - einer freien Softwarelizenz, die es dir erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Programms zu untersuchen, das Programm an Freunde weiterzugeben und das Programm nach deinen Bedürfnissen zu modifizieren. Es bestehen keine zusätzlichen Bestimmungen für diese Endnutzer-Lizenzvereinbarung.</string>
+    <string name="welcome_message">Willkommen bei Lumen!</string>
+    <string name="agree_privacy_policy_message">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Lumen zu.&lt;/font&gt;</string>
+    <string name="privacy_policy_title">Datenschutzerklärung - Lumen</string>
+    <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Lumen sammelt streng anonyme Daten darüber, wie du Lumen benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
+    <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Lumen Browser erfahren. i</string>
+</resources>
+

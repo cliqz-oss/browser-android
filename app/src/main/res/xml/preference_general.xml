@@ -19,7 +19,7 @@
             android:key="search"
             android:title="@string/complementary_search_engine" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_cliqz_tab">
+    <PreferenceCategory android:title="@string/settings_category_tab">
         <CheckBoxPreference
             android:key="cb_show_background_image"
             android:title="@string/settings_show_background_image" />

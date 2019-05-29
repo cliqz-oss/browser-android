@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="reset_subscription">Reset Subscription</string>
     <string name="button_buy_subscription">Buy</string>
+    <string name="url_bar_search_hint">Lumen Search</string>
+    <string name="app_name">Lumen Browser</string>
+    <string name="shared_using">Shared with Lumen for Android</string>
+    <string name="optimized_block_ads_description">The Lumen Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads. More https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Lumen has blocked access to %1$s because it has been reported as a phishing website. Phishing websites disguise as other sites you may trust in order to trick you into disclosing your login, password or other sensitive information. [Learn more|https://cliqz.com/en/whycliqz/anti-phishing]</string>
+    <string name="rate_us">Rate Lumen Browser</string>
+    <string name="summary_adblock_data">Please note: Lumen Browser has to download some data packages first, before the ad-blocker works efficiently. For this, the app must be connected to Wi-Fi.</string>
+    <string name="tips_and_tricks">Get the best out of Lumen</string>
+    <string name="msg_pairing_instructions_dialog">Open Lumen Browser on your computer (or get it from cliqz.com).</string>
+    <string name="pairing_information">Connect Lumen on your mobile device with Lumen on your computer. This will allow you to send tabs between your desktop and your mobile device. You can also directly download videos from your desktop browser to your mobile device.</string>
+    <string name="request_location_access">Allow Lumen Browser to access location information</string>
+    <string name="msg_new_icon">Hey, the Lumen logo is now blue. Check out the new version of the app!</string>
+    <string name="send_tab_no_connection_error_msg">You are not connected to any Lumen Browser for Desktop. Go to the \'Connect\' menu to add a new connection.</string>
+    <string name="share_card_email_subject">I discovered this in the Lumen Browser</string>
+    <string name="settings_category_tab">Lumen Tab</string>
+    <string name="clear_data_summary">Lumen will automatically clear your data whenever you select \"Exit\" from the main menu.</string>
+    <string name="default_browser_title">Lumen as Default Browser</string>
+    <string name="default_browser_message">You seem to like using Lumen. Do you want to make it your default browser?</string>
+    <string name="save_password_text">Do you want Lumen to save your password for this site?</string>
+    <string name="tab_default_url" translatable="false">Lumen Tab</string>
+    <string name="eula_text">The Lumen for Android browser is built upon the &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning Browser open source project&lt;/a&gt; and is made available to you under the terms of the &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; a free software license, which gives you the right to run the program for any purpose, to study how it works, to give copies to your friends and to modify it to meet your needs better. There is no separate End User License Agreement (EULA).</string>
+    <string name="welcome_message">Welcome to Lumen!</string>
+    <string name="agree_privacy_policy_message">By using this application, you agree to the &lt;font color=\'#00aef0\'>Lumen Privacy Policy &lt;/font></string>
+    <string name="privacy_policy_title">Privacy Policy - Lumen</string>
+    <string name="send_usage_data_summary">Help us improve your browsing experience. Lumen collects strictly anonymous usage data. At no occasion is any PII collected.</string>
+    <string name="user_sentiment_survey_first_line_msg" tools:ignore="MissingTranslation">Hello! We’d like to know your opinion about the Lumen Browser. i</string>
 </resources>

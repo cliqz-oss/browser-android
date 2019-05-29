@@ -25,7 +25,6 @@
     <string name="clear_cache">Vider le cache lors de la fermeture</string>
     <string name="enable_cookies">Autoriser les cookies</string>
     <string name="recommended">Recommandé</string>
-    <string name="cliqz_search_hint">Rechercher avec Cliqz</string>
     <string name="fullScreenOption">Cacher la barre de status lors de la navigation</string>
     <string name="action_download">Télécharger</string>
     <string name="action_open">Ouvrir</string>
@@ -91,7 +90,6 @@ Continuer tout de même ?</string>
     <string name="reading_mode">Mode Lecture</string>
     <string name="loading">Chargement en cours…</string>
     <string name="dark_theme">Thème sombre</string>
-    <string name="app_name">Navigateur Cliqz</string>
     <string name="theme">Thème de l\'appli</string>
     <string name="light_theme">Thème clair</string>
     <string name="black_theme">Thème sombre (AMOLED)</string>
@@ -107,7 +105,6 @@ Continuer tout de même ?</string>
     <string name="humanweb">Human Web</string>
     <string name="about_humanweb_url">https://cliqz.com/whycliqz/human-web</string>
     <string name="share_link">Partager avec</string>
-    <string name="shared_using">Partagé avec Cliqz pour Android</string>
     <string name="gps_permission">Veuillez activer votre GPS pour de meilleur résultats de recherche</string>
     <string name="open_in_new_tab">Ouvrir dans un nouvel onglet</string>
     <string name="open_in_incognito_tab">Ouvrir dans un Onglet Mode Oubli</string>
@@ -131,16 +128,11 @@ Continuer tout de même ?</string>
     <string name="settings_block_ads">Bloqueur de Publicités (Bêta)</string>
     <string name="optimized_block_ads">Bloquage équitable</string>
     <string name="what_does_optimized_mean">Qu\'est-ce que « équitable » ?</string>
-    <string name="optimized_block_ads_description">Le Bloqueur de Publicités de Cliqz est pour l\'instant en version bêta. La version finale offrira les options suivantes : « Autoriser les publicités - Équitable » (paramétré par défaut), « Bloquer toutes les publicités » , « Autoriser toutes les publicités ». 
-Pour en savoir plus : https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Voir la vidéo hors connection</string>
     <string name="overview">Aperçu</string>
     <string name="open_tabs">Onglets ouverts</string>
     <string name="favorites">Marque-pages</string>
     <string name="antiphishing_dialog_title">Attention : site malveillant !</string>
-    <string name="antiphishing_message">Cliqz a bloqué l\'accès à %1$s car il a été reporté comme un site malveillant. 
-Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos identifiants, vos mots de passe ou toutes autres données sensibles.
-[En savoir plus||https://cliqz.com/fr/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Retourner au site sûr</string>
     <string name="antiphishing_ignore_danger">Continuer malgré l\'avertissement</string>
     <string name="antitracking_header">Vos données sont protégées</string>
@@ -161,10 +153,9 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="showcase_search_message">Les résultats sont affichés au fur et à mesure que vous recherchez.</string>
     <string name="showcace_search_title">Cartes des résultats</string>
     <string name="upload_file_title">Télécharger le titre du fichier</string>
-    <string name="rate_us">Noter le navigateur Cliqz</string>
     <string name="autocompletion_enabled">Activer Autocomplétion</string>
     <string name="request_desktop_site">Version ordinateur</string>
-    <string name="contact_cliqz">FAQ &amp; Support</string>
+    <string name="title_faq_and_support">FAQ &amp; Support</string>
     <string name="activate">Activer</string>
     <string name="adblocking_ad_counts">Pubs</string>
     <string name="ad_blocker_disabled">Bloqueur de Pubs est désactivé</string>
@@ -187,11 +178,9 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="usa">États-Unis</string>
     <string name="regional_settings">Résultats de la recherche pour</string>
     <string name="report_site">Signaler le site Web</string>
-    <string name="tips_and_tricks">Obtenir le meilleur de Cliqz</string>
     <string name="antiphishing_desc">La technologie « Anti-Phishing » identifie et bloque les sites potentiellement frauduleux qui essaient de subtiliser vos mots de passe ou les données de vos comptes, et ceci avant que vous les visitiez.</string>
     <string name="control_center_header_adblocking">Bloqueur de Pubs</string>
     <string name="update">Mettre à jour</string>
-    <string name="summary_adblock_data">À noter : le navigateur Cliqz doit d\'abord télécharger des données afin d\'initialiser le Bloqueur de Publicités. Pour cela, vous devez être connecté au Wi-Fi.</string>
     <string name="update_webview_msg">Le système n\'est pas à jour. Afin de naviguer en toute sécurité, bien vouloir mettre à jour la version Android.</string>
     <string name="open_image_forget_tab">Ouvrir l\'image dans un Onglet Mode Oubli</string>
     <string name="open_image_new_tab">Ouvrir l\'image dans un nouvel onglet</string>
@@ -206,8 +195,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="device_paired_but_offline">Ordinateur hors-ligne</string>
     <string name="title_connect">Connect</string>
     <string name="qrcode_scanner_pairing_instructions">Cliquez sur ![the firefox menu](firefox_menu) puis sur « Connect » afin d\'accéder au code QR.</string>
-    <string name="msg_pairing_instructions_dialog">Ouvrez le navigateur Cliqz sur votre ordinateur (ou téléchargez-le sur cliqz.com).</string>
-    <string name="pairing_information">Connectez Cliqz entre votre téléphone et votre ordinateur. Vous pourrez ainsi partager des onglets entre votre téléphone et votre ordinateur, ou télécharger des vidéos depuis votre ordinateur vers votre téléphone.</string>
     <string name="pairing_error_message">Désolé mais les périphériques n\'ont pas pu être appairés. Veuillez réessayer.</string>
     <string name="pairing_error_title">La connexion a échouée</string>
     <string name="action_retry">Réessayer</string>
@@ -221,7 +208,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="clear_passwords">Effacer les mots de passe</string>
     <string name="clear_passwords_message">Voulez-vous effacer les mots de passe sauvegardés ?</string>
     <string name="query_suggestion">Suggestions de recherche</string>
-    <string name="request_location_access">Permettre au navigateur Cliqz d\'accéder à votre localisation</string>
     <string name="showcase_antitracking_title">Panneau de Contrôle</string>
     <string name="msg_connecting_to_desktop">Connexion en cours…</string>
     <string name="freshtab_no_topsites">Vos sites les plus visités seront accessibles ici.</string>
@@ -231,7 +217,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="action_resume">Restaurer</string>
     <string name="resume_tab_dialog_msg">Voulez-vous restaurer tous les onglets précédents ?</string>
     <string name="action_close_all_tabs">Fermer tous les onglets</string>
-    <string name="msg_new_icon">Le logo de Cliqz est désormais bleu. Découvrez la nouvelle version de l\'application !</string>
     <string name="auto_forget_tab">Mode Oubli Automatique</string>
     <string name="showcase_youtube_title">Téléchargeur des vidéos</string>
     <string name="showcase_youtube_message">Téléchargez des vidéos sur votre smartphone.</string>
@@ -241,7 +226,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="send_tab_generic_error_msg">Oups, l\'onglet n\'a pas pu être envoyé. Veuillez vérifier l\'état de la connexion.</string>
     <string name="action_go_to_connect">Allez sur Connect</string>
     <string name="send_tab_no_connection_error_title">Aucune connexion</string>
-    <string name="send_tab_no_connection_error_msg">Vous n\'êtes pas connecté·e à Cliqz sur votre ordinateur. Cliquez sur « Connect » pour ajouter une nouvelle connexion.</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Envoyez l\'onglet à l\'ordinateur</string>
     <string name="code_scanner">Lecteur de codes QR</string>
@@ -259,7 +243,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="dialog_notification_disabled_title">Les notifications sont désactivées pour cette application</string>
     <string name="dialog_notification_disabled_msg">Cette fonctionnalité nécessite l\'activation des notifications. Allez dans \"Paramètres Système\" pour activer les notifications puis réessayez.</string>
     <string name="allow_write_permission">Veuillez autoriser l\'accès au \"Stockage\" pour activer cette fonctionnalité.</string>
-    <string name="share_card_email_subject">J\'ai découvert ça grâce au navigateur Cliqz</string>
     <string name="no_history">Retrouvez votre historique ici.</string>
     <string name="no_favorites">Retrouvez vos sites favoris ici.</string>
     <string name="download_pending">Téléchargement en cours</string>
@@ -289,7 +272,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="settings_category_clear_data">Supprimer les données</string>
     <string name="settings_category_browsing">En cours de navigation</string>
     <string name="settings_category_search">Recherche</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Abonnements &amp; Notifications</string>
     <string name="settings_category_others">Autres</string>
     <string name="settings_show_top_sites">Afficher vos sites web les plus visités</string>
@@ -298,7 +280,6 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="cache">Cache</string>
     <string name="action_set">Attribuer</string>
     <string name="clear_private_data">Supprimer les données personnelles à la fermeture</string>
-    <string name="clear_data_summary">Cliqz supprimera automatiquement vos données dès que vous sélectionnerez \"Quitter\" dans le menu principal.</string>
     <string name="find_hint">Chercher</string>
     <string name="settings_category_download">Options de téléchargements</string>
     <string name="limit_data_usage">Limiter l\'utilisation de la connexion mobile</string>
@@ -336,27 +317,18 @@ Les pages malveillantes se déguisent des pages sûres afin de subtiliser vos id
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Autorisations de position</string>
     <string name="make_default_browser">Définir comme navigateur par défault</string>
-    <string name="default_browser_title">Cliqz come navigateur par défault</string>
-    <string name="default_browser_message">Il semble que vous aimez utiliser Cliqz. Voulez-vous le définir comme navigateur par défault ?</string>
     <string name="proceed">APPLIQUER</string>
     <string name="save">ENREGISTRER</string>
     <string name="never">JAMAIS</string>
-    <string name="save_password_text">Voulez-vous que Cliqz enregistre votre mot de passe pour ce site ?</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="eula">CGU</string>
-    <string name="eula_text">Le navigateur Cliqz pour Android est basé sur le &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;projet open source
-Lightning Browser&lt;/a&gt; et est mis à votre disposition selon les termes de la &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, une licence
- de logiciel libre, qui vous donne le droit d\'exécuter le programme à toute fin, d\'étudier comment cela fonctionne, de fournir des copies à vos amis et les modifier pour mieux répondre à vos besoins. Il n\'existe pas de conditions générales d\'utilisation (CGU) distinctes.</string>
     <string name="title_activity_eula_setting">CGU</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Site supprimé</item>
         <item quantity="other">%d Sites supprimé</item>
     </plurals>
-    <string name="welcome_cliqz">Bienvenu sur Cliqz !</string>
-    <string name="agree_privacy_policy_cliqz">Em utilisant cette application, vous acceptez les termes la &lt;font color="#00aef0"&gt;politique de confidentialié de Cliqz&lt;/font&gt;</string>
     <string name="accept">ACCEPTER</string>
-    <string name="privacy_policy_title">Politique de confidentialité - Cliqz</string>
-<string name="settings_show_my_offrz">Montrer MyOffrz</string>
+    <string name="settings_show_my_offrz">Montrer MyOffrz</string>
     <string name="settings_about_my_offrz">À propos de MyOffrz</string>
     <string name="myoffrz_activation_description">Activer MyOffrz pour recevoir des remises et offres attractives.</string>
     <string name="settings_category_user_data_choices">Collecte de données</string>

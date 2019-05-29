@@ -6,7 +6,6 @@
     <string name="clear_cache">Eliminar caché al salir</string>
     <string name="enable_cookies">Permitir cookies</string>
     <string name="recommended">Recomendado</string>
-    <string name="cliqz_search_hint">Buscar con Cliqz</string>
     <string name="fullScreenOption">Ocultar barra de estado al navegar</string>
     <string name="action_delete">Eliminar</string>
     <string name="settings">Ajustes</string>
@@ -70,13 +69,11 @@
     <string name="hphosts_ad_server_list">hpHosts Ad Server List</string>
     <string name="settings_general">General</string>
     <string name="settings_privacy">Privacidad</string>
-    <string name="settings_about">Sobre Cliqz</string>
     <string name="settings_about_explain">Detalles de la versión, autor y licencias.</string>
     <string name="color_mode">Habilitar modo de color</string>
     <string name="reading_mode" tools:ignore="UnusedResources">Modo lectura</string>
     <string name="loading">Cargando…</string>
     <string name="dark_theme">Tema oscuro</string>
-    <string name="app_name">Navegador Cliqz</string>
     <string name="theme">Tema de la app</string>
     <string name="light_theme">Tema claro</string>
     <string name="black_theme">Tema negro (AMOLED)</string>
@@ -92,7 +89,6 @@
     <string name="humanweb">Human Web</string>
     <string name="about_humanweb_url">https://cliqz.com/en/whycliqz/human-web</string>
     <string name="share_link">Compartir usando</string>
-    <string name="shared_using">Compartido con Cliqz para Android</string>
     <string name="gps_permission">Activa el GPS para tener mejores resultados de búsqueda</string>
     <string name="open_in_new_tab">Abrir en una pestaña nueva</string>
     <string name="open_in_incognito_tab">Abrir en una pestaña privada</string>
@@ -117,8 +113,6 @@
     <string name="settings_block_ads">AdBlocker(Beta)</string>
     <string name="optimized_block_ads">Bloqueo de anuncios justo</string>
     <string name="what_does_optimized_mean">¿Qué significa \'justo\'?</string>
-    <string name="optimized_block_ads_description">El bloqueador de anuncios de Cliqz está en su fase Beta. La fase final incluirá las siguientes opciones: Bloqueo justo (por defecto), bloquear todos los anuncios, y permitir anuncios.
-Descubre más en https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Ver vídeo sin conexión</string>
     <string name="overview">Vista general</string>
     <string name="open_tabs">Pestañas abiertas</string>
@@ -132,7 +126,6 @@ Descubre más en https://cliqz.com/whycliqz/adblocking</string>
     <string name="antitracking_tracking_companies">Empresas de tracking</string>
     <string name="antitracking_datapoints_count">Datos privados</string>
     <string name="others">Otros</string>
-    <string name="summary_adblock_data">Ten en cuenta que el navegador Cliqz debe descargar paquetes de datos para que el AdBlocker funcione correctamente. Se recomienda estar conectado a una red Wi-Fi.</string>
     <string name="app_not_found">No se encontró una app compatible</string>
     <string name="antiphishing_message">%1$s ha sido identificada como falsificación de una página y ha sido bloqueada por ello.
 Las falsificaciones de páginas web están diseñadas para engañar al usuario, de modo que revele sus credenciales, contraseñas e información sensible.
@@ -150,10 +143,9 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="showcase_search_message">Los resultados relevantes se mostrarán durante la búsqueda.</string>
     <string name="showcace_search_title">Tarjetas de resultados</string>
     <string name="upload_file_title">Nombre del archivo</string>
-    <string name="rate_us">Valora el navegador Cliqz</string>
     <string name="autocompletion_enabled">Autocompletar</string>
     <string name="request_desktop_site">Ver como ordenador</string>
-    <string name="contact_cliqz">Preguntas frequentes y ayuda</string>
+    <string name="title_faq_and_support">Preguntas frequentes y ayuda</string>
     <string name="control_center_header_adblocking">AdBlocker</string>
     <string name="adblocking_header">Navegas sin publicidad</string>
     <string name="adblocking_header_disabled">Navegas con publicidad</string>
@@ -168,7 +160,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="antiphishing_text">No se han detectado actividades sospechosas</string>
     <string name="learn_more"><u>Saber más</u></string>
     <string name="switched_to_forget">Modo privado automático activado</string>
-    <string name="tips_and_tricks">Trucos de Cliqz</string>
     <string name="open_link_new_tab">Abrir en una pestaña nueva</string>
     <string name="open_link_forget_tab">Abrir en una pestaña privada</string>
     <string name="open_image_new_tab">Abrir imagen en una pestaña nueva</string>
@@ -194,8 +185,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="report_site">Informar de una web</string>
     <string name="clear_passwords">Eliminar contraseñas</string>
     <string name="clear_passwords_message">¿Quieres eliminar las contraseñas guardadas?</string>
-    <string name="msg_pairing_instructions_dialog">Abre el navegador Cliqz en tu ordenador (o descárgatelo de cliqz.com).</string>
-    <string name="pairing_information">Conecta Cliqz en tu móvil con el ordenador y podrás enviar pestañas entre tus dispositivos. También puedes descargar vídeos directamente desde el navegador de tu ordenador a tu dispositivo móvil.</string>
     <string name="pairing_error_title">No se realizó la conexión</string>
     <string name="action_retry">Reintentar</string>
     <string name="pairing_successful_title">Conexión establecida</string>
@@ -207,7 +196,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="pairing_device_rename_message">Introduce un nombre nuevo para la conexión:</string>
     <string name="pairing_device_rename_hint">Nuevo nombre</string>
     <string name="query_suggestion">Sugerencias de búsqueda</string>
-    <string name="request_location_access">¿Permites a Cliqz acceder a tu ubicación?</string>
     <string name="msg_connecting_to_desktop">Conectando al ordenador…</string>
     <string name="freshtab_no_topsites">Tus páginas más visitadas aparecerán aquí</string>
     <string name="action_done">Listo</string>
@@ -216,7 +204,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="resume_tab_dialog_msg">¿Quieres restaurar las pestañas abiertas previamente?</string>
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Cerrar todas las pestañas</string>
-    <string name="msg_new_icon">¡Eh, el logo de Cliqz ahora es azul. Prueba la nueva version de la app!</string>
     <string name="auto_forget_tab">Pestañas privadas automáticas</string>
     <string name="showcase_youtube_title">Descarga de vídeos</string>
     <string name="showcase_youtube_message">Descarga vídeos de YouTube en tu teléfono.</string>
@@ -226,7 +213,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="send_tab_generic_error_msg">¡Ups! No se pudo enviar la pestaña. Por favor revisa el estado de tu conexión.</string>
     <string name="action_go_to_connect">Ir a Connect</string>
     <string name="send_tab_no_connection_error_title">No hay conexión</string>
-    <string name="send_tab_no_connection_error_msg">No estás conectado a Cliqz en tu ordenador. Abre el menú de \'Connect\' para iniciar una conexión.</string>
     <string name="action_connect">Conectar</string>
     <string name="send_tab_to_desktop">Enviar pestaña al ordenador</string>
     <string name="code_scanner">Escáner de códigos QR</string>
@@ -244,7 +230,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="dialog_notification_disabled_msg">Dirígete al menú de ajustes del sistema para permitir notificaciones a esta aplicación y vuelve a intentarlo.</string>
     <string name="search_hint">Buscar</string>
     <string name="allow_write_permission">Concede permisos de almacenamiento para usar esta herramienta.</string>
-    <string name="share_card_email_subject">Descubierto con el navegador Cliqz</string>
     <string name="download_pending">Descarga pendiente</string>
     <string name="message_url_copied">URL copiada</string>
     <string name="control_center_header_overview">VISTA GENERAL</string>
@@ -272,7 +257,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="settings_category_clear_data">Eliminar datos</string>
     <string name="settings_category_browsing">Navegación</string>
     <string name="settings_category_search">Búsqueda</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Subscripciones y notificaciones</string>
     <string name="settings_category_others">Otros</string>
     <string name="settings_show_top_sites">Mostrar las páginas más visitadas</string>
@@ -312,32 +296,22 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="cache">Caché</string>
     <string name="action_set">Aceptar</string>
     <string name="clear_private_data">Eliminar datos personales al cerrar al app</string>
-    <string name="clear_data_summary">Cliqz eliminará automáticamente tus datos personales cuando selecciones \"Salir\" en el menú principal.</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">Noticias</string>
-    <string name="welcome_cliqz">¡Bienvenido a Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Al usar esta apliación, aceptas
-         &lt;font color=\'#00aef0\'&gt;la política de privacidad de Cliqz &lt;/font&gt;</string>
     <string name="accept">ACEPTAR</string>
     <string name="settings_show_background_image">Mostrar imagen de fondo</string>
     <string name="menu">Menú</string>
     <string name="android_app_settings_title">Permisos de ubicación</string>
     <string name="make_default_browser">Convertir en navegador predeterminado</string>
     <string name="default_browser_title">Navegador predeterminado</string>
-    <string name="default_browser_message">Parece que te gusta usar Cliqz. ¿Quieres que sea tu navegador predeterminado?</string>
     <string name="proceed">SÍ</string>
     <string name="never">NO</string>
     <string name="save">SÍ</string>
-    <string name="save_password_text">¿Quieres que Cliqz guarde tus contraseñas para esta página?</string>
     <string name="privacy_policy">Política de privacidad</string>
     <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">ALUF</string>
-    <string name="eula_text">Cliqz para Android se basa en el &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;proyecto de código abierto
- Lightning Browser&lt;/a&gt;, y se distribuye bajo los términos de&lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, una licencia de software libre que
- permite utilizar este programa con cualquier objetivo, estudiar su funcionamiento, compartirlo con tus amigos y modificarlo según tus propias necesidades. No existe un Acuerdo de Licencia de Usuario Final (ALUF) adicional.</string>
     <string name="title_activity_eula_setting">ALUF</string>
-    <string name="privacy_policy_title">Política de privacidad - Cliqz</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Página eliminada</item>
         <item quantity="other">%d Páginas eliminadas</item>
@@ -347,5 +321,4 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="myoffrz_activation_description">Activa MyOffrz para recibir atractivos descuentos y ofertas.</string>
     <string name="settings_category_user_data_choices">Opciones de envío de datos</string>
     <string name="send_usage_data">Enviar estadísticas de uso</string>
-    <string name="send_usage_data_summary">Ayúdanos a mejorar tu experiencia de usuario. Cliqz recopila datos anónimos sobre el uso de la aplicación. Cliqz no recopila información personal en ningún momento.</string>
 </resources>

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="url_bar_search_hint">Cliqz поиск</string>
+    <string name="app_name">Cliqz браузер</string>
+    <string name="rate_us">Оценить Cliqz браузер</string>
+    <string name="tips_and_tricks">О возможностях Cliqz</string>
+    <string name="pairing_information">Установите соединение между Cliqz на вашем мобильном устройстве и Cliqz на компьютере, чтобы передавать вкладки между ними. Вы также можете скачивать видео напрямую с компьютера на мобильное устройство.</string>
+    <string name="msg_new_icon">Хэй, логотип Cliqz теперь голубой. Попробуйте новую версию приложения!</string>
+    <string name="send_tab_no_connection_error_msg">Вы не соединены ни с одним Cliqz браузером на компьютере. Перейдите в меню \'Connect\', чтобы добавить новое соединение.</string>
+    <string name="shared_using">Поделиться с Cliqz для Android</string>
+    <string name="optimized_block_ads_description">Cliqz Ad Blocker в настоящее время находится в бета-тестировании. В финальной версии будут доступны следующие опции: разрешить справедливую блокировку рекламы (по умолчанию), блокировать всю рекламу, разрешить всю рекламу. Узнать больше можно здесь: https://cliqz.com/whycliqz/adblocking</string>
+    <string name="antiphishing_message">Cliqz заблокировал доступ к %1$s, потому что сайт был представлен как фишинговый сайт. Фишинговые сайты маскируются под другие сайты, которым вы доверяете, чтобы обмануть вас и получить доступ к конфиденциальной информации, например к логинам и паролям.\n[Узнать больше|https://cliqz.com/en/whycliqz/anti-phishing]</string>
+    <string name="summary_adblock_data">Пожалуйста, учтите: чтобы блокировщик рекламы работал эффективно, Cliqz браузеру необходимо загрузить некоторые данные. Для этого ваше мобильное устройство должно быть соединено с Wi-Fi.</string>
+    <string name="msg_pairing_instructions_dialog">Открыть Cliqz браузер на вашем компьютере (или установить его с cliqz.com).</string>
+    <string name="request_location_access">Разрешить Cliqz браузеру доступ к информации о местоположении?</string>
+    <string name="share_card_email_subject">Я узнал об этом, используя Cliqz Browser</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
+    <string name="clear_data_summary">Cliqz автоматически очистит Ваши данные при нажатии кнопки «Выход» главного меню.</string>
+    <string name="welcome_message">Добро пожаловать в Cliqz</string>
+    <string name="agree_privacy_policy_message">Используя это приложение, вы соглашаетесь с &lt;font color=\'#00aef0\'&gt;политикой конфиденциальности Cliqz &lt;/font&gt;</string>
+    <string name="default_browser_message">Кажется, Вам нравится Cliqz. Хотите сделать его браузером по умолчанию?</string>
+    <string name="save_password_text">Вы хотите, чтобы Cliqz сохранил пароль для этого сайта?</string>
+    <string name="eula_text">Cliqz браузер для Android разработан на основе &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning Browser открытого программного обеспечения&lt;/a&gt; и доступен Вам на основе условий &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, лицензии свободного ПО, которая даёт Вам право использовать программу для любых целей, изучать, как она работает, передавать копии Вашим друзьям и вносить в нее свои изменения. Отдельного лицензионного соглашениея с конечным пользователем (EULA) не существует.</string>
+    <string name="privacy_policy_title">Политика безопасности - Cliqz</string>
+    <string name="send_usage_data_summary">Помогите нам улучшить процесс просмотра веб-страниц. Cliqz собирает только анонимные пользовательские данные. Персональные данные не собираются ни при каких обстоятельствах.</string>
+</resources>

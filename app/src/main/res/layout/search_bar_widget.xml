@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/title_bar_h"
         android:gravity="start|center_vertical"
-        android:hint="@string/cliqz_search_hint"
+        android:hint="@string/url_bar_search_hint"
         android:singleLine="true"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
