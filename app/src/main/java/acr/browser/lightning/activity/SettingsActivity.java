@@ -35,7 +35,7 @@ import javax.inject.Inject;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    private static final boolean IS_GHOSTERY = "ghostery".equals(BuildConfig.FLAVOR_api);
+    private static final boolean IS_GHOSTERY = "ghostery".equals(BuildConfig.FLAVOR);
 
     @Inject
     Telemetry telemetry;

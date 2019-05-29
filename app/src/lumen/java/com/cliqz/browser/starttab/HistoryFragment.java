@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -41,10 +41,10 @@ public class HistoryFragment extends StartTabFragment {
     private final ArrayList<HistoryModel> historyList = new ArrayList<>();
     private HistoryAdapter adapter;
 
-    @Bind(R.id.history_rview)
+    @BindView(R.id.history_rview)
     RecyclerView historyListView;
 
-    @Bind(R.id.no_history_ll)
+    @BindView(R.id.no_history_ll)
     LinearLayout noHistoryMessage;
 
     @Inject

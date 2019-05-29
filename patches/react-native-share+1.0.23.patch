@@ -1,3 +1,14 @@
+diff --git a/node_modules/react-native-share/android/build.gradle b/node_modules/react-native-share/android/build.gradle
+index b6b184e..dc87777 100644
+--- a/node_modules/react-native-share/android/build.gradle
++++ b/node_modules/react-native-share/android/build.gradle
+@@ -19,5 +19,5 @@ android {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
++    implementation 'com.facebook.react:react-native:+'
+ }
 diff --git a/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java b/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java
 index 961d5fe..c8a38d7 100644
 --- a/node_modules/react-native-share/android/src/main/java/cl/json/RNShareModule.java

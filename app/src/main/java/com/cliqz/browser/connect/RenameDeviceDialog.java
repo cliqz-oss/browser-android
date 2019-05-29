@@ -10,7 +10,7 @@ import com.cliqz.browser.R;
 
 import java.lang.ref.WeakReference;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
 
@@ -28,7 +28,7 @@ class RenameDeviceDialog implements DialogInterface.OnClickListener{
     private final String id;
     private AlertDialog dialog;
 
-    @Bind(R.id.pairedDeviceNewName)
+    @BindView(R.id.pairedDeviceNewName)
     EditText pairedDeviceNewName;
 
     private RenameDeviceDialog(PairedDevicesFragment pairedDevicesFragment, String id) {

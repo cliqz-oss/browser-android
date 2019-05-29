@@ -58,7 +58,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.database.HistoryDatabase;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -89,6 +89,7 @@ public class OverFlowMenu extends FrameLayout {
         ACTIONS(EntryType.ACTIONS, -1, -1),
         NEW_TAB(EntryType.REGULAR, R.id.new_tab_menu_button, R.string.action_new_tab),
         NEW_INCOGNITO_TAB(EntryType.REGULAR, R.id.new_incognito_tab_menu_button, R.string.action_incognito),
+        TABS_MANAGER(EntryType.REGULAR, R.id.tabs_manager_button, R.string.action_tabs_manager),
         GO_TO_FAVORITES(EntryType.REGULAR, R.id.go_to_favorites_button, R.string.favorites),
 
         SEARCH_IN_PAGE(EntryType.REGULAR, R.id.search_on_page_menu_button, R.string.action_search_on_page),
@@ -115,6 +116,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
+            Entries.TABS_MANAGER,
             Entries.SEARCH_IN_PAGE,
             Entries.GO_TO_FAVORITES,
             Entries.DESKTOP_PAIRING,
@@ -130,6 +132,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
+            Entries.TABS_MANAGER,
             Entries.SEARCH_IN_PAGE,
             Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
@@ -192,16 +195,16 @@ public class OverFlowMenu extends FrameLayout {
     @Inject
     Engine engine;
 
-    @Bind(R.id.action_refresh)
+    @BindView(R.id.action_refresh)
     AppCompatImageButton actionRefreshButton;
 
-    @Bind(R.id.action_forward)
+    @BindView(R.id.action_forward)
     AppCompatImageButton actionForwardButton;
 
-    @Bind(R.id.toggle_favorite)
+    @BindView(R.id.toggle_favorite)
     ToggleButton toggleFavorite;
 
-    @Bind(R.id.action_share)
+    @BindView(R.id.action_share)
     AppCompatImageButton actionShare;
 
     private CliqzBrowserState state;
@@ -309,13 +312,17 @@ public class OverFlowMenu extends FrameLayout {
         mDesktopSiteEnabled = isEnabled;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @SuppressLint("ObsoleteSdkInt")
     private void prepareEntries() {
         List<Entries> entries = new ArrayList<>(
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
 
-        if ("ghostery".equals(BuildConfig.FLAVOR_api)) {
+        if ("ghostery".equals(BuildConfig.FLAVOR)) {
             entries.remove(Entries.DESKTOP_PAIRING);
+        }
+        if (!"lumen".equals(BuildConfig.FLAVOR)) {
+            entries.remove(Entries.TABS_MANAGER);
         }
         if (!BuildConfig.DEBUG) {
             entries.remove(Entries.REACT_DEBUG);
@@ -543,6 +550,10 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(false));
+                    break;
+                case TABS_MANAGER:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.OVERVIEW, isIncognitoMode(), "web");
+                    bus.post(new Messages.GoToOverview());
                     break;
                 case SEARCH_IN_PAGE:
                     telemetry.sendMainMenuSignal(TelemetryKeys.PAGE_SEARCH, isIncognitoMode(),

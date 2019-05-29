@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -45,7 +45,7 @@ public class FavoritesFragment extends StartTabFragment {
     private RecyclerView favoritesListView;
     private final ArrayList<FavoriteModel> favoritesList = new ArrayList<>();
 
-    @Bind(R.id.ll_no_favorite)
+    @BindView(R.id.ll_no_favorite)
     LinearLayout noFavoriteLayout;
 
     @Inject

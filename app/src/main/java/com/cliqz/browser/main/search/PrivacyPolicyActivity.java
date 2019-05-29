@@ -11,15 +11,15 @@ import android.widget.ProgressBar;
 
 import com.cliqz.browser.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PrivacyPolicyActivity extends AppCompatActivity {
 
-    @Bind(R.id.wv_privacy_policy)
+    @BindView(R.id.wv_privacy_policy)
     WebView privacyPolicy;
 
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
     @Override

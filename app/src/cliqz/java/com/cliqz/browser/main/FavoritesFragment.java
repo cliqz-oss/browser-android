@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import acr.browser.lightning.database.HistoryDatabase;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -42,7 +42,7 @@ public class FavoritesFragment extends FragmentWithBus {
     private View contextualToolBar;
     private TextView contextualToolBarTitle;
 
-    @Bind(R.id.ll_no_favorite)
+    @BindView(R.id.ll_no_favorite)
     LinearLayout noFavoriteLayout;
 
     @Override

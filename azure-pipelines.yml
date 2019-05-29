@@ -45,7 +45,7 @@ jobs:
         mkdir builds
         for flavor in "${flavors[@]}"
         do
-            cp $(BUILD_OUTPUT_DIR)/${flavor}Fat/debug/app-${flavor}-fat-debug.apk $(Build.ArtifactStagingDirectory)/${flavor}.apk || true
+            cp $(BUILD_OUTPUT_DIR)/${flavor}/debug/app-${flavor}-universal-debug.apk $(Build.ArtifactStagingDirectory)/${flavor}.apk || true
         done
       displayName: 'Copy Builds'
 
@@ -118,8 +118,8 @@ jobs:
         options: '--continue'
         publishJUnitResults: true
         testResultsFiles: '$(TESTS_XML_DIR)/**/CLIQZX86/TEST-*.xml'
-        testRunTitle: 'CliqzX86AndroidTest'
-        tasks: 'connectedCliqzX86DebugAndroidTest'
+        testRunTitle: 'CliqzAndroidTest'
+        tasks: 'connectedCliqzDebugAndroidTest'
       displayName: 'Run Tests on Cliqz'
 
 #    - task: Gradle@2

@@ -4,7 +4,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.4.1'
     }
 }
 
@@ -49,7 +49,7 @@ class CliqzPlugin implements Plugin<Project> {
     final static String CLIQZ_CONFIG_FILENAME = "CliqzConfig.java"
     final def configModifier = EnumSet.of(Modifier.FINAL, Modifier.PUBLIC,Modifier.STATIC)
     final static String CLIQZ_CONFIG_JSON = "cliqz-config.json"
-    def logger;
+    def logger
 
     void apply(Project project) {
         if (!project.plugins.hasPlugin('com.android.application')) {
@@ -66,8 +66,8 @@ class CliqzPlugin implements Plugin<Project> {
         def config = slurper.parse(configFile)
         project.afterEvaluate {
             project.android.applicationVariants.each { variant ->
-                Task buildConfig = variant.generateBuildConfig
-                Task compile = variant.javaCompile
+                def buildConfig = variant.generateBuildConfigProvider.get()
+                def compileProvider = variant.javaCompileProvider
                 File sourceOutDir = buildConfig.sourceOutputDir
                 String packageName = buildConfig.getBuildConfigPackageName()
                 String taskName = buildConfig.name.replace('BuildConfig', 'CliqzConfig')
@@ -80,7 +80,7 @@ class CliqzPlugin implements Plugin<Project> {
 
                 Task task = buildTask(project, taskName, variantConfig, packageName, sourceOutDir)
                 task.mustRunAfter(buildConfig)
-                compile.dependsOn(task)
+                compileProvider.get().dependsOn(task)
             }
         }
     }

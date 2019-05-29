@@ -10,7 +10,6 @@ import androidx.multidex.MultiDexApplication;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
-import com.cliqz.browser.utils.LookbackWrapper;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -51,7 +50,6 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
      */
     protected void installSupportLibraries() {
         LeakCanary.install(this);
-        LookbackWrapper.init(this);
     }
 
     @Override

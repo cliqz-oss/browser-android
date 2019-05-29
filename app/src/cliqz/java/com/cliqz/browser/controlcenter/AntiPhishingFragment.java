@@ -20,7 +20,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -39,7 +39,7 @@ public class AntiPhishingFragment extends ControlCenterFragment {
     @Inject
     Telemetry telemetry;
 
-    @Bind(R.id.button_ok)
+    @BindView(R.id.button_ok)
     AppCompatButton helpButton;
 
     @Override

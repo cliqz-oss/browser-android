@@ -12,7 +12,7 @@ import com.cliqz.jsengine.Engine;
 import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
 
@@ -25,7 +25,7 @@ public class ReactDebugActivity extends Activity implements DefaultHardwareBackB
 
     private Engine mEngine;
 
-    @Bind(R.id.reactViewContainer)
+    @BindView(R.id.reactViewContainer)
     FrameLayout reactViewContainer;
 
 

@@ -91,10 +91,11 @@ import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.view.AnimatedProgressBar;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import butterknife.Optional;
 
 /**
  * @author Stefano Pacifici
@@ -139,7 +140,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private boolean mRequestDesktopSite = false;
     private boolean mIsReaderModeOn = false;
 
-    @Bind(R.id.local_container)
+    @BindView(R.id.local_container)
     FrameLayout localContainer;
 
     @Inject
@@ -151,42 +152,47 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Inject
     AppBackgroundManager appBackgroundManager;
 
-    @Bind(R.id.progress_view)
+    @Inject
+    TabsManager tabsManager;
+
+    @BindView(R.id.progress_view)
     AnimatedProgressBar progressBar;
 
-    @Bind(R.id.search_bar)
+    @BindView(R.id.search_bar)
     SearchBar searchBar;
 
-    @Bind(R.id.overflow_menu)
+    @BindView(R.id.overflow_menu)
     View overflowMenuButton;
 
-    @Bind(R.id.overflow_menu_icon)
+    @BindView(R.id.overflow_menu_icon)
     ImageView overflowMenuIcon;
 
-    @Bind(R.id.in_page_search_bar)
+    @BindView(R.id.in_page_search_bar)
     View inPageSearchBar;
 
-    @Bind(R.id.yt_download_icon)
+    @Nullable
+    @BindView(R.id.yt_download_icon)
     ImageButton ytDownloadIcon;
 
     @Nullable
-    @Bind(R.id.control_center)
+    @BindView(R.id.control_center)
     ViewGroup antiTrackingDetails;
 
-    @Bind(R.id.open_tabs_count)
+    @Nullable
+    @BindView(R.id.open_tabs_count)
     AppCompatTextView openTabsCounter;
 
-    @Bind(R.id.toolbar_container)
+    @BindView(R.id.toolbar_container)
     ViewGroup toolBarContainer;
 
     @Nullable
-    @Bind(R.id.quick_access_bar)
+    @BindView(R.id.quick_access_bar)
     QuickAccessBar quickAccessBar;
 
-    @Bind(R.id.reader_mode_button)
+    @BindView(R.id.reader_mode_button)
     ImageButton readerModeButton;
 
-    @Bind(R.id.reader_mode_webview)
+    @BindView(R.id.reader_mode_webview)
     WebView readerModeWebview;
 
     @Inject
@@ -196,7 +202,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     QueryManager queryManager;
 
     @Nullable
-    @Bind(R.id.cc_icon)
+    @BindView(R.id.cc_icon)
     AppCompatImageView ccIcon;
 
     private View mVpnPanelButton;
@@ -285,7 +291,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
-        if ((!"lumen".equals(BuildConfig.FLAVOR_api))) {
+        if ((!"lumen".equals(BuildConfig.FLAVOR))) {
             final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
             stub.inflate();
         }
@@ -293,7 +299,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         //TODO Upgrade the butterknife library(or change to Data binding library?)
         // This can be done gracefully using latest version of butterknife. It has the annotation @Optional
         // by which we can avaoid flavour check and use normal @Bind or @OnClick annotations.
-        if ("lumen".equals(BuildConfig.FLAVOR_api)) {
+        if ("lumen".equals(BuildConfig.FLAVOR)) {
             mVpnPanelButton = view.findViewById(R.id.vpn_panel_button);
             mVpnPanelButton.setOnClickListener(view1 -> {
                 final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
@@ -308,9 +314,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (component != null) {
             component.inject(this);
         }
-        final TabsManager tabsManager = activity != null ? activity.tabsManager : null;
-        final int tabCount = tabsManager != null ? tabsManager.getTabCount() : 0;
-        openTabsCounter.setText(Integer.toString(tabCount));
+        if (openTabsCounter != null) {
+            openTabsCounter.setText(Integer.toString(tabsManager.getTabCount()));
+        }
         updateUI();
         inPageSearchBar.setVisibility(View.GONE);
         state.setIncognito(mIsIncognito);
@@ -466,10 +472,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         return inflater.inflate(R.layout.fragment_search_toolbar, container, false);
     }
 
+    @Optional
     @OnClick(R.id.menu_overview)
     void historyClicked() {
         hideKeyboard(null);
-        telemetry.sendOverViewSignal(Integer.parseInt(openTabsCounter.getText().toString()),
+        telemetry.sendOverViewSignal(tabsManager.getTabCount(),
                 mIsIncognito, getTelemetryView());
         delayedPostOnBus(new Messages.GoToOverview());
     }
@@ -528,6 +535,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
     }
 
+    @Optional
     @OnClick(R.id.yt_download_icon)
     void showYTDownloadDialog() {
         try {
@@ -692,11 +700,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, preferenceManager.isBackgroundImageEnabled());
             overflowMenuIcon.setColorFilter(ContextCompat.getColor(context, R.color.white),
                     PorterDuff.Mode.SRC_IN);
-            openTabsCounter
-                    .getBackground()
-                    .setColorFilter(ContextCompat.getColor(context, R.color.white),
-                            PorterDuff.Mode.SRC_IN);
-            openTabsCounter.setTextColor(ContextCompat.getColor(context, R.color.white));
+            if (openTabsCounter != null) {
+                openTabsCounter
+                        .getBackground()
+                        .setColorFilter(ContextCompat.getColor(context, R.color.white),
+                                PorterDuff.Mode.SRC_IN);
+                openTabsCounter.setTextColor(ContextCompat.getColor(context, R.color.white));
+            }
         } catch (NoInstanceException e) {
             Log.e(TAG, "Null context", e);
         }
@@ -1068,6 +1078,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @SuppressLint("SetTextI18n")
     @Subscribe
     public void updateTabCounter(Messages.UpdateTabCounter event) {
+        if (openTabsCounter == null) {
+            return;
+        }
         openTabsCounter.setText(Integer.toString(event.count));
     }
 
@@ -1250,8 +1263,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, isBackgroundEnabled);
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            openTabsCounter.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            openTabsCounter.setTextColor(color);
+            if (openTabsCounter != null) {
+                openTabsCounter.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                openTabsCounter.setTextColor(color);
+            }
             readerModeWebview.setVisibility(View.GONE);
             readerModeButton.setVisibility(View.GONE);
             mIsReaderModeOn = false;
@@ -1295,9 +1310,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             final int statusBarColor = typedArray.getColor(1,
                     ContextCompat.getColor(wrapper, R.color.primary_color_dark));
             typedArray.recycle();
-            openTabsCounter.getBackground().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+            if (openTabsCounter != null) {
+                openTabsCounter.getBackground().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+                openTabsCounter.setTextColor(iconColor);
+            }
             overflowMenuIcon.getDrawable().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-            openTabsCounter.setTextColor(iconColor);
             updateToolbarContainer(activity, preferenceManager.isBackgroundImageEnabled());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 activity.getWindow().setStatusBarColor(statusBarColor);
@@ -1325,15 +1342,18 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private void showYTIcon() {
-        if (ytDownloadIcon.getVisibility() == View.VISIBLE || state.getMode() == Mode.SEARCH) {
+        if (ytDownloadIcon == null ||
+                ytDownloadIcon.getVisibility() == View.VISIBLE ||
+                state.getMode() == Mode.SEARCH) {
             return;
         }
         telemetry.sendYTIconVisibleSignal();
         ytDownloadIcon.setVisibility(View.VISIBLE);
     }
 
-    protected void hideYTIcon() {
-        if (ytDownloadIcon.getVisibility() == View.GONE) {
+    void hideYTIcon() {
+        if (ytDownloadIcon == null ||
+                ytDownloadIcon.getVisibility() == View.GONE) {
             return;
         }
         ytDownloadIcon.setVisibility(View.GONE);

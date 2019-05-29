@@ -28,7 +28,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -47,10 +47,10 @@ public class UserSurveyMessage extends FrameLayout {
     @Inject
     PreferenceManager preferenceManager;
 
-    @Bind(R.id.user_sentiment_survey_first_line)
+    @BindView(R.id.user_sentiment_survey_first_line)
     TextView msgFirstLine;
 
-    @Bind(R.id.user_sentiment_survey_second_line)
+    @BindView(R.id.user_sentiment_survey_second_line)
     TextView msgSecondLine;
 
     private boolean mInfoShowed = false;

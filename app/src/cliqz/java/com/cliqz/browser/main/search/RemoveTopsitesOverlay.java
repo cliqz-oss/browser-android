@@ -30,7 +30,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -379,10 +379,10 @@ class RemoveTopsitesOverlay {
 
         final RemoveTopSitesContentView contentView;
 
-        @Bind(R.id.button_undo)
+        @BindView(R.id.button_undo)
         Button undo;
 
-        @Bind(R.id.number_deleted_topsites)
+        @BindView(R.id.number_deleted_topsites)
         TextView topsitesDeletedNum;
 
         RemoveTopSitesDialog(@NonNull Context context) {

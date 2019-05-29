@@ -40,7 +40,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -53,19 +53,19 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
 
     private static final int COLLAPSED_NEWS_NO = 2;
 
-    @Bind(R.id.topsites_grid)
+    @BindView(R.id.topsites_grid)
     GridView topsitesGridView;
 
-    @Bind(R.id.topnews_list)
+    @BindView(R.id.topnews_list)
     LinearLayout topnewsListView;
 
-    @Bind(R.id.topsites_header)
+    @BindView(R.id.topsites_header)
     TextView topsitesHeader;
 
-    @Bind(R.id.news_label)
+    @BindView(R.id.news_label)
     TextView newsLabel;
 
-    @Bind(R.id.container)
+    @BindView(R.id.container)
     ScrollView contanier;
 
     RemoveTopsitesOverlay removeTopsitesOverlay;

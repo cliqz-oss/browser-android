@@ -37,7 +37,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.preference.PreferenceManager;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -67,40 +67,40 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
     @Inject
     PreferenceManager preferenceManager;
 
-    @Bind(R.id.counter)
+    @BindView(R.id.counter)
     TextView counter;
 
-    @Bind(R.id.trackers_list)
+    @BindView(R.id.trackers_list)
     RecyclerView trackersList;
 
-    @Bind(R.id.button_ok)
+    @BindView(R.id.button_ok)
     AppCompatButton helpButton;
 
-    @Bind(R.id.companies_header)
+    @BindView(R.id.companies_header)
     TextView companiesHeader;
 
-    @Bind(R.id.counter_header)
+    @BindView(R.id.counter_header)
     TextView counterHeader;
 
-    @Bind(R.id.upperLine)
+    @BindView(R.id.upperLine)
     View upperLine;
 
-    @Bind(R.id.lowerLine)
+    @BindView(R.id.lowerLine)
     View lowerLine;
 
-    @Bind(R.id.anti_tracking_table)
+    @BindView(R.id.anti_tracking_table)
     View antitrackingTable;
 
-    @Bind(R.id.adblock_enable)
+    @BindView(R.id.adblock_enable)
     Switch enableAdBlock;
 
-    @Bind(R.id.adblock_icon)
+    @BindView(R.id.adblock_icon)
     AppCompatImageView adBlockIcon;
 
-    @Bind(R.id.adblocking_header)
+    @BindView(R.id.adblocking_header)
     TextView adblockHeader;
 
-    @Bind(R.id.ads_blocked)
+    @BindView(R.id.ads_blocked)
     TextView adsBlocked;
 
     @Override

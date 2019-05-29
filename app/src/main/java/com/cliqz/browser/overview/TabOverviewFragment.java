@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -35,10 +35,10 @@ public class TabOverviewFragment extends Fragment implements TabsDeckView.TabsDe
 
     @SuppressWarnings("unused")
     private static final String TAG = TabOverviewFragment.class.getSimpleName();
-    @Bind(R.id.tabs_list_view)
+    @BindView(R.id.tabs_list_view)
     TabsDeckView deckView;
 
-    @Bind(R.id.new_tab_button)
+    @BindView(R.id.new_tab_button)
     FloatingActionButton floatingActionButton;
 
     @Inject
