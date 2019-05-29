@@ -15,7 +15,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.telemetry.TelemetryKeys;

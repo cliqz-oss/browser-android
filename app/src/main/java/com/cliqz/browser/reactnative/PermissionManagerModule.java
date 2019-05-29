@@ -2,7 +2,7 @@ package com.cliqz.browser.reactnative;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;

@@ -2,11 +2,10 @@ package com.cliqz.browser.app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
-import android.view.ContextThemeWrapper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.FlavoredActivityComponent;
@@ -96,9 +95,14 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
             return ((ActivityComponentProvider) object).getActivityComponent();
         }
 
-        if (object instanceof ContextThemeWrapper) {
-            return getActivityComponent(((ContextThemeWrapper) object).getBaseContext());
+        if (object instanceof android.view.ContextThemeWrapper) {
+            return getActivityComponent(((android.view.ContextThemeWrapper) object).getBaseContext());
         }
+
+        if (object instanceof androidx.appcompat.view.ContextThemeWrapper) {
+            return getActivityComponent(((androidx.appcompat.view.ContextThemeWrapper) object).getBaseContext());
+        }
+
         return null;
     }
 

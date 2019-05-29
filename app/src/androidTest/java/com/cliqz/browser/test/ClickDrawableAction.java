@@ -2,10 +2,10 @@ package com.cliqz.browser.test;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.annotation.IntDef;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.matcher.BoundedMatcher;
+import androidx.annotation.IntDef;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -15,7 +15,7 @@ import org.hamcrest.Description;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static org.hamcrest.core.AllOf.allOf;
 
 

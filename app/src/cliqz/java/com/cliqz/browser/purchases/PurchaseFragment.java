@@ -1,6 +1,6 @@
 package com.cliqz.browser.purchases;
 
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Stub class for Lumen flavor support

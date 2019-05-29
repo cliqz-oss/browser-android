@@ -1,7 +1,7 @@
 package com.cliqz.browser.main;
 
 import android.Manifest;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;

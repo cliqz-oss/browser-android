@@ -1,6 +1,6 @@
 package com.cliqz.browser.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import java.lang.reflect.InvocationTargetException;

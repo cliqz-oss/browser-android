@@ -6,7 +6,7 @@ package acr.browser.lightning.download;
 import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
@@ -16,11 +16,9 @@ import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.nove.Bus;
-import com.google.zxing.Result;
 
 import javax.inject.Inject;
 
-import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowSnackBarMessage;
 import acr.browser.lightning.constant.Constants;
 

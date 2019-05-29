@@ -2,14 +2,13 @@ package com.cliqz.browser.main.search;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.webview.Topsite;
 import com.cliqz.jsengine.Engine;

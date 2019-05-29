@@ -1,0 +1,71 @@
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java
+index 850c463..c92368d 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java
+@@ -2,7 +2,7 @@ package com.oney.WebRTCModule;
+ 
+ import java.nio.charset.Charset;
+ 
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Base64;
+ 
+ import com.facebook.react.bridge.Arguments;
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PeerConnectionObserver.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PeerConnectionObserver.java
+index 95ddfbb..b86dc00 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PeerConnectionObserver.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PeerConnectionObserver.java
+@@ -7,13 +7,12 @@ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.Map;
+ 
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Base64;
+ import android.util.Log;
+ import android.util.SparseArray;
+ 
+ import com.facebook.react.bridge.Arguments;
+-import com.facebook.react.bridge.Callback;
+ import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.bridge.WritableArray;
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PermissionUtils.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PermissionUtils.java
+index 8ecf1ea..19d78f6 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PermissionUtils.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/PermissionUtils.java
+@@ -10,7 +10,7 @@ import android.os.Bundle;
+ import android.os.Handler;
+ import android.os.Looper;
+ import android.os.ResultReceiver;
+-import android.support.v4.content.ContextCompat;
++import androidx.core.content.ContextCompat;
+ 
+ import com.facebook.react.bridge.LifecycleEventListener;
+ import com.facebook.react.bridge.ReactContext;
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCModule.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCModule.java
+index edec6a0..74765f2 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCModule.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCModule.java
+@@ -2,7 +2,7 @@ package com.oney.WebRTCModule;
+ 
+ import android.hardware.Camera;
+ import android.hardware.Camera.CameraInfo;
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Log;
+ import android.util.SparseArray;
+ 
+diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
+index 9960a2f..f1ca59a 100644
+--- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
++++ b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/WebRTCView.java
+@@ -3,7 +3,7 @@ package com.oney.WebRTCModule;
+ import android.annotation.SuppressLint;
+ import android.content.Context;
+ import android.graphics.Point;
+-import android.support.v4.view.ViewCompat;
++import androidx.core.view.ViewCompat;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.util.Log;

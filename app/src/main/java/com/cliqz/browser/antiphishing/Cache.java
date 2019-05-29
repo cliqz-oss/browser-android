@@ -1,6 +1,6 @@
 package com.cliqz.browser.antiphishing;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashMap;

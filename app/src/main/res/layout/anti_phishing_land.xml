@@ -25,7 +25,7 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/anti_phising_icon"
             android:layout_width="65dp"
             android:layout_height="80dp"
@@ -61,7 +61,7 @@
             android:text="@string/antiphishing_desc"
             android:textSize="16sp" />
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_ok"
             android:layout_width="wrap_content"
             android:layout_height="36dp"

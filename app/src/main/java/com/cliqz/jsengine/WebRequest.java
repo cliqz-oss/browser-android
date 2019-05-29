@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 /**
  * @author Sam Macbeth
  */
+@ReactModule(name = "WebRequest")
 public class WebRequest extends ReactContextBaseJavaModule {
 
     private final static String TAG = WebRequest.class.getSimpleName();

@@ -1,8 +1,8 @@
 package com.cliqz.browser.test;
 
 import android.app.Activity;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 
 /**
  * @author Kiiza Joseph Bazaare

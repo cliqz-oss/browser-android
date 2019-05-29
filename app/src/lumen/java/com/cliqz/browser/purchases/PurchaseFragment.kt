@@ -2,8 +2,9 @@ package com.cliqz.browser.purchases
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View

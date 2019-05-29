@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
+import androidx.appcompat.content.res.AppCompatResources;
 import android.widget.ImageView;
 import android.util.Log;
 import com.facebook.react.uimanager.SimpleViewManager;

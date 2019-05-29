@@ -6,7 +6,8 @@
 package com.cliqz.library.vpn.core;
 
 import android.os.Build;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.cliqz.library.BuildConfig;
 

@@ -5,8 +5,8 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -40,7 +40,7 @@ class SearchInPageDialog implements DialogInterface.OnClickListener {
     public static void show(Context context, View inPageSearchBar, LightningView lightningView) {
         final SearchInPageDialog searchInPageDialog = new SearchInPageDialog(context, inPageSearchBar, lightningView);
         final int verticalMargin = 10; //dps
-        final int[] dialogTitlePadding = new int[]{android.support.v7.appcompat.R.attr.dialogPreferredPadding};
+        final int[] dialogTitlePadding = new int[]{androidx.appcompat.R.attr.dialogPreferredPadding};
         final TypedArray typedArray = context.obtainStyledAttributes(dialogTitlePadding);
         final int sidePadding = typedArray.getDimensionPixelSize(0, -1);
         typedArray.recycle();

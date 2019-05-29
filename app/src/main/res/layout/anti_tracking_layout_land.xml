@@ -28,7 +28,7 @@
             android:tag="@id/enableable_view"
             />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/attrack_icon"
             android:layout_width="match_parent"
             android:layout_height="88dp"
@@ -120,7 +120,7 @@
                 android:background="#333333"
                 android:paddingTop="20dp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/trackers_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
 
         </RelativeLayout>
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_ok"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
@@ -152,7 +152,7 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14sp">
-        </android.support.v7.widget.AppCompatButton>
+        </androidx.appcompat.widget.AppCompatButton>
 
         <TextView
             android:id="@+id/learn_more"

@@ -1,8 +1,8 @@
 package com.cliqz.browser.utils;
 
-import android.support.test.espresso.web.assertion.WebAssertion;
-import android.support.test.espresso.web.sugar.Web;
-import android.support.test.espresso.web.sugar.Web.WebInteraction;
+import androidx.test.espresso.web.assertion.WebAssertion;
+import androidx.test.espresso.web.sugar.Web;
+import androidx.test.espresso.web.sugar.Web.WebInteraction;
 import android.util.Log;
 import android.view.View;
 
