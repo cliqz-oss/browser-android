@@ -3,9 +3,10 @@ package com.cliqz.browser.test;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.support.test.espresso.FailureHandler;
-import android.support.test.espresso.base.DefaultFailureHandler;
 import android.view.View;
+
+import androidx.test.espresso.FailureHandler;
+import androidx.test.espresso.base.DefaultFailureHandler;
 
 import com.cliqz.browser.utils.WindowManagerGlobal;
 
