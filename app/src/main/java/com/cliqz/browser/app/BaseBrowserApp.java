@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
@@ -96,9 +95,14 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
             return ((ActivityComponentProvider) object).getActivityComponent();
         }
 
-        if (object instanceof ContextThemeWrapper) {
-            return getActivityComponent(((ContextThemeWrapper) object).getBaseContext());
+        if (object instanceof android.view.ContextThemeWrapper) {
+            return getActivityComponent(((android.view.ContextThemeWrapper) object).getBaseContext());
         }
+
+        if (object instanceof androidx.appcompat.view.ContextThemeWrapper) {
+            return getActivityComponent(((androidx.appcompat.view.ContextThemeWrapper) object).getBaseContext());
+        }
+
         return null;
     }
 
