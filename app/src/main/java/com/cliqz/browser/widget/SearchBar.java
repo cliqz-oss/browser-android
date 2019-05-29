@@ -37,7 +37,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.view.AnimatedProgressBar;
 import acr.browser.lightning.view.TrampolineConstants;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -68,15 +68,15 @@ public class SearchBar extends FrameLayout {
     @Inject
     QueryManager queryManager;
 
-    @Bind(R.id.title_bar)
+    @BindView(R.id.title_bar)
     TextView titleBar;
 
     @Nullable
-    @Bind(R.id.tracker_counter)
+    @BindView(R.id.tracker_counter)
     TextView trackerCounter;
 
     @Nullable
-    @Bind(R.id.control_center)
+    @BindView(R.id.control_center)
     ViewGroup antiTrackingDetails;
 
     @Nullable

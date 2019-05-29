@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import acr.browser.lightning.utils.Utils;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -79,22 +79,22 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     private AutocompleteEditText mSearchTextView = null;
     private int mY = Integer.MAX_VALUE;
 
-    @Bind(R.id.query_suggestion_container)
+    @BindView(R.id.query_suggestion_container)
     LinearLayout querySuggestionContainer;
 
-    @Bind(R.id.access_bar_container)
+    @BindView(R.id.access_bar_container)
     ViewGroup accessBarContainer;
 
-    @Bind(R.id.tabs_overview_btn)
+    @BindView(R.id.tabs_overview_btn)
     Button tabsOverviewButton;
 
-    @Bind(R.id.history_btn)
+    @BindView(R.id.history_btn)
     Button historyButton;
 
-    @Bind(R.id.offrz_btn)
+    @BindView(R.id.offrz_btn)
     Button offrzButton;
 
-    @Bind(R.id.favorites_btn)
+    @BindView(R.id.favorites_btn)
     Button favoritesButton;
 
     @Inject

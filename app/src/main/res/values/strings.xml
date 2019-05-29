@@ -345,4 +345,5 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="action_later" tools:ignore="MissingTranslation">Later</string>
     <string name="action_take_survey" tools:ignore="MissingTranslation">Take Survey</string>
     <string name="user_sentiment_survey_second_line_msg" tools:ignore="MissingTranslation">Please note: the service used for this survey, SurveyMonkey, records user IPs.</string>
+    <string name="action_tabs_manager">Tabs</string>
 </resources>

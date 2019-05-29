@@ -222,35 +222,6 @@ public class MainActivityTest {
         onView(withId(R.id.topnews_list)).check(matches(isDisplayed()));
     }
 
-    /*  Disabled as this Test is broken. o/
-    @Test
-    public void historyTab() throws Throwable {
-        mActivityRule.getActivity().historyDatabase.clearHistory(true);
-        mActivityRule.getActivity().historyDatabase.clearHistory(false);
-        onView(withId(R.id.menu_overview)).perform(click());
-        onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
-        onView(withText(equalToIgnoringCase("HISTORY"))).perform(click());
-        Thread.sleep(10000);
-        onWebView(withClassName(equalTo(HistoryWebView.class.getName())))
-                .withElement(findElement(Locator.CLASS_NAME, "nohistoryyet"));
-        Thread.sleep(2000);
-        onView(withId(R.id.toolbar)).perform(pressBack());
-        onView(withId(R.id.search_edit_text))
-                .perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/testpage.html"),
-                        pressKey(KeyEvent.KEYCODE_ENTER));
-        Thread.sleep(5000);
-        onView(withId(R.id.menu_overview)).perform(click());
-        onView(withText(equalToIgnoringCase("HISTORY"))).perform(click());
-        Thread.sleep(2000);
-        onWebView(withClassName(equalTo(HistoryWebView.class.getName())))
-                .withElement(findElement(
-                        Locator.CSS_SELECTOR, ".content.history .question .item .item__head"));
-        onWebView(withClassName(equalTo(HistoryWebView.class.getName())))
-                .withElement(findElement(
-                        Locator.CSS_SELECTOR, ".content.history .answer .item .item__head"));
-    }
-    /o TODO: Fix this test. */
-
     @Test
     public void favoritesTabAndAddDelFavorites() {
         mActivityRule.getActivity().getHistoryDatabase().clearHistory(true);

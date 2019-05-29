@@ -52,7 +52,7 @@ import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
-import com.cliqz.browser.utils.LookbackWrapper;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -403,7 +403,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         timings.setAppStartTime();
         locationCache.start();
-        showLookbackDialog();
         if (engine.reactInstanceManager != null) {
             engine.reactInstanceManager.onHostResume(this);
         }
@@ -419,13 +418,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final TabsManager.Builder builder = handleIntent(intent);
         if (builder != null) {
             builder.show();
-        }
-    }
-
-    private void showLookbackDialog() {
-        if ("lookback".contentEquals(BuildConfig.FLAVOR_api) && mShouldShowLookbackDialog) {
-            mShouldShowLookbackDialog = false;
-            LookbackWrapper.show(this, preferenceManager.getSessionId());
         }
     }
 

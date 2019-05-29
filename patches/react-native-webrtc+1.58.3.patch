@@ -1,3 +1,32 @@
+diff --git a/node_modules/react-native-webrtc/android/build.gradle b/node_modules/react-native-webrtc/android/build.gradle
+index 25c371f..2696e3f 100644
+--- a/node_modules/react-native-webrtc/android/build.gradle
++++ b/node_modules/react-native-webrtc/android/build.gradle
+@@ -1,12 +1,12 @@
+ apply plugin: 'com.android.library'
+ 
+ android {
+-    compileSdkVersion 23
+-    buildToolsVersion "23.0.1"
++    compileSdkVersion 26
++    buildToolsVersion "23.0.3"
+ 
+     defaultConfig {
+         minSdkVersion 16
+-        targetSdkVersion 22
++        targetSdkVersion 26
+         versionCode 1
+         versionName "1.0"
+         ndk {
+@@ -16,6 +16,6 @@ android {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
+-    compile fileTree(dir: 'libs', include: ['*.jar'])
++    implementation 'com.facebook.react:react-native:+'
++    implementation fileTree(dir: 'libs', include: ['*.jar'])
+ }
 diff --git a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java b/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java
 index 850c463..c92368d 100644
 --- a/node_modules/react-native-webrtc/android/src/main/java/com/oney/WebRTCModule/DataChannelObserver.java

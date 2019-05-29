@@ -29,7 +29,7 @@ import com.cliqz.nove.Subscribe;
 import javax.inject.Inject;
 
 import acr.browser.lightning.constant.Constants;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -53,10 +53,10 @@ public class ControlCenterDialog extends DialogFragment {
     private boolean mSaveInstanceStateCalled = false;
     private boolean mIsIncognito;
 
-    @Bind(R.id.sec_features)
+    @BindView(R.id.sec_features)
     TabLayout controlCenterHeaders;
 
-    @Bind(R.id.control_center_pager)
+    @BindView(R.id.control_center_pager)
     ViewPager controlCenterPager;
 
     @Inject

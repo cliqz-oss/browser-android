@@ -144,15 +144,10 @@ def getCliqzExtensionVersion() {
 
 afterEvaluate { project ->
     project.tasks.each { tazk ->
-        if (tazk.name =~ /mergeXwalk.*Assets/ && !tazk.name.endsWith('TestAssets')) {
-            tazk.doLast {
-                compileAdHostsList(tazk.outputDir)
-            }
-        }
         if (tazk.name =~ /merge.*Assets/ && !tazk.name.endsWith('TestAssets')) {
             tazk.doLast {
-                createBloomFilter(tazk.outputDir)
-                copyJsEngine(tazk.outputDir)
+                createBloomFilter(tazk.outputDir.get().asFile)
+                copyJsEngine(tazk.outputDir.get().asFile)
             }
         }
     }

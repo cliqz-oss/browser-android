@@ -21,7 +21,7 @@ import com.cliqz.nove.Subscribe;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -36,10 +36,10 @@ public class HistoryFragment extends FragmentWithBus {
     private View contextualToolBar;
     private TextView contextualToolBarTitle;
 
-    @Bind(R.id.history_rview)
+    @BindView(R.id.history_rview)
     RecyclerView historyListView;
 
-    @Bind(R.id.no_history_ll)
+    @BindView(R.id.no_history_ll)
     LinearLayout noHistoryMessage;
 
     @Override

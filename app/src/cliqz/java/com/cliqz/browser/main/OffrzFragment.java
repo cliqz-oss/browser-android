@@ -34,7 +34,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -60,37 +60,37 @@ public class OffrzFragment extends FragmentWithBus implements
     private static final String CALL_TO_ACTION_TEXT_KEY = "text";
     private static final String CALL_TO_ACTION_URL_KEY = "url";
 
-    @Bind(R.id.empty_offers_outer_container)
+    @BindView(R.id.empty_offers_outer_container)
     ViewGroup emptyOffersOuterContainer;
 
-    @Bind(R.id.offers_outer_container)
+    @BindView(R.id.offers_outer_container)
     View offersOuterContainer;
 
-    @Bind(R.id.offrz_onboaring_container)
+    @BindView(R.id.offrz_onboaring_container)
     ViewGroup onboardingVG;
 
-    @Bind(R.id.offrz_activation_container)
+    @BindView(R.id.offrz_activation_container)
     ViewGroup activationVG;
 
-    @Bind(R.id.offers_container)
+    @BindView(R.id.offers_container)
     ViewGroup offersContainer;
 
-    @Bind(R.id.onboarding_feature_icon_iv)
+    @BindView(R.id.onboarding_feature_icon_iv)
     ImageView onboardingIcon;
 
-    @Bind(R.id.empty_offers_icon_iv)
+    @BindView(R.id.empty_offers_icon_iv)
     ImageView emptyOffersIcon;
 
-    @Bind(R.id.onboarding_feature_description_tv)
+    @BindView(R.id.onboarding_feature_description_tv)
     TextView onboardingText;
 
-    @Bind(R.id.activation_feature_description_tv)
+    @BindView(R.id.activation_feature_description_tv)
     TextView activationText;
 
-    @Bind(R.id.offers_loading_pb)
+    @BindView(R.id.offers_loading_pb)
     ProgressBar progressBar;
 
-    @Bind(R.id.myoffrz_deactivate_view)
+    @BindView(R.id.myoffrz_deactivate_view)
     View myOffrzDeactivateView;
 
     @Nullable
@@ -287,25 +287,25 @@ public class OffrzFragment extends FragmentWithBus implements
     }
 
     class ViewHolder {
-        @Bind(R.id.offer_title_tv)
+        @BindView(R.id.offer_title_tv)
         TextView title;
 
-        @Bind(R.id.offer_description_tv)
+        @BindView(R.id.offer_description_tv)
         TextView descrption;
 
-        @Bind(R.id.offer_image_iv)
+        @BindView(R.id.offer_image_iv)
         SimpleDraweeView image;
 
-        @Bind(R.id.terms_and_conditions_btn)
+        @BindView(R.id.terms_and_conditions_btn)
         Button termsAndConditionsButton;
 
-        @Bind(R.id.terms_and_conditions_tv)
+        @BindView(R.id.terms_and_conditions_tv)
         TextView termsAndConditions;
 
-        @Bind(R.id.offer_copy_code_btn)
+        @BindView(R.id.offer_copy_code_btn)
         Button copyCode;
 
-        @Bind(R.id.go_to_offer_btn)
+        @BindView(R.id.go_to_offer_btn)
         Button goToOffer;
 
         private String mUrl;

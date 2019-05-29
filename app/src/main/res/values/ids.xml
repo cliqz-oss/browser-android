@@ -40,4 +40,5 @@
     <item name="background_manager_listener_key" type="id" />
     <item name="background_manager_mode_key" type="id" />
     <item name="favorites_view_parent" type="id" />
+    <item name="tabs_manager_button" type="id" />
 </resources>

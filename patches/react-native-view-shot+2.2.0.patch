@@ -1,0 +1,21 @@
+diff --git a/node_modules/react-native-view-shot/android/build.gradle b/node_modules/react-native-view-shot/android/build.gradle
+index 27df6c1..4f0319a 100644
+--- a/node_modules/react-native-view-shot/android/build.gradle
++++ b/node_modules/react-native-view-shot/android/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+     }
+ 
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:2.3.0'
++        classpath 'com.android.tools.build:gradle:3.4.1'
+     }
+ }
+ 
+@@ -37,5 +37,5 @@ allprojects {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
++    implementation 'com.facebook.react:react-native:+'
+ }
+\ No newline at end of file
