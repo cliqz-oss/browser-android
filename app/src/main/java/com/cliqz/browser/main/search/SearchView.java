@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.anthonycr.grant.PermissionsManager;
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
@@ -89,7 +90,6 @@ public class SearchView extends FrameLayout {
         addView(mReactView);
         addView(incognito);
         addView(startTabContainer);
-
     }
 
     @Override
@@ -107,7 +107,6 @@ public class SearchView extends FrameLayout {
                 incognito.setVisibility(View.GONE);
             }
             mReactView.setVisibility(View.GONE);
-
         } else {
             mReactView.bringToFront();
             startTabContainer.setVisibility(View.GONE);
@@ -181,6 +180,10 @@ public class SearchView extends FrameLayout {
     }
 
     public void updateQuery(String query, int start, int count) {
+        //noinspection ConstantConditions
+        if ("lumen".equals(BuildConfig.FLAVOR)) {
+            return;
+        }
         String keyCode = "";
         if (count == 0) {
             keyCode = "Backspace";
