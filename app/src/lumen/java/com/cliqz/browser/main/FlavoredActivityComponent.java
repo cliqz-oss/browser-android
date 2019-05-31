@@ -2,6 +2,7 @@ package com.cliqz.browser.main;
 
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.starttab.FavoritesFragment;
+import com.cliqz.browser.starttab.freshtab.FreshTab;
 import com.cliqz.browser.starttab.HistoryFragment;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
@@ -17,6 +18,8 @@ import dagger.Subcomponent;
 public interface FlavoredActivityComponent extends MainActivityComponent {
 
     void inject(VpnPanel vpnPanel);
+
+    void inject(FreshTab freshTab);
 
     void inject(HistoryFragment historyFragment);
 

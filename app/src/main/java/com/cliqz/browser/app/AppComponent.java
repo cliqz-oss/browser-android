@@ -132,4 +132,7 @@ public interface AppComponent {
     void inject(GeoLocationModule geoLocationModule);
 
     void inject(SearchEnginesModule searchEnginesModule);
+
+    void inject(BrowserApp browserApp);
+
 }

@@ -53,7 +53,6 @@ import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.utils.LookbackWrapper;
-import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -156,9 +155,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Inject
     Engine engine;
 
-    @Inject
-    PurchasesManager purchasesManager;
-
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
 
     @Override
@@ -248,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         }
 
-        purchasesManager.checkPurchases();
         setupContentView();
 
         if (preferenceManager.getSessionId() == null) {

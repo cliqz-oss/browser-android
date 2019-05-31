@@ -36,7 +36,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.Theme_Purchase_Dialog)
+        setStyle(STYLE_NORMAL, R.style.Theme_Purchase_Dialog)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -96,15 +96,14 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     },
                     { _, purchaseInfo ->
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("vpn") }) {
-                            purchasesManager.isVpnEnabled = true
+                            purchasesManager.purchase.isVpnEnabled = true
                         }
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("basic") }) {
-                            purchasesManager.isDashboardEnabled = true
+                            purchasesManager.purchase.isDashboardEnabled = true
                         }
                         this@PurchaseFragment.dismiss()
                     }
             )
         }
     }
-
 }

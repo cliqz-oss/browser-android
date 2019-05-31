@@ -135,6 +135,10 @@ public class PreferenceManager {
         static final String START_COUNT = "start_count";
         static final String MY_OFFRZ_ENABLED = "MY_OFFRZ_ENABLED";
         static final String SEND_USAGE_DATA = "SEND_USAGE_DATA";
+
+        // Lumen
+        static final String PREF_TRIAL_PERIOD_OBJECT = "trial_period_object";
+        static final String PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED = "trial_message_dismissed_time";
     }
 
     private final SharedPreferences mPrefs;
@@ -920,5 +924,21 @@ public class PreferenceManager {
 
     public long getVpnStartTime() {
         return mPrefs.getLong(Name.VPN_START_TIME, System.currentTimeMillis());
+    }
+
+    public String getTrialPeriodInfo() {
+        return mPrefs.getString(Name.PREF_TRIAL_PERIOD_OBJECT, null);
+    }
+
+    public void setTrialPeriodInfo(String trialInfo) {
+        putString(Name.PREF_TRIAL_PERIOD_OBJECT, trialInfo);
+    }
+
+    public long timeWhenTrialMessageDismissed() {
+        return mPrefs.getLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, 0L);
+    }
+
+    public void updateTimeOfTrialMessageDismissed() {
+        putLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, System.currentTimeMillis());
     }
 }

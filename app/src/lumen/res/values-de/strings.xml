@@ -25,5 +25,14 @@
     <string name="privacy_policy_title">Datenschutzerklärung - Lumen</string>
     <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Lumen sammelt streng anonyme Daten darüber, wie du Lumen benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
     <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Lumen Browser erfahren. i</string>
-</resources>
 
+    <!-- Start Tab -->
+    <string name="start_tab_welcome_message">Willkommen bei Lumen!</string>
+
+    <plurals name="trial_period_upgrade_description">
+        <item quantity="one">Noch 1 Tag in der Test-Version</item>
+        <item quantity="other">Noch %d Tage in der Test-Version</item>
+    </plurals>
+    <string name="upgrade_button">Upgrade</string>
+    <string name="made_in_germany">Made in Germany</string>
+</resources>

@@ -6,10 +6,10 @@ import androidx.fragment.app.Fragment;
 /**
  * @author Ravjit Uppal
  */
-abstract class StartTabFragment extends Fragment {
+abstract public class StartTabFragment extends Fragment {
 
-    abstract String getTitle();
+    abstract public String getTitle();
 
     abstract @DrawableRes
-    int getIconId();
+    public int getIconId();
 }

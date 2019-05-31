@@ -4,6 +4,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.cliqz.browser.starttab.freshtab.FreshTab;
+
 import java.util.ArrayList;
 
 /**
@@ -16,7 +18,7 @@ public class StartTabAdapter extends IconTabLayout.ImageFragmentPagerAdapter {
     public StartTabAdapter(FragmentManager fm) {
         super(fm);
         mFragments.clear();
-        mFragments.add(new Freshtab());
+        mFragments.add(new FreshTab());
         mFragments.add(new HistoryFragment());
         mFragments.add(new FavoritesFragment());
     }
