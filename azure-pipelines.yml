@@ -41,12 +41,7 @@ jobs:
       displayName: 'Run Gradle Task: $(gradle.flavor)'
 
     - bash: |
-        declare -a flavors=("lumen" "cliqz")
-        mkdir builds
-        for flavor in "${flavors[@]}"
-        do
-            cp $(BUILD_OUTPUT_DIR)/${flavor}/debug/app-${flavor}-universal-debug.apk $(Build.ArtifactStagingDirectory)/${flavor}.apk || true
-        done
+        find $(BUILD_OUTPUT_DIR) -iregex '.*-debug\.apk' -exec cp '{}' $(Build.ArtifactStagingDirectory) ';'
       displayName: 'Copy Builds'
 
     - task: PublishBuildArtifacts@1
@@ -117,7 +112,7 @@ jobs:
         gradleWrapperFile: 'gradlew'
         options: '--continue'
         publishJUnitResults: true
-        testResultsFiles: '$(TESTS_XML_DIR)/**/CLIQZX86/TEST-*.xml'
+        testResultsFiles: '$(TESTS_XML_DIR)/**/TEST-*.xml'
         testRunTitle: 'CliqzAndroidTest'
         tasks: 'connectedCliqzDebugAndroidTest'
       displayName: 'Run Tests on Cliqz'
