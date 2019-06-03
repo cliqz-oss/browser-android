@@ -30,7 +30,7 @@
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
     "@cliqz/indexeddbshim": "^4.1.2",
-    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.8fda379.tgz",
+    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.3e6f330.tgz",
     "buffer": "5.0.7",
     "core-js": "2.5.3",
     "https-browserify": "1.0.0",
@@ -48,7 +48,7 @@
     "react-native-sqlite-2": "1.5.0",
     "react-native-user-agent": "^1.0.3",
     "react-native-view-shot": "2.2.0",
-    "react-native-webrtc": "1.58.3",
+    "react-native-webrtc": "^1.69.1",
     "stream-browserify": "2.0.1",
     "stream-http": "2.7.2",
     "url": "^0.11.0"
