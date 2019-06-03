@@ -41,4 +41,10 @@
     </plurals>
     <string name="upgrade_button">Upgrade</string>
     <string name="made_in_germany">Made in Germany</string>
+
+    <!-- VPN -->
+    <string name="unlock_vpn_dialog_title">VPN PROTECTION</string>
+    <string name="unlock_vpn_dialog_description">Unlock the VPN feature to get the best out of Lumen</string>
+    <string name="unlock_vpn_dialog_negative_btn">No, thanks</string>
+    <string name="unlock_vpn_dialog_positive_btn">LEARN MORE</string>
 </resources>

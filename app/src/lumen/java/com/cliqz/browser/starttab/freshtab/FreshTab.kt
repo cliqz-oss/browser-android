@@ -8,8 +8,10 @@ import android.view.ViewGroup
 
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
+import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
 import com.cliqz.browser.starttab.StartTabFragment
+import com.cliqz.nove.Bus
 import kotlinx.android.synthetic.lumen.fragment_freshtab.*
 import javax.inject.Inject
 
@@ -20,6 +22,9 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
 
     @Inject
     lateinit var preferenceManager: PreferenceManager
+
+    @Inject
+    lateinit var bus: Bus
 
     private lateinit var freshTabPresenter: FreshTabPresenter
 
@@ -46,7 +51,7 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
         trial_over_lumen_upgrade.visibility = View.VISIBLE
         trial_over_learn_more_btn.setOnClickListener {
             trial_over_lumen_upgrade.visibility = View.GONE
-            // TODO: Show PurchaseFragment
+            bus.post(Messages.GoToPurchase(0))
         }
         trial_over_dismiss_btn.setOnClickListener {
             trial_over_lumen_upgrade.visibility = View.GONE
@@ -60,7 +65,7 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
         trial_period_upgrade_description.text =
                 resources.getQuantityString(R.plurals.trial_period_upgrade_description, daysLeft, daysLeft)
         trial_period_lumen_upgrade.setOnClickListener {
-            // TODO: Show PurchaseFragment
+            bus.post(Messages.GoToPurchase(0))
         }
     }
 

@@ -3,6 +3,7 @@ package com.cliqz.browser.vpn;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Paint;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -146,8 +147,9 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
             //VpnCountriesDialog.show(getContext(), this);
             Toast.makeText(getContext(), "In progress", Toast.LENGTH_SHORT).show();
         } else if (v.getId() == R.id.vpn_connect_button) {
-            boolean isVpnEnabled = purchasesManager.getPurchase() != null && purchasesManager.getPurchase().isVpnEnabled();
-            boolean isInTrial = purchasesManager.getTrialPeriod() != null && purchasesManager.getTrialPeriod().isInTrial();
+            boolean isVpnEnabled = purchasesManager.getPurchase().isVpnEnabled();
+            boolean isInTrial = purchasesManager.getTrialPeriod() != null &&
+                    purchasesManager.getTrialPeriod().isInTrial();
             if (isVpnEnabled || isInTrial) {
                 if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
                     mVpnHandler.disconnectVpn();
@@ -156,9 +158,20 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
                     mVpnHandler.connectVpn();
                 }
             } else {
-                bus.post(new Messages.GoToPurchase(0));
+                unlockVpnDialog();
             }
         }
+    }
+
+    private void unlockVpnDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle(getString(R.string.unlock_vpn_dialog_title))
+                .setMessage(getString(R.string.unlock_vpn_dialog_description))
+                .setNegativeButton(getString(R.string.unlock_vpn_dialog_negative_btn), null)
+                .setPositiveButton(getString(R.string.unlock_vpn_dialog_positive_btn),
+                        (dialogInterface, which) -> bus.post(new Messages.GoToPurchase(0)))
+                .create()
+                .show();
     }
 
     @Override
