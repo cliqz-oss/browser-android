@@ -144,7 +144,6 @@ public class PreferenceManager {
     private final SharedPreferences mPrefs;
 
     private static final String PREFERENCES = "settings";
-    private static final int MAX_SURVEY_MESSAGE_SHOW_COUNT = 3;
 
     public PreferenceManager(final Context context) {
         mPrefs = context.getSharedPreferences(PREFERENCES, 0);
@@ -400,16 +399,6 @@ public class PreferenceManager {
 
     public boolean shouldShowNews() {
         return mPrefs.getBoolean(Name.SHOW_NEWS, true);
-    }
-
-    public boolean shouldShowUserSentimentSurvey() {
-        final Locale locale = Locale.getDefault();
-        final String lang = locale.getLanguage();
-        final String english = Locale.ENGLISH.getLanguage();
-        final String german = Locale.GERMAN.getLanguage();
-        final boolean isSupportedLanguage = english.equals(lang) || german.equals(lang);
-        final int count = mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0);
-        return (isSupportedLanguage && count < MAX_SURVEY_MESSAGE_SHOW_COUNT);
     }
 
     public ClearQueriesOptions shouldClearQueries() {
@@ -907,15 +896,6 @@ public class PreferenceManager {
 
     public void setMyOffrzEnable(boolean value){
         putBoolean(Name.MY_OFFRZ_ENABLED,value);
-    }
-
-    public void updateUserSurvey201903Count() {
-        final int value = mPrefs.getInt(Name.USER_SENTIMENT_SURVEY_201903, 0);
-        putInt(Name.USER_SENTIMENT_SURVEY_201903, value + 1);
-    }
-
-    public void stopUserSurvey201903() {
-        putInt(Name.USER_SENTIMENT_SURVEY_201903, MAX_SURVEY_MESSAGE_SHOW_COUNT);
     }
 
     public void setVpnStartTime(long currentTimeMillis) {

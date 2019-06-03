@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright © Cliqz 2018-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bond_dashboard_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/dash_board_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/reset"
+        android:layout_alignParentTop="true"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:background="@color/primary_color"
+        android:gravity="center"
+        android:paddingStart="20dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:text="@string/reset_subscription"
+        android:textColor="@color/white" />
+
+    <View
+        android:id="@+id/dashboard_disable_view"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/dark_transparent_overlay"
+        android:visibility="gone" />
+
+</RelativeLayout>

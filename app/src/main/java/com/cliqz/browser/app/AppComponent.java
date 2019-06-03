@@ -4,6 +4,7 @@ import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.connect.PairedDevicesFragment;
 import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.controlcenter.ControlCenterComponent;
+import com.cliqz.browser.controlcenter.ControlCenterHelper;
 import com.cliqz.browser.controlcenter.ControlCenterModule;
 import com.cliqz.browser.gcm.MessageListenerService;
 import com.cliqz.browser.gcm.NotificationDismissedReceiver;
@@ -132,6 +133,8 @@ public interface AppComponent {
     void inject(GeoLocationModule geoLocationModule);
 
     void inject(SearchEnginesModule searchEnginesModule);
+
+    void inject(ControlCenterHelper controlCenterHelper);
 
     void inject(BrowserApp browserApp);
 

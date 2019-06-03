@@ -1,8 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="tab_layout_style">
+        <item name="tabTextAppearance">@style/tab_layout_text_style</item>
+        <item name="android:background">@color/primary_color</item>
+        <item name="tabSelectedTextColor">@color/bond_general_color_blue</item>
+        <item name="tabTextColor">@color/bond_disabled_text_color</item>
+        <item name="tabIndicatorColor">@color/bond_general_color_blue</item>
+    </style>
+
+    <style name="tab_layout_text_style">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/bond_general_color_blue</item>
+    </style>
+
+    <style name="required_items">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="dashboard_measurement_value">
+        <item name="android:fontFamily">@string/roboto_regular</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/dashboard_measurement_value_size</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="dashboard_item" parent="required_items">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <style name="dashboard_item_title" parent="dashboard_item">
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textSize">@dimen/dashboard_item_title_size</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
+    <style name="dashboard_item_content" parent="dashboard_item">
+        <item name="android:fontFamily">@string/roboto_regular</item>
+        <item name="android:textSize">@dimen/dashboard_item_content_size</item>
+    </style>
+    <style name="dashboard_switch_style" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#1B9CFC</item>
+        <item name="colorSwitchThumbNormal">#7189B0</item>
+    </style>
     <style name="Theme.Purchase.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
     </style>
-
 </resources>
