@@ -17,15 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.StyleRes;
-import com.google.android.material.appbar.AppBarLayout;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.ContextThemeWrapper;
@@ -48,14 +39,23 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.controlcenter.ControlCenterHelper;
-import com.cliqz.browser.controlcenter.ControlCenterActions;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.Messages.ControlCenterStatus;
 import com.cliqz.browser.main.search.SearchView;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
@@ -75,7 +75,9 @@ import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StreamUtils;
 import com.cliqz.utils.ViewUtils;
+import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +85,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 
 import javax.inject.Inject;
@@ -200,6 +203,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @BindView(R.id.reader_mode_webview)
     WebView readerModeWebview;
 
+    @Nullable
+    @BindView(R.id.vpn_panel_button)
+    AppCompatImageView mVpnPanelButton;
+
     @Inject
     OnBoardingHelper onBoardingHelper;
 
@@ -210,13 +217,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @BindView(R.id.cc_icon)
     AppCompatImageView ccIcon;
 
-    private View mVpnPanelButton;
-
     @Inject
     Adblocker adblocker;
 
     @Inject
     AntiTracking antiTracking;
+
+    @Inject
+    PurchasesManager purchasesManager;
 
     private String mDomainName = "";
 
@@ -309,16 +317,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             stub.inflate();
         }
         ButterKnife.bind(this, view);
-        //TODO Upgrade the butterknife library(or change to Data binding library?)
-        // This can be done gracefully using latest version of butterknife. It has the annotation @Optional
-        // by which we can avaoid flavour check and use normal @Bind or @OnClick annotations.
-        if ("lumen".equals(BuildConfig.FLAVOR)) {
-            mVpnPanelButton = view.findViewById(R.id.vpn_panel_button);
-            mVpnPanelButton.setOnClickListener(view1 -> {
-                final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
-                vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
-            });
-        }
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();
@@ -364,7 +362,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             quickAccessBar.hide();
         }
         //way to handle links in the readermode article
-        readerModeWebview.setWebViewClient(new WebViewClient(){
+        readerModeWebview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 toggleReaderMode();
@@ -373,6 +371,40 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         });
         onPageFinished(null);
+        if (mVpnPanelButton != null) {
+            if (isVPNConnected()) {
+                mVpnPanelButton.setImageResource(getFlavorDrawable("ic_vpn_on"));
+            } else {
+                mVpnPanelButton.setImageResource(getFlavorDrawable("ic_vpn_off"));
+            }
+        }
+
+        if ("lumen".equals(BuildConfig.FLAVOR)) {
+            if (purchasesManager.isDashboardEnabled()) {
+                ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_on"));
+            } else {
+                ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_off"));
+            }
+        }
+    }
+
+    private int getFlavorDrawable(@NonNull String name) {
+        return getResources().getIdentifier(name, "drawable",
+                BrowserApp.getAppContext().getPackageName());
+    }
+
+    private boolean isVPNConnected() {
+        if (!"lumen".equals(BuildConfig.FLAVOR)) {
+            return false;
+        }
+
+        try {
+            final Class<?> vpnStatusClass = Class.forName("com.cliqz.library.vpn.core.VpnStatus");
+            final Method method = vpnStatusClass.getMethod("isVPNConnected");
+            return (Boolean) method.invoke(null);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -544,7 +576,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     // TODO @Ravjit, the dialog should disappear if you pause the app
-    @OnClick(R.id.control_center)
+    @Optional
+    @OnClick(R.id.cc_icon)
     void showControlCenter() {
         final WebView webView = mLightningView.getWebView();
         mControlCenterHelper.setControlCenterData(mStatusBar, mIsIncognito, webView.hashCode(),
@@ -589,6 +622,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
             readerModeWebview.setVisibility(View.GONE);
         }
+    }
+
+    @Optional
+    @OnClick(R.id.vpn_panel_button)
+    void toggleVpnView() {
+        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
+        vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
     }
 
     @SuppressWarnings("UnusedParameters")

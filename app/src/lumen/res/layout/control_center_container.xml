@@ -22,7 +22,7 @@
             android:text="@string/bond_dashboard_ultimate_protection"
             android:textColor="@color/white" />
 
-        <android.support.v7.widget.SwitchCompat
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/ultimate_protection_switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/control_center_tab_layout"
         style="@style/tab_layout_style"
         android:layout_width="match_parent"
