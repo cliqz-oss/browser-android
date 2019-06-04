@@ -15,4 +15,8 @@ public class PurchasesManager {
     public PurchasesManager(Context context, Bus bus, PreferenceManager preferenceManager) {
         // No-op
     }
+
+    public boolean isDashboardEnabled() {
+        return false;
+    }
 }

@@ -67,9 +67,9 @@ class PurchasesManager(
     }
 
     private fun loadPurchaseInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
+        // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-                // Read trial period object from cache
                 trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
                 // TODO: Can avoid querying network if not needed.
                 trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
@@ -80,5 +80,9 @@ class PurchasesManager(
                 })
             }
         })
+    }
+
+    fun isDashboardEnabled() : Boolean {
+        return purchase.isDashboardEnabled || trialPeriod?.isInTrial ?: false;
     }
 }

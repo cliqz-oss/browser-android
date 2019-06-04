@@ -1,79 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:background="#aaa">
 
-    <LinearLayout android:orientation="horizontal"
+    <TextView
+        android:id="@+id/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|left"
-        android:layout_marginEnd="31dp"
-        android:layout_marginRight="31dp"
-        android:gravity="center_vertical"
-        android:contentDescription="@string/descr_search_bar"
+        android:layout_height="@dimen/title_bar_h"
         android:background="@drawable/tab_item_bg_normal"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-
-        <TextView
-            android:id="@+id/title_bar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/title_bar_h"
-            android:layout_weight="1"
-            android:gravity="start|center_vertical"
-            android:hint="@string/url_bar_search_hint"
-            android:textColorHint="@color/url_bar_hint_text_color"
-            android:singleLine="true"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:paddingRight="8dp"
-            android:paddingLeft="8dp"
-            android:textColor="#333333"
-            android:textSize="15sp" />
-
-        <LinearLayout
-            android:id="@+id/control_center"
-            android:layout_width="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/cc_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ic_control_center"
-                tools:src="@drawable/ic_control_center"/>
-
-            <TextView
-                android:id="@+id/tracker_counter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                tools:text="@string/zero"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                tools:ignore="RtlHardcoded" />
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/vpn_panel_button"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:scaleType="fitXY"
-        android:layout_gravity="end|right|center_vertical"
-        app:srcCompat="@drawable/ic_action_add_white"/>
+        android:gravity="start|center_vertical"
+        android:hint="@string/url_bar_search_hint"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:singleLine="true"
+        android:textColor="#333333"
+        android:textColorHint="@color/url_bar_hint_text_color"
+        android:textSize="15sp" />
 
 </FrameLayout>

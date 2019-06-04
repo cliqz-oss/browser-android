@@ -16,7 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         tools:layout_height="30dp"
-        tools:background="@color/fresh_tab_background"
+        tools:background="@color/white"
         android:paddingLeft="@dimen/toolbar_padding"
         android:paddingRight="@dimen/toolbar_padding"
         android:layout_weight="1"/>
@@ -25,11 +25,32 @@
         android:id="@+id/reader_mode_button"
         android:layout_width="28dp"
         android:layout_height="28dp"
+        android:layout_marginEnd="@dimen/toolbar_padding"
+        android:layout_marginRight="@dimen/toolbar_padding"
         app:srcCompat="@drawable/ic_reader_mode_off"
         android:background="@color/transparent"
         android:scaleType="fitXY"
         android:visibility="gone"
         tools:visibility="visible"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/vpn_panel_button"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:scaleType="fitXY"
+        android:layout_gravity="end|right|center_vertical"
+        app:srcCompat="@drawable/ic_vpn_on"
+        android:background="@color/transparent"
+        android:layout_marginEnd="@dimen/toolbar_padding"
+        android:layout_marginRight="@dimen/toolbar_padding"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/cc_icon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        app:srcCompat="@drawable/ic_dashboard_on"
+        android:background="@color/transparent"
+        android:scaleType="fitXY"/>
 
     <FrameLayout
         android:id="@+id/overflow_menu"
