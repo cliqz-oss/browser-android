@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingFlowParams
 
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
@@ -17,13 +18,14 @@ import com.cliqz.browser.main.MainActivity
 import com.cliqz.browser.purchases.productlist.OnBuyClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
-import com.revenuecat.purchases.Entitlement
-import com.revenuecat.purchases.Purchases
-import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
-import com.revenuecat.purchases.makePurchaseWith
 import kotlinx.android.synthetic.lumen.fragment_purchase.*
+import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
+import com.cliqz.browser.purchases.SubscriptionConstants.Product
+import com.revenuecat.purchases.*
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 private val TAG = PurchaseFragment::class.java.simpleName
 
@@ -45,15 +47,15 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        BrowserApp.getActivityComponent(activity as MainActivity)?.inject(this)
+        close_btn.setOnClickListener { dismiss() }
         initRecyclerView()
         setLoading(true)
         getProductDetails()
-
-        BrowserApp.getActivityComponent(activity as MainActivity)?.inject(this)
     }
 
     private fun initRecyclerView() {
-        mAdapter = ProductListAdapter(null, this)
+        mAdapter = ProductListAdapter(context, null, this)
         product_list.adapter = mAdapter
         product_list.layoutManager = LinearLayoutManager(context)
     }
@@ -62,14 +64,22 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         Purchases.sharedInstance.getEntitlements(object : ReceiveEntitlementsListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
                 val productList = ArrayList<ProductRowData>()
-                entitlementMap[SubscriptionConstants.Entitlements.PREMIUM_SALE]?.offerings?.forEach {
+                var isSubscribed = false
+                entitlementMap[Entitlements.PREMIUM_SALE]?.offerings?.forEach {
                     (_, offering) -> offering.skuDetails?.apply {
-                        productList.add(ProductRowData(sku, title, price, description))
+                        if (sku == purchasesManager.purchase.sku) {
+                            isSubscribed = true
+                            productList.add(ProductRowData(sku, title, price, description, true))
+                        } else {
+                            productList.add(ProductRowData(sku, title, price, description, false))
+                        }
                     }
                 }
                 if (productList.isEmpty()) {
                     // TODO: Display error
                 } else {
+                    customSwapProductListElements(productList)
+                    mAdapter.setHasSubscription(isSubscribed)
                     mAdapter.updateProductList(productList)
                     setLoading(false)
                 }
@@ -82,15 +92,30 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         })
     }
 
+    /**
+     * The middle product in the list should always be "Basic + VPN".
+     */
+    private fun customSwapProductListElements(productList: List<ProductRowData>) {
+        if (productList.size < 2) return
+        val middleElement = productList[1]
+        val basicVpnProductElement: ProductRowData = productList.find { it.sku == Product.BASIC_VPN }
+                ?: return
+        Collections.swap(productList, productList.indexOf(basicVpnProductElement), productList.indexOf(middleElement))
+    }
+
     fun setLoading(flag: Boolean) {
         product_list.visibility = if (flag) View.GONE else View.VISIBLE
         loading.visibility = if (flag) View.VISIBLE else View.GONE
     }
 
     override fun onBuyClicked(position: Int) {
+        val oldSku = ArrayList<String>()
+        if (purchasesManager.purchase.sku.isNotEmpty()) {
+            oldSku.add(purchasesManager.purchase.sku)
+        }
         mAdapter.getProduct(position)?.apply {
             Purchases.sharedInstance.makePurchaseWith(activity as Activity, sku,
-                    BillingClient.SkuType.SUBS,
+                    BillingClient.SkuType.SUBS, oldSku,
                     { error, _ ->
                         Log.e(TAG, error.underlyingErrorMessage)
                     },
