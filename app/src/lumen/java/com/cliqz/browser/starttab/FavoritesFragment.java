@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -44,9 +42,6 @@ public class FavoritesFragment extends StartTabFragment {
     private FavoritesAdapter adapter;
     private RecyclerView favoritesListView;
     private final ArrayList<FavoriteModel> favoritesList = new ArrayList<>();
-
-    @BindView(R.id.ll_no_favorite)
-    LinearLayout noFavoriteLayout;
 
     @Inject
     Engine engine;
@@ -97,12 +92,8 @@ public class FavoritesFragment extends StartTabFragment {
         prepareRecyclerView();
     }
 
-    public boolean checkNoFavorites() {
-        if (favoritesList.size() == 0) {
-            noFavoriteLayout.setVisibility(View.VISIBLE);
-            return true;
-        }
-        return false;
+    private boolean checkNoFavorites() {
+        return favoritesList.size() == 0;
     }
 
     private void prepareRecyclerView() {
@@ -121,13 +112,16 @@ public class FavoritesFragment extends StartTabFragment {
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
                     @Override
-                    public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                    public int getSwipeDirs(@NonNull RecyclerView recyclerView,
+                                            @NonNull RecyclerView.ViewHolder viewHolder) {
                         //Dont swipe when contextual menu is enabled
                         return super.getSwipeDirs(recyclerView, viewHolder);
                     }
 
                     @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
                         return false;
                     }
 

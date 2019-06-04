@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,9 +43,6 @@ public class HistoryFragment extends StartTabFragment {
     @BindView(R.id.history_rview)
     RecyclerView historyListView;
 
-    @BindView(R.id.no_history_ll)
-    LinearLayout noHistoryMessage;
-
     @Inject
     Engine engine;
 
@@ -68,10 +64,8 @@ public class HistoryFragment extends StartTabFragment {
         }
         prepareListData();
         if (historyList.size() == 0) {
-            noHistoryMessage.setVisibility(View.VISIBLE);
             return;
         }
-        noHistoryMessage.setVisibility(View.GONE);
         if (adapter == null) {
             adapter = new HistoryAdapter(historyList, engine, handler, new HistoryAdapter.ClickListener() {
                 @Override
@@ -101,7 +95,7 @@ public class HistoryFragment extends StartTabFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_history_recyclerview, container, false);
+        final View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -118,7 +112,8 @@ public class HistoryFragment extends StartTabFragment {
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
                     @Override
-                    public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                    public int getSwipeDirs(@NonNull RecyclerView recyclerView,
+                                            @NonNull RecyclerView.ViewHolder viewHolder) {
                         //Dont swipe date view and when contextual menu is enabled
                         if (viewHolder instanceof HistoryAdapter.DateViewHolder) {
                             return 0;
@@ -127,8 +122,9 @@ public class HistoryFragment extends StartTabFragment {
                     }
 
                     @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                                          RecyclerView.ViewHolder target) {
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
                         return false;
                     }
 
@@ -145,13 +141,10 @@ public class HistoryFragment extends StartTabFragment {
                         adapter.notifyItemRemoved(position);
                         //check if date view is to be removed
                         if ((position == historyList.size()
-                                || historyListView.getAdapter().getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE)
-                                && historyListView.getAdapter().getItemViewType(position - 1 ) == HistoryAdapter.VIEW_TYPE_DATE) {
+                                || adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE)
+                                && adapter.getItemViewType(position - 1 ) == HistoryAdapter.VIEW_TYPE_DATE) {
                             historyList.remove(position-1);
                             adapter.notifyItemRemoved(position-1);
-                            if (historyList.size() == 0) {
-                                noHistoryMessage.setVisibility(View.VISIBLE);
-                            }
                         }
                     }
                 };
