@@ -321,7 +321,7 @@ public class OverFlowMenu extends FrameLayout {
         if ("ghostery".equals(BuildConfig.FLAVOR)) {
             entries.remove(Entries.DESKTOP_PAIRING);
         }
-        if (!"lumen".equals(BuildConfig.FLAVOR)) {
+        if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
             entries.remove(Entries.TABS_MANAGER);
         }
         if (!BuildConfig.DEBUG) {
