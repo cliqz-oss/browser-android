@@ -16,20 +16,19 @@ import android.webkit.WebView;
 import com.cliqz.browser.main.TabBundleKeys;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import acr.browser.lightning.utils.Utils;
@@ -113,6 +112,7 @@ public class WebViewPersister {
             final Parcel parcel = Parcel.obtain();
             final byte[] buffer = new byte[(int) dataFile.length()];
             InputStream in = null;
+            Bundle state = null;
             try {
                 in = new FileInputStream(dataFile);
                 final int read = in.read(buffer);
@@ -121,13 +121,20 @@ public class WebViewPersister {
                 }
                 parcel.unmarshall(buffer, 0, buffer.length);
                 parcel.setDataPosition(0);
-                final Bundle state = parcel.readBundle(getClass().getClassLoader());
-                view.restoreState(state);
+                state = parcel.readBundle(getClass().getClassLoader());
             } catch (Throwable e) {
                 Log.e(TAG, "Can't read state from " + dataFile, e);
             } finally {
                 Utils.close(in);
                 parcel.recycle();
+                // If the file is corrupted restoreState(...) will crash the app asynchronously:
+                // in order to be sure to not be caught in a crash loop let's remove the data file
+                //noinspection ResultOfMethodCallIgnored
+                dataFile.delete();
+            }
+
+            if (state != null) {
+                view.restoreState(state);
             }
         }
     }
@@ -137,25 +144,17 @@ public class WebViewPersister {
     public List<Bundle> loadTabsMetaData() {
         final List<Bundle> metadata = new LinkedList<>();
         final MutableInt maxFileSize = new MutableInt(0);
-        final File[] metafiles = destDirectory.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                final boolean isMetaFile = pathname.getName().endsWith(META_FILE_EXTENSION);
-                if (isMetaFile) {
-                    maxFileSize.value = Math.max(maxFileSize.value, (int) pathname.length());
-                }
-                return isMetaFile;
+        final File[] metafiles = destDirectory.listFiles(pathname -> {
+            final boolean isMetaFile = pathname.getName().endsWith(META_FILE_EXTENSION);
+            if (isMetaFile) {
+                maxFileSize.value = Math.max(maxFileSize.value, (int) pathname.length());
             }
+            return isMetaFile;
         });
         if (metafiles == null || metafiles.length == 0) {
             return metadata;
         }
-        Arrays.sort(metafiles, new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        Arrays.sort(metafiles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
         final byte[] byteBuffer = new byte[maxFileSize.value];
         for (final File metafile: metafiles) {
             try {
@@ -202,19 +201,6 @@ public class WebViewPersister {
         }
     }
 
-    @MainThread
-    public boolean cleanUp() {
-        File[] files = destDirectory.listFiles();
-        if (files == null || files.length == 0) {
-            return true;
-        }
-        boolean result = true;
-        for (File f: files) {
-            result &= f.delete();
-        }
-        return result;
-    }
-
     private class Loop extends Thread {
 
         @Override
@@ -236,7 +222,7 @@ public class WebViewPersister {
             switch (msg.what) {
                 case QUEUE_OPERATION_MESSAGE_CODE:
                     // Add an on operation to the queue and schedule a mass persist operation
-                    final Operation operation = Operation.class.cast(msg.obj);
+                    final Operation operation = (Operation) msg.obj;
                     enqueueOperarion(operation.id(), operation);
                     if (!mWorking) {
                         sendEmptyMessage(PERFORM_OPERATIONS_CODE);
@@ -265,7 +251,7 @@ public class WebViewPersister {
 
         private void enqueueOperarion(String id, Operation operation) {
             if (ops.containsKey(id)) {
-                ops.get(id).add(operation);
+                Objects.requireNonNull(ops.get(id)).add(operation);
             } else {
                 final List<Operation> list = new LinkedList<>();
                 list.add(operation);
@@ -333,16 +319,23 @@ public class WebViewPersister {
         }
 
         private void writeBundleOut(File outFile, Bundle bundle) throws IOException {
+            final File tmpFile = File.createTempFile(outFile.getName(), null);
             final Parcel parcel = Parcel.obtain();
             bundle.writeToParcel(parcel, 0);
             OutputStream out = null;
             try {
-                out = new FileOutputStream(outFile);
+                out = new FileOutputStream(tmpFile);
                 out.write(parcel.marshall());
                 out.flush();
             } finally {
                 Utils.close(out);
                 parcel.recycle();
+            }
+
+            if (!tmpFile.renameTo(outFile)) {
+                //noinspection ResultOfMethodCallIgnored
+                tmpFile.delete();
+                throw new IOException("Can't create data file");
             }
         }
     }
@@ -395,8 +388,8 @@ public class WebViewPersister {
                 while (it.hasPrevious()) {
                     final Operation op = it.previous();
                     cleanOpsList.add(op);
-                    if (DeleteTabOperation.class.isInstance(op) ||
-                            PersistTabOperation.class.isInstance(op)) {
+                    if (op instanceof DeleteTabOperation ||
+                            op instanceof PersistTabOperation) {
                         break;
                     } else {
                         cleanOpsList.add(op);
