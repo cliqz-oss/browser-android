@@ -21,9 +21,6 @@ import acr.browser.lightning.download.DownloadHandler;
 @Singleton
 public class PreferenceManager {
 
-    private static final String FLAVOR_API_AMAZON = "amazon";
-    private static final String FLAVOR_API_HUAWEI = "huawei";
-
     public enum ClearQueriesOptions {
         NO,
         CLEAR_HISTORY,

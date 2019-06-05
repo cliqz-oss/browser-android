@@ -312,7 +312,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
-        if ((!"lumen".equals(BuildConfig.FLAVOR))) {
+        if ((!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR))) {
             final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
             stub.inflate();
         }
@@ -379,7 +379,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         }
 
-        if ("lumen".equals(BuildConfig.FLAVOR)) {
+        if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
             if (purchasesManager.isDashboardEnabled()) {
                 ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_on"));
             } else {
@@ -394,7 +394,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private boolean isVPNConnected() {
-        if (!"lumen".equals(BuildConfig.FLAVOR)) {
+        if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
             return false;
         }
 
@@ -1166,12 +1166,15 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             return;
         }
         final String title = mLightningView.getTitle();
-        searchBar.setTitle(title);
         state.setTitle(title);
-        final Activity activity = getActivity();
-        if (activity != null) {
-            ActivityUtils.setTaskDescription(activity, title,
-                    R.color.primary_color_dark, R.mipmap.ic_launcher);
+        //noinspection ConstantConditions
+        if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
+            searchBar.setTitle(title);
+            final Activity activity = getActivity();
+            if (activity != null) {
+                ActivityUtils.setTaskDescription(activity, title,
+                        R.color.primary_color_dark, R.mipmap.ic_launcher);
+            }
         }
     }
 
