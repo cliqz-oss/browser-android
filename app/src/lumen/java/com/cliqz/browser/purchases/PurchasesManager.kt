@@ -44,6 +44,7 @@ class PurchasesManager(
                     this.isASubscriber = true
                     this.isVpnEnabled = isVpnEnabled
                     this.isDashboardEnabled = isDashboardEnabled
+                    this.sku = sku
                 }
             }
             isLoading = false

@@ -4,5 +4,6 @@ class ProductRowData(
         val sku: String,
         val title: String,
         val price: String,
-        val description: String
+        val description: String,
+        val isSubscribed: Boolean
 )
