@@ -16,5 +16,7 @@ interface FreshTabContract {
         fun showTrialDaysLeft(daysLeft: Int)
 
         fun hideAllTrialPeriodViews()
+
+        fun toggleWelcomeMessage(show: Boolean)
     }
 }
