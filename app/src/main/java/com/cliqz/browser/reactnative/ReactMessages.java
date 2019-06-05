@@ -1,9 +1,8 @@
 package com.cliqz.browser.reactnative;
 
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.facebook.react.bridge.Promise;
 

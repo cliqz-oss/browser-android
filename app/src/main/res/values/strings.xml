@@ -1,21 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  Copyright 2013 The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
-<resources>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">New Tab</string>
     <string name="action_copy">Copy Link</string>
     <string name="settings">Settings</string>
@@ -26,7 +10,6 @@
     <string name="clear_cache">Clear cache on exit</string>
     <string name="enable_cookies">Enable cookies</string>
     <string name="recommended">Recommended</string>
-    <string name="cliqz_search_hint">Cliqz Search</string>
     <string name="fullScreenOption">Hide status bar while browsing</string>
     <string name="action_delete">Delete</string>
     <string name="action_download">Download</string>
@@ -92,7 +75,6 @@
     <string name="reading_mode">Reader Mode</string>
     <string name="loading">Loading…</string>
     <string name="dark_theme">Dark Theme</string>
-    <string name="app_name">Cliqz Browser</string>
     <string name="about_version_format" translatable="false">%1$s</string>
     <string name="theme">App Theme</string>
     <string name="light_theme">Light Theme</string>
@@ -109,7 +91,6 @@
     <string name="humanweb">Human Web</string>
     <string name="about_humanweb_url">https://cliqz.com/en/whycliqz/human-web</string>
     <string name="share_link">Share using</string>
-    <string name="shared_using">Shared with Cliqz for Android</string>
     <string name="gps_permission">Please enable GPS for better search results</string>
     <string name="open_in_new_tab">Open in new tab</string>
     <string name="open_in_incognito_tab">Open in new Forget Tab</string>
@@ -135,16 +116,11 @@
     <string name="settings_block_ads">Block Ads (Beta)</string>
     <string name="optimized_block_ads">Fair Blocking</string>
     <string name="what_does_optimized_mean">What is \'fair\'?</string>
-    <string name="optimized_block_ads_description">The Cliqz Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads.
-More https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">View video offline</string>
     <string name="overview">Overview</string>
     <string name="open_tabs">Open Tabs</string>
     <string name="favorites">Favorites</string>
     <string name="antiphishing_dialog_title">Warning: deceptive website!</string>
-    <string name="antiphishing_message">Cliqz has blocked access to %1$s because it has been reported as a phishing website.
-Phishing websites disguise as other sites you may trust in order to trick you into disclosing your login, password or other sensitive information.
-[Learn more|https://cliqz.com/en/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Back to safe site</string>
     <string name="antiphishing_ignore_danger">Continue despite warning</string>
     <string name="antitracking_header">Your data is protected</string>
@@ -168,10 +144,9 @@ Phishing websites disguise as other sites you may trust in order to trick you in
     <string name="showcase_search_message">Relevant results are shown instantly during search.</string>
     <string name="showcace_search_title">Result Cards</string>
     <string name="upload_file_title">Upload File Title</string>
-    <string name="rate_us">Rate Cliqz Browser</string>
     <string name="autocompletion_enabled">Enable Autocompletion</string>
     <string name="request_desktop_site">Desktop Site</string>
-    <string name="contact_cliqz">FAQs &amp; Support</string>
+    <string name="title_faq_and_support">FAQs &amp; Support</string>
     <string name="control_center_header_antitracking" translatable="false">Anti-Tracking</string>
     <string name="control_center_header_adblocking">Ad-Blocking</string>
     <string name="control_center_header_antiphishing" translatable="false">Anti-Phishing</string>
@@ -186,9 +161,7 @@ Phishing websites disguise as other sites you may trust in order to trick you in
     <string name="antiphishing_desc">Anti-Phishing technology identifies and blocks potentially deceptive websites that try to get your passwords or account data before you visit the site.</string>
     <string name="learn_more"><u>Learn more</u></string>
     <string name="switched_to_forget">Automatic Forget Tab enabled</string>
-    <string name="summary_adblock_data">Please note: Cliqz Browser has to download some data packages first, before the ad-blocker works efficiently. For this, the app must be connected to Wi-Fi.</string>
     <string name="extension_version" translatable="false">Extension Version</string>
-    <string name="tips_and_tricks">Get the best out of Cliqz</string>
     <string name="open_link_new_tab">Open link in new tab</string>
     <string name="open_link_forget_tab">Open link in Forget Tab</string>
     <string name="open_image_new_tab">Open image in new tab</string>
@@ -215,8 +188,6 @@ Phishing websites disguise as other sites you may trust in order to trick you in
     <string name="report_site">Report Website</string>
     <string name="clear_passwords">Clear passwords</string>
     <string name="clear_passwords_message">Would you like to clear saved passwords?</string>
-    <string name="msg_pairing_instructions_dialog">Open Cliqz Browser on your computer (or get it from cliqz.com).</string>
-    <string name="pairing_information">Connect Cliqz on your mobile device with Cliqz on your computer. This will allow you to send tabs between your desktop and your mobile device. You can also directly download videos from your desktop browser to your mobile device.</string>
     <string name="pairing_error_message">Sorry, but the devices could not be connected. Please try again.</string>
     <string name="pairing_error_title">Connection failed</string>
     <string name="action_retry">Retry</string>
@@ -231,7 +202,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="pairing_device_rename_message">Enter a new name for the connection:</string>
     <string name="pairing_device_rename_hint">New name</string>
     <string name="query_suggestion">Search query suggestions</string>
-    <string name="request_location_access">Allow Cliqz Browser to access location information</string>
     <string name="msg_connecting_to_desktop">Connecting to Desktop…</string>
     <string name="freshtab_no_topsites">Your most visited sites will appear here</string>
     <string name="action_done">Done</string>
@@ -261,7 +231,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cdn">CDN</string>
     <string name="control_center_tracker_ad_blocked">%1$d Trackers</string>
     <string name="action_close_all_tabs">Close All Tabs</string>
-    <string name="msg_new_icon">Hey, the Cliqz logo is now blue. Check out the new version of the app!</string>
     <string name="auto_forget_tab">Automatic Forget Tab</string>
     <string name="showcase_youtube_title">Video Downloader</string>
     <string name="showcase_youtube_message">Download YouTube videos to your Smartphone.</string>
@@ -271,7 +240,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="send_tab_generic_error_msg">Oops, the tab could not be sent to Desktop. Please check your connection status.</string>
     <string name="action_go_to_connect">Go to Connect</string>
     <string name="send_tab_no_connection_error_title">No Connection</string>
-    <string name="send_tab_no_connection_error_msg">You are not connected to any Cliqz Browser for Desktop. Go to the \'Connect\' menu to add a new connection.</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Send Tab to Desktop</string>
     <string name="code_scanner">QR-Code scanner</string>
@@ -289,13 +257,11 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="dialog_notification_disabled_msg">Activate the notifications for this app to use this feature. Go to your system settings to allow push notification and retry.</string>
     <string name="search_hint">Search</string>
     <string name="allow_write_permission">Please allow write permissions for this feature to work.</string>
-    <string name="share_card_email_subject">I discovered this in the Cliqz Browser</string>
     <string name="loading_failed">Couldn\'t load anything from this page</string>
     <string name="zero">0</string>
     <string name="settings_category_clear_data">Clear Data</string>
     <string name="settings_category_browsing">Browsing</string>
     <string name="settings_category_search">Search</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications"><![CDATA[Subscriptions & Notifications]]></string>
     <string name="settings_category_others">Other</string>
     <string name="settings_show_top_sites">Show most visited websites</string>
@@ -304,7 +270,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cache">Cache</string>
     <string name="action_set">Set</string>
     <string name="clear_private_data">Clear private data on exit</string>
-    <string name="clear_data_summary">Cliqz will automatically clear your data whenever you select \"Exit\" from the main menu.</string>
     <string name="find_hint">Find</string>
     <string name="settings_category_download">Download Options</string>
     <string name="limit_data_usage">Limit mobile data usage</string>
@@ -339,13 +304,9 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Location permissions</string>
     <string name="make_default_browser">Make default browser</string>
-    <string name="default_browser_title">Cliqz as Default Browser</string>
-    <string name="default_browser_message">You seem to like using Cliqz. Do you want to make it your default browser?</string>
     <string name="proceed">PROCEED</string>
     <string name="save">SAVE</string>
     <string name="never">NEVER</string>
-    <string name="save_password_text">Do you want Cliqz to save your password for this site?</string>
-    <string name="cliqz_tab_default_url" translatable="false">Cliqz Tab</string>
     <plurals name="items">
         <item quantity="one">%d item selected</item>
         <item quantity="other">%d items selected</item>
@@ -353,19 +314,12 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">EULA</string>
-    <string name="eula_text">The Cliqz for Android browser is built upon the &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
- Browser open source project&lt;/a&gt; and is made available to you under the terms of the &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; a free
- software license, which gives you the right to run the program for any purpose, to study how it works, to give copies to your friends and to modify it to meet your needs better. There is no separate End User License Agreement (EULA).</string>
     <string name="title_activity_eula_setting">EULA</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d topsite deleted</item>
         <item quantity="other">%d topsites deleted</item>
     </plurals>
-    <string name="welcome_cliqz">Welcome to Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">By using this application, you agree to the
-        &lt;font color=\'#00aef0\'>Cliqz Privacy Policy &lt;/font></string>
     <string name="accept">ACCEPT</string>
-    <string name="privacy_policy_title">Privacy Policy - Cliqz</string>
     <string name="settings_show_background_image">Show background image</string>
     <string name="settings_show_my_offrz">Show MyOffrz</string>
     <string name="settings_about_my_offrz">About MyOffrz</string>
@@ -373,4 +327,7 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="settings_category_user_data_choices">Data Choices</string>
     <string name="send_usage_data">Send usage data</string>
     <string name="send_usage_data_summary">Help us improve your browsing experience. Cliqz collects strictly anonymous usage data. At no occasion is any PII collected.</string>
+    <string name="action_later" tools:ignore="MissingTranslation">Later</string>
+    <string name="action_take_survey" tools:ignore="MissingTranslation">Take Survey</string>
+    <string name="action_tabs_manager">Tabs</string>
 </resources>

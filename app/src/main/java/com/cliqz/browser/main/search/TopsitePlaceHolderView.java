@@ -2,7 +2,7 @@ package com.cliqz.browser.main.search;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 

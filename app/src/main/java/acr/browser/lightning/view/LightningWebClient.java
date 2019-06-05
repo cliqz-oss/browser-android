@@ -14,9 +14,9 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -170,15 +170,12 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     private boolean handleHistoryCommand(@NonNull WebView view, @Nullable String cmd) {
         if (TrampolineConstants.TRAMPOLINE_COMMAND_HISTORY.equals(cmd)) {
             lightningView.telemetry.sendBackPressedSignal("web", "history", 0);
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    lightningView.eventBus.post(new Messages.GoToHistory());
-                    if (lightningView.canGoBack()) {
-                        lightningView.goBack();
-                    } else {
-                        lightningView.eventBus.post(new Messages.ShowSearch(""));
-                    }
+            view.post(() -> {
+                lightningView.eventBus.post(new Messages.GoToHistory());
+                if (lightningView.canGoBack()) {
+                    lightningView.goBack();
+                } else {
+                    lightningView.eventBus.post(new Messages.ShowSearch(""));
                 }
             });
             return true;
@@ -204,12 +201,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             final String query = uri.getQueryParameter(TrampolineConstants.TRAMPOLINE_QUERY_PARAM_NAME);
             final int queryLen = query != null ? query.length() : 0;
             lightningView.telemetry.sendBackPressedSignal("web", "cards", queryLen);
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    lightningView.eventBus.post(new Messages.ShowSearch(query));
-                }
-            });
+            view.post(() -> lightningView.eventBus.post(new Messages.ShowSearch(query)));
             return true;
         }
         return false;

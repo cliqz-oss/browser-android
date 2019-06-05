@@ -1,6 +1,6 @@
 package com.cliqz.browser.abtesting;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.utils.HttpHandler;
@@ -43,7 +43,7 @@ public class ABTestFetcher {
                 try {
                     final JSONObject response = HttpHandler.sendRequest("GET", new URL(AB_TEST_ENDPOINT
                                     + URLEncoder.encode(preferenceManager.getSessionId(), "UTF-8")),
-                            "CONTENT_TYPE_JSON", null);
+                            "CONTENT_TYPE_JSON", null, null);
                     parseResponse(response);
                 } catch (MalformedURLException | UnsupportedEncodingException e) {
                     e.printStackTrace();

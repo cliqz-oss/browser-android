@@ -6,6 +6,8 @@
 
 The CLIQZ Browser for Android. Originally a fork of [Anthony Restaino](https://github.com/anthonycr)'s [Lightning Browser](https://github.com/anthonycr/Lightning-Browser). We maintain two different repositories for the project: a [private one](https://github.com/cliqz/android-browser) for internal development (only accessible by CLIQZers) and a [public one](https://github.com/cliqz-oss/browser-android). The latter is updated every time we publish a new version and can be used to contribute to the project.
 
+[![Build Status](https://dev.azure.com/cliqz-ci/cliqz-android/_apis/build/status/cliqz-oss.browser-android%20-%20CI?branchName=lumen)](https://dev.azure.com/cliqz-ci/cliqz-android/_build/latest?definitionId=4&branchName=lumen)
+
 ## How to clone and start hacking
 
 Run these commands in a shell:

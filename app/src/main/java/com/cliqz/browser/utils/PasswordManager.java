@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.SavePasswordDialog;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.utils.StreamUtils;
@@ -40,7 +40,7 @@ public class PasswordManager implements SavePasswordDialog.PasswordDialogListene
 
     public PasswordManager(Activity activity) {
         mActivity = activity;
-        final MainActivityComponent component = BrowserApp.getActivityComponent(mActivity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(mActivity);
         if (component != null) {
             component.inject(this);
         }

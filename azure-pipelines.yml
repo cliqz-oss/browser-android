@@ -1,0 +1,147 @@
+variables:
+  BUILD_OUTPUT_DIR: app/build/outputs/apk
+  TESTS_XML_DIR: app/build/outputs/androidTest-results
+  IMG_NAME: system-images;android-23;google_apis;x86
+  DEVICE_TYPE: "Nexus 4"
+  DEVICE_NAME: Nexus4Emu
+  DEVICE_VIDEO_DIR: /mnt/sdcard/DCIM
+  VM_IMAGE: 'macOS 10.13'
+  NODE_VER: '9.11.2'
+  NPM_VER: 6.5
+
+jobs:
+
+  # Job to Build the Browsers
+  - job: Cliqz_Android_CI_Build
+
+    timeoutInMinutes: 60
+
+    pool:
+      vmImage: $(VM_IMAGE)
+
+    steps:
+
+    - task: NodeTool@0
+      displayName: 'Define Node to v$(NODE_VER)'
+      inputs:
+        versionSpec: $(NODE_VER)
+
+    - bash: |
+        npm i -g npm@$(NPM_VER)
+        /usr/local/bin/npm ci
+        npm run bundle
+      displayName: 'Build ReactNative'
+
+    - task: Gradle@2
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        tasks: $(gradle.flavor)
+      env:
+        DISABLE_GOOGLE_SERVICES: true
+      displayName: 'Run Gradle Task: $(gradle.flavor)'
+
+    - bash: |
+        find $(BUILD_OUTPUT_DIR) -iregex '.*-debug\.apk' -exec cp '{}' $(Build.ArtifactStagingDirectory) ';'
+      displayName: 'Copy Builds'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Builds'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.BuildId).Builds'
+        publishLocation: 'Container'
+
+  # Job to Test the Cliqz and Lumen Browser
+  - job: Cliqz_Android_CI_Test
+    condition: and(eq(variables['run.tests'], 'true'), ne(variables['Build.Reason'], 'Schedule'))
+
+    timeoutInMinutes: 60
+
+    pool:
+      vmImage: $(VM_IMAGE)
+
+    steps:
+
+    - task: NodeTool@0
+      displayName: 'Define Node to v$(NODE_VER)'
+      inputs:
+        versionSpec: $(NODE_VER)
+
+    - bash: |
+        npm i -g npm@$(NPM_VER)
+        /usr/local/bin/npm ci
+        npm run bundle
+      displayName: 'Build ReactNative'
+
+    - bash: |
+        $ANDROID_HOME/tools/bin/sdkmanager "$(IMG_NAME)"
+        $ANDROID_HOME/tools/bin/avdmanager create avd --device "$(DEVICE_TYPE)" --package "$(IMG_NAME)" --abi google_apis/x86 --name "$(DEVICE_NAME)"
+        $ANDROID_HOME/emulator/emulator -avd $(DEVICE_NAME) &
+        echo $! > emu.pid
+        echo "Emulator Started with Process ID: $(cat emu.pid)"
+        $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+        sleep 60
+        $ANDROID_HOME/platform-tools/adb devices
+      displayName: 'Setup and Launch Emulator'
+
+    - bash: |
+        $ANDROID_HOME/platform-tools/adb shell """
+        mount -o rw,remount rootfs /;
+        chmod 0777 /mnt/sdcard;
+        exit
+        """
+        sleep 10
+        $ANDROID_HOME/platform-tools/adb logcat -c
+        $ANDROID_HOME/platform-tools/adb logcat > $(Build.ArtifactStagingDirectory)/device.log &
+        echo $! > logcat.pid
+        echo "Logcat Started with Process ID: $(cat logcat.pid)"
+        $ANDROID_HOME/platform-tools/adb shell "mkdir -p $(DEVICE_VIDEO_DIR)"
+        $ANDROID_HOME/platform-tools/adb shell '''
+          for i in $(seq 1 1 20)
+          do
+            screenrecord --bugreport --verbose --time-limit=180 /mnt/sdcard/DCIM/test"${i}".mp4
+          done
+        ''' > $(Build.ArtifactStagingDirectory)/video.log &
+        echo $! > video.pid
+        echo "Video Recorder Started with Process ID: $(cat video.pid)"
+      displayName: 'Start Video Record and Logcat'
+
+    - task: Gradle@2
+      condition: or(succeeded(), failed())
+      inputs:
+        gradleWrapperFile: 'gradlew'
+        options: '--continue'
+        publishJUnitResults: true
+        testResultsFiles: '$(TESTS_XML_DIR)/**/TEST-*.xml'
+        testRunTitle: 'CliqzAndroidTest'
+        tasks: 'connectedCliqzDebugAndroidTest'
+      displayName: 'Run Tests on Cliqz'
+
+#    - task: Gradle@2
+#      condition: or(succeeded(), failed())
+#      inputs:
+#        gradleWrapperFile: 'gradlew'
+#        options: '--continue'
+#        publishJUnitResults: true
+#        testResultsFiles: '$(TESTS_XML_DIR)/**/LUMENX86/TEST-*.xml'
+#        testRunTitle: 'LumenX86AndroidTest'
+#        tasks: 'connectedLumenX86DebugAndroidTest'
+#      displayName: 'Run Tests on Lumen'
+
+    - bash: |
+        kill -9 $(cat video.pid) || true
+        sleep 5
+        $ANDROID_HOME/platform-tools/adb pull $(DEVICE_VIDEO_DIR) $(Build.ArtifactStagingDirectory) || true
+        kill -9 $(cat logcat.pid) || true
+        adb kill-server
+        kill -9 $(cat emu.pid)
+      condition: or(succeeded(), failed())
+      displayName: 'Copy Videos and Clean Up'
+
+    - task: PublishBuildArtifacts@1
+      condition: or(succeeded(), failed())
+      displayName: 'Publish Tests Archive'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(Build.BuildId).TestsArchive'
+        publishLocation: 'Container'

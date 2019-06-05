@@ -2,7 +2,7 @@ package com.cliqz.browser.main;
 
 import android.os.Build;
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,17 +29,17 @@ import java.util.TimeZone;
  * @author vishnu
  * @author Ravjit Singh
  */
-class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    interface ClickListener {
+    public interface ClickListener {
         void onClick(View view, int position);
 
         void onLongPress(View view, int position);
     }
 
-    static final int VIEW_TYPE_DATE = 0;
-    static final int VIEW_TYPE_HISTORY = 1;
-    static final int VIEW_TYPE_QUERY = 2;
+    public static final int VIEW_TYPE_DATE = 0;
+    public static final int VIEW_TYPE_HISTORY = 1;
+    public static final int VIEW_TYPE_QUERY = 2;
 
     private ArrayList<HistoryModel> historyList;
     private Engine engine;
@@ -48,8 +48,8 @@ class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Integer> multiSelectList = new ArrayList<>();
     private ClickListener clickListener;
 
-    HistoryAdapter(ArrayList<HistoryModel> historyList, Engine engine, Handler handler,
-                   ClickListener clickListener) {
+    public HistoryAdapter(ArrayList<HistoryModel> historyList, Engine engine, Handler handler,
+                          ClickListener clickListener) {
         this.historyList = historyList;
         this.engine = engine;
         this.handler = handler;
@@ -191,7 +191,7 @@ class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    class DateViewHolder extends RecyclerView.ViewHolder {
+    public class DateViewHolder extends RecyclerView.ViewHolder {
 
         public TextView date;
 

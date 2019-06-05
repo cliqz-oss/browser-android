@@ -2,7 +2,7 @@ package com.cliqz.browser.helper;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ToggleButton;
 
@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final File ONBOARDING_OVERRIDE_FILE = new File("/sdcard/com.cliqz.browser.no_onboarding");
 
-    @Bind(R.id.onboarding_toggle)
+    @BindView(R.id.onboarding_toggle)
     ToggleButton onboardingToggle;
 
     @Override

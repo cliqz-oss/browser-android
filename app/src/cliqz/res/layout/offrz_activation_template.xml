@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="8dp"
+    android:paddingLeft="8dp"
+    android:background="@color/onboarding_background">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/activation_feature_icon_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/oval_shape_white"
+        android:scaleType="center"
+        app:tint="@color/accent_color"
+        app:srcCompat="@drawable/ic_offrz_black"/>
+
+    <TextView
+        android:id="@+id/activation_feature_description_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activation_feature_icon_iv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        tools:text="@string/myoffrz_activation_description" />
+
+    <Button
+        android:id="@+id/activate_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activation_feature_description_tv"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/activate"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:background="@color/primary_color" />
+
+    <TextView
+        android:id="@+id/learn_more_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activate_btn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="@string/learn_more"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/primary_color_dark" />
+
+</RelativeLayout>

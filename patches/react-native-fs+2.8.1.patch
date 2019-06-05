@@ -1,0 +1,37 @@
+diff --git a/node_modules/react-native-fs/android/build.gradle b/node_modules/react-native-fs/android/build.gradle
+index 196eb43..2c15754 100644
+--- a/node_modules/react-native-fs/android/build.gradle
++++ b/node_modules/react-native-fs/android/build.gradle
+@@ -1,10 +1,11 @@
+ buildscript {
+     repositories {
+         jcenter()
++        google()
+     }
+ 
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:1.5.0'
++        classpath 'com.android.tools.build:gradle:3.4.1'
+     }
+ }
+ 
+@@ -26,5 +27,5 @@ android {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
++    implementation 'com.facebook.react:react-native:+'
+ }
+diff --git a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+index b32b37a..20a3415 100755
+--- a/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
++++ b/node_modules/react-native-fs/android/src/main/java/com/rnfs/RNFSManager.java
+@@ -4,7 +4,7 @@ import android.content.res.AssetFileDescriptor;
+ import android.content.res.AssetManager;
+ import android.os.Environment;
+ import android.os.StatFs;
+-import android.support.annotation.Nullable;
++import androidx.annotation.Nullable;
+ import android.util.Base64;
+ import android.util.SparseArray;
+ 

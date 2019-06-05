@@ -1,6 +1,6 @@
 package com.cliqz.browser.main;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;

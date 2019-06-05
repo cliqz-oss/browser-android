@@ -2,7 +2,7 @@ package acr.browser.lightning.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.Countries;
@@ -21,9 +21,6 @@ import acr.browser.lightning.download.DownloadHandler;
 @Singleton
 public class PreferenceManager {
 
-    private static final String FLAVOR_API_AMAZON = "amazon";
-    private static final String FLAVOR_API_HUAWEI = "huawei";
-
     public enum ClearQueriesOptions {
         NO,
         CLEAR_HISTORY,
@@ -41,6 +38,7 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
+        public static final String VPN_START_TIME = "vpn_start_time";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
         static final String BLOCK_IMAGES = "blockimages";
@@ -133,6 +131,10 @@ public class PreferenceManager {
         static final String START_COUNT = "start_count";
         static final String MY_OFFRZ_ENABLED = "MY_OFFRZ_ENABLED";
         static final String SEND_USAGE_DATA = "SEND_USAGE_DATA";
+
+        // Lumen
+        static final String PREF_TRIAL_PERIOD_OBJECT = "trial_period_object";
+        static final String PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED = "trial_message_dismissed_time";
     }
 
     private final SharedPreferences mPrefs;
@@ -890,5 +892,29 @@ public class PreferenceManager {
 
     public void setMyOffrzEnable(boolean value){
         putBoolean(Name.MY_OFFRZ_ENABLED,value);
+    }
+
+    public void setVpnStartTime(long currentTimeMillis) {
+        putLong(Name.VPN_START_TIME, currentTimeMillis);
+    }
+
+    public long getVpnStartTime() {
+        return mPrefs.getLong(Name.VPN_START_TIME, System.currentTimeMillis());
+    }
+
+    public String getTrialPeriodInfo() {
+        return mPrefs.getString(Name.PREF_TRIAL_PERIOD_OBJECT, null);
+    }
+
+    public void setTrialPeriodInfo(String trialInfo) {
+        putString(Name.PREF_TRIAL_PERIOD_OBJECT, trialInfo);
+    }
+
+    public long timeWhenTrialMessageDismissed() {
+        return mPrefs.getLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, 0L);
+    }
+
+    public void updateTimeOfTrialMessageDismissed() {
+        putLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, System.currentTimeMillis());
     }
 }

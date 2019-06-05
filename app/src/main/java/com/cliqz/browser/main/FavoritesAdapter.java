@@ -3,7 +3,7 @@ package com.cliqz.browser.main;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +22,9 @@ import java.util.ArrayList;
 /**
  * @author Ravjit Uppal
  */
-class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    interface ClickListener {
+    public interface ClickListener {
         void onClick(View view, int position);
 
         void onLongPress(View view, int position);
@@ -37,8 +37,8 @@ class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ArrayList<Integer> multiSelectList = new ArrayList<>();
 
-    FavoritesAdapter(ArrayList<FavoriteModel> favoriteList, Engine engine, Handler handler,
-                     ClickListener clickListener) {
+    public FavoritesAdapter(ArrayList<FavoriteModel> favoriteList, Engine engine, Handler handler,
+                            ClickListener clickListener) {
         this.favoriteList = favoriteList;
         this.engine = engine;
         this.handler = handler;
@@ -98,6 +98,7 @@ class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             title = view.findViewById(R.id.history_title);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             favorites_view_parent = view.findViewById(R.id.history_view_parent);
+            favorites_view_parent.setId(R.id.favorites_view_parent);
             final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) favorites_view_parent.getLayoutParams();
             layoutParams.setMargins(sideMargin, topMargin, sideMargin, topMargin);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

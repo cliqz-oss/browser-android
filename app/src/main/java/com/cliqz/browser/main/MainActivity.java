@@ -21,13 +21,13 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
@@ -42,18 +42,17 @@ import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.gcm.RegistrationIntentService;
-import com.cliqz.browser.main.search.NewsFetcher;
 import com.cliqz.browser.main.search.SearchView;
-import com.cliqz.browser.main.search.Topnews;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
-import com.cliqz.browser.utils.LookbackWrapper;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -87,11 +86,8 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * Flat navigation browser
- *
- * @author Stefano Pacifici
- * @author Moaz Rashad
  */
-public class MainActivity extends AppCompatActivity implements ActivityComponentProvider, NewsFetcher.OnTaskCompleted {
+public class MainActivity extends AppCompatActivity implements ActivityComponentProvider {
 
     //Keys for arguments in intents/bundles
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -105,7 +101,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
     public static final int FILE_UPLOAD_REQUEST_CODE = 1000;
 
-    private MainActivityComponent mMainActivityComponent;
+    private static final String DIALOG_TAG = "dialog";
+
+    private FlavoredActivityComponent mMainActivityComponent;
 
 
     private TabsManager.Builder firstTabBuilder;
@@ -118,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
     private ProgressDialog progressDialog = null;
+
+    private PurchaseFragment purchaseFragment;
 
     @Inject
     CrashDetector crashDetector;
@@ -196,7 +196,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setIndeterminate(true);
                 progressDialog.show();
-                new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
+                // TODO This break the news on Cliqz. Please, move the loader to the proper, flavor dependent spot
+                // new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager, 1, locationCache));
             } else if (intent.getDataString() != null && intent.getDataString().equals("cliqz://LAST_SITE_SHORTCUT_INTENT")) {
                 isNotificationClicked = false;
                 isIncognito = false;
@@ -402,7 +403,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         timings.setAppStartTime();
         locationCache.start();
-        showLookbackDialog();
         if (engine.reactInstanceManager != null) {
             engine.reactInstanceManager.onHostResume(this);
         }
@@ -418,13 +418,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final TabsManager.Builder builder = handleIntent(intent);
         if (builder != null) {
             builder.show();
-        }
-    }
-
-    private void showLookbackDialog() {
-        if ("lookback".contentEquals(BuildConfig.FLAVOR_api) && mShouldShowLookbackDialog) {
-            mShouldShowLookbackDialog = false;
-            LookbackWrapper.show(this, preferenceManager.getSessionId());
         }
     }
 
@@ -796,7 +789,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Nullable
     @Override
-    public MainActivityComponent getActivityComponent() {
+    public FlavoredActivityComponent getActivityComponent() {
         return mMainActivityComponent;
     }
 
@@ -918,11 +911,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return result == PERMISSION_GRANTED;
     }
 
-    @Override
-    public void onTaskCompleted(List<Topnews> topnewses, int breakingNewsCount, int topNewsCount, String newsVersion) {
-        progressDialog.dismiss();
-        if (topnewses.size() >= 1 && topnewses.get(0).url != null) {
-            tabsManager.buildTab().setUrl(topnewses.get(0).url).show();
+    @SuppressWarnings("UnusedParameters")
+    @Subscribe
+    public void goToPurchase(Messages.GoToPurchase event) {
+        // TODO @Jayesh: if event.trialDaysLeft > 0 display a toast else go to the fragment and remove the unused parameter suppression
+        if (purchaseFragment == null) {
+            purchaseFragment = new PurchaseFragment();
         }
+        if (!isPurchaseFragmentVisible()) {
+            purchaseFragment.show(getSupportFragmentManager(), DIALOG_TAG);
+        }
+    }
+
+    private boolean isPurchaseFragmentVisible() {
+        return purchaseFragment != null && purchaseFragment.isVisible();
     }
 }

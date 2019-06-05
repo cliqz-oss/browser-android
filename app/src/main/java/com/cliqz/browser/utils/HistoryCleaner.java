@@ -3,7 +3,7 @@ package com.cliqz.browser.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;

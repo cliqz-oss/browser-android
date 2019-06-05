@@ -3,7 +3,7 @@ package com.anthonycr.grant;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.Collections;
 import java.util.HashSet;

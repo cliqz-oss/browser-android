@@ -1,6 +1,6 @@
 package com.cliqz.browser.main;
 
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.text.Editable;
 import android.view.View;
 
@@ -51,7 +51,9 @@ class TabFragmentListener implements SearchBar.Listener {
             if (!ResumeTabDialog.isShown()) {
                 fragment.telemetry.sendQuickAccessBarSignal(TelemetryKeys.SHOW, null,
                         fragment.getTelemetryView());
-                fragment.quickAccessBar.show();
+                if (fragment.quickAccessBar != null) {
+                    fragment.quickAccessBar.show();
+                }
             }
             fragment.disableUrlBarScrolling();
             fragment.inPageSearchBar.setVisibility(View.GONE);

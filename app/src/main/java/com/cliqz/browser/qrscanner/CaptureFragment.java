@@ -20,8 +20,8 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -43,7 +43,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -64,13 +64,13 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
     private CameraManager cameraManager;
     private CaptureFragmentHandler handler;
 
-    @Bind(R.id.viewfinder_view)
+    @BindView(R.id.viewfinder_view)
     ViewfinderView viewfinderView;
 
-    @Bind(R.id.preview_view)
+    @BindView(R.id.preview_view)
     SurfaceView surfaceView;
 
-    @Bind(R.id.qrscan_instruction_view)
+    @BindView(R.id.qrscan_instruction_view)
     TextView instructionsView;
 
     @Inject

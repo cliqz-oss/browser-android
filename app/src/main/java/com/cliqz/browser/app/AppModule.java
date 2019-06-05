@@ -1,12 +1,13 @@
 package com.cliqz.browser.app;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.peercomm.ChunkedFileManager;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.SubscriptionsManager;
@@ -14,6 +15,7 @@ import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.Engine;
+import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Singleton;
@@ -30,9 +32,9 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private final BrowserApp app;
+    private final BaseBrowserApp app;
 
-    public AppModule(@NonNull BrowserApp app) {
+    public AppModule(@NonNull BaseBrowserApp app) {
         this.app = app;
     }
 
@@ -102,6 +104,13 @@ public class AppModule {
     }
 
     @Provides
+    @Singleton
+    Insights provideInsights(Engine engine) {
+        return new Insights(engine);
+    }
+
+
+    @Provides
     ChunkedFileManager providesChunkedFileManaget(Context context) {
         return new ChunkedFileManager(context);
     }
@@ -116,6 +125,12 @@ public class AppModule {
     @Singleton
     SubscriptionsManager provideSubscriptionsManager(Context context) {
         return new SubscriptionsManager(context);
+    }
+
+    @Provides
+    @Singleton
+    PurchasesManager providePurchasesManager(Context context, Bus bus, PreferenceManager prefs) {
+        return new PurchasesManager(context, bus, prefs);
     }
 
     @Provides

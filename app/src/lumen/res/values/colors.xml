@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#0D0F22</color>
+    <color name="secondary_color">#1E2247</color>
+    <color name="accent_color">#3073DB</color>
+    <color name="incognito_tab_primary_color">@color/primary_color</color>
+    <color name="primary_color_dark">@color/primary_color</color>
+    <color name="text_color_primary">@color/white</color>
+    <color name="divider_light">#1F000000</color>
+    <color name="incognito_tab_primary_color_dark">#333333</color>
+    <color name="secondary_color_settings">#9C9C9C</color>
+    <color name="progress_bar_bg">#E7ECEE</color>
+    <color name="progress_bar_color">#2B5993</color>
+    <color name="url_bar_bg_normal">#3073DB</color>
+    <color name="url_bar_text_color_normal">@color/white</color>
+    <color name="url_bar_bg_incognito">#464857</color>
+    <color name="url_bar_text_color_incognito">@color/white</color>
+    <color name="icon_light_theme">#FFFFFFFF</color>
+    <color name="icon_dark_theme">#FF000000</color>
+
+    <color name="text_color_2">#7189B0</color>
+    <!-- May to be removed -->
+    <color name="showcase_background_color">#f22d3e50</color>
+    <color name="showcase_title_color">#fff</color>
+    <color name="showcase_message_color">#ABB2BA</color>
+    <color name="default_tab_bg">#00AEF0</color>
+    <color name="fresh_tab_placeholder_color">#4FFF</color>
+
+    <!-- To be removed -->
+    <color name="fresh_tab_incognito_background">#000</color>
+    <color name="fresh_tab_background">#000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_laser">#ffcc0000</color>
+    <color name="possible_result_points">#c0ffbd21</color>
+
+    <color name="bond_general_color_blue">#3073DB</color>
+    <color name="bond_disabled_text_color">#993073DB</color>
+    <color name="dark_transparent_overlay">#99000000</color>
+    <color name="bond_disabled_state_color">#BDC0CE</color>
+</resources>

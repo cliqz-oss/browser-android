@@ -1,8 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: '../scripts/CliqzConfig.gradle'
 apply from: 'cliqz.gradle'
+
+def useGoogleServices = System.getenv("DISABLE_GOOGLE_SERVICES") == null
 
 android {
     compileOptions {
@@ -19,6 +24,16 @@ android {
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
 
+        if (this.hasProperty("com.cliqz.lumen.vpnApiKey")) {
+            buildConfigField 'String', 'VPN_API_KEY', this.getProperty("com.cliqz.lumen.vpnApiKey")
+        } else {
+            buildConfigField 'String', 'VPN_API_KEY', '""'
+        }
+        if (this.hasProperty("com.cliqz.lumen.revenuecatApiKey")) {
+            buildConfigField 'String', 'REVENUECAT_API_KEY', this.getProperty("com.cliqz.lumen.revenuecatApiKey")
+        } else {
+            buildConfigField 'String', 'REVENUECAT_API_KEY', '""'
+        }
         applicationId "com.cliqz.browser"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
         vectorDrawables.useSupportLibrary = true
@@ -53,78 +68,59 @@ android {
                     "${rootDir}/jsengine"
             ]
         }
-        standard {
-            java.srcDirs += [
-                    'src/cliqz/java',
-            ]
-        }
         amazon {
             java.srcDirs += [
-                    'src/standard/java',
                     'src/cliqz/java',
             ]
             res.srcDirs += [
-                    'src/standard/res',
+                    'src/cliqz/res',
             ]
         }
-        huawei {
-            java.srcDirs += [
-                    'src/standard/java',
-                    'src/cliqz/java',
-            ]
-            res.srcDirs += [
-                    'src/standard/res',
-            ]
-        }
+//        huawei {
+//            java.srcDirs += [
+//                    'src/cliqz/java',
+//            ]
+//            res.srcDirs += [
+//                    'src/cliqz/res',
+//            ]
+//        }
     }
 
-    flavorDimensions "api", "abi"
-
+    flavorDimensions "api"
     productFlavors {
-        standard {
+        cliqz {
             dimension "api"
             versionCode 5
+        }
+        lumen {
+            dimension "api"
+            applicationId "com.cliqz.lumen"
+            versionCode 6
+            useGoogleServices = false
         }
         amazon {
             dimension "api"
             versionCode 8
         }
-        x86_64 {
-            dimension "abi"
-            ndk {
-                abiFilter "x86_64"
-            }
-            versionCode 6
+//        huawei {
+//            dimension "api"
+//            versionCode 5
+//            applicationIdSuffix ".huawei"
+//        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include "x86", "armeabi-v7a", "arm64-v8a", "x86_64"
+            universalApk true
         }
-        x86 {
-            dimension "abi"
-            ndk {
-                abiFilter "x86"
-            }
-            versionCode 5
-        }
-        arm64 {
-            dimension "abi"
-            ndk {
-                abiFilter "arm64-v8a"
-            }
-            versionCode 4
-        }
-        arm {
-            dimension "abi"
-            ndk {
-                abiFilter "armeabi-v7a"
-            }
-            versionCode 3
-        }
-        fat {
-            dimension "abi"
-            versionCode 1
-        }
-        huawei {
-            dimension "api"
-            versionCode 5
-            applicationIdSuffix ".huawei"
+    }
+
+    productFlavors.properties.names.each { name ->
+        defaultConfig {
+            buildConfigField 'String', "FLAVOR_${name.toUpperCase()}", "\"${name}\""
         }
     }
 }
@@ -156,9 +152,6 @@ configurations.all {
 
 configurations.all {
   resolutionStrategy {
-      force "com.android.support:support-v4:${supportLibVersion}"
-      force "com.android.support:appcompat-v7:${supportLibVersion}"
-      force "com.android.support:support-annotations:${supportLibVersion}"
       force "com.google.code.findbugs:jsr305:3.0.0"
   }
 }
@@ -166,34 +159,33 @@ configurations.all {
 dependencies {
 
     // support libraries
-    implementation "com.android.support:support-v4:${supportLibVersion}"
-    implementation "com.android.support:cardview-v7:${supportLibVersion}"
-    implementation "com.android.support:design:${supportLibVersion}"
-    implementation "com.android.support:support-vector-drawable:${supportLibVersion}"
-    implementation "com.android.support:animated-vector-drawable:${supportLibVersion}"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable-animated:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
     // event bus
     implementation 'com.cliqz:nove:0.3.0'
     annotationProcessor 'com.cliqz:nove-compiler:0.3.0'
-    
+
     // dependency injection
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'com.google.dagger:dagger:2.11'
     implementation 'com.google.dagger:dagger-android-support:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     compileOnly 'javax.annotation:jsr250-api:1.0'
-    
+
     // view binding
-    annotationProcessor 'com.jakewharton:butterknife:7.0.1'
-    implementation 'com.jakewharton:butterknife:7.0.1'
+    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
+    implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
 
     // native fs support for React-Native
     implementation project(':react-native-fs')
-    
+
     // sqlite support for React-Native
     implementation project(':react-native-sqlite2')
     implementation project(':WebRTCModule')
@@ -206,29 +198,30 @@ dependencies {
 
     // user agent
     implementation project(':react-native-user-agent-react-native-user-agent')
-    
+
     // Utils libraries
     implementation project(':utils')
     implementation project(':android_utils')
-    
+
     // On-boarding
-    implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
-    
+    cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+
     // memory leak analysis
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    
+
     // Google Play Services
     implementation 'com.google.android.gms:play-services-gcm:16.1.0'
-    
+
     // React-Native
     implementation "com.facebook.react:react-native:${reactNativeVersion}"
-    
+
     // AWS SNS SDK
     implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
-    
+
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
 
@@ -237,34 +230,47 @@ dependencies {
 
     // MiniBloomFilter
     implementation 'com.github.cliqz-oss:minibloomfilter:1.0'
-    
+
     // Ghostery chart support
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    
+
+    // RevenueCat for subscription
+    lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
+
+    // vpn module
+    lumenImplementation project(':vpn')
+
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:1.10.19'
-    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.robolectric:robolectric:3.8'
     testImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
-    
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.apache.velocity:velocity:1.7'
+    androidTestImplementation 'org.mockito:mockito-core:1.10.19'
+    androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+
     // Forcing version
-    androidTestImplementation "com.android.support:support-annotations:${supportLibVersion}"
-    androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'com.android.support.test:rules:0.5'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-web:2.2.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.0'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.0'
     androidTestImplementation 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.0'
     testImplementation 'org.apache.velocity:velocity:1.7'
 }
+
+def abiCodes = ["armeabi-v7a": 2, "arm64-v8a": 4, "x86": 6, "x86_64": 8]
+import com.android.build.OutputFile
 
 preBuild.doLast {
     android.applicationVariants.each { variant ->
         def apiVersion = variant.productFlavors.get(0).versionCode
-        def abiVersion = variant.productFlavors.get(1).versionCode
         // set the composite code
-        def generatedVersionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
         variant.outputs.each { output ->
+            def abiVersion = abiCodes.get(output.getFilter(OutputFile.ABI)) ?: 1
+            def generatedVersionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
             output.versionCodeOverride = generatedVersionCode
         }
     }
@@ -273,5 +279,6 @@ preBuild.doLast {
 play {
     track = 'alpha'
 }
-
-apply plugin: 'com.google.gms.google-services'
+if (useGoogleServices) {
+    apply plugin: 'com.google.gms.google-services'
+}

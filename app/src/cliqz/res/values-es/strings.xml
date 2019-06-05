@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="url_bar_search_hint">Buscar con Cliqz</string>
+    <string name="settings_about">Sobre Cliqz</string>
+    <string name="app_name">Navegador Cliqz</string>
+    <string name="shared_using">Compartido con Cliqz para Android</string>
+    <string name="optimized_block_ads_description">El bloqueador de anuncios de Cliqz está en su fase Beta. La fase final incluirá las siguientes opciones: Bloqueo justo (por defecto), bloquear todos los anuncios, y permitir anuncios. Descubre más en https://cliqz.com/whycliqz/adblocking</string>
+    <string name="summary_adblock_data">Ten en cuenta que el navegador Cliqz debe descargar paquetes de datos para que el AdBlocker funcione correctamente. Se recomienda estar conectado a una red Wi-Fi.</string>
+    <string name="rate_us">Valora el navegador Cliqz</string>
+    <string name="tips_and_tricks">Trucos de Cliqz</string>
+    <string name="msg_pairing_instructions_dialog">Abre el navegador Cliqz en tu ordenador (o descárgatelo de cliqz.com).</string>
+    <string name="pairing_information">Conecta Cliqz en tu móvil con el ordenador y podrás enviar pestañas entre tus dispositivos. También puedes descargar vídeos directamente desde el navegador de tu ordenador a tu dispositivo móvil.</string>
+    <string name="request_location_access">¿Permites a Cliqz acceder a tu ubicación?</string>
+    <string name="msg_new_icon">¡Eh, el logo de Cliqz ahora es azul. Prueba la nueva version de la app!</string>
+    <string name="send_tab_no_connection_error_msg">No estás conectado a Cliqz en tu ordenador. Abre el menú de \'Connect\' para iniciar una conexión.</string>
+    <string name="share_card_email_subject">Descubierto con el navegador Cliqz</string>
+    <string name="settings_category_tab">Cliqz Tab</string>
+    <string name="clear_data_summary">Cliqz eliminará automáticamente tus datos personales cuando selecciones \"Salir\" en el menú principal.</string>
+    <string name="welcome_message">¡Bienvenido a Cliqz!</string>
+    <string name="agree_privacy_policy_message">Al usar esta apliación, aceptas &lt;font color=\'#00aef0\'&gt;la política de privacidad de Cliqz &lt;/font&gt;</string>
+    <string name="default_browser_message">Parece que te gusta usar Cliqz. ¿Quieres que sea tu navegador predeterminado?</string>
+    <string name="save_password_text">¿Quieres que Cliqz guarde tus contraseñas para esta página?</string>
+    <string name="eula_text">Cliqz para Android se basa en el &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;proyecto de código abierto Lightning Browser&lt;/a&gt;, y se distribuye bajo los términos de&lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, una licencia de software libre que permite utilizar este programa con cualquier objetivo, estudiar su funcionamiento, compartirlo con tus amigos y modificarlo según tus propias necesidades. No existe un Acuerdo de Licencia de Usuario Final (ALUF) adicional.</string>
+    <string name="privacy_policy_title">Política de privacidad - Cliqz</string>
+    <string name="send_usage_data_summary">Ayúdanos a mejorar tu experiencia de usuario. Cliqz recopila datos anónimos sobre el uso de la aplicación. Cliqz no recopila información personal en ningún momento.</string>
+</resources>

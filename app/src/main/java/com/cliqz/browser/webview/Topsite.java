@@ -1,7 +1,7 @@
 package com.cliqz.browser.webview;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This class catches basic informations about a "topsite"

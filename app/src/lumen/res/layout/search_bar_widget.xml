@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:background="#aaa">
+
+    <TextView
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_bar_h"
+        android:background="@drawable/tab_item_bg_normal"
+        android:gravity="start|center_vertical"
+        android:hint="@string/url_bar_search_hint"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:singleLine="true"
+        android:textColor="#333333"
+        android:textColorHint="@color/url_bar_hint_text_color"
+        android:textSize="15sp" />
+
+</FrameLayout>

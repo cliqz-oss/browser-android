@@ -1,6 +1,6 @@
 package com.cliqz.browser.main;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,6 +44,14 @@ public final class Messages {
     }
 
     public static class BackPressed {
+    }
+
+    public static class GoToPurchase {
+        public final int trialDaysLeft;
+
+        public GoToPurchase(int trialDaysLeft) {
+            this.trialDaysLeft = trialDaysLeft;
+        }
     }
 
     /**

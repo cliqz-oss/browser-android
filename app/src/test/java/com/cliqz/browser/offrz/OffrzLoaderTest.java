@@ -1,7 +1,7 @@
 package com.cliqz.browser.offrz;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cliqz.utils.FileUtils;
 

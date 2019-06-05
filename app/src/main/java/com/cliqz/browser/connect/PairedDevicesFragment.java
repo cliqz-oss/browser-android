@@ -7,12 +7,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,9 +41,10 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * @author Stefano Pacifici
@@ -61,13 +62,13 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
     @Inject
     Telemetry telemetry;
 
-    @Bind(R.id.paired_devices_list)
+    @BindView(R.id.paired_devices_list)
     RecyclerView devicesList;
 
-    @Bind(R.id.pairing_information)
+    @BindView(R.id.pairing_information)
     View pairingInformation;
 
-    @Bind(R.id.pairing_information_text)
+    @BindView(R.id.pairing_information_text)
     TextView pairingInformationText;
 
     private DevicesAdapter mAdapter;
@@ -79,12 +80,13 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
     private String mLastCodeRead;
     private long startTime;
     private long mConnectionStartedTime;
+    private Unbinder mUnbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_pairing, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         devicesList.setHasFixedSize(true);
         devicesList.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         mAdapter = new DevicesAdapter(this);
@@ -153,7 +155,9 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
 
     @Override
     public void onDestroyView() {
-        ButterKnife.unbind(this);
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
         mAdapter = null;
         super.onDestroyView();
     }

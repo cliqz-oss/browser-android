@@ -22,7 +22,7 @@
         android:tag="@id/enableable_view"
         />
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/attrack_icon"
         android:layout_below="@+id/antitracking_header"
         android:layout_width="match_parent"
@@ -72,7 +72,7 @@
         android:checked="false"
         android:layout_marginLeft="2dp" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_ok"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
@@ -87,7 +87,7 @@
         android:textColor="@color/white"
         android:textAllCaps="false"
         android:textSize="14sp">
-    </android.support.v7.widget.AppCompatButton>
+    </androidx.appcompat.widget.AppCompatButton>
 
     <TextView
         android:id="@+id/learn_more"
@@ -144,7 +144,7 @@
             android:padding="10dp"
             android:background="#333333" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trackers_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"

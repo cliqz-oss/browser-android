@@ -3,12 +3,12 @@ package com.cliqz.browser.controlcenter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.view.TrampolineConstants;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
@@ -69,40 +69,40 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     @Inject
     PreferenceManager preferenceManager;
 
-    @Bind(R.id.counter)
+    @BindView(R.id.counter)
     TextView counter;
 
-    @Bind(R.id.trackers_list)
+    @BindView(R.id.trackers_list)
     RecyclerView trackersList;
 
-    @Bind(R.id.button_ok)
+    @BindView(R.id.button_ok)
     AppCompatButton helpButton;
 
-    @Bind(R.id.companies_header)
+    @BindView(R.id.companies_header)
     TextView companiesHeader;
 
-    @Bind(R.id.counter_header)
+    @BindView(R.id.counter_header)
     TextView counterHeader;
 
-    @Bind(R.id.upperLine)
+    @BindView(R.id.upperLine)
     View upperLine;
 
-    @Bind(R.id.lowerLine)
+    @BindView(R.id.lowerLine)
     View lowerLine;
 
-    @Bind(R.id.anti_tracking_table)
+    @BindView(R.id.anti_tracking_table)
     View antitrackingTable;
 
-    @Bind(R.id.attrack_enable)
+    @BindView(R.id.attrack_enable)
     Switch enableAttrack;
 
-    @Bind(R.id.attrack_icon)
+    @BindView(R.id.attrack_icon)
     AppCompatImageView attrackIcon;
 
-    @Bind(R.id.antitracking_header)
+    @BindView(R.id.antitracking_header)
     TextView attrackHeader;
 
-    @Bind(R.id.trackers_blocked)
+    @BindView(R.id.trackers_blocked)
     TextView trackersBlocked;
 
     @Override

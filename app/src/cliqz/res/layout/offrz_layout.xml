@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fresh_tab_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/offrz_onboaring_container"
+            layout="@layout/onboarding_template"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/offrz_activation_container"
+            layout="@layout/offrz_activation_template"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/offers_loading_pb"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/myoffrz_deactivate_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/topsites_background"
+                android:visibility="invisible" />
+
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:id="@+id/offers_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:clickable="false"
+                />
+        </FrameLayout>
+    </LinearLayout>
+</ScrollView>

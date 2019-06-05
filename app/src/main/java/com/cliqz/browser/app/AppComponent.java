@@ -4,11 +4,12 @@ import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.connect.PairedDevicesFragment;
 import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.controlcenter.ControlCenterComponent;
+import com.cliqz.browser.controlcenter.ControlCenterHelper;
 import com.cliqz.browser.controlcenter.ControlCenterModule;
 import com.cliqz.browser.gcm.MessageListenerService;
 import com.cliqz.browser.gcm.NotificationDismissedReceiver;
 import com.cliqz.browser.gcm.RegistrationIntentService;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivityModule;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.SearchModule;
@@ -67,7 +68,7 @@ public interface AppComponent {
      */
     Engine getEngine();
 
-    MainActivityComponent plus(MainActivityModule module);
+    FlavoredActivityComponent plus(MainActivityModule module);
 
     ControlCenterComponent plus(ControlCenterModule dialog);
 
@@ -132,4 +133,9 @@ public interface AppComponent {
     void inject(GeoLocationModule geoLocationModule);
 
     void inject(SearchEnginesModule searchEnginesModule);
+
+    void inject(ControlCenterHelper controlCenterHelper);
+
+    void inject(BrowserApp browserApp);
+
 }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -15,10 +15,10 @@ import butterknife.OnClick;
  */
 public class NewsMessageDialog extends Dialog {
 
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     TextView titleTextView;
 
-    @Bind(R.id.url)
+    @BindView(R.id.url)
     TextView urlTextView;
 
     public NewsMessageDialog(Context context) {

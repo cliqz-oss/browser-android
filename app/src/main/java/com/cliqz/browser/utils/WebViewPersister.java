@@ -7,9 +7,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
-import android.support.annotation.AnyThread;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
+import androidx.annotation.AnyThread;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.webkit.WebView;
 

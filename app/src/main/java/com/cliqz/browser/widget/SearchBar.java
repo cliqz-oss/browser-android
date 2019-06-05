@@ -8,22 +8,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
@@ -37,7 +37,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.view.AnimatedProgressBar;
 import acr.browser.lightning.view.TrampolineConstants;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -68,16 +68,16 @@ public class SearchBar extends FrameLayout {
     @Inject
     QueryManager queryManager;
 
-    @Bind(R.id.title_bar)
+    @BindView(R.id.title_bar)
     TextView titleBar;
 
     @Nullable
-    @Bind(R.id.tracker_counter)
+    @BindView(R.id.tracker_counter)
     TextView trackerCounter;
 
     @Nullable
-    @Bind(R.id.control_center)
-    RelativeLayout antiTrackingDetails;
+    @BindView(R.id.control_center)
+    ViewGroup antiTrackingDetails;
 
     @Nullable
     Listener mListener;
@@ -208,7 +208,7 @@ public class SearchBar extends FrameLayout {
         final String query = searchEditText.getQuery();
         if (query.length() == 0) {
             titleBar.setText("");
-            titleBar.setHint(R.string.cliqz_search_hint);
+            titleBar.setHint(R.string.url_bar_search_hint);
         } else {
             titleBar.setText(query);
         }
@@ -262,20 +262,10 @@ public class SearchBar extends FrameLayout {
     }
 
     public void setAntiTrackingDetailsVisibility(int visibility) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || antiTrackingDetails == null) {
             return;
         }
-        if (antiTrackingDetails != null) {
-            antiTrackingDetails.setVisibility(visibility);
-            if (visibility == VISIBLE) {
-                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.left_corners_rounded_bg));
-                antiTrackingDetails.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.right_corners_rounded_bg));
-            } else {
-                titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
-            }
-        } else {
-            titleBar.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.tab_item_bg_normal));
-        }
+        antiTrackingDetails.setVisibility(visibility);
     }
 
     public void setTrackerCount(int count) {
@@ -331,10 +321,12 @@ public class SearchBar extends FrameLayout {
             searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
             searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
             titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
+            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
         } else {
             searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
             searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
             titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
+            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
         }
     }
 

@@ -1,7 +1,7 @@
 package com.cliqz.browser.connect;
 
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,7 +10,7 @@ import com.cliqz.browser.R;
 
 import java.lang.ref.WeakReference;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
 
@@ -28,7 +28,7 @@ class RenameDeviceDialog implements DialogInterface.OnClickListener{
     private final String id;
     private AlertDialog dialog;
 
-    @Bind(R.id.pairedDeviceNewName)
+    @BindView(R.id.pairedDeviceNewName)
     EditText pairedDeviceNewName;
 
     private RenameDeviceDialog(PairedDevicesFragment pairedDevicesFragment, String id) {

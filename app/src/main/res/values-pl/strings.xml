@@ -44,7 +44,6 @@
     <string name="version">Wersja aplikacji</string>
     <string name="clear_cache">Wyczyść pamięć podręczną przy zamykaniu</string>
     <string name="recommended">Zalecane</string>
-    <string name="cliqz_search_hint">Wyszukiwarka Cliqz</string>
     <string name="fullScreenOption">Ukryj pasek statusu przy przeglądaniu</string>
     <string name="title_download_location">Wybierz folder pobranych plików</string>
     <string name="cannot_download">Pliki mogą być pobierane tylko z linków rozpoczynających się od \"http\" lub \"https\".</string>
@@ -75,7 +74,6 @@
     <string name="reading_mode" tools:ignore="UnusedResources">Tryb czytania</string>
     <string name="loading">Łsdowanie…</string>
     <string name="dark_theme">Ciemny motyw</string>
-    <string name="app_name">Przeglądarka Cliqz</string>
     <string name="theme">Motyw aplikacji</string>
     <string name="light_theme">Jasny motyw</string>
     <string name="black_theme">Ciemny motyw (AMOLED)</string>
@@ -91,7 +89,6 @@
     <string name="humanweb">Human Web</string>
     <string name="about_humanweb_url">https://cliqz.com/en/whycliqz/human-web</string>
     <string name="share_link">Udostępnij za pomocą</string>
-    <string name="shared_using">Udostępnione przez Cliqz na Androida</string>
     <string name="gps_permission">Aktywuj GPS, aby uzyskać lepsze wyniki wyszukiwania</string>
     <string name="open_in_new_tab">Otwórz w nowej karcie</string>
     <string name="open_in_incognito_tab">Otwórz w nowej karcie prywatnej</string>
@@ -115,15 +112,11 @@
     <string name="settings_block_ads">Blokowanie reklam (Beta)</string>
     <string name="optimized_block_ads">Uczciwe blokowanie reklam</string>
     <string name="what_does_optimized_mean">Co znaczy \'uczciwe\'?</string>
-    <string name="optimized_block_ads_description">Blokada reklam w Cliqz jest w fazie beta. W wersji finalnej dostępne będą następujące opcje: Zezwól na uczciwe reklamy (ustawienie domyślne), Blokuj wszystkie reklamy, Zezwól na wszystkie reklamy.\nWięcej na https://cliqz.com/whycliqz/adblocking</string>
     <string name="make_video_available_offline">Obejrzyj film w trybie offline</string>
     <string name="overview">Przegląd</string>
     <string name="open_tabs">Otwarte karty</string>
     <string name="favorites">Ulubione</string>
     <string name="antiphishing_dialog_title">Ostrzeżenie: zwodnicza strona!</string>
-    <string name="antiphishing_message">Cliqz zablokował dostęp do strony %1$s, ponieważ została zgłoszona jako wyłudzająca dane (phishing).\n
-Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby uzyskać Twoje loginy, hasła lub inne prywatne dane.\n
-[Czytaj więcej|https://cliqz.com/en/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Powrót do bezpiecznej strony</string>
     <string name="antiphishing_ignore_danger">Kontynuuj mimo ostrzeżenia</string>
     <string name="antitracking_header">Twoje dane są chronione</string>
@@ -145,10 +138,9 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="showcase_search_message">Wyniki odpowiadające zapytaniu wyświetlane są bezpośrednio w trakcie wyszukiwania.</string>
     <string name="showcace_search_title">Karty z wynikami wyszukiwania</string>
     <string name="upload_file_title">Nazwa pliku do wysłania</string>
-    <string name="rate_us">Oceń przeglądarkę Cliqz</string>
     <string name="autocompletion_enabled">Włącz autouzupełnianie</string>
     <string name="request_desktop_site">Tryb stacjonarny</string>
-    <string name="contact_cliqz">FAQ i pomoc techniczna</string>
+    <string name="title_faq_and_support">FAQ i pomoc techniczna</string>
     <string name="control_center_header_adblocking">Blokowanie reklam</string>
     <string name="adblocking_header">Przeglądasz internet bez reklam</string>
     <string name="adblocking_header_disabled">Przeglądasz internet z reklamami</string>
@@ -187,8 +179,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="report_site">Zgłoś stronę</string>
     <string name="clear_passwords">Usuń hasła</string>
     <string name="clear_passwords_message">Czy chciałbyś usunąć zapisane hasła?</string>
-    <string name="msg_pairing_instructions_dialog">Otwórz przeglądarkę Cliqz na swoim komputerze (lub pobierz z cliqz.com).</string>
-    <string name="pairing_information">Połącz Cliqz na swoim urządzeniu mobilnym z Cliqz na Twoim komputerze. Umożliwi Ci to przesyłanie kart pomiędzy przeglądarką desktopową i urządzeniem mobilnym. Możesz także ściągać filmy bezpośrednio z przeglądarki desktopowej na swoje urządzenie mobilne.</string>
     <string name="pairing_error_message">Połączenie między urządzeniami nie powiodło się. Spróbuj ponownie.</string>
     <string name="pairing_error_title">Połączenie nie powiodło się</string>
     <string name="action_retry">Ponów</string>
@@ -201,7 +191,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="pairing_device_rename_message">Wprowadź nową nazwę połączenia:</string>
     <string name="pairing_device_rename_hint">Nowa nazwa</string>
     <string name="query_suggestion">Podpowiedzi wyszukiwania</string>
-    <string name="request_location_access">Czy chcesz zezwolić przeglądarce Cliqz na dostęp do informacji o geolokalizacji?</string>
     <string name="msg_connecting_to_desktop">Łączenie z przeglądarką desktopową…</string>
     <string name="freshtab_no_topsites">Twoje najczęściej odwiedzane strony pojawią się tutaj</string>
     <string name="action_done">Gotowe</string>
@@ -210,7 +199,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="resume_tab_dialog_msg">Czy chcesz przywrócić wszystkie poprzednio otwarte karty?</string>
     <string name="action_resume">Przywróć</string>
     <string name="action_close_all_tabs">Zamknij wszystkie karty</string>
-    <string name="msg_new_icon">Hej, logo Cliqz jest teraz niebieskie. Sprawdź nową wersję aplikacji!</string>
     <string name="auto_forget_tab">Automatyczny tryb prywatny</string>
     <string name="showcase_youtube_title">Asystent pobierania plików</string>
     <string name="showcase_youtube_message">Pobierz filmy z YouTube na swój smartfon.</string>
@@ -220,7 +208,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="send_tab_generic_error_msg">Ups, wysłanie karty do przeglądarki desktopowej zakończyło się niepowodzeniem. Sprawdź status swojego połączenia.</string>
     <string name="action_go_to_connect">Przejdź do Connect</string>
     <string name="send_tab_no_connection_error_title">Brak połączenia</string>
-    <string name="send_tab_no_connection_error_msg">Nie jesteś połączony z żadną przeglądarką desktopową Cliqz. Przejdź do menu \'Connect\', aby dodać nowe połączenie.</string>
     <string name="action_connect">Połącz</string>
     <string name="send_tab_to_desktop">Wyślij kartę do przeglądarki desktopowej</string>
     <string name="code_scanner">Skaner kodów QR</string>
@@ -229,7 +216,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="code_scanner_title">Skaner kodów QR</string>
     <string name="antitracking_datapoints_disabled">Anti-Tracking jest wyłączony na tej stronie</string>
     <string name="antitracking_tracking_companies">Tropiciele</string>
-    <string name="summary_adblock_data">Uwaga: aby blokowanie reklam było skuteczne, przeglądarka Cliqz musi pobrać pewne dane. W tym celu aplikacja musi być połączona z siecią Wi-Fi.</string>
     <string name="tips_and_tricks">Wkazówki i porady</string>
     <string name="subscribe_soccer_league">Liga</string>
     <string name="subscribe_soccer_club">Zespół</string>
@@ -241,7 +227,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="dialog_notification_disabled_msg">Aktywuj powiadomienia dla tej aplikacji, aby skorzystać z tej funkcjonalności. Przejdź do ustawień systemowych aby aktywować notyfikacje i spróbuj ponownie.</string>
     <string name="search_hint">Szukaj</string>
     <string name="allow_write_permission">Zezwól na zapis danych, aby skorzystać z tej funkcjonalności.</string>
-    <string name="share_card_email_subject">Odkryłem to w Cliqz Browser</string>
     <string name="no_history">Tutaj znajdziesz swoją historię.</string>
     <string name="no_favorites">Tutaj znajdziesz swoje ulubione.</string>
     <string name="download_pending">Oczekuje na pobranie</string>
@@ -271,7 +256,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="settings_category_clear_data">Kasowanie informacji</string>
     <string name="settings_category_browsing">Przeglądanie</string>
     <string name="settings_category_search">Szukaj</string>
-    <string name="settings_category_cliqz_tab">Zakładka Cliqz</string>
     <string name="settings_category_notifications">Subskrypcja i powiadomienia</string>
     <string name="settings_category_others">Inne</string>
     <string name="settings_show_top_sites">Najbardziej odwiedzane strony</string>
@@ -280,7 +264,6 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
     <string name="cache">Pamięć podręczna</string>
     <string name="action_set">Ustanów</string>
     <string name="clear_private_data">Czyść prywatne dane przy wyjściu</string>
-    <string name="clear_data_summary">Cliqz automatycznie usunie twoje dane za każdym razem, gdy wybierzesz \"Wyjdź\" z głównego menu.</string>
     <string name="find_hint">Znajdź</string>
     <string name="settings_category_download">Opcje pobierania</string>
     <string name="limit_data_usage">Ogranicz użycie danych sieci komórkowych</string>
@@ -315,37 +298,25 @@ Strony wyłudzające dane podszywają się pod inne strony, którym ufasz, aby u
         <item quantity="many">wybranych elementów</item>
         <item quantity="other">wybranych elementów</item>
     </plurals>
-    <string name="welcome_cliqz">Witamy w Cliqz!</string>
-    <string name="agree_privacy_policy_cliqz">Używając tej aplikacji, akceptujesz
-         &lt;font color=\'#00aef0\'&gt;Politykę Prywatności Cliqz &lt;/font&gt;</string>
     <string name="accept">Akceptuj</string>
     <string name="settings_show_background_image">Pokaż tapetę</string>
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Uprawnienia lokalizacji</string>
     <string name="make_default_browser">Ustaw jako domyślną przeglądarkę</string>
-    <string name="default_browser_title">Cliqz jako domyślna przeglądarka</string>
-    <string name="default_browser_message">Wygląda na to, że chętnie korzystasz z Cliqz. Czy chcesz ustawić tę przeglądarkę jako domyślną?</string>
     <string name="proceed">POTWIERDŹ</string>
     <string name="save">ANULUJ</string>
     <string name="never">NIE</string>
-    <string name="save_password_text">Czy chcesz aby Cliqz zapamiętał hasło do tej witryny?</string>
     <string name="privacy_policy">Polityka prywatności</string>
     <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">EULA</string>
-    <string name="eula_text">Przeglądarka Cliqz dla systemu Android jest zbudowana na otwartym projekcie &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
- Browser open source project&lt;/a&gt; i jest udostępniana na warunkach &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, licencja wolnego
- oprogramowania, która daje prawo do uruchomienia programu w dowolnym celu, poznania jego działania oraz prawa do dawania kopii znajomym w celu modyfikacji, aby lepiej spełniał twoje potrzeby. Nie ma osobnej umowy licencyjnej użytkownika końcowego (EULA).</string>
     <string name="title_activity_eula_setting">EULA</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Strona usunięta</item>
         <item quantity="few">%d Strony usunięte</item>
         <item quantity="many">%d Stron usuniętych</item>
     </plurals>
-    <string name="privacy_policy_title">Polityka prywatności - Cliqz</string>
-<string name="settings_show_my_offrz">Pokaż MyOffrz</string>
+    <string name="settings_show_my_offrz">Pokaż MyOffrz</string>
     <string name="settings_about_my_offrz">O MyOffrz</string>
     <string name="myoffrz_activation_description">Aktywuj MyOffrz, aby otrzymywać atrakcyjne oferty i rabaty.</string>
-    <string name="settings_category_user_data_choices">Dane zbierane przez Cliqz</string>
     <string name="send_usage_data">Interakcje z programem</string>
-    <string name="send_usage_data_summary">Pomóż nam udoskonalić Cliqz. Wszysztkie dane zbierane przez Cliqz są anonimowe.</string>
 </resources>

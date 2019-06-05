@@ -1,8 +1,8 @@
 package com.cliqz.browser.main.search;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -11,15 +11,15 @@ import android.widget.ProgressBar;
 
 import com.cliqz.browser.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PrivacyPolicyActivity extends AppCompatActivity {
 
-    @Bind(R.id.wv_privacy_policy)
+    @BindView(R.id.wv_privacy_policy)
     WebView privacyPolicy;
 
-    @Bind(R.id.progress_bar)
+    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
     @Override

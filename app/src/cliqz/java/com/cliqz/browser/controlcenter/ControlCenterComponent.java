@@ -9,6 +9,7 @@ import dagger.Subcomponent;
  */
 @Subcomponent(modules = { ControlCenterModule.class} )
 public interface ControlCenterComponent {
+
     void inject(AdBlockingFragment adBlockingFragment);
 
     void inject(AntiPhishingFragment antiPhishingFragment);

@@ -3,7 +3,7 @@ package com.cliqz.browser.main;
 /**
  * @author Ravjit Uppal
  */
-class HistoryModel {
+public class HistoryModel {
 
     private long id;
     private String url;
@@ -11,7 +11,7 @@ class HistoryModel {
     private String time;
     private int type;
 
-    HistoryModel(long id, String url, String title, String time, int type) {
+    public HistoryModel(long id, String url, String title, String time, int type) {
         this.id = id;
         this.url = url;
         this.title = title;

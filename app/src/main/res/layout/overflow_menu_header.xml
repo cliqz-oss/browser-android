@@ -8,7 +8,7 @@
     android:clickable="false"
     android:paddingTop="10dp">
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/action_forward"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             tools:background="@drawable/ic_favorite" />
     </FrameLayout>
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/action_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
         app:tint="@color/overflow_menu_header_tint"
         app:srcCompat="@drawable/ic_refresh"/>
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/action_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

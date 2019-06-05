@@ -39,6 +39,8 @@ public final class Constants {
 
     public static final String CONTROL_CENTER = "control_center";
 
+    public static final String VPN_PANEL = "vpn_panel";
+
     //Permission Codes
     public static final int LOCATION_PERMISSION = 1;
 }

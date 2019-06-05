@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:minHeight="50dp">
 
-    <android.support.v7.widget.AppCompatImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/actions_button"
         android:layout_width="40dp"
         android:layout_height="40dp"

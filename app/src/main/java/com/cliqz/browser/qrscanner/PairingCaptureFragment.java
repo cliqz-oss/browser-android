@@ -19,7 +19,7 @@ package com.cliqz.browser.qrscanner;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -60,7 +60,6 @@ public final class PairingCaptureFragment extends CaptureFragment implements Sur
         dialog = new InstructionsDialog(telemetry);
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.capture, container, false);
@@ -85,7 +84,7 @@ public final class PairingCaptureFragment extends CaptureFragment implements Sur
         }
 
         final TypedArray attrs = context.getTheme().obtainStyledAttributes(new int[] {
-                android.support.design.R.attr.actionBarSize,
+                androidx.appcompat.R.attr.actionBarSize,
         });
         final int actionBarHeight = (int) attrs.getDimension(0, 0);
         attrs.recycle();

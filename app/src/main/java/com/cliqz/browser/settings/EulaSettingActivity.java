@@ -1,8 +1,8 @@
 package com.cliqz.browser.settings;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Html;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.cliqz.browser.R;
 import com.cliqz.browser.utils.CustomLinkMovementMethod;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
  */
 public class EulaSettingActivity extends AppCompatActivity {
 
-    @Bind(R.id.tv_eula_text)
+    @BindView(R.id.tv_eula_text)
     TextView eulaText;
 
     @Override

@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +26,6 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;

@@ -1,7 +1,7 @@
 package com.cliqz.browser.utils;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.cliqz.utils.StreamUtils;
@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * @author Khaled Tantawy
@@ -33,6 +34,7 @@ public class HttpHandler {
     public static JSONObject sendRequest(   @NonNull String method,
                                             @NonNull URL url,
                                             @Nullable String contentType,
+                                            @Nullable Map<String, String> customHeaders,
                                             @Nullable String content) {
         HttpURLConnection connection = null;
         try {
@@ -43,6 +45,11 @@ public class HttpHandler {
             connection.setReadTimeout(HTTP_READ_TIMEOUT);
             if (content != null && contentType != null) {
                 connection.setRequestProperty(HEADER_CONTENT_TYPE, contentType);
+                if (customHeaders != null) {
+                    for (Map.Entry<String, String> customHeader : customHeaders.entrySet()) {
+                        connection.setRequestProperty(customHeader.getKey(), customHeader.getValue());
+                    }
+                }
                 sendContent(connection, content);
             }
             final String response = readResponse(connection);

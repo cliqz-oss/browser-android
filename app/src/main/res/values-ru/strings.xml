@@ -9,7 +9,6 @@
     <string name="version">Версия приложения</string>
     <string name="clear_cache">Очищать кэш при выходе</string>
     <string name="enable_cookies">Разрешить куки</string>
-    <string name="cliqz_search_hint">Cliqz поиск</string>
     <string name="fullScreenOption">Скрывать строку статуса во время просмотра веб-страниц</string>
     <string name="action_delete">Удалить</string>
     <string name="action_download">Скачать</string>
@@ -63,7 +62,6 @@
     <string name="color_mode">Включить цветной режим</string>
     <string name="reading_mode" tools:ignore="UnusedResources">Режим чтения</string>
     <string name="loading">Загрузка…</string>
-    <string name="app_name">Cliqz браузер</string>
     <string name="light_theme">Светлая тема</string>
     <string name="black_theme">Чёрная тема (AMOLED)</string>
     <string name="history">История</string>
@@ -116,10 +114,9 @@
     <string name="got_it">Понятно</string>
     <string name="showcase_antitracking_title">Центр управления</string>
     <string name="showcace_search_title">Карточки с результатами</string>
-    <string name="rate_us">Оценить Cliqz браузер</string>
     <string name="autocompletion_enabled">Включить автозаполнение</string>
     <string name="request_desktop_site">Полная версия сайта</string>
-    <string name="contact_cliqz">FAQ &amp; Поддержка</string>
+    <string name="title_faq_and_support">FAQ &amp; Поддержка</string>
     <string name="control_center_header_adblocking">Ad-Blocking</string>
     <string name="adblocking_ads_blocked">Реклама была заблокирована</string>
     <string name="adblocking_ads_blocked_disabled">Ad-Blocking выключен для этого сайта</string>
@@ -128,7 +125,6 @@
     <string name="antiphishing_header">Вы в безопасности</string>
     <string name="antiphishing_text">Не было замечено подозрительной активности</string>
     <string name="learn_more"><u>Узнать больше</u></string>
-    <string name="tips_and_tricks">О возможностях Cliqz</string>
     <string name="open_link_new_tab">Открыть ссылку в новой вкладке</string>
     <string name="open_link_forget_tab">Открыть ссылку в приватной вкладке</string>
     <string name="open_image_new_tab">Открыть картинку в новой вкладке</string>
@@ -151,7 +147,6 @@
     <string name="usa">Соединённых Штатов Америки</string>
     <string name="clear_passwords">Очистить пароли</string>
     <string name="clear_passwords_message">Вы хотите удалить сохраненные пароли?</string>
-    <string name="pairing_information">Установите соединение между Cliqz на вашем мобильном устройстве и Cliqz на компьютере, чтобы передавать вкладки между ними. Вы также можете скачивать видео напрямую с компьютера на мобильное устройство.</string>
     <string name="pairing_error_message">Приносим свои извинения, данные устройства не были соединены. Пожалуйста, попробуйте ещё раз.</string>
     <string name="pairing_error_title">Ошибка соединения</string>
     <string name="action_retry">Попробуйте ещё раз</string>
@@ -167,7 +162,6 @@
     <string name="resume_tab_dialog_title">Восстановить открытые вкладки</string>
     <string name="action_resume">Восстановить</string>
     <string name="action_close_all_tabs">Закрыть все вкладки</string>
-    <string name="msg_new_icon">Хэй, логотип Cliqz теперь голубой. Попробуйте новую версию приложения!</string>
     <string name="showcase_youtube_title">Video Downloader</string>
     <string name="showcase_youtube_message">Скачать YouTube видео на ваш смартфон.</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
@@ -175,7 +169,6 @@
     <string name="send_tab_generic_error_title">Данная вкладка не может быть передана</string>
     <string name="send_tab_generic_error_msg">Упс, данная вкладка не может передана на компьютер. Пожалуйста, проверьте ваше соединение с интернетом.</string>
     <string name="send_tab_no_connection_error_title">Нет соединения</string>
-    <string name="send_tab_no_connection_error_msg">Вы не соединены ни с одним Cliqz браузером на компьютере. Перейдите в меню \'Connect\', чтобы добавить новое соединение.</string>
     <string name="action_connect">Соединить</string>
     <string name="send_tab_to_desktop">Отправить вкладку на компьютер</string>
     <string name="code_scanner">Сканер QR-кода</string>
@@ -196,10 +189,7 @@
     <string name="dark_theme">Тёмная тема</string>
     <string name="theme">Тема приложения</string>
     <string name="share_link">Поделиться</string>
-    <string name="shared_using">Поделиться с Cliqz для Android</string>
     <string name="not_shareable">Этой карточкой невозможно поделиться</string>
-    <string name="optimized_block_ads_description">Cliqz Ad Blocker в настоящее время находится в бета-тестировании. В финальной версии будут доступны следующие опции: разрешить справедливую блокировку рекламы (по умолчанию), блокировать всю рекламу, разрешить всю рекламу. Узнать больше можно здесь: https://cliqz.com/whycliqz/adblocking</string>
-    <string name="antiphishing_message">Cliqz заблокировал доступ к %1$s, потому что сайт был представлен как фишинговый сайт. Фишинговые сайты маскируются под другие сайты, которым вы доверяете, чтобы обмануть вас и получить доступ к конфиденциальной информации, например к логинам и паролям.\n[Узнать больше|https://cliqz.com/en/whycliqz/anti-phishing]</string>
     <string name="antiphishing_walk_away">Вернуться на безопасный сайт</string>
     <string name="antiphishing_ignore_danger">Продолжить несмотря на предупреждение</string>
     <string name="antitracking_datapoints">Уникальные идентификаторы пользователя были удалены</string>
@@ -215,16 +205,13 @@
     <string name="adblocking_header_disabled">Вы сёрфите в интернете с рекламой</string>
     <string name="antiphishing_desc">Технология Anti-Phishing идентифицирует и блокирует потенциально опасные веб-сайты, которые пытаются получить ваши пароли или информацию об аккаунте.</string>
     <string name="switched_to_forget">Автоматическая приватная вкладка включена</string>
-    <string name="summary_adblock_data">Пожалуйста, учтите: чтобы блокировщик рекламы работал эффективно, Cliqz браузеру необходимо загрузить некоторые данные. Для этого ваше мобильное устройство должно быть соединено с Wi-Fi.</string>
     <string name="update_webview_msg">Ваша система не обновлена. Чтобы безопасно просматривать страницы, обновите Android System WebView.</string>
     <string name="msg_camera_framework_bug">Извините, у камеры Android возникла проблема. Возможно, вам потребуется перезапустить устройство.</string>
     <string name="device_paired_but_offline">Компьютер оффлайн</string>
     <string name="report_site">Сообщить о веб-сайте</string>
-    <string name="msg_pairing_instructions_dialog">Открыть Cliqz браузер на вашем компьютере (или установить его с cliqz.com).</string>
     <string name="pairing_successful_message">Вы подключили ваше первое устройство!\n\nТеперь вы можете передавать вкладки между вашим компьютером и вашим мобильным устройством. Вы также можете скачивать видео напрямую с вашего компьютера на ваше мобильное устройство.</string>
     <string name="incognito_tab_description">Вы находитесь в приватном режиме: веб-сайты, которые вы посещаете в этом режиме, не будут сохранены в истории; локальные данные, включая куки, также не будут сохранены.</string>
     <string name="query_suggestion">Искать в предложенных запросах</string>
-    <string name="request_location_access">Разрешить Cliqz браузеру доступ к информации о местоположении?</string>
     <string name="action_undo">Отменить</string>
     <string name="resume_tab_dialog_msg">Вы хотите восстановить все предыдущие открытые вкладки?</string>
     <string name="auto_forget_tab">Автоматическая приватная вкладка</string>
@@ -239,7 +226,6 @@
     <string name="dialog_notification_disabled_msg">Перейдите в настройки системы, разрешите уведомления и попробуйте снова.</string>
     <string name="search_hint">Поиск</string>
     <string name="allow_write_permission">Пожалуйста, разрешите хранить данные для работы этой функции.</string>
-    <string name="share_card_email_subject">Я узнал об этом, используя Cliqz Browser</string>
     <string name="no_history">Здесь Вы найдёте свою историю.</string>
     <string name="no_favorites">Здесь вы найдёте свои закладки.</string>
     <string name="download_pending">Загрузка ожидается</string>
@@ -268,7 +254,6 @@
     <string name="settings_category_clear_data">Очистить данные</string>
     <string name="settings_category_browsing">Просмотр</string>
     <string name="settings_category_search">Поиск</string>
-    <string name="settings_category_cliqz_tab">Cliqz Tab</string>
     <string name="settings_category_notifications">Подписки и уведомления</string>
     <string name="settings_category_others">Другое</string>
     <string name="settings_show_top_sites">Показывать наиболее посещаемые сайты</string>
@@ -277,7 +262,6 @@
     <string name="cache">Кэш</string>
     <string name="action_set">Установить</string>
     <string name="clear_private_data">Очищать личные данные при выходе</string>
-    <string name="clear_data_summary">Cliqz автоматически очистит Ваши данные при нажатии кнопки «Выход» главного меню.</string>
     <string name="find_hint">Поиск</string>
     <string name="settings_category_download">Опции загрузки</string>
     <string name="limit_data_usage">Ограничить передачу данных по мобильной сети</string>
@@ -312,37 +296,27 @@
         <item quantity="many">%d элементов выбрано</item>
     </plurals>
     <string name="customer_interaction">Взаимодействие с клиентом</string>
-    <string name="welcome_cliqz">Добро пожаловать в Cliqz</string>
-    <string name="agree_privacy_policy_cliqz">Используя это приложение, вы соглашаетесь с
-        &lt;font color=\'#00aef0\'&gt;политикой конфиденциальности Cliqz &lt;/font&gt;</string>
     <string name="accept">ПРИНЯТЬ</string>
     <string name="settings_show_background_image">Показать фоновое изображение</string>
     <string name="menu">Меню</string>
     <string name="android_app_settings_title">Местоположение</string>
     <string name="make_default_browser">Сделать браузером по умолчанию</string>
     <string name="default_browser_title">Браузер по умолчанию</string>
-    <string name="default_browser_message">Кажется, Вам нравится Cliqz. Хотите сделать его браузером по умолчанию?</string>
     <string name="proceed">ПРОДОЛЖИТЬ</string>
     <string name="save">ОТМЕНА</string>
     <string name="never">Нет</string>
-    <string name="save_password_text">Вы хотите, чтобы Cliqz сохранил пароль для этого сайта?</string>
     <string name="privacy_policy">Политика безопасности</string>
     <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">Пользовательское соглашение</string>
-    <string name="eula_text">Cliqz браузер для Android разработан на основе &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning
- Browser открытого программного обеспечения&lt;/a&gt; и доступен Вам на основе условий &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, лицензии
- свободного ПО, которая даёт Вам право использовать программу для любых целей, изучать, как она работает, передавать копии Вашим друзьям и вносить в нее свои изменения. Отдельного лицензионного соглашениея с конечным пользователем (EULA) не существует.</string>
     <string name="title_activity_eula_setting">Пользовательское соглашение</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Ваши топ сайты удалены</item>
         <item quantity="few">%d Ваши топ сайты удалены</item>
         <item quantity="many">%d Ваши топ сайты удалены</item>
     </plurals>
-    <string name="privacy_policy_title">Политика безопасности - Cliqz</string>
-<string name="settings_show_my_offrz">Показать MyOffrz</string>
+    <string name="settings_show_my_offrz">Показать MyOffrz</string>
     <string name="settings_about_my_offrz">О MyOffrz</string>
     <string name="myoffrz_activation_description">Активируйте MyOffrz, чтобы получать выгодные предложения и скидки.</string>
     <string name="settings_category_user_data_choices">Выбор передачи данных</string>
     <string name="send_usage_data">Отправлять пользовательские данные</string>
-    <string name="send_usage_data_summary">Помогите нам улучшить процесс просмотра веб-страниц. Cliqz собирает только анонимные пользовательские данные. Персональные данные не собираются ни при каких обстоятельствах.</string>
 </resources>

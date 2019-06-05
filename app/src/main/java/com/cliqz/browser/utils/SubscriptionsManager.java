@@ -1,9 +1,9 @@
 package com.cliqz.browser.utils;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -107,67 +107,67 @@ public class SubscriptionsManager {
     }
 
     private void loadSubscriptions() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new FileReader(subscriptionsFile));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        final String[] parts = line.split("\\|");
-                        final String type = parts[0];
-                        final String subtype = parts[1];
-                        final String value = parts[2];
-                        final Map<String, Set<String>> typeMap = getType(type);
-                        final Set<String> valuesSet = getSet(typeMap, subtype);
-                        valuesSet.add(value);
-                    }
-                } catch (Exception e) {
-                    Log.i(TAG, "Can't load " + subscriptionsFile.getName());
-                } finally {
-                    Utils.close(reader);
-                    latch.countDown();
+        executor.execute(() -> {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(subscriptionsFile));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    final String[] parts = line.split("\\|");
+                    final String type = parts[0];
+                    final String subtype = parts[1];
+                    final String value = parts[2];
+                    final Map<String, Set<String>> typeMap = getType(type);
+                    final Set<String> valuesSet = getSet(typeMap, subtype);
+                    valuesSet.add(value);
                 }
+            } catch (Exception e) {
+                Log.i(TAG, "Can't load " + subscriptionsFile.getName());
+            } finally {
+                Utils.close(reader);
+                latch.countDown();
             }
         });
     }
 
     private void saveSubscriptions() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final File tmpFile = new File(subscriptionsFile.getPath() + "_" +
-                        System.currentTimeMillis());
-                //noinspection ResultOfMethodCallIgnored
-                tmpFile.delete();
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(tmpFile, false));
-                    for (final String type: subscriptions.keySet()) {
-                        final Map<String, Set<String>> entry = subscriptions.get(type);
-                        for (final String key: entry.keySet()) {
-                            final Set<String> values = entry.get(key);
-                            for (final String value: values) {
-                                writer
-                                    .append(type).append("|")
-                                    .append(key).append("|")
-                                    .append(value);
-                                writer.newLine();
-                            }
+        executor.execute(() -> {
+            final File tmpFile = new File(subscriptionsFile.getPath() + "_" +
+                    System.currentTimeMillis());
+            //noinspection ResultOfMethodCallIgnored
+            tmpFile.delete();
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter(tmpFile, false));
+                for (final String type: subscriptions.keySet()) {
+                    final Map<String, Set<String>> entry = subscriptions.get(type);
+                    if (entry == null) {
+                        continue;
+                    }
+                    for (final String key: entry.keySet()) {
+                        final Set<String> values = entry.get(key);
+                        if (values == null) {
+                            continue;
+                        }
+                        for (final String value: values) {
+                            writer
+                                .append(type).append("|")
+                                .append(key).append("|")
+                                .append(value);
+                            writer.newLine();
                         }
                     }
-                    // Close the writer before renaming the file
-                    Utils.close(writer);
-                    synchronized (SubscriptionsManager.this) {
-                        //noinspection ResultOfMethodCallIgnored
-                        tmpFile.renameTo(subscriptionsFile);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    Utils.close(writer);
                 }
+                // Close the writer before renaming the file
+                Utils.close(writer);
+                synchronized (SubscriptionsManager.this) {
+                    //noinspection ResultOfMethodCallIgnored
+                    tmpFile.renameTo(subscriptionsFile);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                Utils.close(writer);
             }
         });
     }
@@ -191,16 +191,23 @@ public class SubscriptionsManager {
     }
 
     @NonNull
-    public WritableMap toWritableMap() {
+    WritableMap toWritableMap() {
         WritableMap result = Arguments.createMap();
 
         try {
             latch.await();
             for (final String typeName: subscriptions.keySet()) {
                 final Map<String, Set<String>> subtypes = subscriptions.get(typeName);
+                if (subtypes == null) {
+                    continue;
+                }
                 final WritableMap map = Arguments.createMap();
                 for (final String subtypeName: subtypes.keySet()) {
-                    final WritableArray ids = Arguments.fromArray(subtypes.get(subtypeName).toArray(new String[0]));
+                    final Set<String> idsSet = subtypes.get(subtypeName);
+                    if (idsSet == null) {
+                        continue;
+                    }
+                    final WritableArray ids = Arguments.fromArray(idsSet.toArray(new String[0]));
                     map.putArray(subtypeName, ids);
                 }
                 result.putMap(typeName, map);

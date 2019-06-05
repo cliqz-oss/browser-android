@@ -12,9 +12,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +26,7 @@ import android.webkit.WebView;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.MainActivityComponent;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
@@ -149,7 +149,7 @@ public class LightningView {
 
     @SuppressLint("NewApi")
     public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        final MainActivityComponent component = BrowserApp.getActivityComponent(activity);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }

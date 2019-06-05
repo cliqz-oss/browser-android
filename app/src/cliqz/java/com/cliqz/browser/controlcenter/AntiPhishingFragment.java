@@ -2,9 +2,9 @@ package com.cliqz.browser.controlcenter;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatButton;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +20,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -39,7 +39,7 @@ public class AntiPhishingFragment extends ControlCenterFragment {
     @Inject
     Telemetry telemetry;
 
-    @Bind(R.id.button_ok)
+    @BindView(R.id.button_ok)
     AppCompatButton helpButton;
 
     @Override
