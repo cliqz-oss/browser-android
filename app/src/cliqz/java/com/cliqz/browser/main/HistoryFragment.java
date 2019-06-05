@@ -46,7 +46,7 @@ public class HistoryFragment extends FragmentWithBus {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         contextualToolBar = ((OverviewFragment)getParentFragment()).contextualToolBar;
         contextualToolBarTitle = contextualToolBar.findViewById(R.id.contextual_title);
-        final View view = inflater.inflate(R.layout.fragment_history_recyclerview, container, false);
+        final View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this,view);
         return view;
     }
