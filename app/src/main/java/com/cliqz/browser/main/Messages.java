@@ -272,4 +272,7 @@ public final class Messages {
 
     public static class OnVpnPermissionGranted {
     }
+
+    public static class OnTrialPeriodResponse {
+    }
 }

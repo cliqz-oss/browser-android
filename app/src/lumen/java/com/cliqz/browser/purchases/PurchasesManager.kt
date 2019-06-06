@@ -3,6 +3,7 @@ package com.cliqz.browser.purchases
 import acr.browser.lightning.preference.PreferenceManager
 import android.content.Context
 import android.util.Log
+import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.trial.TrialPeriod
 import com.cliqz.browser.purchases.trial.TrialPeriodLocalRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo
@@ -32,6 +33,7 @@ class PurchasesManager(
     override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
         this.trialPeriod = trialPeriod
         isLoading = false
+        bus.post(Messages.OnTrialPeriodResponse())
     }
 
     override fun onReceived(purchaserInfo: PurchaserInfo) {
