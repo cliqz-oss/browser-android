@@ -21,7 +21,7 @@ $> git clone "${CLIQZ_REPO}" browser-android
 $> cd browser-android
 ```
 
-Once the reposistory is checked out, get the dependencies for the react-native bundle, and build it
+Once the repository is checked out, get the dependencies for the react-native bundle, and build it
 ```bash
 $> npm install
 $> npm run dev-bundle
@@ -143,7 +143,7 @@ The final zip file should be in `<project_dir>/tests_helper/build/distribution`.
 ## Signing for distribution (CLIQZers only)
 
 The APK must be signed to be published on PlayStore, for more information follow this [link](http://developer.android.com/tools/publishing/app-signing.html). To sign the app you need the CLIQZ keystore, however it is not and must not be distributed with the source code, also keystore passwords must be kept secret.
-If you have the keystore and the passwords, you can configure gradle to generate the signed APK. To do so, create a *gradle.properties* file and add (or append to it fi already exists) the following lines:
+If you have the keystore and the passwords, you can configure gradle to generate the signed APK. To do so, create a *gradle.properties* file and add (or append to it if already exists) the following lines:
 
 ```groovy
 Browser.storeFile=<key_store_path>

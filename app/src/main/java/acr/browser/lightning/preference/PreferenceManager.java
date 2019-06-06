@@ -39,7 +39,6 @@ public class PreferenceManager {
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
         public static final String VPN_START_TIME = "vpn_start_time";
-        static final String USER_SENTIMENT_SURVEY_201903 = "userSentimentSurvey201903Count";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
         static final String BLOCK_IMAGES = "blockimages";
@@ -334,7 +333,7 @@ public class PreferenceManager {
     }
 
     public boolean getRemoveIdentifyingHeadersEnabled() {
-        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, false);
+        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, true);
     }
 
     public boolean getOnBoardingComplete() {

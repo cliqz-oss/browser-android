@@ -337,5 +337,4 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="settings_category_user_data_choices">Datenübermittlung</string>
     <string name="action_later">Später</string>
     <string name="action_take_survey">Teilnehmen</string>
-    <string name="user_sentiment_survey_second_line_msg">Die verwendete Umfragesoftware, SurveyMonkey, erfasst IP-Adressen.</string>
 </resources>
