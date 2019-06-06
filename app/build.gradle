@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
@@ -170,17 +171,17 @@ dependencies {
 
     // event bus
     implementation 'com.cliqz:nove:0.3.0'
-    annotationProcessor 'com.cliqz:nove-compiler:0.3.0'
+    kapt 'com.cliqz:nove-compiler:0.3.0'
 
     // dependency injection
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'com.google.dagger:dagger:2.11'
     implementation 'com.google.dagger:dagger-android-support:2.11'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    kapt 'com.google.dagger:dagger-compiler:2.11'
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     // view binding
-    annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
+    kapt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
     implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
 
     // native fs support for React-Native
