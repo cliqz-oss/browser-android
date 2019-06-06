@@ -73,4 +73,10 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
         trial_period_lumen_upgrade.visibility = View.GONE
         trial_over_lumen_upgrade.visibility = View.GONE
     }
+
+    override fun toggleWelcomeMessage(show: Boolean) {
+        welcome_image.visibility = if (show) View.VISIBLE else View.GONE
+        welcome_title.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
 }
