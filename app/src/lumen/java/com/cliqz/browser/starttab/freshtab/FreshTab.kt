@@ -2,7 +2,6 @@ package com.cliqz.browser.starttab.freshtab
 
 import acr.browser.lightning.preference.PreferenceManager
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +12,13 @@ import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
 import com.cliqz.browser.starttab.StartTabFragment
 import com.cliqz.nove.Bus
+import com.cliqz.nove.Subscribe
 import kotlinx.android.synthetic.lumen.fragment_freshtab.*
 import javax.inject.Inject
 
 private const val SEVEN_DAYS_IN_MILLIS = 604800000L
 
 internal class FreshTab : StartTabFragment() {
-
-    private var trialTries = 1
 
     @Inject
     lateinit var purchasesManager: PurchasesManager
@@ -42,38 +40,42 @@ internal class FreshTab : StartTabFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
+        initializeViews()
     }
 
-    private fun loadData() {
+    override fun onResume() {
+        super.onResume()
+        bus.register(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bus.unregister(this)
+    }
+
+    private fun initializeViews() {
         toggleWelcomeMessage()
         if (purchasesManager.purchase.isASubscriber) {
             hideAllTrialPeriodViews()
         } else {
-            getTrialPeriod()
+            bus.post(Messages.OnTrialPeriodResponse())
         }
     }
 
-    private fun getTrialPeriod() {
-        // Hacky solution with handler. Bus wasn't working, giving a DispatcherNotFoundException
-        // We retry till we get a non null object.
-        Handler().postDelayed({
-            if (purchasesManager.trialPeriod != null) {
-                purchasesManager.trialPeriod?.apply {
-                    if (isInTrial) {
-                        showTrialDaysLeft(trialDaysLeft)
-                    } else {
-                        if (preferenceManager.timeWhenTrialMessageDismissed() <
-                                (System.currentTimeMillis() - SEVEN_DAYS_IN_MILLIS)) {
-                            showTrialPeriodExpired()
-                        }
+    @Subscribe
+    fun getTrialPeriod(onTrialPeriodResponse: Messages.OnTrialPeriodResponse) {
+        if (purchasesManager.trialPeriod != null) {
+            purchasesManager.trialPeriod?.apply {
+                if (isInTrial) {
+                    showTrialDaysLeft(trialDaysLeft)
+                } else {
+                    if (preferenceManager.timeWhenTrialMessageDismissed() <
+                            (System.currentTimeMillis() - SEVEN_DAYS_IN_MILLIS)) {
+                        showTrialPeriodExpired()
                     }
                 }
-            } else if (trialTries < 5) {
-                trialTries++
-                getTrialPeriod()
             }
-        }, 200)
+        }
     }
 
     override fun getTitle() = ""
