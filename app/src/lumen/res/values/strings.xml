@@ -35,6 +35,8 @@
     <string name="bond_dashboard_ultimate_protection_pause_dialog_positive_button">Pause</string>
     <string name="bond_dashboard_contols_start">Start</string>
     <string name="bond_dashboard_protection_off">Protection is off</string>
+    <string name="reset_statistics">Reset statistics</string>
+
 
     <string name="url_bar_search_hint">Lumen Search</string>
     <string name="app_name">Lumen Browser</string>
@@ -84,7 +86,6 @@
     <string name="learn_more_link">Unlock the VPN feature to get the best out of Lumen. LEARN MORE</string>
 
     <!-- Subscription -->
-    <string name="reset_subscription">Reset Subscription</string>
     <string name="button_buy_subscription">Subscribe</string>
     <string name="button_upgrade_subscription">Upgrade</string>
     <string name="text_subscribed">Subscribed</string>

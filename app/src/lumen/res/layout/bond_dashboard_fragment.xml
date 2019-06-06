@@ -29,7 +29,7 @@
         android:paddingEnd="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="10dp"
-        android:text="@string/reset_subscription"
+        android:text="@string/reset_statistics"
         android:textColor="@color/white" />
 
     <View
