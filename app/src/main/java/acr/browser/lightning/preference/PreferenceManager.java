@@ -134,6 +134,7 @@ public class PreferenceManager {
         static final String SEND_USAGE_DATA = "SEND_USAGE_DATA";
 
         // Lumen
+        static final String PREF_IS_FRESH_INSTALL = "fresh_install";
         static final String PREF_TRIAL_PERIOD_OBJECT = "trial_period_object";
         static final String PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED = "trial_message_dismissed_time";
     }
@@ -893,6 +894,14 @@ public class PreferenceManager {
 
     public void setMyOffrzEnable(boolean value){
         putBoolean(Name.MY_OFFRZ_ENABLED,value);
+    }
+
+    public void setIsFreshInstall(boolean value) {
+        putBoolean(Name.PREF_IS_FRESH_INSTALL, value);
+    }
+
+    public boolean getIsFreshInstall() {
+        return mPrefs.getBoolean(Name.PREF_IS_FRESH_INSTALL, true);
     }
 
     public void setVpnStartTime(long currentTimeMillis) {

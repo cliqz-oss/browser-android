@@ -16,6 +16,7 @@ class FreshTabPresenter(
 
     override fun initialize() {
         loadData()
+        showWelcomeMessage()
     }
 
     private fun loadData() {
@@ -24,6 +25,14 @@ class FreshTabPresenter(
         } else {
             getTrialPeriod()
         }
+    }
+
+    private fun showWelcomeMessage() {
+        if (preferenceManager.isFreshInstall) {
+            preferenceManager.isFreshInstall = false
+            view.toggleWelcomeMessage(show = true)
+        }
+        view.toggleWelcomeMessage(show = false)
     }
 
     override fun getTrialPeriod() {
