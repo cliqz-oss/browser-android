@@ -29,13 +29,13 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.library.vpn.core.ConnectionStatus;
-import com.cliqz.library.vpn.core.VpnStatus;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import de.blinkt.openvpn.core.ConnectionStatus;
+import de.blinkt.openvpn.core.VpnStatus;
 
 /**
  * @author Ravjit Uppal

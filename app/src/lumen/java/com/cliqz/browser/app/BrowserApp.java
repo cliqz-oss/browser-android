@@ -4,12 +4,13 @@ import android.net.Uri;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.library.vpn.ConfigConverter;
-import com.cliqz.library.vpn.core.ProfileManager;
-import com.cliqz.library.vpn.core.StatusListener;
 import com.revenuecat.purchases.Purchases;
 
 import javax.inject.Inject;
+
+import de.blinkt.openvpn.ConfigConverter;
+import de.blinkt.openvpn.core.ProfileManager;
+import de.blinkt.openvpn.core.StatusListener;
 
 /**
  * @author Ravjit Uppal

@@ -2,7 +2,6 @@ package com.cliqz.browser.vpn;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +14,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.cliqz.browser.R;
-import com.cliqz.library.vpn.core.IOpenVPNServiceInternal;
-import com.cliqz.library.vpn.LaunchVPN;
-import com.cliqz.library.vpn.VpnProfile;
-import com.cliqz.library.vpn.core.OpenVPNService;
-import com.cliqz.library.vpn.core.ProfileManager;
-import com.cliqz.library.vpn.core.VpnStatus;
+
+import de.blinkt.openvpn.LaunchVPN;
+import de.blinkt.openvpn.VpnProfile;
+import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
+import de.blinkt.openvpn.core.OpenVPNService;
+import de.blinkt.openvpn.core.ProfileManager;
+import de.blinkt.openvpn.core.VpnStatus;
 
 /**
  * @author Ravjit Uppal
@@ -75,28 +75,6 @@ class VpnHandler {
             final LaunchVPN launchVPN = new LaunchVPN(vpnProfile, mActivity);
 
             launchVPN.launchVPN();
-            final Intent pauseVPN = new Intent(mActivity.getBaseContext(), OpenVPNService.class);
-            pauseVPN.setAction(OpenVPNService.PAUSE_VPN);
-            final Intent resumeVPN = new Intent(mActivity.getBaseContext(), OpenVPNService.class);
-            resumeVPN.setAction(OpenVPNService.RESUME_VPN);
-            final PendingIntent pauseVPNPending = PendingIntent.getService(mActivity.getBaseContext(), 0, pauseVPN, 0);
-            final PendingIntent resumeVPNPending = PendingIntent.getService(mActivity.getBaseContext(), 0, resumeVPN, 0);
-            //@TODO Look into why it happens.
-            //Sometimes vpn gets stuck at connecting. Pausing and resuming the vpn guarantees that it connects 100% of the time
-            mMainHandler.postDelayed(() -> {
-                try {
-                    pauseVPNPending.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
-            },3000);
-            mMainHandler.postDelayed(() -> {
-                try {
-                    resumeVPNPending.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
-            },5000);
         });
         builder.show();
     }
