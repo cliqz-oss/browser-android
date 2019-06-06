@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 
@@ -118,6 +119,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     BillingClient.SkuType.SUBS, oldSku,
                     { error, _ ->
                         Log.e(TAG, error.underlyingErrorMessage)
+                        Toast.makeText(context, error.underlyingErrorMessage, Toast.LENGTH_LONG).show()
                     },
                     { _, purchaseInfo ->
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("vpn") }) {
