@@ -13,6 +13,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.cliqz.browser.R;
 
+import acr.browser.lightning.preference.PreferenceManager;
+
 /**
  * @author Ravjit Uppal
  */
@@ -36,9 +38,9 @@ public class StartTabContainer extends FrameLayout {
     public void updateFreshTab() {
     }
 
-    public void init(FragmentManager supportFragmentManager) {
+    public void init(FragmentManager supportFragmentManager, PreferenceManager preferenceManager) {
         final ViewPager viewPager = findViewById(R.id.view_pager);
-        final StartTabAdapter startTabAdapter = new StartTabAdapter(supportFragmentManager);
+        final StartTabAdapter startTabAdapter = new StartTabAdapter(supportFragmentManager, preferenceManager);
         final IconTabLayout pagerTabStrip = findViewById(R.id.tab_layout);
         viewPager.setAdapter(startTabAdapter);
         pagerTabStrip.setupWithViewPager(viewPager);

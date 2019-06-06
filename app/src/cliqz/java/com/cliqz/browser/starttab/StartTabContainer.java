@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cliqz.browser.main.search.Freshtab;
 
+import acr.browser.lightning.preference.PreferenceManager;
+
 /**
  * @author Ravjit Uppal
  */
@@ -29,7 +31,7 @@ public class StartTabContainer extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void init(FragmentManager supportFragmentManager) {
+    public void init(FragmentManager supportFragmentManager, PreferenceManager preferenceManager) {
         mFreshtab = new Freshtab(getContext());
         addView(mFreshtab);
     }
