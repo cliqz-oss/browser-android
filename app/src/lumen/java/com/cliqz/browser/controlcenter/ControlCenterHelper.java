@@ -11,8 +11,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.AppComponent;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.Messages;
+import com.cliqz.jsengine.Insights;
+import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+
+import javax.inject.Inject;
 
 /**
  * Copyright © Cliqz 2019
@@ -29,8 +37,19 @@ public class ControlCenterHelper implements ControlCenterActions {
 
     private String mDomainName = "";
 
+    @Inject
+    Bus bus;
+
+    @Inject
+    Insights insights;
+
     public ControlCenterHelper(@NonNull FragmentManager fragmentManager,
                                @NonNull Context context, View parent) {
+        final AppComponent component = BrowserApp.getAppComponent();
+        if (component != null) {
+            component.inject(this);
+        }
+        bus.register(this);
         mContext = context;
         ViewPager mControlCenterPager = parent.findViewById(R.id.control_center_pager);
         mControlCenterContainer = parent.findViewById(R.id.control_center_container);
@@ -114,5 +133,11 @@ public class ControlCenterHelper implements ControlCenterActions {
         // Do nothing.
     }
 
-
+    @Subscribe
+    public void clearDashboardData(Messages.ClearDashboardData clearDashboardData) {
+        insights.clearData();
+        for(ControlCenterFragment fragment : mControlCenterPagerAdapter.mFragmentList) {
+            fragment.updateUI();
+        }
+    }
 }
