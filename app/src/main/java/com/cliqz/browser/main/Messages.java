@@ -269,4 +269,7 @@ public final class Messages {
      */
     public static class OnOpenMenuButton {
     }
+
+    public static class ClearDashboardData {
+    }
 }
