@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
@@ -14,6 +13,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.browser.main.Messages;
+import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
+
+import javax.inject.Inject;
 
 import de.blinkt.openvpn.LaunchVPN;
 import de.blinkt.openvpn.VpnProfile;
@@ -25,10 +31,9 @@ import de.blinkt.openvpn.core.VpnStatus;
 /**
  * @author Ravjit Uppal
  */
-class VpnHandler {
+public class VpnHandler {
 
     private Activity mActivity;
-    private Handler mMainHandler;
     private IOpenVPNServiceInternal mService;
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -45,9 +50,16 @@ class VpnHandler {
 
     };
 
-    public VpnHandler(Activity activity) {
+    @Inject
+    Bus bus;
+
+    VpnHandler(Activity activity) {
         mActivity = activity;
-        mMainHandler = new Handler(mActivity.getMainLooper());
+        FlavoredActivityComponent activityComponent = BrowserApp.getActivityComponent(mActivity);
+        if (activityComponent != null) {
+            activityComponent.inject(this);
+            bus.register(this);
+        }
     }
 
     void onResume() {
@@ -89,5 +101,10 @@ class VpnHandler {
                 VpnStatus.logException(e);
             }
         }
+    }
+
+    @Subscribe
+    public void onVpnPermissionGranted(Messages.OnVpnPermissionGranted onVpnPermissionGranted) {
+        connectVpn();
     }
 }

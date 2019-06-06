@@ -42,6 +42,7 @@ import de.blinkt.openvpn.core.VpnStatus;
  */
 public class VpnPanel extends DialogFragment implements View.OnClickListener, VpnStatus.StateListener {
 
+    public static final int VPN_LAUNCH_REQUEST_CODE = 70;
     private static String TAG = VpnPanel.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
