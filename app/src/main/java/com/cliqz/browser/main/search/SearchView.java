@@ -78,7 +78,7 @@ public class SearchView extends FrameLayout {
         this.engine = engine;
         mReactView = engine.reactRootView;
         startTabContainer = new StartTabContainer(this.context);
-        startTabContainer.init(context.getSupportFragmentManager());
+        startTabContainer.init(context.getSupportFragmentManager(), preferenceManager);
         incognito = new Incognito(this.context);
         // mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
         mReactView.setLayoutParams(

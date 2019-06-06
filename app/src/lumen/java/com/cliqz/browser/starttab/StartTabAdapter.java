@@ -8,6 +8,8 @@ import com.cliqz.browser.starttab.freshtab.FreshTab;
 
 import java.util.ArrayList;
 
+import acr.browser.lightning.preference.PreferenceManager;
+
 /**
  * @author Ravjit Uppal
  */
@@ -15,10 +17,14 @@ public class StartTabAdapter extends IconTabLayout.ImageFragmentPagerAdapter {
 
     final ArrayList<StartTabFragment> mFragments = new ArrayList<>();
 
-    public StartTabAdapter(FragmentManager fm) {
+    public StartTabAdapter(FragmentManager fm, PreferenceManager preferenceManager) {
         super(fm);
         mFragments.clear();
-        mFragments.add(new FreshTab());
+        boolean isFreshInstall = preferenceManager.getIsFreshInstall();
+        if (isFreshInstall) {
+            preferenceManager.setIsFreshInstall(false);
+        }
+        mFragments.add(FreshTab.newInstance(isFreshInstall));
         mFragments.add(new HistoryFragment());
         mFragments.add(new FavoritesFragment());
     }
