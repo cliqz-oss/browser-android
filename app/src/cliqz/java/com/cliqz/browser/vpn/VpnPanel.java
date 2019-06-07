@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
  */
 public class VpnPanel {
 
+    public static final int VPN_LAUNCH_REQUEST_CODE = 70;
+
     public static VpnPanel create(View view, Activity activity) {
         return null;
     }
