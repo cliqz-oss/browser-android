@@ -33,4 +33,6 @@
     <dimen name="icon_height">24dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_padding">10dp</dimen>
+    <dimen name="topsites_logo_cornes_radius">5dp</dimen>
+    <dimen name="topsites_logo_textsize">24sp</dimen>
 </resources>

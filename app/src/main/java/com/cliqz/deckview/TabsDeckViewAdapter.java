@@ -129,7 +129,8 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
                     0xff000000 | decodeColor(result.getString(BACKGROUND_COLOR_KEY)) :
                     ContextCompat.getColor(context, R.color.accent_color);
             final Drawable textDrawable = new DefaultIconDrawable(text, color,
-                    (int) resources.getDimension(R.dimen.fallback_logo_text_size));
+                    resources.getDimensionPixelSize(R.dimen.fallback_logo_text_size),
+                    0);
             final int logoSize = (int) resources.getDimension(R.dimen.tab_icon_size);
             final String iconUrl = Logo.getUriFromSvgUri(rawIconUrl, logoSize, logoSize);
             tabsDeckView.post(new Runnable() {

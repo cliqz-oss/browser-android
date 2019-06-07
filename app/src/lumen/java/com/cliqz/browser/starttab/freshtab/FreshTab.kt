@@ -1,19 +1,28 @@
 package com.cliqz.browser.starttab.freshtab
 
+import acr.browser.lightning.bus.BrowserEvents
 import acr.browser.lightning.preference.PreferenceManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.ScaleAnimation
+import android.widget.AdapterView
 
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.Messages
+import com.cliqz.browser.main.search.TopsitesAdapter
 import com.cliqz.browser.purchases.PurchasesManager
 import com.cliqz.browser.starttab.StartTabFragment
+import com.cliqz.browser.telemetry.Telemetry
+import com.cliqz.browser.webview.CliqzMessages
+import com.cliqz.browser.webview.Topsite
 import com.cliqz.nove.Bus
 import com.cliqz.nove.Subscribe
 import kotlinx.android.synthetic.lumen.fragment_freshtab.*
+import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_over_msg.*
+import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_upgrade_msg.*
 import javax.inject.Inject
 
 private const val SEVEN_DAYS_IN_MILLIS = 604800000L
@@ -31,6 +40,12 @@ internal class FreshTab : StartTabFragment() {
 
     private var isFreshInstall: Boolean = false
 
+    @Inject
+    lateinit var topsitesAdapter: TopsitesAdapter
+
+    @Inject
+    lateinit var telemetry: Telemetry
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         isFreshInstall = arguments?.getBoolean(ARG_IS_FRESH_INSTALL) ?: false
@@ -46,6 +61,7 @@ internal class FreshTab : StartTabFragment() {
     override fun onResume() {
         super.onResume()
         bus.register(this)
+        topsitesAdapter.fetchTopsites()
     }
 
     override fun onPause() {
@@ -53,7 +69,17 @@ internal class FreshTab : StartTabFragment() {
         bus.unregister(this)
     }
 
+
     private fun initializeViews() {
+        topsites_grid.adapter = topsitesAdapter
+        topsites_grid.onItemClickListener = AdapterView.OnItemClickListener { _, view, position, _ ->
+            val topsite = topsitesAdapter.getItem(position) as Topsite
+            val animation = ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
+                    view.x + view.width / 2, view.y + view.height / 2)
+            animation.duration = 200
+            bus.post(CliqzMessages.OpenLink.open(topsite.url, animation))
+            telemetry.sendTopsitesClickSignal(position, topsitesAdapter.displayedCount)
+        }
         toggleWelcomeMessage()
         if (purchasesManager.purchase.isASubscriber) {
             hideAllTrialPeriodViews()
@@ -84,8 +110,7 @@ internal class FreshTab : StartTabFragment() {
 
     private fun showTrialPeriodExpired() {
         trial_period_lumen_upgrade.visibility = View.GONE
-        welcome_image.visibility = View.GONE
-        welcome_title.visibility = View.GONE
+        welcome_message.visibility = View.GONE
         trial_over_lumen_upgrade.visibility = View.VISIBLE
         trial_over_learn_more_btn.setOnClickListener {
             trial_over_lumen_upgrade.visibility = View.GONE
@@ -113,8 +138,8 @@ internal class FreshTab : StartTabFragment() {
     }
 
     private fun toggleWelcomeMessage() {
-        welcome_image.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
-        welcome_title.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
+        welcome_message.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
+        topsites_grid.visibility = if (isFreshInstall) View.GONE else View.VISIBLE
     }
 
     companion object {

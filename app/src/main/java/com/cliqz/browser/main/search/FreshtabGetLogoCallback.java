@@ -55,11 +55,12 @@ public class FreshtabGetLogoCallback implements JSBridge.Callback, Runnable {
             // TODO @Khaled: if we have the domain in the LogoMeta class we can fallback here
             alternateText = "";
         }
-        holder.setBackgroundColor(backgroundColor);
+        final Resources resources = holder.iconView.getResources();
+        final int cornerRadius = resources.getDimensionPixelSize(R.dimen.topsites_logo_cornes_radius);
+        final int textSize = resources.getDimensionPixelSize(R.dimen.topsites_logo_textsize);
         final Drawable fallbackDrawable =
-                new DefaultIconDrawable(alternateText, backgroundColor, 45);
+                new DefaultIconDrawable(alternateText, backgroundColor, textSize, cornerRadius);
         try {
-            final Resources resources = holder.iconView.getResources();
             final int logoSize = (int) resources.getDimension(R.dimen.freshtab_icons_size);
             final String pngUri = Logo.getUriFromSvgUri(iconUrl, logoSize, logoSize);
 

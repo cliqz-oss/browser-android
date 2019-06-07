@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="30dp"
+    android:layout_marginEnd="30dp"
+    android:layout_marginBottom="8dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:background="@color/black">
+    <!-- tools:showIn="@layout/fragment_freshtab" -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="@string/trial_over_upgrade_lumen_title"
+        android:textColor="@color/text_color_2"
+        android:textSize="@dimen/title_text_size" />
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/trial_over_upgrade_lumen_description"
+        android:textAlignment="center"
+        android:textColor="@color/text_color_2"
+        android:textSize="@dimen/normal_text_size" />
+
+    <Button
+        android:id="@+id/trial_over_dismiss_btn"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rounded_corner_button"
+        android:text="@string/trial_over_upgrade_lumen_dismiss"
+        android:textAllCaps="false"
+        android:textColor="#1B9CFC"
+        android:textSize="@dimen/normal_text_size"
+        android:textStyle="normal" />
+
+    <Button
+        android:id="@+id/trial_over_learn_more_btn"
+        android:layout_width="200dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rounded_corner_solid_button"
+        android:text="@string/trial_over_upgrade_lumen_proceed"
+        android:textColor="@color/white"
+        android:textSize="@dimen/normal_text_size" />
+
+</LinearLayout>

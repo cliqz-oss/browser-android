@@ -24,6 +24,7 @@ android {
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
+        buildConfigField 'int', "VISIBLE_TOP_SITES", '4'
 
         if (this.hasProperty("com.cliqz.lumen.vpnApiKey")) {
             buildConfigField 'String', 'VPN_API_KEY', this.getProperty("com.cliqz.lumen.vpnApiKey")
@@ -97,6 +98,7 @@ android {
             dimension "api"
             applicationId "com.cliqz.lumen"
             versionCode 6
+            buildConfigField 'int', "VISIBLE_TOP_SITES", '8'
             useGoogleServices = false
         }
         amazon {
