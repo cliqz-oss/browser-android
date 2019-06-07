@@ -21,19 +21,20 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.BuildConfig;
@@ -45,14 +46,14 @@ import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
-import com.cliqz.browser.reactnative.ReactMessages;
 import com.cliqz.browser.purchases.PurchaseFragment;
+import com.cliqz.browser.reactnative.ReactMessages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
 import com.cliqz.browser.utils.DownloadHelper;
 import com.cliqz.browser.utils.LocationCache;
-import com.cliqz.browser.purchases.PurchasesManager;
+import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -770,7 +771,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
 
             fileChooserHelper.notifyResultOk(data);
-        } else {
+        } else if (requestCode == VpnPanel.VPN_LAUNCH_REQUEST_CODE) {
+            bus.post(new Messages.OnVpnPermissionGranted());
+        }
+        else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
