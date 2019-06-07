@@ -3,6 +3,7 @@
 # CLIQZ Browser for Android
 
 [![Build Status](https://dev.azure.com/cliqz-ci/cliqz-android/_apis/build/status/cliqz-oss.browser-android%20-%20CI?branchName=master)](https://dev.azure.com/cliqz-ci/cliqz-android/_build/latest?definitionId=4&branchName=master)
+[![PlayStore Version](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Funtitled-663xcdfysjy8.runkit.sh%2F)](https://play.google.com/store/apps/details?id=com.cliqz.browser)
 
 Cliqz is the first browser with built-in anonymous quick search and intelligent anti-tracking technology. Wherever you are going on the Internet: Cliqz protects your privacy. Our own search engine, developed in Munich, saves you time and data volume: simply type a query, select a suggested website or swipe left for more results. And by the way: Cliqz is free and open source.
 
