@@ -116,10 +116,13 @@ public class SettingsActivityTest {
             onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
                     .check(matches(withText(containsString(url))));
         } catch(Exception e) {
+            mActivityRule.finishActivity();
             mActivityRule.launchActivity(null);
-            WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
-                    .withTimeout(5, TimeUnit.SECONDS)
-                    .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString(url)));
+            try {
+                ViewHelpers.onView(withId(R.id.title_bar)).perform(click());
+            } catch (Exception ex) {
+                Log.e("AUTOBOTS", ex.toString());
+            }
             onView(withId(R.id.title_bar)).perform(click());
             onView(withId(R.id.search_edit_text)).check(matches(withText(containsString(query))))
                     .check(matches(withText(containsString(url))));
