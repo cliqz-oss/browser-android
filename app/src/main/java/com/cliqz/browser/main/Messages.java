@@ -271,7 +271,7 @@ public final class Messages {
     }
 
     public static class ClearDashboardData {
-	}
+    }
 
     public static class OnVpnPermissionGranted {
     }
@@ -284,4 +284,8 @@ public final class Messages {
 
     public static class onVpnStateChange {
     }
+
+    public static class PurchaseCompleted {
+    }
+
 }

@@ -86,6 +86,6 @@ class PurchasesManager(
     }
 
     fun isDashboardEnabled() : Boolean {
-        return purchase.isDashboardEnabled || trialPeriod?.isInTrial ?: false;
+        return purchase.isDashboardEnabled || trialPeriod != null && trialPeriod!!.isInTrial
     }
 }

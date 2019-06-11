@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="non_subscriber_ultimate_protection">Ultimate Protection: OFF</string>
+    <string name="non_subscriber_ultimate_protection_desc">You are browsing without ultimate protection and ad blocker.</string>
+    <string name="non_subscriber_ultimate_protection_button">Turn On</string>
     <string name="bond_dashboard_clear_dialog_title">Clear Dashboard Data?</string>
     <string name="bond_dashboard_clear_dialog_message">This will delete all your dashboard data and cannot be undone.</string>
     <string name="cancel">Cancel</string>
