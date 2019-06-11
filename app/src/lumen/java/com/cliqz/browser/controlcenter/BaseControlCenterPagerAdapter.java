@@ -33,7 +33,7 @@ public abstract class BaseControlCenterPagerAdapter extends FragmentPagerAdapter
     }
 
     public CharSequence getPageTitle(int position) {
-        return mFragmentList.get(position).getTitle(mContext,position);
+        return mFragmentList.get(position).getTitle(mContext, position);
     }
 
     void updateCurrentView(int position) {

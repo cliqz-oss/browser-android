@@ -11,11 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingFlowParams
 
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.MainActivity
+import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.productlist.OnBuyClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
@@ -23,6 +23,7 @@ import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
 import kotlinx.android.synthetic.lumen.fragment_purchase.*
 import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
 import com.cliqz.browser.purchases.SubscriptionConstants.Product
+import com.cliqz.nove.Bus
 import com.revenuecat.purchases.*
 import java.util.*
 import javax.inject.Inject
@@ -36,6 +37,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     @set:Inject
     lateinit var purchasesManager: PurchasesManager
+
+    @Inject
+    lateinit var bus: Bus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,6 +132,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("basic") }) {
                             purchasesManager.purchase.isDashboardEnabled = true
                         }
+                        bus.post(Messages.PurchaseCompleted())
                         this@PurchaseFragment.dismiss()
                     }
             )

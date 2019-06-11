@@ -84,14 +84,16 @@ public class DashboardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             viewHolder.rightItem.changeState(mIsDashboardEnabled);
         } else {
             final FooterViewHolder viewHolder = (FooterViewHolder) holder;
-            viewHolder.resetButton.setOnClickListener(v -> new AlertDialog.Builder(v.getContext())
-                    .setTitle(R.string.bond_dashboard_clear_dialog_title)
-                    .setMessage(R.string.bond_dashboard_clear_dialog_message)
-                    .setPositiveButton(R.string.button_ok, (dialogInterface, i) -> {
-                        mBus.post(new Messages.ClearDashboardData());
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show());
+            if (mIsDashboardEnabled) {
+                viewHolder.resetButton.setOnClickListener(v -> new AlertDialog.Builder(v.getContext())
+                        .setTitle(R.string.bond_dashboard_clear_dialog_title)
+                        .setMessage(R.string.bond_dashboard_clear_dialog_message)
+                        .setPositiveButton(R.string.button_ok, (dialogInterface, i) -> {
+                            mBus.post(new Messages.ClearDashboardData());
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show());
+            }
         }
     }
 

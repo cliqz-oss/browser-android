@@ -8,12 +8,16 @@
     android:background="@android:color/transparent"
     android:visibility="gone">
 
+    <include
+        layout="@layout/subscribe_ultimate_protection_view" />
+
     <LinearLayout
         android:id="@+id/ultimate_protection_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary_color"
         android:orientation="horizontal"
+        android:layout_below="@+id/subscribe_ultimate_protection"
         android:padding="20dp">
 
         <TextView

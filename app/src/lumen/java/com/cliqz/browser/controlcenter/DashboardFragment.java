@@ -14,9 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.jsengine.Insights;
 import com.cliqz.jsengine.ReadableMapUtils;
 import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
@@ -41,10 +44,13 @@ public class DashboardFragment extends ControlCenterFragment {
             R.string.bond_dashboard_today_title, R.string.bond_dashboard_week_title};
 
     @Inject
+    Bus bus;
+
+    @Inject
     Insights insights;
 
     @Inject
-    Bus bus;
+    PurchasesManager purchasesManager;
 
     @Inject
     PreferenceManager preferenceManager;
@@ -61,6 +67,7 @@ public class DashboardFragment extends ControlCenterFragment {
         if (component != null) {
             component.inject(this);
         }
+        bus.register(this);
     }
 
     @Nullable
@@ -132,10 +139,24 @@ public class DashboardFragment extends ControlCenterFragment {
         if (data == null) {
             return;
         }
-        final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"));
-        final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"adsBlocked"));
-        final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"));
-        final MeasurementWrapper pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"pages"));
+
+        final MeasurementWrapper dataSaved;
+        final MeasurementWrapper adsBlocked;
+        final MeasurementWrapper trackersDetected;
+        final MeasurementWrapper pagesVisited;
+
+        if (purchasesManager.isDashboardEnabled()) {
+            dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"));
+            adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"adsBlocked"));
+            trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"));
+            pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"pages"));
+        } else {
+            dataSaved = ValuesFormatterUtil.formatBytesCount(0);
+            adsBlocked = ValuesFormatterUtil.formatBlockCount(0);
+            trackersDetected = ValuesFormatterUtil.formatBlockCount(0);
+            pagesVisited = ValuesFormatterUtil.formatBlockCount(0);
+        }
+
         final List<DashboardItemEntity> dashboardItems = new ArrayList<>();
 
         dashboardItems.add(new DashboardItemEntity(adsBlocked.getValue(),
@@ -150,4 +171,10 @@ public class DashboardFragment extends ControlCenterFragment {
                 getString(R.string.bond_dashboard_phishing_protection_title), -1, VIEW_TYPE_ICON));
         mDashboardAdapter.addItems(dashboardItems);
     }
+
+    @Subscribe
+    void onPurchaseCompleted(Messages.PurchaseCompleted purchaseCompleted) {
+        changeDashboardState(purchasesManager.isDashboardEnabled());
+    }
+
 }
