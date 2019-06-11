@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.preference.PreferenceManager;
+
 import static com.cliqz.browser.controlcenter.DashboardItemEntity.VIEW_TYPE_ICON;
 import static com.cliqz.browser.controlcenter.DashboardItemEntity.VIEW_TYPE_SHIELD;
 
@@ -43,6 +45,9 @@ public class DashboardFragment extends ControlCenterFragment {
 
     @Inject
     Bus bus;
+
+    @Inject
+    PreferenceManager preferenceManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +75,7 @@ public class DashboardFragment extends ControlCenterFragment {
         updateUI();
         dashBoardListView.setAdapter(mDashboardAdapter);
         dashBoardListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        changeDashboardState(true); // @TODO should change with real state
+        changeDashboardState(preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
         return view;
     }
 
