@@ -2,6 +2,7 @@ variables:
   BUILD_OUTPUT_DIR: app/build/outputs/apk
   TESTS_XML_DIR: app/build/outputs/androidTest-results
   IMG_NAME: system-images;android-23;google_apis;x86
+  IMG_ABI: google_apis/x86
   DEVICE_TYPE: "Nexus 4"
   DEVICE_NAME: Nexus4Emu
   DEVICE_VIDEO_DIR: /mnt/sdcard/DCIM
@@ -75,7 +76,7 @@ jobs:
 
     - bash: |
         $ANDROID_HOME/tools/bin/sdkmanager "$(IMG_NAME)"
-        $ANDROID_HOME/tools/bin/avdmanager create avd --device "$(DEVICE_TYPE)" --package "$(IMG_NAME)" --abi google_apis/x86 --name "$(DEVICE_NAME)"
+        $ANDROID_HOME/tools/bin/avdmanager create avd --device "$(DEVICE_TYPE)" --package "$(IMG_NAME)" --abi "$(IMG_ABI)" --name "$(DEVICE_NAME)"
         $ANDROID_HOME/emulator/emulator -avd $(DEVICE_NAME) &
         echo $! > emu.pid
         echo "Emulator Started with Process ID: $(cat emu.pid)"
