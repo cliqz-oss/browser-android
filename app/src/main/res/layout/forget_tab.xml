@@ -43,4 +43,19 @@
             tools:layout_marginTop="15dp"
             android:textColor="@color/toolbar_icon_color_incognito" />
     </LinearLayout>
+
+    <!-- TODO: Handle in code the letter spacing for below API 19 -->
+    <TextView
+        android:id="@+id/made_in_germany_watermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:letterSpacing="0.25"
+        android:layout_centerInParent="true"
+        android:text="@string/made_in_germany"
+        android:textAllCaps="true"
+        android:textColor="#304572"
+        android:textSize="11.5sp"
+        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>
