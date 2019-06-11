@@ -89,6 +89,7 @@ internal class FreshTab : StartTabFragment() {
         trial_over_lumen_upgrade.visibility = View.VISIBLE
         trial_over_learn_more_btn.setOnClickListener {
             trial_over_lumen_upgrade.visibility = View.GONE
+            preferenceManager.updateTimeOfTrialMessageDismissed()
             bus.post(Messages.GoToPurchase(0))
         }
         trial_over_dismiss_btn.setOnClickListener {
