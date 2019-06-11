@@ -119,7 +119,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     BillingClient.SkuType.SUBS, oldSku,
                     { error, _ ->
                         Log.e(TAG, error.underlyingErrorMessage)
-                        Toast.makeText(context, error.underlyingErrorMessage, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
                     },
                     { _, purchaseInfo ->
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("vpn") }) {
