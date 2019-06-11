@@ -11,26 +11,8 @@
         android:id="@+id/dash_board_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/reset"
         android:layout_alignParentTop="true"
         android:padding="16dp" />
-
-    <TextView
-        android:id="@+id/reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:background="@color/primary_color"
-        android:gravity="center"
-        android:paddingStart="20dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="20dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="10dp"
-        android:text="@string/reset_subscription"
-        android:textColor="@color/white" />
 
     <View
         android:id="@+id/dashboard_disable_view"

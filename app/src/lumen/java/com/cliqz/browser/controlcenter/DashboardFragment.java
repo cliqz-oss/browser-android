@@ -1,12 +1,10 @@
 package com.cliqz.browser.controlcenter;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +15,8 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.jsengine.Insights;
+import com.cliqz.jsengine.ReadableMapUtils;
+import com.cliqz.nove.Bus;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
@@ -41,6 +41,9 @@ public class DashboardFragment extends ControlCenterFragment {
     @Inject
     Insights insights;
 
+    @Inject
+    Bus bus;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,25 +64,20 @@ public class DashboardFragment extends ControlCenterFragment {
                              @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.bond_dashboard_fragment, container,
                 false);
-        RecyclerView dashBoardListView = (RecyclerView) view.findViewById(R.id.dash_board_list_view);
+        final RecyclerView dashBoardListView = view.findViewById(R.id.dash_board_list_view);
         mDisableDashboardView = view.findViewById(R.id.dashboard_disable_view);
-        mDashboardAdapter = new DashboardAdapter(getContext());
-        TextView resetButton = view.findViewById(R.id.reset);
-        resetButton.setOnClickListener(v -> new AlertDialog.Builder(v.getContext())
-                .setTitle(R.string.bond_dashboard_clear_dialog_title)
-                .setMessage(R.string.bond_dashboard_clear_dialog_message)
-                .setPositiveButton(R.string.button_ok, (dialogInterface, i) -> {
-                    updateUI();
-                    //mControlCenterPagerAdapter.setTrackingData(new GeckoBundle());
-                    //EventDispatcher.getInstance().dispatch("Privacy:ClearInsightsData", null);
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show());
+        mDashboardAdapter = new DashboardAdapter(getContext(), bus);
         updateUI();
         dashBoardListView.setAdapter(mDashboardAdapter);
         dashBoardListView.setLayoutManager(new LinearLayoutManager(getContext()));
         changeDashboardState(true); // @TODO should change with real state
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateUI();
     }
 
     public void changeDashboardState(boolean isEnabled) {
@@ -129,10 +127,10 @@ public class DashboardFragment extends ControlCenterFragment {
         if (data == null) {
             return;
         }
-        final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(data.getInt("dataSaved"));
-        final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(data.getInt("adsBlocked"));
-        final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(data.getInt("trackersDetected"));
-        final MeasurementWrapper pagesVisited = ValuesFormatterUtil.formatBlockCount(data.getInt("pages"));
+        final MeasurementWrapper dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"));
+        final MeasurementWrapper adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"adsBlocked"));
+        final MeasurementWrapper trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"));
+        final MeasurementWrapper pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"pages"));
         final List<DashboardItemEntity> dashboardItems = new ArrayList<>();
 
         dashboardItems.add(new DashboardItemEntity(adsBlocked.getValue(),
