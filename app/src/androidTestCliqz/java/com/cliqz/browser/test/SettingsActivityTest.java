@@ -1,25 +1,22 @@
 package com.cliqz.browser.test;
 
+import android.util.Log;
+import android.view.KeyEvent;
+
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.web.assertion.WebViewAssertions;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.utils.WebHelpers;
 import com.cliqz.browser.utils.ViewHelpers;
+import com.cliqz.browser.utils.WebHelpers;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -106,6 +103,7 @@ public class SettingsActivityTest {
         onView(withText(equalToIgnoringCase("OK"))).perform(click());
         onView(withText(equalToIgnoringCase("General"))).perform(pressBack());
         onView(withText(equalToIgnoringCase("Settings"))).perform(pressBack());
+        onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text)).perform(typeText(query),
                 pressKey(KeyEvent.KEYCODE_ENTER));
         try {

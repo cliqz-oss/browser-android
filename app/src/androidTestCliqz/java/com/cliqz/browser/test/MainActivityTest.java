@@ -1,6 +1,9 @@
 package com.cliqz.browser.test;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.KeyEvent;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.web.assertion.WebViewAssertions;
@@ -8,8 +11,6 @@ import androidx.test.espresso.web.matcher.DomMatchers;
 import androidx.test.espresso.web.webdriver.Locator;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
-import android.util.Log;
-import android.view.KeyEvent;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
@@ -19,9 +20,7 @@ import com.cliqz.browser.utils.WebHelpers;
 import com.cliqz.browser.widget.OverFlowMenu;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -38,7 +37,6 @@ import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -114,23 +112,12 @@ public class MainActivityTest {
     }
 
     @Test
-    public void focusedSearchBar() throws Throwable {
-        Thread.sleep(2000);
-        onView(allOf(hasFocus(), withId(R.id.search_edit_text))).check(matches(isDisplayed()));
-
-    }
-
-    @Test
     public void numberOfInitialTabs() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.open_tabs_count)).check(matches(withText("1")));
     }
 
     // @Test
     public void actionableButtons() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         ViewHelpers.onView(withId(R.id.overflow_menu)).customCheck(matches(isDisplayed()), 400);
         onView(withId(R.id.overflow_menu)).perform(click());
         onView(allOf(isEnabled(), withId(R.id.action_share))).check(matches(isDisplayed()));
@@ -151,8 +138,6 @@ public class MainActivityTest {
 
     @Test
     public void changeOfNumberOfTabs() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.overflow_menu)).perform(click());
         onView(withId(R.id.new_tab_menu_button)).perform(click());
         onView(withId(R.id.open_tabs_count)).check(matches(withText("2")));
@@ -160,16 +145,12 @@ public class MainActivityTest {
 
     @Test
     public void viewAllTabs() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.menu_overview)).perform(click());
         onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
     }
 
     @Test
     public void overViewTabs() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.menu_overview)).perform(click());
         onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
         onView(withId(R.id.new_tab_button)).perform(click());
@@ -178,8 +159,6 @@ public class MainActivityTest {
 
     @Test
     public void threeDotMenu() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         ViewHelpers.onView(withId(R.id.overflow_menu)).customCheck(matches(isDisplayed()), 400);
         onView(withId(R.id.overflow_menu)).perform(click());
         onView(withClassName(equalTo(OverFlowMenu.class.getName()))).check(matches(isDisplayed()));
@@ -225,13 +204,12 @@ public class MainActivityTest {
     @Test
     public void favoritesTabAndAddDelFavorites() {
         mActivityRule.getActivity().getHistoryDatabase().clearHistory(true);
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.menu_overview)).perform(click());
         onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
         onView(withText(equalToIgnoringCase("FAVORITES"))).perform(click());
         onView(withId(R.id.ll_no_favorite)).check(matches(isDisplayed()));
         onView(withId(R.id.toolbar)).perform(pressBack());
+        onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text))
                 .perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/testpage.html"),
                         pressKey(KeyEvent.KEYCODE_ENTER));
@@ -253,6 +231,7 @@ public class MainActivityTest {
 
     @Test
     public void forwardButton() {
+        onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text)).
                 perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/forward_test.html"),
                         pressKey(KeyEvent.KEYCODE_ENTER));
@@ -277,6 +256,7 @@ public class MainActivityTest {
     public void testControlCenterVisible() {
         onView(withId(R.id.topsites_grid)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.control_center))).check(matches(not(isDisplayed())));
+        onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text))
                 .perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/testpage.html"),
                         pressKey(KeyEvent.KEYCODE_ENTER));
@@ -287,6 +267,7 @@ public class MainActivityTest {
 
     @Test
     public void testCloseTab() throws InterruptedException {
+        onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text))
                 .perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/testpage.html"),
                         pressKey(KeyEvent.KEYCODE_ENTER));
@@ -296,16 +277,12 @@ public class MainActivityTest {
         onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
         onView(withId(R.id.regular_tab_id)).perform(swipeLeft());
         Thread.sleep(1000);
-        ViewHelpers.onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         ViewHelpers.onView(withId(R.id.menu_overview)).perform(click());
         onView(withId(R.id.urlTv)).check(matches(withText("New Tab")));
     }
 
     @Test
     public void testForgetTab() {
-        onView(withId(R.id.search_edit_text)).
-                perform(new ClickDrawableAction(ClickDrawableAction.Left));
         onView(withId(R.id.menu_overview)).check(matches(isDisplayed()));
         onView(withId(R.id.overflow_menu)).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.new_incognito_tab_menu_button)).perform(click());
