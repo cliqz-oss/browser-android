@@ -25,13 +25,18 @@ android {
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
 
-        if (this.hasProperty("com.cliqz.lumen.vpnApiKey")) {
-            buildConfigField 'String', 'VPN_API_KEY', this.getProperty("com.cliqz.lumen.vpnApiKey")
+        def vpnApiKey = this.hasProperty("com.cliqz.lumen.vpnApiKey") ?
+                this.getProperty("com.cliqz.lumen.vpnApiKey") : System.getenv("VPN_API_KEY")
+        if (vpnApiKey) {
+            buildConfigField 'String', 'VPN_API_KEY', "\"${vpnApiKey}\""
         } else {
             buildConfigField 'String', 'VPN_API_KEY', '""'
         }
-        if (this.hasProperty("com.cliqz.lumen.revenuecatApiKey")) {
-            buildConfigField 'String', 'REVENUECAT_API_KEY', this.getProperty("com.cliqz.lumen.revenuecatApiKey")
+
+        def revenueCatApiKey = this.hasProperty("com.cliqz.lumen.revenueCatApiKey") ?
+                this.getProperty("com.cliqz.lumen.revenueCatApiKey") : System.getenv("REVENUECAT_API_KEY")
+        if (revenueCatApiKey) {
+            buildConfigField 'String', 'REVENUECAT_API_KEY', "\"${revenueCatApiKey}\""
         } else {
             buildConfigField 'String', 'REVENUECAT_API_KEY', '""'
         }
