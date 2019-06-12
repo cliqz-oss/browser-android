@@ -29,19 +29,20 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.library.vpn.core.ConnectionStatus;
-import com.cliqz.library.vpn.core.VpnStatus;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import de.blinkt.openvpn.core.ConnectionStatus;
+import de.blinkt.openvpn.core.VpnStatus;
 
 /**
  * @author Ravjit Uppal
  */
 public class VpnPanel extends DialogFragment implements View.OnClickListener, VpnStatus.StateListener {
 
+    public static final int VPN_LAUNCH_REQUEST_CODE = 70;
     private static String TAG = VpnPanel.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";

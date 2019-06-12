@@ -269,4 +269,13 @@ public final class Messages {
      */
     public static class OnOpenMenuButton {
     }
+
+    public static class ClearDashboardData {
+	}
+
+    public static class OnVpnPermissionGranted {
+    }
+
+    public static class OnTrialPeriodResponse {
+    }
 }

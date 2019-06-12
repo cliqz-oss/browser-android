@@ -39,7 +39,6 @@ public class PreferenceManager {
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
         public static final String VPN_START_TIME = "vpn_start_time";
-        static final String USER_SENTIMENT_SURVEY_201903 = "userSentimentSurvey201903Count";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
         static final String BLOCK_IMAGES = "blockimages";
@@ -134,6 +133,7 @@ public class PreferenceManager {
         static final String SEND_USAGE_DATA = "SEND_USAGE_DATA";
 
         // Lumen
+        static final String PREF_IS_FRESH_INSTALL = "fresh_install";
         static final String PREF_TRIAL_PERIOD_OBJECT = "trial_period_object";
         static final String PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED = "trial_message_dismissed_time";
     }
@@ -333,7 +333,7 @@ public class PreferenceManager {
     }
 
     public boolean getRemoveIdentifyingHeadersEnabled() {
-        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, false);
+        return mPrefs.getBoolean(Name.IDENTIFYING_HEADERS, true);
     }
 
     public boolean getOnBoardingComplete() {
@@ -893,6 +893,14 @@ public class PreferenceManager {
 
     public void setMyOffrzEnable(boolean value){
         putBoolean(Name.MY_OFFRZ_ENABLED,value);
+    }
+
+    public void setIsFreshInstall(boolean value) {
+        putBoolean(Name.PREF_IS_FRESH_INSTALL, value);
+    }
+
+    public boolean getIsFreshInstall() {
+        return mPrefs.getBoolean(Name.PREF_IS_FRESH_INSTALL, true);
     }
 
     public void setVpnStartTime(long currentTimeMillis) {

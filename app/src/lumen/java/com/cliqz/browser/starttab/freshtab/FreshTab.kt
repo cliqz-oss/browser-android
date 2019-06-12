@@ -12,10 +12,13 @@ import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
 import com.cliqz.browser.starttab.StartTabFragment
 import com.cliqz.nove.Bus
+import com.cliqz.nove.Subscribe
 import kotlinx.android.synthetic.lumen.fragment_freshtab.*
 import javax.inject.Inject
 
-internal class FreshTab : StartTabFragment(), FreshTabContract.View {
+private const val SEVEN_DAYS_IN_MILLIS = 604800000L
+
+internal class FreshTab : StartTabFragment() {
 
     @Inject
     lateinit var purchasesManager: PurchasesManager
@@ -26,25 +29,60 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
     @Inject
     lateinit var bus: Bus
 
-    private lateinit var freshTabPresenter: FreshTabPresenter
+    private var isFreshInstall: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        isFreshInstall = arguments?.getBoolean(ARG_IS_FRESH_INSTALL) ?: false
         BrowserApp.getActivityComponent(activity)?.inject(this)
-        freshTabPresenter = FreshTabPresenter(purchasesManager, preferenceManager, this)
         return inflater.inflate(R.layout.fragment_freshtab, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        freshTabPresenter.initialize()
+        initializeViews()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bus.register(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        bus.unregister(this)
+    }
+
+    private fun initializeViews() {
+        toggleWelcomeMessage()
+        if (purchasesManager.purchase.isASubscriber) {
+            hideAllTrialPeriodViews()
+        } else {
+            bus.post(Messages.OnTrialPeriodResponse())
+        }
+    }
+
+    @Subscribe
+    fun getTrialPeriod(onTrialPeriodResponse: Messages.OnTrialPeriodResponse) {
+        if (purchasesManager.trialPeriod != null) {
+            purchasesManager.trialPeriod?.apply {
+                if (isInTrial) {
+                    showTrialDaysLeft(trialDaysLeft)
+                } else {
+                    if (preferenceManager.timeWhenTrialMessageDismissed() <
+                            (System.currentTimeMillis() - SEVEN_DAYS_IN_MILLIS)) {
+                        showTrialPeriodExpired()
+                    }
+                }
+            }
+        }
     }
 
     override fun getTitle() = ""
 
     override fun getIconId() = R.drawable.ic_fresh_tab
 
-    override fun showTrialPeriodExpired() {
+    private fun showTrialPeriodExpired() {
         trial_period_lumen_upgrade.visibility = View.GONE
         welcome_image.visibility = View.GONE
         welcome_title.visibility = View.GONE
@@ -55,11 +93,11 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
         }
         trial_over_dismiss_btn.setOnClickListener {
             trial_over_lumen_upgrade.visibility = View.GONE
-            freshTabPresenter.disableTrialPeriodExpiredTemporarily()
+            preferenceManager.updateTimeOfTrialMessageDismissed()
         }
     }
 
-    override fun showTrialDaysLeft(daysLeft: Int) {
+    private fun showTrialDaysLeft(daysLeft: Int) {
         trial_period_lumen_upgrade.visibility = View.VISIBLE
         trial_over_lumen_upgrade.visibility = View.GONE
         trial_period_upgrade_description.text =
@@ -69,8 +107,25 @@ internal class FreshTab : StartTabFragment(), FreshTabContract.View {
         }
     }
 
-    override fun hideAllTrialPeriodViews() {
+    private fun hideAllTrialPeriodViews() {
         trial_period_lumen_upgrade.visibility = View.GONE
         trial_over_lumen_upgrade.visibility = View.GONE
+    }
+
+    private fun toggleWelcomeMessage() {
+        welcome_image.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
+        welcome_title.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
+    }
+
+    companion object {
+
+        const val ARG_IS_FRESH_INSTALL = "is_fresh_install"
+
+        @JvmStatic
+        fun newInstance(isFreshInstall: Boolean) = FreshTab().apply{
+            arguments = Bundle().apply {
+                putBoolean(ARG_IS_FRESH_INSTALL, isFreshInstall)
+            }
+        }
     }
 }

@@ -16,10 +16,12 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="Lumen Logo"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/welcome_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/lumen_logo_start_tab" />
+        app:srcCompat="@drawable/lumen_logo_start_tab"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/welcome_title"
@@ -32,10 +34,12 @@
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textSize="@dimen/title_text_size"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/trial_over_lumen_upgrade"
