@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/settings_category_search">
+        <Preference
+            android:key="search"
+            android:title="@string/complementary_search_engine" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_tab">
+        <CheckBoxPreference
+            android:key="cb_show_topsites"
+            android:title="@string/settings_show_top_sites" />
+    </PreferenceCategory>
+    <PreferenceCategory>
+        <Preference
+            android:key="onboarding"
+            android:title="@string/show_onboarding_hints" />
+    </PreferenceCategory>
+</PreferenceScreen>
