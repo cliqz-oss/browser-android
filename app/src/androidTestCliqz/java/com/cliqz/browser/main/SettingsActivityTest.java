@@ -1,4 +1,4 @@
-package com.cliqz.browser.test;
+package com.cliqz.browser.main;
 
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,6 +12,8 @@ import androidx.test.runner.AndroidJUnit4;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.test.CustomFailureHandler;
+import com.cliqz.browser.test.DeviceShellHelper;
 import com.cliqz.browser.utils.ViewHelpers;
 import com.cliqz.browser.utils.WebHelpers;
 

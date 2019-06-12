@@ -21,11 +21,11 @@ import static android.text.format.DateFormat.format;
 /**
  * @author Kiiza Joseph Bazaare
  */
-class CustomFailureHandler implements FailureHandler {
+public class CustomFailureHandler implements FailureHandler {
     private final FailureHandler delegate;
     private final Activity mActivity;
 
-    CustomFailureHandler(Activity activity) {
+    public CustomFailureHandler(Activity activity) {
         delegate = new DefaultFailureHandler(activity);
         this.mActivity = activity;
     }

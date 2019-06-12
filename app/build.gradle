@@ -127,7 +127,10 @@ android {
 
     productFlavors.properties.names.each { name ->
         defaultConfig {
-            buildConfigField 'String', "FLAVOR_${name.toUpperCase()}", "\"${name}\""
+            def upperName = name.toUpperCase()
+            buildConfigField 'String', "FLAVOR_${upperName}", "\"${name}\""
+            buildConfigField 'boolean', "IS_${upperName}", "FLAVOR.equals(FLAVOR_${upperName})"
+            buildConfigField 'boolean', "IS_NOT_${upperName}", "!IS_${upperName}"
         }
     }
 }

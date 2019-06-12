@@ -2,6 +2,7 @@ package acr.browser.lightning.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 
 import com.cliqz.browser.BuildConfig;
@@ -38,7 +39,7 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
-        public static final String VPN_START_TIME = "vpn_start_time";
+        static final String VPN_START_TIME = "vpn_start_time";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
         static final String BLOCK_IMAGES = "blockimages";
@@ -151,7 +152,6 @@ public class PreferenceManager {
      *
      * @return true if adblocking is enabled, false otherwise
      */
-    @SuppressWarnings("ConstantConditions")
     public boolean getAdBlockEnabled() {
         return mPrefs.getBoolean(Name.BLOCK_ADS, true);
     }
@@ -369,7 +369,8 @@ public class PreferenceManager {
     }
 
     public boolean getNewsNotificationEnabled() {
-        return mPrefs.getBoolean(Name.NEWS_NOTIFICATION, true);
+        return BuildConfig.IS_NOT_LUMEN &&
+                mPrefs.getBoolean(Name.NEWS_NOTIFICATION, true);
     }
 
     public String getDistribution() {
@@ -456,7 +457,8 @@ public class PreferenceManager {
     }
 
     public boolean isAutoForgetEnabled() {
-        return mPrefs.getBoolean(Name.AUTO_FORGET_MODE, true);
+        return BuildConfig.IS_NOT_LUMEN &&
+                mPrefs.getBoolean(Name.AUTO_FORGET_MODE, true);
     }
 
     public boolean getCloseTabsExit() {
@@ -469,7 +471,7 @@ public class PreferenceManager {
     }
 
     public boolean isMyOffrzOnboardingEnabled() {
-        return mPrefs.getBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, true);
+        return BuildConfig.IS_NOT_LUMEN && mPrefs.getBoolean(Name.IS_MYOFFRZ_ONBOARDING_ENABLED, true);
     }
 
     public boolean isBackgroundImageEnabled() {
@@ -887,8 +889,8 @@ public class PreferenceManager {
     }
 
     public boolean isMyOffrzEnable(){
-        boolean defaultValue = OffrzConfig.isOffrzSupportedForLang();
-        return mPrefs.getBoolean(Name.MY_OFFRZ_ENABLED,defaultValue);
+        final boolean defaultValue = OffrzConfig.isOffrzSupportedForLang();
+        return BuildConfig.IS_NOT_LUMEN && mPrefs.getBoolean(Name.MY_OFFRZ_ENABLED,defaultValue);
     }
 
     public void setMyOffrzEnable(boolean value){

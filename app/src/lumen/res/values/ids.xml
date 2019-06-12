@@ -4,4 +4,9 @@
     <item name="yt_download_icon" type="id" />
     <item name="menu_overview" type="id" />
     <item name="open_tabs_count" type="id" />
+
+    <!-- Stub ids for preferences -->
+    <item name="ad_block" type="id" />
+    <item name="tips_and_tricks" type="id" />
+    <item name="report_site" type="id" />
 </resources>

@@ -9,20 +9,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+
 import com.anthonycr.grant.PermissionsManager;
-import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.offrz.OffrzConfig;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.utils.ActivityUtils;
@@ -34,8 +33,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
-
-    private static final boolean IS_GHOSTERY = "ghostery".equals(BuildConfig.FLAVOR);
 
     @Inject
     Telemetry telemetry;
@@ -62,7 +59,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         BrowserApp.getAppComponent().inject(this);
         // this is a workaround for the Toolbar in PreferenceActitivty
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup root = findViewById(android.R.id.content);
         LinearLayout content = (LinearLayout) root.getChildAt(0);
         LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.toolbar_settings, null);
 
@@ -71,7 +68,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         root.addView(toolbarContainer);
 
         // now we can set the Toolbar using AppCompatPreferenceActivity
-        Toolbar toolbar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
+        Toolbar toolbar = toolbarContainer.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -81,17 +78,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         loadHeadersFromResource(R.xml.preferences_headers, target);
         fragments.clear();
         final Iterator<Header> iterator = target.iterator();
-        final boolean isOffrzAvailable = OffrzConfig.isOffrzSupportedForLang();
         while (iterator.hasNext()) {
             final Header header = iterator.next();
-            if (IS_GHOSTERY && (
-                    header.id == R.id.rate_us ||
-                    header.id == R.id.feedback ||
-                    header.id == R.id.report_site ||
-                    header.id == R.id.tips_and_tricks
-            )) {
-                iterator.remove();
-            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
                     && header.id == R.id.ad_block) {
                 iterator.remove();
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
@@ -132,7 +121,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             openUrl(getString(R.string.tips_and_tricks_url));
         } else if (info.id == R.id.report_site) {
             openUrl(getString(R.string.report_site_url));
-        } else if (info.id == R.id.default_browser){
+        } else if (info.id == R.id.default_browser && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
             telemetry.sendSettingsMenuSignal(TelemetryKeys.MAKE_DEFAULT, TelemetryKeys.MAIN);
             final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
             startActivity(intent);

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:fragment="com.cliqz.browser.settings.GeneralSettingsFragment"
+        android:title="@string/settings_general" />
+    <header
+        android:fragment="com.cliqz.browser.settings.PrivacySettingsFragment"
+        android:title="@string/settings_privacy" />
+    <header
+        android:title="@string/make_default_browser"
+        android:id="@+id/default_browser"/>
+    <header
+        android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
+        android:title="@string/settings_about"
+        android:summary="@string/settings_about_explain" />
+    <header
+        android:title="@string/rate_us"
+        android:id="@+id/rate_us" />
+    <header
+        android:title="@string/imprint"
+        android:id="@+id/imprint" />
+    <header
+        android:title="@string/title_faq_and_support"
+        android:id="@+id/feedback" />
+</preference-headers>

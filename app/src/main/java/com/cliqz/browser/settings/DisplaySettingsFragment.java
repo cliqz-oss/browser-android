@@ -42,7 +42,7 @@ public class DisplaySettingsFragment extends BaseSettingsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.preference_display);
+        addPreferencesFromResource(R.xml.preferences_display);
 
         mActivity = getActivity();
 

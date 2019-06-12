@@ -31,7 +31,7 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
         startTime = System.currentTimeMillis();
         mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ABOUT, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.preference_about);
+        addPreferencesFromResource(R.xml.preferences_about);
 
         final Preference version = findPreference(SETTINGS_VERSION);
         version.setSummary(getVersion());

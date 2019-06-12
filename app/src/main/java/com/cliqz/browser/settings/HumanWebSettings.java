@@ -29,7 +29,7 @@ public class HumanWebSettings extends BaseSettingsFragment
         startTime = System.currentTimeMillis();
         mTelemetry.sendSettingsMenuSignal(TelemetryKeys.HUMAN_WEB, TelemetryKeys.MAIN);
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.preference_humaweb);
+        addPreferencesFromResource(R.xml.preferences_humaweb);
 
         for (String key: KEYS) {
             final Preference preference = findPreference(key);

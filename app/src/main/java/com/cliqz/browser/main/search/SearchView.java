@@ -181,7 +181,7 @@ public class SearchView extends FrameLayout {
 
     public void updateQuery(String query, int start, int count) {
         //noinspection ConstantConditions
-        if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
+        if (BuildConfig.IS_LUMEN) {
             return;
         }
         String keyCode = "";

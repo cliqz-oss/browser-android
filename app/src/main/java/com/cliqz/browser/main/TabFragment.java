@@ -314,8 +314,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        if ((!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR))) {
+        if (BuildConfig.IS_NOT_LUMEN) {
             final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
             stub.inflate();
         }
@@ -388,7 +387,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private void updateCCIcon() {
-        if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
+        if (BuildConfig.IS_LUMEN) {
             if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
                     && preferenceManager.isAttrackEnabled()) {
                 ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_on"));
@@ -1169,8 +1168,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         final String title = mLightningView.getTitle();
         state.setTitle(title);
-        //noinspection ConstantConditions
-        if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
+        if (BuildConfig.IS_NOT_LUMEN) {
             searchBar.setTitle(title);
             final Activity activity = getActivity();
             if (activity != null) {
