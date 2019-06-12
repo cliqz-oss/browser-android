@@ -60,8 +60,6 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     private Handler mainHandler;
     private Boolean shouldAnimate = false;
 
-    private VpnHandler mVpnHandler;
-
     @Inject
     PurchasesManager purchasesManager;
 
@@ -71,12 +69,14 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     @Inject
     PreferenceManager preferenceManager;
 
+    @Inject
+    VpnHandler vpnHandler;
+
     public static VpnPanel create(View source, Activity activity) {
         final VpnPanel dialog = new VpnPanel();
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        dialog.mVpnHandler = new VpnHandler(activity);
         return dialog;
     }
 
@@ -97,6 +97,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     @Override
     public void onResume() {
         super.onResume();
+        vpnHandler.onResume();
         mSaveInstanceStateCalled = false;
         final Window window = getDialog().getWindow();
         final Activity activity = getActivity();
@@ -111,15 +112,14 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         } else {
             updateStateToConnect();
         }
-        mVpnHandler.onResume();
         VpnStatus.addStateListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        vpnHandler.onPause();
         VpnStatus.removeStateListener(this);
-        mVpnHandler.onPause();
     }
 
     @Nullable
@@ -153,10 +153,10 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
                     purchasesManager.getTrialPeriod().isInTrial();
             if (isVpnEnabled || isInTrial) {
                 if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
-                    mVpnHandler.disconnectVpn();
+                    vpnHandler.disconnectVpn();
                     updateStateToConnect();
                 } else {
-                    mVpnHandler.connectVpn();
+                    vpnHandler.connectVpn();
                 }
             } else {
                 unlockVpnDialog();

@@ -62,6 +62,7 @@ import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
 import com.cliqz.browser.utils.EnableNotificationDialog;
 import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.browser.vpn.VpnHandler;
 import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
@@ -85,7 +86,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLDecoder;
 
 import javax.inject.Inject;
@@ -225,6 +225,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Inject
     PurchasesManager purchasesManager;
+
+    @Inject
+    VpnHandler vpnHandler;
 
     private String mDomainName = "";
 
@@ -371,16 +374,23 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         });
         onPageFinished(null);
+        updateCCIcon();
+    }
+
+    private void updateVpnIcon() {
         if (mVpnPanelButton != null) {
-            if (isVPNConnected()) {
+            if (vpnHandler.isVpnConnected()) {
                 mVpnPanelButton.setImageResource(getFlavorDrawable("ic_vpn_on"));
             } else {
                 mVpnPanelButton.setImageResource(getFlavorDrawable("ic_vpn_off"));
             }
         }
+    }
 
+    private void updateCCIcon() {
         if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
-            if (purchasesManager.isDashboardEnabled()) {
+            if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
+                    && preferenceManager.isAttrackEnabled()) {
                 ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_on"));
             } else {
                 ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_off"));
@@ -391,20 +401,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private int getFlavorDrawable(@NonNull String name) {
         return getResources().getIdentifier(name, "drawable",
                 BrowserApp.getAppContext().getPackageName());
-    }
-
-    private boolean isVPNConnected() {
-        if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
-            return false;
-        }
-
-        try {
-            final Class<?> vpnStatusClass = Class.forName("com.cliqz.library.vpn.core.VpnStatus");
-            final Method method = vpnStatusClass.getMethod("isVPNConnected");
-            return (Boolean) method.invoke(null);
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     @Override
@@ -1351,6 +1347,16 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         telemetry.sendOrientationSignal(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ?
                 TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT, view);
+    }
+
+    @Subscribe
+    public void onDashboardStateChange(Messages.onDashboardStateChange message) {
+        updateCCIcon();
+    }
+
+    @Subscribe
+    public void onVpnStateChange(Messages.onVpnStateChange message) {
+        updateVpnIcon();
     }
 
     private void updateUI() {
