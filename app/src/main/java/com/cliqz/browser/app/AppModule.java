@@ -1,6 +1,7 @@
 package com.cliqz.browser.app;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;

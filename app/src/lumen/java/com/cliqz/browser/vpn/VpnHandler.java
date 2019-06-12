@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import de.blinkt.openvpn.LaunchVPN;
 import de.blinkt.openvpn.VpnProfile;
+import de.blinkt.openvpn.core.ConnectionStatus;
 import de.blinkt.openvpn.core.IOpenVPNServiceInternal;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
@@ -31,7 +32,7 @@ import de.blinkt.openvpn.core.VpnStatus;
 /**
  * @author Ravjit Uppal
  */
-public class VpnHandler {
+public class VpnHandler implements VpnStatus.StateListener {
 
     private Activity mActivity;
     private IOpenVPNServiceInternal mService;
@@ -53,13 +54,14 @@ public class VpnHandler {
     @Inject
     Bus bus;
 
-    VpnHandler(Activity activity) {
+    public VpnHandler(Activity activity) {
         mActivity = activity;
         FlavoredActivityComponent activityComponent = BrowserApp.getActivityComponent(mActivity);
         if (activityComponent != null) {
             activityComponent.inject(this);
             bus.register(this);
         }
+        VpnStatus.addStateListener(this);
     }
 
     void onResume() {
@@ -106,5 +108,19 @@ public class VpnHandler {
     @Subscribe
     public void onVpnPermissionGranted(Messages.OnVpnPermissionGranted onVpnPermissionGranted) {
         connectVpn();
+    }
+
+    public boolean isVpnConnected() {
+        return VpnStatus.isVPNConnected();
+    }
+
+    @Override
+    public void updateState(String s, String s1, int i, ConnectionStatus connectionStatus) {
+        bus.post(new Messages.onVpnStateChange());
+    }
+
+    @Override
+    public void setConnectedVPN(String s) {
+
     }
 }
