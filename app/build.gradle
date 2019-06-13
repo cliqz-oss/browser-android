@@ -24,6 +24,7 @@ android {
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
+        buildConfigField 'int', "VISIBLE_TOP_SITES", '4'
 
         def vpnApiKey = this.hasProperty("com.cliqz.lumen.vpnApiKey") ?
                 this.getProperty("com.cliqz.lumen.vpnApiKey") : System.getenv("VPN_API_KEY")
@@ -102,6 +103,7 @@ android {
             dimension "api"
             applicationId "com.cliqz.lumen"
             versionCode 6
+            buildConfigField 'int', "VISIBLE_TOP_SITES", '8'
             useGoogleServices = false
         }
         amazon {

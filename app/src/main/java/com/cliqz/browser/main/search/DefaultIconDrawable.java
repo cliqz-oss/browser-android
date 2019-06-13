@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 
@@ -16,6 +18,8 @@ public class DefaultIconDrawable extends Drawable {
     private final String name;
     private final int color;
     private final Paint paint;
+    private final int cornerRadius;
+    private final RectF rect = new RectF();
 
     /**
      * A drawable made by the name in white with given size over the color background
@@ -24,21 +28,30 @@ public class DefaultIconDrawable extends Drawable {
      * @param color The background color
      * @param textSize icon text size in pixels
      */
-    public DefaultIconDrawable(@NonNull String name, int color, int textSize) {
+    public DefaultIconDrawable(@NonNull String name, int color, int textSize, int cornerRadius) {
         this.name = name;
         this.color = color;
+        this.cornerRadius = cornerRadius;
         this.paint = new Paint(Paint.ANTI_ALIAS_FLAG|Paint.SUBPIXEL_TEXT_FLAG);
         paint.setTextSize(textSize);
         paint.setFakeBoldText(true);
         paint.setTextAlign(Paint.Align.CENTER);
-        paint.setColor(Color.WHITE);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        canvas.drawColor(color);
-        int xPos = (canvas.getWidth() / 2);
-        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2)) ;
+        paint.setColor(color);
+        final Rect bounds = getBounds();
+        final int w = bounds.width();
+        final int h = bounds.height();
+        rect.left = 0;
+        rect.top = 0;
+        rect.right = w;
+        rect.bottom = h;
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, paint);
+        int xPos = (w / 2);
+        int yPos = (int) ((h / 2) - ((paint.descent() + paint.ascent()) / 2)) ;
+        paint.setColor(Color.WHITE);
         canvas.drawText(name, xPos, yPos, paint);
     }
 

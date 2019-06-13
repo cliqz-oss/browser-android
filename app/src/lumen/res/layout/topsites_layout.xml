@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/top_site"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:layout_margin="4dp"
+    tools:background="#CCC">
+
+    <FrameLayout
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/topsites_icon_background"
+        android:layout_gravity="center_horizontal"
+        android:padding="12dp">
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_gravity="top"
+            android:id="@+id/icon_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:roundedCornerRadius="@dimen/topsites_logo_cornes_radius"
+            tools:background="@drawable/topsites_placeholder_background"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/domain_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        tools:text="This is a top Site"
+        android:textSize="10sp"
+        tools:ignore="SmallSp" />
+</FrameLayout>

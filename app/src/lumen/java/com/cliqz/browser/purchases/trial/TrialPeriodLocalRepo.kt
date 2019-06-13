@@ -1,21 +1,35 @@
 package com.cliqz.browser.purchases.trial
 
 import acr.browser.lightning.preference.PreferenceManager
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import android.util.Base64
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 class TrialPeriodLocalRepo(private val preferenceManager: PreferenceManager) {
 
-    // TODO: Use Base64 encoding or Android X's EncryptedSharedPreferences
-    private val gson: Gson = GsonBuilder().serializeNulls().create()
-
     fun loadPurchaseInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
-        val trialPeriod = gson.fromJson<TrialPeriod>(
-                preferenceManager.trialPeriodInfo, TrialPeriod::class.java)
-        trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
+        if (preferenceManager.trialPeriodInfo == null) {
+            trialPeriodResponseListener.onTrialPeriodResponse(null)
+            return
+        }
+        val bis = ByteArrayInputStream(Base64.decode(preferenceManager.trialPeriodInfo, Base64.DEFAULT))
+        ObjectInputStream(bis).use {
+            val trialPeriod = it.readObject() as TrialPeriod
+            trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
+        }
     }
 
     fun saveTrialPeriodInfo(trialPeriod: TrialPeriod?) {
-        preferenceManager.trialPeriodInfo = gson.toJson(trialPeriod)
+        if (trialPeriod == null) {
+            return
+        }
+        val bos = ByteArrayOutputStream()
+        ObjectOutputStream(bos).use {
+            it.writeObject(trialPeriod)
+            val base64 = Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT)
+            preferenceManager.trialPeriodInfo = base64
+        }
     }
 }

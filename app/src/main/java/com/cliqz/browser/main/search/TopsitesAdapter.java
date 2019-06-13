@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.webview.Topsite;
 import com.cliqz.jsengine.Engine;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +27,7 @@ import acr.browser.lightning.preference.PreferenceManager;
  * @author Stefano Pacifici
  */
 public class TopsitesAdapter extends BaseAdapter {
+    @SuppressWarnings("WeakerAccess")
     static final int TOPSITE_TYPE = 0;
     // Weaker access to keep consistency with TOPSITE_TYPE
     @SuppressWarnings("WeakerAccess")
@@ -33,9 +36,8 @@ public class TopsitesAdapter extends BaseAdapter {
     private final HistoryDatabase historyDatabase;
 
     private static final int TOPSITE_LIMIT = 15;
-    private static final int TOPSITES_COUNT = 4;
 
-    private List<Topsite> topsites;
+    private List<Topsite> topsites = Collections.emptyList();
     private final Engine engine;
     private final Handler handler;
     private final PreferenceManager preferenceManager;
@@ -51,13 +53,20 @@ public class TopsitesAdapter extends BaseAdapter {
         this.preferenceManager = preferenceManager;
     }
 
-    void fetchTopsites() {
+    // Weaker access due to Lumen
+    @SuppressWarnings("WeakerAccess")
+    public void fetchTopsites() {
         topsites = historyDatabase.getTopSites(TOPSITE_LIMIT);
         notifyDataSetInvalidated();
     }
 
     public int getCount() {
-        return TOPSITES_COUNT;
+        //noinspection ConstantConditions
+        if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR)) {
+            return topsites.size() > 0 ? BuildConfig.VISIBLE_TOP_SITES : 0;
+        } else {
+            return BuildConfig.VISIBLE_TOP_SITES;
+        }
     }
 
     @Override
@@ -71,11 +80,13 @@ public class TopsitesAdapter extends BaseAdapter {
         return position < topsites.size() ? TOPSITE_TYPE : PLACEHOLDER_TYPE;
     }
 
-    int getDisplayedCount() { return Math.min(TOPSITES_COUNT, topsites.size()); }
+    // Weaker access due to Lumen
+    @SuppressWarnings("WeakerAccess")
+    public int getDisplayedCount() { return Math.min(BuildConfig.VISIBLE_TOP_SITES, topsites.size()); }
 
     @Override
     public Object getItem(int position) {
-        if (position >= topsites.size() || position >= TOPSITES_COUNT) {
+        if (position >= topsites.size() || position >= BuildConfig.VISIBLE_TOP_SITES) {
             return null;
         }
         return topsites.get(position);
@@ -93,29 +104,27 @@ public class TopsitesAdapter extends BaseAdapter {
         final Context context = parent.getContext();
         final LayoutInflater inflater = LayoutInflater.from(context);
 
-        switch (getItemViewType(position)) {
-            case TOPSITE_TYPE:
-                if (convertView == null) {
-                    // if it's not recycled, initialize some attributes
-                    convertView = inflater.inflate(R.layout.topsites_layout, parent, false);
-                    row = new TopsitesViewHolder(convertView,position);
-                    convertView.setTag(row);
-                } else {
-                    row = (TopsitesViewHolder) convertView.getTag();
-                }
-                final Topsite topsite = topsites.get(position);
-                row.setTopsite(topsite);
-                row.domainView.setText(topsite.domain);
-                row.domainView.setTextColor(ContextCompat.getColor(context,
-                        preferenceManager.isBackgroundImageEnabled() ?
-                                R.color.white : R.color.black));
+        if (getItemViewType(position) == TOPSITE_TYPE) {
+            if (convertView == null) {
+                // if it's not recycled, initialize some attributes
+                convertView = inflater.inflate(R.layout.topsites_layout, parent, false);
+                row = new TopsitesViewHolder(convertView, position);
+                convertView.setTag(row);
+            } else {
+                row = (TopsitesViewHolder) convertView.getTag();
+            }
+            final Topsite topsite = topsites.get(position);
+            row.setTopsite(topsite);
+            row.domainView.setText(topsite.domain);
+            row.domainView.setTextColor(ContextCompat.getColor(context,
+                    preferenceManager.isBackgroundImageEnabled() ?
+                            R.color.white : R.color.black));
 
-                loadIcon(row, topsite.url);
-                break;
-            default:
-                convertView = convertView == null ?
-                        new TopsitePlaceHolderView(context) : convertView;
-                break;
+            loadIcon(row, topsite.url);
+        } else {
+            convertView = convertView == null ?
+                    inflater.inflate(R.layout.topsites_placeholder_layout, parent, false) :
+                    convertView;
         }
 
         return convertView;

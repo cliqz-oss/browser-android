@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/top_site"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="@dimen/freshtab_icons_size"
+    android:layout_height="62dp"
+    android:layout_margin="4dp"
     android:orientation="vertical">
 
     <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_gravity="top"
         android:id="@+id/icon_view"
         android:layout_width="@dimen/freshtab_icons_size"
         android:layout_height="@dimen/freshtab_icons_size"
+        tools:background="#F00"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/domain_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill_horizontal"
+        android:layout_gravity="bottom"
         android:gravity="center_horizontal"
         android:lines="1"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:textSize="8sp" />
-</LinearLayout>
+        tools:text="This is a top Site"
+        android:textSize="8sp"
+        tools:ignore="SmallSp" />
+</FrameLayout>
