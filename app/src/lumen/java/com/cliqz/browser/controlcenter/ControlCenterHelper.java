@@ -75,6 +75,7 @@ public class ControlCenterHelper implements ControlCenterActions {
                 antiTracking.setEnabled(isChecked);
                 preferenceManager.setAttrackEnabled(isChecked);
                 preferenceManager.setAdBlockEnabled(isChecked);
+                bus.post(new Messages.onDashboardStateChange());
             } catch (EngineNotYetAvailable engineNotYetAvailable) {
                 Log.e("JsEngineError", "Cannot enable/disable tracking modules", engineNotYetAvailable);
             }

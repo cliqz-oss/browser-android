@@ -7,6 +7,7 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
+import com.cliqz.browser.vpn.VpnHandler;
 import com.cliqz.jsengine.Engine;
 
 import acr.browser.lightning.preference.PreferenceManager;
@@ -76,5 +77,11 @@ public class MainActivityModule {
     @Provides
     AppBackgroundManager provideBackgroundManager() {
         return new AppBackgroundManager(activity);
+    }
+
+    @PerActivity
+    @Provides
+    VpnHandler provideVpnHandler() {
+        return new VpnHandler(activity);
     }
 }
