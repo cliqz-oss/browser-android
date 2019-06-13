@@ -38,7 +38,8 @@
     <string name="reset_statistics">Reset statistics</string>
 
 
-    <string name="url_bar_search_hint">Lumen Search</string>
+    <string name="url_bar_search_hint">Search or enter URL</string>
+    <string name="search_hint">Search or enter URL</string>
     <string name="app_name">Lumen Browser</string>
     <string name="shared_using">Shared with Lumen for Android</string>
     <string name="optimized_block_ads_description">The Lumen Ad Blocker is in beta at the moment. The final version will provide the following options: Allow Fair Ads (default setting), Block All Ads, Allow All Ads. More https://cliqz.com/whycliqz/adblocking</string>
