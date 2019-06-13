@@ -51,7 +51,6 @@ android {
             proguardFile getDefaultProguardFile('proguard-android.txt')
             shrinkResources false
             proguardFiles 'proguard-project.txt'
-            applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
         }
 
