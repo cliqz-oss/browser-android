@@ -12,4 +12,8 @@
     <string name="startpage_url" translatable="false">https://startpage.com/do/search?query=</string>
     <string name="qwant_url" translatable="false">https://www.qwant.com/?t=all&amp;q=</string>
     <string name="myoffrz_url">https://cliqz.com/en/myoffrz</string>
+
+    <!-- Lumen -->
+    <string name="lumen_faq_url" translatable="false">https://lumenbrowser.com/faq.html</string>
+    <string name="lumen_support_mail" translatable="false">support@lumenbrowser.com</string>
 </resources>

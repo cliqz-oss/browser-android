@@ -91,6 +91,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     header.id == R.id.tips_and_tricks
             )) {
                 iterator.remove();
+            } else if (!BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR) && (
+                    header.id == R.id.lumen_faq ||
+                    header.id == R.id.lumen_support
+            )) {
+                iterator.remove();
+            } else if (BuildConfig.FLAVOR_LUMEN.equals(BuildConfig.FLAVOR) &&
+                    header.id == R.id.feedback) {
+                iterator.remove();
             } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
                     && header.id == R.id.ad_block) {
                 iterator.remove();
@@ -136,6 +144,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.MAKE_DEFAULT, TelemetryKeys.MAIN);
             final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
             startActivity(intent);
+        } else if (info.id == R.id.lumen_faq) {
+            openUrl(getString(R.string.lumen_faq_url));
+        } else if (info.id == R.id.lumen_support) {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto", getString(R.string.lumen_support_mail), null));
+            startActivity(emailIntent);
         } else {
             super.onListItemClick(l, v, position, id);
         }
