@@ -92,8 +92,8 @@ internal class FreshTab : StartTabFragment() {
 
     @Subscribe
     fun getTrialPeriod(onTrialPeriodResponse: Messages.OnTrialPeriodResponse) {
-        if (purchasesManager.trialPeriod != null) {
-            purchasesManager.trialPeriod?.apply {
+        if (purchasesManager.serverData != null) {
+            purchasesManager.serverData?.apply {
                 if (isInTrial) {
                     showTrialDaysLeft(trialDaysLeft)
                 } else {

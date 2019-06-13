@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.SubscriptionConstants.Product
-import com.cliqz.browser.purchases.trial.TrialPeriod
+import com.cliqz.browser.purchases.trial.ServerData
 import com.cliqz.browser.purchases.trial.TrialPeriodLocalRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodResponseListener
@@ -29,15 +29,15 @@ class PurchasesManager(
 
     var purchase = Purchase()
 
-    var trialPeriod: TrialPeriod? = null
+    var serverData: ServerData? = null
 
     var isLoading = true
 
-    override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-        this.trialPeriod = trialPeriod
+    override fun onTrialPeriodResponse(serverData: ServerData?) {
+        this.serverData = serverData
         isLoading = false
-        preferenceManager.adBlockEnabled = trialPeriod == null || trialPeriod.isInTrial
-        preferenceManager.isAttrackEnabled = trialPeriod == null || trialPeriod.isInTrial
+        preferenceManager.adBlockEnabled = serverData == null || serverData.isInTrial
+        preferenceManager.isAttrackEnabled = serverData == null || serverData.isInTrial
 
         bus.post(Messages.OnTrialPeriodResponse())
     }
@@ -83,13 +83,13 @@ class PurchasesManager(
     private fun loadTrialPeriodInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
         // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-            override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-                trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
+            override fun onTrialPeriodResponse(serverData: ServerData?) {
+                trialPeriodResponseListener.onTrialPeriodResponse(serverData)
                 // TODO: Can avoid querying network if not needed.
                 trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-                    override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-                        trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
-                        trialPeriodLocalRepo.saveTrialPeriodInfo(trialPeriod)
+                    override fun onTrialPeriodResponse(serverData: ServerData?) {
+                        trialPeriodResponseListener.onTrialPeriodResponse(serverData)
+                        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
                     }
                 })
             }
@@ -99,13 +99,13 @@ class PurchasesManager(
     fun isDashboardEnabled() = if (purchase.isASubscriber) {
         purchase.isDashboardEnabled
     } else {
-        trialPeriod != null && trialPeriod!!.isInTrial
+        serverData != null && serverData!!.isInTrial
     }
 
     fun isVpnEnabled() = if (purchase.isASubscriber) {
         purchase.isVpnEnabled
     } else {
-        trialPeriod != null && trialPeriod!!.isInTrial
+        serverData != null && serverData!!.isInTrial
     }
 
 }
