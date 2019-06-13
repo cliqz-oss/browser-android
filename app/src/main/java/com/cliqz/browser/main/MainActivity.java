@@ -771,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
 
             fileChooserHelper.notifyResultOk(data);
-        } else if (requestCode == VpnPanel.VPN_LAUNCH_REQUEST_CODE) {
+        } else if (requestCode == VpnPanel.VPN_LAUNCH_REQUEST_CODE  && resultCode == Activity.RESULT_OK) {
             bus.post(new Messages.OnVpnPermissionGranted());
         }
         else {
