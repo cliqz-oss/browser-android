@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Stub ids for not existing elements in Cliqz -->
     <item name="vpn_panel_button" type="id" />
+    <!-- Settings activity specific stubs -->
+    <item name="lumen_faq" type="id" />
+    <item name="lumen_support" type="id" />
 </resources>
