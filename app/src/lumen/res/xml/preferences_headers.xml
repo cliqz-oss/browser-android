@@ -22,4 +22,10 @@
     <header
         android:title="@string/title_faq_and_support"
         android:id="@+id/feedback" />
+    <header
+        android:title="@string/faq"
+        android:id="@+id/lumen_faq" />
+    <header
+        android:title="@string/support"
+        android:id="@+id/lumen_support" />
 </preference-headers>

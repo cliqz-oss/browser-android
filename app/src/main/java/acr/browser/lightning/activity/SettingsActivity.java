@@ -121,10 +121,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             openUrl(getString(R.string.tips_and_tricks_url));
         } else if (info.id == R.id.report_site) {
             openUrl(getString(R.string.report_site_url));
-        } else if (info.id == R.id.default_browser && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
+        } else if (info.id == R.id.default_browser && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.MAKE_DEFAULT, TelemetryKeys.MAIN);
             final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
             startActivity(intent);
+        } else if (info.id == R.id.lumen_faq) {
+            openUrl(getString(R.string.lumen_faq_url));
+        } else if (info.id == R.id.lumen_support) {
+            final Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto", getString(R.string.lumen_support_mail), null));
+            startActivity(emailIntent);
         } else {
             super.onListItemClick(l, v, position, id);
         }
