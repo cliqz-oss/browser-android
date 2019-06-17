@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.DialogFragment;
 
 import com.cliqz.browser.R;
@@ -29,6 +30,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
+import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
@@ -54,11 +56,14 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     private View mVpnConnectButton;
     private TextView mVpnButtonTitle;
     private TextView mVpnButtonDesc;
-    private TextView mVpnStatusText;
     private ImageView mWorldMap;
     private Chronometer vpnTimer;
     private Handler mainHandler;
     private Boolean shouldAnimate = false;
+    private TextView featureOne;
+    private TextView featureTwo;
+    private TextView learnMoreLink;
+    private TextView vpnCtaTitle;
 
     @Inject
     PurchasesManager purchasesManager;
@@ -135,9 +140,22 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         mVpnConnectButton.setOnClickListener(this);
         mVpnButtonTitle = mVpnConnectButton.findViewById(R.id.vpn_button_text_title);
         mVpnButtonDesc = mVpnConnectButton.findViewById(R.id.vpn_button_text_desc);
-        mVpnStatusText = view.findViewById(R.id.vpn_status_text);
         mWorldMap = view.findViewById(R.id.vpn_map);
         vpnTimer = view.findViewById(R.id.vpn_timer);
+        learnMoreLink = view.findViewById(R.id.learn_more_btn);
+        learnMoreLink.setOnClickListener(this);
+        featureOne = view.findViewById(R.id.vpn_feature_one);
+        featureTwo = view.findViewById(R.id.vpn_feature_two);
+        vpnCtaTitle = view.findViewById(R.id.vpn_cta_title);
+        if (VpnStatus.isVPNConnected()) {
+            featureOne.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_check), null, null, null);
+            featureTwo.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_check), null, null, null);
+        } else {
+            featureOne.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_cross), null, null, null);
+            featureTwo.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_cross), null, null, null);
+        }
+        vpnCtaTitle.setText(purchasesManager.isVpnEnabled() ?
+                getString(R.string.vpn_cta_enabled) : getString(R.string.vpn_cta_disabled));
         mainHandler = new Handler(getContext().getMainLooper());
         return view;
     }
@@ -160,6 +178,13 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
                 }
             } else {
                 unlockVpnDialog();
+            }
+        } else if(v.getId() == R.id.learn_more_btn) {
+            if (purchasesManager.isVpnEnabled()) {
+                bus.post(CliqzMessages.OpenLink.open(getString(R.string.vpn_faq_url)));
+                dismiss();
+            } else {
+                bus.post(new Messages.GoToPurchase(0));
             }
         }
     }
@@ -238,7 +263,6 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setDuration(800);
         animator.start();
-        mVpnStatusText.setText("connecting");
     }
 
     private void updateStateToConnected() {
@@ -250,7 +274,8 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         mVpnButtonDesc.setText("disconnect");
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_connect_button_bg));
         mWorldMap.setImageResource(R.drawable.vpn_map_on);
-        mVpnStatusText.setText("connected");
+        featureOne.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_check), null, null, null);
+        featureTwo.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_check), null, null, null);
     }
 
     private void updateStateToConnect() {
@@ -262,6 +287,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         mVpnButtonDesc.setText("connect");
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_connect_button_bg));
         mWorldMap.setImageResource(R.drawable.vpn_map_off);
-        mVpnStatusText.setText("connect");
+        featureOne.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_cross), null, null, null);
+        featureTwo.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(getContext(), R.drawable.ic_cross), null, null, null);
     }
 }

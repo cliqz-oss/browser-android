@@ -1,5 +1,6 @@
 package com.cliqz.browser.purchases
 
+import acr.browser.lightning.preference.PreferenceManager
 import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
@@ -40,6 +41,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     @Inject
     lateinit var purchasesManager: PurchasesManager
+
+    @Inject
+    lateinit var preferenceManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +135,8 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                         }
                         if (purchaseInfo.allPurchasedSkus.any { it.contains("basic") }) {
                             purchasesManager.purchase.isDashboardEnabled = true
+                            preferenceManager.isAttrackEnabled = true
+                            preferenceManager.adBlockEnabled = true
                         }
                         bus.post(Messages.PurchaseCompleted())
                         this@PurchaseFragment.dismiss()
