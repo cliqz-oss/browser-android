@@ -145,7 +145,7 @@ public class DashboardFragment extends ControlCenterFragment {
         final MeasurementWrapper trackersDetected;
         final MeasurementWrapper pagesVisited;
 
-        if (purchasesManager.isDashboardEnabled()) {
+        if (preferenceManager.getAdBlockEnabled() && preferenceManager.isAttrackEnabled()) {
             dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"));
             adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"adsBlocked"));
             trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"));
@@ -174,7 +174,11 @@ public class DashboardFragment extends ControlCenterFragment {
 
     @Subscribe
     void onPurchaseCompleted(Messages.PurchaseCompleted purchaseCompleted) {
-        changeDashboardState(purchasesManager.isDashboardEnabled());
+        if (purchasesManager.getPurchase().isDashboardEnabled()) {
+            bus.post(new Messages.EnableAdBlock());
+            bus.post(new Messages.EnableAttrack());
+            changeDashboardState(true);
+        }
     }
 
 }

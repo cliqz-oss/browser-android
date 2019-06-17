@@ -57,9 +57,8 @@ class ControlCenterHelper(fragmentManager: FragmentManager, mContext: Context,
 
         val isDashboardEnabled = preferenceManager.isAttrackEnabled && preferenceManager.adBlockEnabled
 
-        showSubscribeButton(isDashboardEnabled)
+        hideSubscribeButton(isDashboardEnabled)
 
-        parent.ultimate_protection_switch.isChecked = isDashboardEnabled
         parent.ultimate_protection_switch.setOnCheckedChangeListener { _, isChecked ->
             mControlCenterPagerAdapter.updateViewComponent(0, isChecked)
             mControlCenterPagerAdapter.updateViewComponent(1, isChecked)
@@ -100,10 +99,11 @@ class ControlCenterHelper(fragmentManager: FragmentManager, mContext: Context,
 
     @Subscribe
     fun onPurchaseCompleted(purchaseCompleted: Messages.PurchaseCompleted) {
-        showSubscribeButton(purchasesManager.isDashboardEnabled())
+        hideSubscribeButton(purchasesManager.purchase.isDashboardEnabled)
     }
 
-    private fun showSubscribeButton(isDashboardEnabled: Boolean) {
+    private fun hideSubscribeButton(isDashboardEnabled: Boolean) {
+        parent.ultimate_protection_switch.isChecked = isDashboardEnabled
         parent.subscribe_ultimate_protection.visibility =
                 if (isDashboardEnabled) View.GONE else View.VISIBLE
         parent.ultimate_protection_container.enableViewHierarchy(isDashboardEnabled)

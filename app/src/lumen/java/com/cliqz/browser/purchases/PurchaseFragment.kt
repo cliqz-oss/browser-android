@@ -35,11 +35,11 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     private lateinit var mAdapter: ProductListAdapter
 
-    @set:Inject
-    lateinit var purchasesManager: PurchasesManager
-
     @Inject
     lateinit var bus: Bus
+
+    @Inject
+    lateinit var purchasesManager: PurchasesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

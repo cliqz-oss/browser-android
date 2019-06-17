@@ -17,7 +17,7 @@ import com.revenuecat.purchases.interfaces.ReceivePurchaserInfoListener
 class PurchasesManager(
         val context: Context,
         val bus: Bus,
-        preferenceManager: PreferenceManager) :
+        val preferenceManager: PreferenceManager) :
         TrialPeriodResponseListener,
         ReceivePurchaserInfoListener {
 
@@ -33,6 +33,9 @@ class PurchasesManager(
     override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
         this.trialPeriod = trialPeriod
         isLoading = false
+        preferenceManager.adBlockEnabled = trialPeriod == null || trialPeriod.isInTrial
+        preferenceManager.isAttrackEnabled = trialPeriod == null || trialPeriod.isInTrial
+
         bus.post(Messages.OnTrialPeriodResponse())
     }
 
@@ -48,11 +51,15 @@ class PurchasesManager(
                     this.isDashboardEnabled = isDashboardEnabled
                     this.sku = sku
                 }
+                if (!isDashboardEnabled) {
+                    preferenceManager.adBlockEnabled = false
+                    preferenceManager.isAttrackEnabled = false
+                }
             }
             isLoading = false
         } else {
             // Check if in trial period.
-            this.loadPurchaseInfo(this@PurchasesManager)
+            this.loadTrialPeriodInfo(this@PurchasesManager)
         }
 
     }
@@ -69,7 +76,7 @@ class PurchasesManager(
         }
     }
 
-    private fun loadPurchaseInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
+    private fun loadTrialPeriodInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
         // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
