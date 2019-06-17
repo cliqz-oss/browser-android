@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <RelativeLayout
+        android:id="@+id/history_view_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/history_item_bg"
+        android:gravity="center">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/icon_view"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            app:actualImageScaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/history_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/icon_view"
+            android:layout_toEndOf="@id/icon_view"
+            android:layout_toRightOf="@id/icon_view"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="7dp"
+            android:textColor="@color/text_color_primary"
+            android:textSize="12sp"
+            tools:text="facebook.com" />
+
+        <TextView
+            android:id="@+id/history_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/icon_view"
+            android:layout_alignStart="@id/icon_view"
+            android:layout_alignLeft="@id/icon_view"
+            android:maxLines="3"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/text_color_primary"
+            android:textSize="16sp"
+            tools:text="Facebook - log in or sign up" />
+
+        <TextView
+            android:id="@+id/history_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:padding="10dp"
+            android:textColor="@color/text_color_primary"
+            android:textSize="12sp"
+            tools:text="12:00" />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/selectedOverLay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp" />
+
+</FrameLayout>
