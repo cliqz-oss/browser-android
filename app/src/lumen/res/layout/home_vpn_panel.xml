@@ -25,18 +25,19 @@
         android:id="@+id/vpn_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/vpn_country"
+        android:layout_above="@id/vpn_msg_line_two"
         android:layout_centerHorizontal="true"
         android:maxHeight="155dp"
         android:paddingTop="10dp"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/vpn_map_off" />
+        app:srcCompat="@drawable/vpn_map_off"
+        tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/vpn_feature_one"
+        android:id="@+id/vpn_msg_line_one"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/vpn_map"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:drawablePadding="10dp"
@@ -46,10 +47,11 @@
         tools:drawableStart="@drawable/ic_check" />
 
     <TextView
-        android:id="@+id/vpn_feature_two"
+        android:id="@+id/vpn_msg_line_two"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/vpn_feature_one"
+        android:layout_below="@id/vpn_msg_line_one"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="5dp"
         android:drawablePadding="10dp"
