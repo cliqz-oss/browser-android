@@ -37,15 +37,15 @@ class TabsCounter @JvmOverloads constructor(
 
     init {
         paint.textAlign = Paint.Align.CENTER
-        if (attrs != null) {
+        color = if (attrs != null) {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TabsCounter, 0, 0)
-             try {
-                color = typedArray.getColor(R.styleable.TabsCounter_color, Color.WHITE)
+            try {
+                typedArray.getColor(R.styleable.TabsCounter_color, Color.WHITE)
             } finally {
                 typedArray.recycle()
             }
         } else {
-            color = Color.WHITE
+            Color.WHITE
         }
     }
 
