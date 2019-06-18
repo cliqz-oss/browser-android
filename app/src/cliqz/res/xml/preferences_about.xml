@@ -34,23 +34,5 @@
                 android:targetClass="com.cliqz.browser.main.MainActivity"
                 android:targetPackage="@string/application_id" />
         </Preference>
-        <Preference
-            android:summary="@string/freeware"
-            android:title="@string/hphosts_ad_server_list">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://hosts-file.net/"
-                android:targetClass="com.cliqz.browser.main.MainActivity"
-                android:targetPackage="@string/application_id" />
-        </Preference>
-        <Preference
-            android:summary="@string/apache"
-            android:title="@string/crux">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/chimbori/crux/blob/master/LICENSE.txt"
-                android:targetClass="com.cliqz.browser.main.MainActivity"
-                android:targetPackage="@string/application_id" />
-        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
