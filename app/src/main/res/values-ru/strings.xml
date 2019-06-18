@@ -306,7 +306,6 @@
     <string name="save">ОТМЕНА</string>
     <string name="never">Нет</string>
     <string name="privacy_policy">Политика безопасности</string>
-    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">Пользовательское соглашение</string>
     <string name="title_activity_eula_setting">Пользовательское соглашение</string>
     <plurals name="topsite_deleted">

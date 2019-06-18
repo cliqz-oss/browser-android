@@ -312,7 +312,6 @@ Continuer tout de même ?</string>
 	<item quantity="one">%d entrée sélectionnée</item>
 	<item quantity="other">%d entrées sélectionnées</item>
     </plurals>
-    <string name="privacy_policy_url">https://cliqz.com/fr/privacy-browser</string>
     <string name="settings_show_background_image">Afficher l\'image d\'arrière plan</string>
     <string name="menu">Menu</string>
     <string name="android_app_settings_title">Autorisations de position</string>
