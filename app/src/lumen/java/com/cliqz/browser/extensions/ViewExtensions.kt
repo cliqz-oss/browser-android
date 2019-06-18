@@ -1,4 +1,4 @@
-package com.cliqz.browser.utils.extensions
+package com.cliqz.browser.extensions
 
 import android.view.View
 import android.view.ViewGroup

@@ -30,39 +30,62 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.browser.utils.extensions.DrawableExtensionsKt;
+import com.cliqz.browser.extensions.DrawableExtensionsKt;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.blinkt.openvpn.core.ConnectionStatus;
 import de.blinkt.openvpn.core.VpnStatus;
 
 /**
  * @author Ravjit Uppal
  */
-public class VpnPanel extends DialogFragment implements View.OnClickListener, VpnStatus.StateListener {
+public class VpnPanel extends DialogFragment implements VpnStatus.StateListener {
 
-    public static final int VPN_LAUNCH_REQUEST_CODE = 70;
     private static String TAG = VpnPanel.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
 
+    public static final int VPN_LAUNCH_REQUEST_CODE = 70;
+
     private int mAnchorHeight;
     private boolean mSaveInstanceStateCalled = false;
 
-    private TextView mSelectedCountry;
-    private View mVpnConnectButton;
-    private TextView mVpnButtonTitle;
-    private TextView mVpnButtonDesc;
-    private ImageView mWorldMap;
-    private Chronometer vpnTimer;
-    private Handler mainHandler;
-    private Boolean shouldAnimate = false;
-    private TextView vpnMsgLineOne;
-    private TextView vpnMsgLineTwo;
+    private Handler mMainHandler;
+    private boolean mShouldAnimate = false;
+
+    @BindView(R.id.vpn_country)
+    TextView mSelectedCountry;
+
+    @BindView(R.id.vpn_connect_button)
+    View mVpnConnectButton;
+
+    @BindView(R.id.vpn_button_text_title)
+    TextView mVpnButtonTitle;
+
+    @BindView(R.id.vpn_button_text_desc)
+    TextView mVpnButtonDesc;
+
+    @BindView(R.id.vpn_map)
+    ImageView mWorldMap;
+
+    @BindView(R.id.vpn_timer)
+    Chronometer mVpnTimer;
+
+    @BindView(R.id.vpn_msg_line_one)
+    TextView mVpnMsgLineOne;
+
+    @BindView(R.id.vpn_msg_line_two)
+    TextView mVpnMsgLineTwo;
+
+    @BindView(R.id.vpn_cta_title)
+    TextView mVpnCtaTitle;
 
     @Inject
     PurchasesManager purchasesManager;
@@ -76,7 +99,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     @Inject
     VpnHandler vpnHandler;
 
-    public static VpnPanel create(View source, Activity activity) {
+    public static VpnPanel create(View source) {
         final VpnPanel dialog = new VpnPanel();
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
@@ -126,59 +149,56 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         VpnStatus.removeStateListener(this);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.home_vpn_panel, container, false);
-        mSelectedCountry = view.findViewById(R.id.vpn_country);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
         //mSelectedCountry.setText(PreferenceManager.getInstance(getContext()).getVpnSelectedCountry());
         mSelectedCountry.setText("Wakanda");
-        mSelectedCountry.setOnClickListener(this);
-        mSelectedCountry.setPaintFlags(mSelectedCountry.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
-        mVpnConnectButton = view.findViewById(R.id.vpn_connect_button);
-        mVpnConnectButton.setOnClickListener(this);
-        mVpnButtonTitle = mVpnConnectButton.findViewById(R.id.vpn_button_text_title);
-        mVpnButtonDesc = mVpnConnectButton.findViewById(R.id.vpn_button_text_desc);
-        mWorldMap = view.findViewById(R.id.vpn_map);
-        vpnTimer = view.findViewById(R.id.vpn_timer);
-        final TextView learnMoreLink = view.findViewById(R.id.learn_more_btn);
-        learnMoreLink.setOnClickListener(this);
-        vpnMsgLineOne = view.findViewById(R.id.vpn_msg_line_one);
-        vpnMsgLineTwo = view.findViewById(R.id.vpn_msg_line_two);
-        final TextView vpnCtaTitle = view.findViewById(R.id.vpn_cta_title);
+        mSelectedCountry.setPaintFlags(mSelectedCountry.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
         vpnMsgsChangeDrawable(VpnStatus.isVPNConnected() ? R.drawable.ic_check : R.drawable.ic_cross);
-        vpnCtaTitle.setText(purchasesManager.isVpnEnabled() ?
+
+        mVpnCtaTitle.setText(purchasesManager.isVpnEnabled() ?
                 getString(R.string.vpn_cta_enabled) : getString(R.string.vpn_cta_disabled));
-        mainHandler = new Handler(getContext().getMainLooper());
-        return view;
+
+        mMainHandler = new Handler(getContext().getMainLooper());
     }
 
+    @Nullable
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.vpn_country) {
-            //VpnCountriesDialog.show(getContext(), this);
-            Toast.makeText(getContext(), "In progress", Toast.LENGTH_SHORT).show();
-        } else if (v.getId() == R.id.vpn_connect_button) {
-            boolean isVpnEnabled = purchasesManager.getPurchase().isVpnEnabled();
-            boolean isInTrial = purchasesManager.getTrialPeriod() != null &&
-                    purchasesManager.getTrialPeriod().isInTrial();
-            if (isVpnEnabled || isInTrial) {
-                if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
-                    vpnHandler.disconnectVpn();
-                    updateStateToConnect();
-                } else {
-                    vpnHandler.connectVpn();
-                }
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.home_vpn_panel, container, false);
+    }
+
+    @OnClick(R.id.vpn_country)
+    void vpnCountryClicked() {
+        // TODO: VpnCountriesDialog.show(getContext(), this);
+        Toast.makeText(getContext(), "In progress", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.vpn_connect_button)
+    void connectClicked() {
+        if (purchasesManager.isVpnEnabled()) {
+            if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
+                vpnHandler.disconnectVpn();
+                updateStateToConnect();
             } else {
-                unlockVpnDialog();
+                vpnHandler.connectVpn();
             }
-        } else if(v.getId() == R.id.learn_more_btn) {
-            if (purchasesManager.isVpnEnabled()) {
-                bus.post(CliqzMessages.OpenLink.open(getString(R.string.vpn_faq_url)));
-                dismiss();
-            } else {
-                bus.post(new Messages.GoToPurchase(0));
-            }
+        } else {
+            unlockVpnDialog();
+        }
+    }
+
+    @OnClick(R.id.learn_more_btn)
+    void learnMoreClicked() {
+        if (purchasesManager.isVpnEnabled()) {
+            bus.post(CliqzMessages.OpenLink.open(getString(R.string.vpn_faq_url)));
+            dismiss();
+        } else {
+            bus.post(new Messages.GoToPurchase(0));
         }
     }
 
@@ -197,17 +217,17 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus level) {
         if (isAdded()) {
             if (level.equals(ConnectionStatus.LEVEL_START)) {
-                if (mainHandler != null) {
-                    mainHandler.post(mConnectingRunnable);
+                if (mMainHandler != null) {
+                    mMainHandler.post(mConnectingRunnable);
                 }
             } else if (level.equals(ConnectionStatus.LEVEL_CONNECTED)) {
-                shouldAnimate = false;
-                if (mainHandler != null) {
-                    mainHandler.post(mConnectedRunnable);
+                mShouldAnimate = false;
+                if (mMainHandler != null) {
+                    mMainHandler.post(mConnectedRunnable);
                 }
             } else if (level.equals(ConnectionStatus.LEVEL_NOTCONNECTED)) {
-                if (mainHandler != null) {
-                    mainHandler.post(mConnectRunnable);
+                if (mMainHandler != null) {
+                    mMainHandler.post(mConnectRunnable);
                 }
             } else if (level.equals(ConnectionStatus.LEVEL_CONNECTING_SERVER_REPLIED)) {
                 preferenceManager.setVpnStartTime(System.currentTimeMillis());
@@ -229,7 +249,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
         final String[] dots = {".", "..", "...", "....",".....","......"};
         new Thread(() -> {
             int itr = 0;
-            while (shouldAnimate) {
+            while (mShouldAnimate) {
                 final int i = itr;
                 itr++;
                 mVpnButtonTitle.post(() -> mVpnButtonTitle.setText(dots[i%6]));
@@ -243,10 +263,10 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     }
 
     private void updateStateToConnecting() {
-        shouldAnimate = true;
+        mShouldAnimate = true;
         animateTv();
-        vpnTimer.stop();
-        vpnTimer.setVisibility(View.GONE);
+        mVpnTimer.stop();
+        mVpnTimer.setVisibility(View.GONE);
         mVpnButtonDesc.setText("");
         mWorldMap.setImageResource(R.drawable.vpn_map_off);
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_button_connecting_animation));
@@ -259,11 +279,11 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     }
 
     private void updateStateToConnected() {
-        shouldAnimate = false;
+        mShouldAnimate = false;
         mVpnButtonTitle.setVisibility(View.GONE);
-        vpnTimer.setVisibility(View.VISIBLE);
-        vpnTimer.setBase(SystemClock.elapsedRealtime() - (System.currentTimeMillis() - preferenceManager.getVpnStartTime()));
-        vpnTimer.start();
+        mVpnTimer.setVisibility(View.VISIBLE);
+        mVpnTimer.setBase(SystemClock.elapsedRealtime() - (System.currentTimeMillis() - preferenceManager.getVpnStartTime()));
+        mVpnTimer.start();
         mVpnButtonDesc.setText("disconnect");
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_connect_button_bg));
         mWorldMap.setImageResource(R.drawable.vpn_map_on);
@@ -271,9 +291,9 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     }
 
     private void updateStateToConnect() {
-        shouldAnimate = false;
-        vpnTimer.stop();
-        vpnTimer.setVisibility(View.GONE);
+        mShouldAnimate = false;
+        mVpnTimer.stop();
+        mVpnTimer.setVisibility(View.GONE);
         mVpnButtonTitle.setVisibility(View.VISIBLE);
         mVpnButtonTitle.setText("vpn");
         mVpnButtonDesc.setText("connect");
@@ -283,7 +303,7 @@ public class VpnPanel extends DialogFragment implements View.OnClickListener, Vp
     }
 
     private void vpnMsgsChangeDrawable(@DrawableRes int id) {
-        DrawableExtensionsKt.drawableStart(vpnMsgLineOne, id);
-        DrawableExtensionsKt.drawableStart(vpnMsgLineTwo, id);
+        DrawableExtensionsKt.drawableStart(mVpnMsgLineOne, id);
+        DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
     }
 }
