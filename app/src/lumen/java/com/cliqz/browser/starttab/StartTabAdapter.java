@@ -15,9 +15,9 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 public class StartTabAdapter extends IconTabLayout.ImageFragmentPagerAdapter {
 
-    final ArrayList<StartTabFragment> mFragments = new ArrayList<>();
+    private final ArrayList<StartTabFragment> mFragments = new ArrayList<>();
 
-    public StartTabAdapter(FragmentManager fm, PreferenceManager preferenceManager) {
+    StartTabAdapter(FragmentManager fm, PreferenceManager preferenceManager) {
         super(fm);
         mFragments.clear();
         boolean isFreshInstall = preferenceManager.getIsFreshInstall();
@@ -48,5 +48,9 @@ public class StartTabAdapter extends IconTabLayout.ImageFragmentPagerAdapter {
     @DrawableRes
     public int getIcon(int position) {
         return getItem(position).getIconId();
+    }
+
+    void updateView(int position) {
+        mFragments.get(position).updateView();
     }
 }

@@ -18,7 +18,10 @@ import acr.browser.lightning.preference.PreferenceManager;
 /**
  * @author Ravjit Uppal
  */
-public class StartTabContainer extends FrameLayout {
+public class StartTabContainer extends FrameLayout implements ViewPager.OnPageChangeListener {
+
+    private ViewPager mViewPager;
+    private StartTabAdapter mStartTabAdapter;
 
     public StartTabContainer(@NonNull Context context) {
         this(context, null);
@@ -39,10 +42,32 @@ public class StartTabContainer extends FrameLayout {
     }
 
     public void init(FragmentManager supportFragmentManager, PreferenceManager preferenceManager) {
-        final ViewPager viewPager = findViewById(R.id.view_pager);
-        final StartTabAdapter startTabAdapter = new StartTabAdapter(supportFragmentManager, preferenceManager);
+        mViewPager = findViewById(R.id.view_pager);
+        mViewPager.addOnPageChangeListener(this);
+        mStartTabAdapter = new StartTabAdapter(supportFragmentManager, preferenceManager);
         final IconTabLayout pagerTabStrip = findViewById(R.id.tab_layout);
-        viewPager.setAdapter(startTabAdapter);
-        pagerTabStrip.setupWithViewPager(viewPager);
+        mViewPager.setAdapter(mStartTabAdapter);
+        pagerTabStrip.setupWithViewPager(mViewPager);
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        if (visibility == VISIBLE) {
+            mStartTabAdapter.updateView(mViewPager.getCurrentItem());
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        mStartTabAdapter.updateView(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
     }
 }

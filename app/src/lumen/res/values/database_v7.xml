@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_queries_table_v7" translatable="false">CREATE TABLE queries (id INTEGER PRIMARY KEY, query TEXT, time INTEGER)</string>
+    <string name="get_history_query_recyclerview_v7" translatable="false">select * from (select type, id, title, url, min(time) as time, date  from (select  \'0\' as type,NULL as id,NULL as title,NULL as url,max(time) as time, strftime(\'%Y-%m-%d 00:00:00\', time/1000, \'unixepoch\') as \'date\' from history group by date union select  \'0\' as type,NULL as id,NULL as title,NULL as url,min(time) as time,  strftime(\'%Y-%m-%d 00:00:00\', time/1000, \'unixepoch\') as date from queries group by date) group by date union select \'1\' as type,history.id as id,title as title,url as url, history.time, strftime(\'%Y-%m-%d %H:%M:%S\', history.time/1000, \'unixepoch\') as date from urls, history where urls.id = history.url_id union select \'2\' as type,queries.id as id,NULL as title,queries.query as url, time, strftime(\'%Y-%m-%d %H:%M:%S\', queries.time/1000, \'unixepoch\') as date from queries) order by time desc</string>
+</resources>
