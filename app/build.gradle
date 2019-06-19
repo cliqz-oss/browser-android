@@ -96,6 +96,16 @@ android {
             dimension "api"
             versionCode 8
         }
+        applicationVariants.all { variant ->
+            buildConfigField 'String', 'SENTRY_TOKEN', 'null'
+            if (variant.flavorName == "lumen" && variant.buildType.name == "release") {
+                def sentryToken = this.hasProperty("com.cliqz.lumen.sentryToken") ?
+                        this.getProperty("com.cliqz.lumen.sentryToken") : System.getenv("SENTRY_TOKEN")
+                if (sentryToken) {
+                    buildConfigField 'String', 'SENTRY_TOKEN', "\"${sentryToken}\""
+                }
+            }
+        }
 //        huawei {
 //            dimension "api"
 //            versionCode 5
