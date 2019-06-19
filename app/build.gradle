@@ -124,15 +124,6 @@ android {
             universalApk true
         }
     }
-
-    productFlavors.properties.names.each { name ->
-        defaultConfig {
-            def upperName = name.toUpperCase()
-            buildConfigField 'String', "FLAVOR_${upperName}", "\"${name}\""
-            buildConfigField 'boolean', "IS_${upperName}", "FLAVOR.equals(FLAVOR_${upperName})"
-            buildConfigField 'boolean', "IS_NOT_${upperName}", "!IS_${upperName}"
-        }
-    }
 }
 
 dexcount {
@@ -157,13 +148,8 @@ configurations.all {
                 details.useTarget group: details.requested.group, name: 'android-jsc-intl', version: 'r236355'
             }
         }
+        force "com.google.code.findbugs:jsr305:3.0.0"
     }
-}
-
-configurations.all {
-  resolutionStrategy {
-      force "com.google.code.findbugs:jsr305:3.0.0"
-  }
 }
 
 dependencies {
@@ -271,24 +257,11 @@ dependencies {
     testImplementation 'org.apache.velocity:velocity:1.7'
 }
 
-def abiCodes = ["armeabi-v7a": 2, "arm64-v8a": 4, "x86": 6, "x86_64": 8]
-import com.android.build.OutputFile
-
-preBuild.doLast {
-    android.applicationVariants.each { variant ->
-        def apiVersion = variant.productFlavors.get(0).versionCode
-        // set the composite code
-        variant.outputs.each { output ->
-            def abiVersion = abiCodes.get(output.getFilter(OutputFile.ABI)) ?: 1
-            def generatedVersionCode = android.defaultConfig.versionCode * 100 + apiVersion * 10 + abiVersion
-            output.versionCodeOverride = generatedVersionCode
-        }
-    }
-}
-
 play {
     track = 'alpha'
 }
 if (useGoogleServices) {
     apply plugin: 'com.google.gms.google-services'
 }
+
+apply plugin: com.cliqz.gradle.CliqzPlugin
