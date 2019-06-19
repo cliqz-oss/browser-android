@@ -748,7 +748,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        searchBar.setTitle(webView.getTitle());
+        searchBar.setTitle(BuildConfig.IS_LUMEN ? webView.getUrl() : webView.getTitle());
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
         webView.bringToFront();
