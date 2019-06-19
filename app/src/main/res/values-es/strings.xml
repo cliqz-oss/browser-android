@@ -309,7 +309,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="never">NO</string>
     <string name="save">SÍ</string>
     <string name="privacy_policy">Política de privacidad</string>
-    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">ALUF</string>
     <string name="title_activity_eula_setting">ALUF</string>
     <plurals name="topsite_deleted">

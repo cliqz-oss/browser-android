@@ -8,13 +8,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.AppCompatImageButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -32,6 +25,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
+
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.BuildConfig;
@@ -42,6 +43,7 @@ import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
+import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.qrscanner.CodeScannerActivity;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -61,6 +63,7 @@ import acr.browser.lightning.database.HistoryDatabase;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
@@ -89,7 +92,6 @@ public class OverFlowMenu extends FrameLayout {
         ACTIONS(EntryType.ACTIONS, -1, -1),
         NEW_TAB(EntryType.REGULAR, R.id.new_tab_menu_button, R.string.action_new_tab),
         NEW_INCOGNITO_TAB(EntryType.REGULAR, R.id.new_incognito_tab_menu_button, R.string.action_incognito),
-        TABS_MANAGER(EntryType.REGULAR, R.id.tabs_manager_button, R.string.action_tabs_manager),
         GO_TO_FAVORITES(EntryType.REGULAR, R.id.go_to_favorites_button, R.string.favorites),
 
         SEARCH_IN_PAGE(EntryType.REGULAR, R.id.search_on_page_menu_button, R.string.action_search_on_page),
@@ -116,7 +118,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
-            Entries.TABS_MANAGER,
             Entries.SEARCH_IN_PAGE,
             Entries.GO_TO_FAVORITES,
             Entries.DESKTOP_PAIRING,
@@ -132,7 +133,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
-            Entries.TABS_MANAGER,
             Entries.SEARCH_IN_PAGE,
             Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
@@ -193,6 +193,9 @@ public class OverFlowMenu extends FrameLayout {
     HistoryDatabase historyDatabase;
 
     @Inject
+    TabsManager tabsManager;
+
+    @Inject
     Engine engine;
 
     @BindView(R.id.action_refresh)
@@ -204,8 +207,13 @@ public class OverFlowMenu extends FrameLayout {
     @BindView(R.id.toggle_favorite)
     ToggleButton toggleFavorite;
 
+    @Nullable
     @BindView(R.id.action_share)
     AppCompatImageButton actionShare;
+
+    @Nullable
+    @BindView(R.id.open_tabs_count)
+    TabsCounter tabsCounter;
 
     private CliqzBrowserState state;
     private final ListView listView;
@@ -312,22 +320,15 @@ public class OverFlowMenu extends FrameLayout {
         mDesktopSiteEnabled = isEnabled;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @SuppressLint("ObsoleteSdkInt")
     private void prepareEntries() {
         List<Entries> entries = new ArrayList<>(
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
 
-        if ("ghostery".equals(BuildConfig.FLAVOR)) {
-            entries.remove(Entries.DESKTOP_PAIRING);
-        }
-        if (BuildConfig.IS_NOT_LUMEN) {
-            entries.remove(Entries.TABS_MANAGER);
-        }
         if (!BuildConfig.DEBUG) {
             entries.remove(Entries.REACT_DEBUG);
         }
-        mEntries = entries.toArray(new Entries[entries.size()]);
+        mEntries = entries.toArray(new Entries[0]);
     }
 
     public void setIsFreshTabVisible(boolean visible) {
@@ -386,7 +387,7 @@ public class OverFlowMenu extends FrameLayout {
         @Override
         public boolean isEnabled(int position) {
             final Entries entry = mEntries[position];
-            final boolean hasValidId = !mUrl.isEmpty() && mUrl != null && !mUrl.contains("cliqz://trampoline");
+            final boolean hasValidId = mUrl != null &&  !mUrl.isEmpty() && !mUrl.contains("cliqz://trampoline");
             final boolean isShowingWebPage = state.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
             final boolean isSendTab = entry == Entries.SEND_TAB_TO_DESKTOP;
@@ -401,7 +402,7 @@ public class OverFlowMenu extends FrameLayout {
             View view = convertView;
             final Mode mode = state.getMode();
             if(view == null) {
-                LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = LayoutInflater.from(parent.getContext());
                 switch (mEntries[position].type) {
                     case ACTIONS:
                         view = inflater.inflate(R.layout.overflow_menu_header, parent, false);
@@ -429,6 +430,9 @@ public class OverFlowMenu extends FrameLayout {
                             setButtonDisabled(actionForwardButton);
                         } else {
                             setButtonEnabled(actionForwardButton);
+                        }
+                        if (tabsCounter != null) {
+                            tabsCounter.setCounter(tabsManager.getTabCount());
                         }
                         break;
                     case MULTICHOICE:
@@ -466,6 +470,7 @@ public class OverFlowMenu extends FrameLayout {
             return view;
         }
 
+        @SuppressWarnings("RedundantCast")
         private TextView getEntryTextView(final View view) {
             final TextView result;
             if (view instanceof TextView) {
@@ -476,6 +481,7 @@ public class OverFlowMenu extends FrameLayout {
             return result;
         }
 
+        @SuppressWarnings("RedundantCast")
         @Nullable
         private CheckedTextView getCheckedTextView(final View view) {
             final CheckedTextView result;
@@ -487,13 +493,19 @@ public class OverFlowMenu extends FrameLayout {
             return result;
         }
 
-        private void setButtonDisabled(final ImageView view) {
+        private void setButtonDisabled(final @Nullable ImageView view) {
+            if (view == null) {
+                return;
+            }
             view.setEnabled(false);
             final int color = ContextCompat.getColor(activity, R.color.hint_text);
             view.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         }
 
-        private void setButtonEnabled(final ImageView view) {
+        private void setButtonEnabled(final @Nullable ImageView view) {
+            if (view == null) {
+                return;
+            }
             view.setEnabled(true);
             final int color = ContextCompat.getColor(activity, R.color.black);
             view.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
@@ -501,6 +513,7 @@ public class OverFlowMenu extends FrameLayout {
 
     }
 
+    @SuppressWarnings("RedundantCast")
     public void show() {
         if (mAnchorView == null) {
             throw new RuntimeException("Must be anchored");
@@ -512,6 +525,9 @@ public class OverFlowMenu extends FrameLayout {
                 contentView.getGlobalVisibleRect(contentRect);
         if (!hasContentRect) {
             root.getGlobalVisibleRect(contentRect);
+        }
+        if (tabsCounter != null) {
+            tabsCounter.setCounter(tabsManager.getTabCount());
         }
         root.addView(this);
         bus.register(this);
@@ -550,10 +566,6 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(false));
-                    break;
-                case TABS_MANAGER:
-                    telemetry.sendMainMenuSignal(TelemetryKeys.OVERVIEW, isIncognitoMode(), "web");
-                    bus.post(new Messages.GoToOverview());
                     break;
                 case SEARCH_IN_PAGE:
                     telemetry.sendMainMenuSignal(TelemetryKeys.PAGE_SEARCH, isIncognitoMode(),
@@ -623,12 +635,22 @@ public class OverFlowMenu extends FrameLayout {
         this.dismiss();
     }
 
+    @Optional
     @OnClick(R.id.action_share)
     void onShareClicked() {
         telemetry.sendMainMenuSignal(TelemetryKeys.SHARE, isIncognitoMode(),
                 state.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.ShareLink());
         this.dismiss();
+    }
+
+    @Optional
+    @OnClick(R.id.open_tabs_count)
+    void onTabsCounterClicked() {
+        telemetry.sendMainMenuSignal(TelemetryKeys.TAB_COUNT, isIncognitoMode(),
+                state.getMode() == Mode.SEARCH ? "cards" : "web");
+        bus.post(new Messages.GoToOverview());
+        dismiss();
     }
 
     @Subscribe

@@ -58,36 +58,30 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     }
 
     private final Preference.OnPreferenceClickListener versionClickListener =
-            new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (mAppVerCounter < 10) {
-                        mAppVerCounter++;
-                        return false;
-                    } else {
-                        final Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://i.imgur.com/4lpVkTS.gif"));
-                        getActivity().startActivity(intent);
-                        mAppVerCounter = 0;
-                        return true;
-                    }
+            preference -> {
+                if (mAppVerCounter < 10) {
+                    mAppVerCounter++;
+                    return false;
+                } else {
+                    final Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://i.imgur.com/4lpVkTS.gif"));
+                    getActivity().startActivity(intent);
+                    mAppVerCounter = 0;
+                    return true;
                 }
             };
 
     private final Preference.OnPreferenceClickListener extensionClickListener =
-            new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (mExtVerCounter < 10) {
-                        mExtVerCounter++;
-                        return false;
-                    } else {
-                        for (AvailableTests test: AvailableTests.values()) {
-                            mPreferenceManager.setABTestPreference(test.preferenceName, true);
-                        }
-                        Toast.makeText(getActivity(), "All features activated", Toast.LENGTH_SHORT).show();
-                        return true;
+            preference -> {
+                if (mExtVerCounter < 10) {
+                    mExtVerCounter++;
+                    return false;
+                } else {
+                    for (AvailableTests test: AvailableTests.values()) {
+                        mPreferenceManager.setABTestPreference(test.preferenceName, true);
                     }
+                    Toast.makeText(getActivity(), "All features activated", Toast.LENGTH_SHORT).show();
+                    return true;
                 }
             };
 

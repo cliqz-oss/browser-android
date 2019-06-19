@@ -37,48 +37,45 @@ public class CustomFailureHandler implements FailureHandler {
     }
 
     private void takeScreenshot() {
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final String now = format("yyyy-MM-dd_hh:mm:ss", new Date()).toString();
-                // In Test droid Cloud, taken screenshots are always stored
-                // under /test-screenshots/ folder and this ensures those screenshots
-                // be shown under Test Results
-                final File path =
-                        new File(Environment.getExternalStorageDirectory(), "/test-screenshots/");
-                // Path does not exist and we can not create it
-                if (!path.isDirectory() && !path.mkdirs()) {
-                    // TODO @Joseph: Please take appropriate action here
-                    return;
-                }
+        mActivity.runOnUiThread(() -> {
+            final String now = format("yyyy-MM-dd_hh:mm:ss", new Date()).toString();
+            // In Test droid Cloud, taken screenshots are always stored
+            // under /test-screenshots/ folder and this ensures those screenshots
+            // be shown under Test Results
+            final File path =
+                    new File(Environment.getExternalStorageDirectory(), "/test-screenshots/");
+            // Path does not exist and we can not create it
+            if (!path.isDirectory() && !path.mkdirs()) {
+                // TODO @Joseph: Please take appropriate action here
+                return;
+            }
 
-                View scrView = getTopMostWindow();
-                if (scrView == null) {
-                    return;
-                }
-                mActivity.getWindow();
+            View scrView = getTopMostWindow();
+            if (scrView == null) {
+                return;
+            }
+            mActivity.getWindow();
 //                View scrView = Activity.getActivity().getWindow().getDecorView().getRootView();
-                scrView.setDrawingCacheEnabled(true);
-                Bitmap bitmap = Bitmap.createBitmap(scrView.getDrawingCache());
-                scrView.setDrawingCacheEnabled(false);
-                OutputStream out = null;
+            scrView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(scrView.getDrawingCache());
+            scrView.setDrawingCacheEnabled(false);
+            OutputStream out = null;
+            try {
+                File imageFile = new File(path, now + ".png");
+                out = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                out.flush();
+            } catch (IOException e) {
+                // exception
+            } finally {
+
                 try {
-                    File imageFile = new File(path, now + ".png");
-                    out = new FileOutputStream(imageFile);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
-                    out.flush();
-                } catch (IOException e) {
-                    // exception
-                } finally {
-
-                    try {
-                        if (out != null) {
-                            out.close();
-                        }
-                    } catch (Exception ignored) {
+                    if (out != null) {
+                        out.close();
                     }
-
+                } catch (Exception ignored) {
                 }
+
             }
         });
     }

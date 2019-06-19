@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="imprint_url" translatable="false">https://lumenbrowser.com/impressum.html</string>
+    <string name="privacy_policy_url" translatable="false">https://lumenbrowser.com/dse.html</string>
+    <string name="vpn_faq_url" translatable="false">https://lumenbrowser.com/faq.html#vpn</string>
 </resources>

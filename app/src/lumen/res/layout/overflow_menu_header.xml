@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:clickable="false"
+    android:paddingTop="10dp">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/action_forward"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="?attr/actionBarItemBackground"
+        app:tint="@color/overflow_menu_header_tint"
+        android:enabled="false"
+        android:src="@drawable/ic_action_forward"/>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/actionBarItemBackground"
+        android:layout_weight="1">
+        <ToggleButton
+            android:id="@+id/toggle_favorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:checked="false"
+            android:text="@null"
+            android:textOff="@null"
+            android:textOn="@null"
+            android:tint="@color/overflow_menu_header_tint"
+            android:enabled="false"
+            tools:background="@drawable/ic_favorite" />
+    </FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/action_refresh"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="?attr/actionBarItemBackground"
+        app:tint="@color/overflow_menu_header_tint"
+        app:srcCompat="@drawable/ic_refresh"/>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+        <com.cliqz.browser.widget.TabsCounter
+            android:id="@+id/open_tabs_count"
+            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:color="@color/black" />
+    </FrameLayout>
+
+</LinearLayout>

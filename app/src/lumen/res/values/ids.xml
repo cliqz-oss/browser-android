@@ -6,7 +6,11 @@
     <item name="open_tabs_count" type="id" />
 
     <!-- Stub ids for preferences -->
+    <item name="feedback" type="id" />
     <item name="ad_block" type="id" />
     <item name="tips_and_tricks" type="id" />
     <item name="report_site" type="id" />
+
+    <!-- Stub ids for the overflow menu -->
+    <item name="action_share" type="id" />
 </resources>
