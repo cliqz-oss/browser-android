@@ -245,7 +245,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
     // RevenueCat for subscription
-    lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
+    lumenImplementation 'com.revenuecat.purchases:purchases:2.2.5'
 
     // vpn module
     lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.1'

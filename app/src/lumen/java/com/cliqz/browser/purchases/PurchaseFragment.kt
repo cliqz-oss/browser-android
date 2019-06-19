@@ -3,29 +3,30 @@ package com.cliqz.browser.purchases
 import acr.browser.lightning.preference.PreferenceManager
 import android.app.Activity
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.android.billingclient.api.BillingClient
-
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.billingclient.api.SkuDetails
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.MainActivity
 import com.cliqz.browser.main.Messages
+import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
+import com.cliqz.browser.purchases.SubscriptionConstants.Product
 import com.cliqz.browser.purchases.productlist.OnBuyClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
-import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
-import kotlinx.android.synthetic.lumen.fragment_purchase.*
-import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
-import com.cliqz.browser.purchases.SubscriptionConstants.Product
 import com.cliqz.nove.Bus
-import com.revenuecat.purchases.*
+import com.revenuecat.purchases.Entitlement
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.PurchasesError
+import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
+import com.revenuecat.purchases.makePurchaseWith
+import kotlinx.android.synthetic.lumen.fragment_purchase.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -44,6 +45,8 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     @Inject
     lateinit var preferenceManager: PreferenceManager
+
+    private var skuDetailsMap = mutableMapOf<String, SkuDetails>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +75,12 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     private fun getProductDetails() {
         Purchases.sharedInstance.getEntitlements(object : ReceiveEntitlementsListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
+                skuDetailsMap.clear()
                 val productList = ArrayList<ProductRowData>()
                 var isSubscribed = false
                 entitlementMap[Entitlements.PREMIUM_SALE]?.offerings?.forEach { (_, offering) ->
                     offering.skuDetails?.apply {
+                        skuDetailsMap[sku] = this
                         if (sku == purchasesManager.purchase.sku) {
                             isSubscribed = true
                             productList.add(ProductRowData(sku, title, price, description, true))
@@ -118,43 +123,45 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     override fun onBuyClicked(position: Int) {
-        val oldSku = ArrayList<String>()
-        if (purchasesManager.purchase.sku.isNotEmpty()) {
-            oldSku.add(purchasesManager.purchase.sku)
-        }
+        val oldSku = purchasesManager.purchase.sku
         mAdapter.getProduct(position)?.apply {
-            Purchases.sharedInstance.makePurchaseWith(activity as Activity, sku,
-                    BillingClient.SkuType.SUBS, oldSku,
-                    { error, _ ->
-                        Log.e(TAG, error.underlyingErrorMessage)
-                        Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
-                    },
-                    { purchase, _ ->
-                        when (purchase.sku) {
-                            Product.BASIC_VPN -> {
-                                purchasesManager.purchase.isVpnEnabled = true
-                                purchasesManager.purchase.isDashboardEnabled = true
-                                preferenceManager.isAttrackEnabled = true
-                                preferenceManager.adBlockEnabled = true
+            skuDetailsMap[sku]?.let { skuDetails ->
+                Purchases.sharedInstance.makePurchaseWith(
+                        activity as Activity,
+                        skuDetails,
+                        oldSku,
+                        onError = { error, _ ->
+                            Log.e(TAG, error.underlyingErrorMessage)
+                            Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                        },
+                        onSuccess = { purchase, _ ->
+                            Purchases.sharedInstance.syncPurchases()
+                            when (purchase.sku) {
+                                Product.BASIC_VPN -> {
+                                    purchasesManager.purchase.isVpnEnabled = true
+                                    purchasesManager.purchase.isDashboardEnabled = true
+                                    preferenceManager.isAttrackEnabled = true
+                                    preferenceManager.adBlockEnabled = true
+                                }
+                                Product.BASIC -> {
+                                    purchasesManager.purchase.isVpnEnabled = false
+                                    purchasesManager.purchase.isDashboardEnabled = true
+                                    preferenceManager.isAttrackEnabled = true
+                                    preferenceManager.adBlockEnabled = true
+                                }
+                                Product.VPN -> {
+                                    purchasesManager.purchase.isVpnEnabled = true
+                                    purchasesManager.purchase.isDashboardEnabled = false
+                                    preferenceManager.isAttrackEnabled = false
+                                    preferenceManager.adBlockEnabled = false
+                                }
                             }
-                            Product.BASIC -> {
-                                purchasesManager.purchase.isVpnEnabled = false
-                                purchasesManager.purchase.isDashboardEnabled = true
-                                preferenceManager.isAttrackEnabled = true
-                                preferenceManager.adBlockEnabled = true
-                            }
-                            Product.VPN -> {
-                                purchasesManager.purchase.isVpnEnabled = true
-                                purchasesManager.purchase.isDashboardEnabled = false
-                                preferenceManager.isAttrackEnabled = false
-                                preferenceManager.adBlockEnabled = false
-                            }
+                            purchasesManager.purchase.sku = purchase.sku
+                            bus.post(Messages.PurchaseCompleted())
+                            this@PurchaseFragment.dismiss()
                         }
-                        purchasesManager.purchase.sku = purchase.sku
-                        bus.post(Messages.PurchaseCompleted())
-                        this@PurchaseFragment.dismiss()
-                    }
-            )
+                )
+            }
         }
     }
 }
