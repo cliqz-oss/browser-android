@@ -115,7 +115,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
             openUrl(getString(R.string.support_url));
         } else if (info.id == R.id.rate_us) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.cliqz.browser")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
         } else if (info.id == R.id.tips_and_tricks) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.TIPS_AND_TRICKS, TelemetryKeys.MAIN);
             openUrl(getString(R.string.tips_and_tricks_url));

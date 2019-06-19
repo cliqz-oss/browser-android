@@ -313,7 +313,6 @@ Procedere comunque?</string>
     <string name="eula">EULA</string>
     <string name="title_activity_eula_setting">EULA</string>
     <string name="privacy_policy">Norme sulla privacy</string>
-    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Sito eliminato</item>
         <item quantity="other">%d Siti eliminati</item>

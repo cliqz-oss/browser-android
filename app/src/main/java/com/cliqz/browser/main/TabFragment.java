@@ -45,7 +45,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.BuildConfig;
@@ -68,6 +67,7 @@ import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
+import com.cliqz.browser.widget.TabsCounter;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Subscribe;
@@ -188,7 +188,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Nullable
     @BindView(R.id.open_tabs_count)
-    AppCompatTextView openTabsCounter;
+    TabsCounter openTabsCounter;
 
     @BindView(R.id.toolbar_container)
     ViewGroup toolBarContainer;
@@ -332,7 +332,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 new ControlCenterHelper(getChildFragmentManager(), getContext(), view);
 
         if (openTabsCounter != null) {
-            openTabsCounter.setText(Integer.toString(tabsManager.getTabCount()));
+            openTabsCounter.setCounter(tabsManager.getTabCount());
         }
 
         updateUI();
@@ -628,7 +628,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Optional
     @OnClick(R.id.vpn_panel_button)
     void toggleVpnView() {
-        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
+        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar);
         vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
     }
 
@@ -748,7 +748,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        searchBar.setTitle(webView.getTitle());
+        searchBar.setTitle(BuildConfig.IS_LUMEN ? webView.getUrl() : webView.getTitle());
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
         webView.bringToFront();
@@ -759,13 +759,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, preferenceManager.isBackgroundImageEnabled());
             overflowMenuIcon.setColorFilter(ContextCompat.getColor(context, R.color.white),
                     PorterDuff.Mode.SRC_IN);
-            if (openTabsCounter != null) {
-                openTabsCounter
-                        .getBackground()
-                        .setColorFilter(ContextCompat.getColor(context, R.color.white),
-                                PorterDuff.Mode.SRC_IN);
-                openTabsCounter.setTextColor(ContextCompat.getColor(context, R.color.white));
-            }
         } catch (NoInstanceException e) {
             Log.e(TAG, "Null context", e);
         }
@@ -1140,7 +1133,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (openTabsCounter == null) {
             return;
         }
-        openTabsCounter.setText(Integer.toString(event.count));
+        openTabsCounter.setCounter(event.count);
     }
 
     @Subscribe
@@ -1323,10 +1316,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, isBackgroundEnabled);
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            if (openTabsCounter != null) {
-                openTabsCounter.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                openTabsCounter.setTextColor(color);
-            }
             readerModeWebview.setVisibility(View.GONE);
             readerModeButton.setVisibility(View.GONE);
             mIsReaderModeOn = false;
@@ -1380,10 +1369,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             final int statusBarColor = typedArray.getColor(1,
                     ContextCompat.getColor(wrapper, R.color.primary_color_dark));
             typedArray.recycle();
-            if (openTabsCounter != null) {
-                openTabsCounter.getBackground().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-                openTabsCounter.setTextColor(iconColor);
-            }
             overflowMenuIcon.getDrawable().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
             updateToolbarContainer(activity, preferenceManager.isBackgroundImageEnabled());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

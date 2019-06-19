@@ -312,7 +312,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
         <item quantity="other">%d items selected</item>
     </plurals>
     <string name="privacy_policy">Privacy Policy</string>
-    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="eula">EULA</string>
     <string name="title_activity_eula_setting">EULA</string>
     <plurals name="topsite_deleted">

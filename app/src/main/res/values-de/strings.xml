@@ -315,7 +315,6 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="loading_failed">Es konnten keine Infos zu dieser Seite geladen werden</string>
     <string name="make_default_browser">Als Standardbrowser festlegen</string>
     <string name="proceed">FORTFAHREN</string>
-    <string name="privacy_policy_url">https://cliqz.com/privacy-browser</string>
     <string name="settings_show_background_image">Hintergrundbild anzeigen</string>
     <string name="menu">Menü</string>
     <string name="android_app_settings_title">Standortberechtigungen</string>

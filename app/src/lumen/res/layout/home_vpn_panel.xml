@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/vpn_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-medium"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        tools:text="Deutschland" />
+
+    <ImageView
+        android:id="@+id/vpn_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/vpn_msg_line_two"
+        android:layout_centerHorizontal="true"
+        android:maxHeight="155dp"
+        android:paddingTop="10dp"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/vpn_map_off"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/vpn_msg_line_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:drawablePadding="10dp"
+        android:text="@string/vpn_feature_one"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        tools:drawableStart="@drawable/ic_check" />
+
+    <TextView
+        android:id="@+id/vpn_msg_line_two"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/vpn_msg_line_one"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:drawablePadding="10dp"
+        android:text="@string/vpn_feature_two"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        tools:drawableStart="@drawable/ic_check" />
+
+    <LinearLayout
+        android:id="@+id/vpn_connect_button"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_above="@id/vpn_cta_title"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/vpn_connect_button_bg"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/vpn_button_text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <Chronometer
+            android:id="@+id/vpn_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/vpn_button_text_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/vpn_cta_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/learn_more_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/vpn_cta_enabled"
+        android:textAlignment="center"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/learn_more_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:minLines="2"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:text="@string/learn_more_btn"
+        android:textAllCaps="true"
+        android:textColor="#3073DB"
+        android:textSize="14sp" />
+
+</RelativeLayout>

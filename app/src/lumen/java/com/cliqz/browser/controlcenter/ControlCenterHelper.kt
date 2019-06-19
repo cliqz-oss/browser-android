@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentManager
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
-import com.cliqz.browser.utils.enableViewHierarchy
+import com.cliqz.browser.extensions.enableViewHierarchy
 import com.cliqz.jsengine.Adblocker
 import com.cliqz.jsengine.AntiTracking
 import com.cliqz.jsengine.EngineNotYetAvailable

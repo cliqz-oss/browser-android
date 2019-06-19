@@ -15,4 +15,5 @@
     <!-- Lumen -->
     <string name="lumen_faq_url" translatable="false">https://lumenbrowser.com/faq.html</string>
     <string name="lumen_support_mail" translatable="false">support@lumenbrowser.com</string>
+    <string name="lumen_eula" translatable="false">https://lumenbrowser.com/lumen_eula.html</string>
 </resources>
