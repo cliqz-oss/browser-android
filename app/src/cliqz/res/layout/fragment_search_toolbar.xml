@@ -46,17 +46,12 @@
         android:layout_height="@dimen/toolbar_menu_item_h"
         android:background="?attr/actionBarItemBackground">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.cliqz.browser.widget.TabsCounter
             android:id="@+id/open_tabs_count"
             android:layout_width="@dimen/toolbar_menu_icon_w"
             android:layout_height="@dimen/toolbar_menu_icon_h"
             android:layout_gravity="center"
-            android:background="@drawable/tab_counter"
-            app:backgroundTint="?android:attr/textColorPrimary"
-            tools:backgroundTint="@color/white"
-            android:gravity="center"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold" />
+            app:color="@android:color/white" />
     </FrameLayout>
 
     <FrameLayout
