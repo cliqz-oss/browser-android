@@ -1,6 +1,7 @@
 package com.cliqz.browser.app;
 
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.purchases.PurchasesManager;
@@ -11,6 +12,8 @@ import javax.inject.Inject;
 import de.blinkt.openvpn.ConfigConverter;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.StatusListener;
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
 
 /**
  * @author Ravjit Uppal
@@ -26,6 +29,8 @@ public class BrowserApp extends BaseBrowserApp {
         final StatusListener mStatus = new StatusListener();
         mStatus.init(getApplicationContext());
 
+        setupCrashReporting();
+
         getAppComponent().inject(this);
         setupSubscriptionSDK();
     }
@@ -37,6 +42,12 @@ public class BrowserApp extends BaseBrowserApp {
             final Uri usVpnUri = Uri.parse("android.resource://" + getPackageName() + "/raw/austria");
             final ConfigConverter usConvertor = new ConfigConverter(getApplicationContext());
             usConvertor.startImportTask(usVpnUri, "austria-vpn");
+        }
+    }
+
+    private void setupCrashReporting() {
+        if (!TextUtils.isEmpty(BuildConfig.SENTRY_TOKEN)) {
+            Sentry.init(BuildConfig.SENTRY_TOKEN, new AndroidSentryClientFactory(this));
         }
     }
 

@@ -109,6 +109,16 @@ android {
             dimension "api"
             versionCode 8
         }
+        applicationVariants.all { variant ->
+            buildConfigField 'String', 'SENTRY_TOKEN', 'null'
+            if (variant.flavorName == "lumen" && variant.buildType.name == "release") {
+                def sentryToken = this.hasProperty("com.cliqz.lumen.sentryToken") ?
+                        this.getProperty("com.cliqz.lumen.sentryToken") : System.getenv("SENTRY_TOKEN")
+                if (sentryToken) {
+                    buildConfigField 'String', 'SENTRY_TOKEN', "\"${sentryToken}\""
+                }
+            }
+        }
 //        huawei {
 //            dimension "api"
 //            versionCode 5
@@ -260,6 +270,8 @@ dependencies {
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
 
+    // Sentry
+    implementation 'io.sentry:sentry-android:1.7.21'
     // Forcing version
     androidTestImplementation 'androidx.annotation:annotation:1.0.0'
     androidTestImplementation 'androidx.test:runner:1.1.0'
