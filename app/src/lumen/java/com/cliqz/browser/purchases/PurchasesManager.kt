@@ -95,4 +95,9 @@ class PurchasesManager(
     fun isDashboardEnabled() : Boolean {
         return purchase.isDashboardEnabled || trialPeriod != null && trialPeriod!!.isInTrial
     }
+
+    fun isVpnEnabled() : Boolean {
+        return purchase.isVpnEnabled || trialPeriod != null && trialPeriod!!.isInTrial
+    }
+
 }

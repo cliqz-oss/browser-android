@@ -83,11 +83,16 @@
     <string name="made_in_germany">Made in Germany</string>
 
     <!-- VPN -->
+    <string name="learn_more_btn">LEARN MORE</string>
     <string name="unlock_vpn_dialog_title">VPN PROTECTION</string>
-    <string name="unlock_vpn_dialog_description">Unlock the VPN feature to get the best out of Lumen</string>
+    <string name="unlock_vpn_dialog_description">Unlock the VPN feature to get the best out of Lumen.</string>
     <string name="unlock_vpn_dialog_negative_btn">No, thanks</string>
-    <string name="unlock_vpn_dialog_positive_btn">LEARN MORE</string>
+    <string name="unlock_vpn_dialog_positive_btn">@string/learn_more</string>
     <string name="learn_more_link">Unlock the VPN feature to get the best out of Lumen. LEARN MORE</string>
+    <string name="vpn_feature_one">Protection from hackers</string>
+    <string name="vpn_feature_two">Hide your location</string>
+    <string name="vpn_cta_disabled">@string/unlock_vpn_dialog_description</string>
+    <string name="vpn_cta_enabled">VPN is short for Virtual Private Network.</string>
 
     <!-- Subscription -->
     <string name="button_buy_subscription">Subscribe</string>

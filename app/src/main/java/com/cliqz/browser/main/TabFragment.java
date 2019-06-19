@@ -628,7 +628,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Optional
     @OnClick(R.id.vpn_panel_button)
     void toggleVpnView() {
-        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar, getActivity());
+        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar);
         vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
     }
 
