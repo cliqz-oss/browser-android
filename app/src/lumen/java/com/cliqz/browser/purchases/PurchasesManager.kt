@@ -4,6 +4,7 @@ import acr.browser.lightning.preference.PreferenceManager
 import android.content.Context
 import android.util.Log
 import com.cliqz.browser.main.Messages
+import com.cliqz.browser.purchases.SubscriptionConstants.Product
 import com.cliqz.browser.purchases.trial.TrialPeriod
 import com.cliqz.browser.purchases.trial.TrialPeriodLocalRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo
@@ -13,6 +14,8 @@ import com.revenuecat.purchases.PurchaserInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.interfaces.ReceivePurchaserInfoListener
+
+private val TAG = PurchasesManager::class.java.simpleName
 
 class PurchasesManager(
         val context: Context,
@@ -43,8 +46,8 @@ class PurchasesManager(
         if (purchaserInfo.activeSubscriptions.isNotEmpty()) {
             // If subscribed, enable features.
             for (sku in purchaserInfo.activeSubscriptions) {
-                val isVpnEnabled = sku.contains("vpn")
-                val isDashboardEnabled = sku.contains("basic")
+                val isVpnEnabled = sku == Product.VPN || sku == Product.BASIC_VPN
+                val isDashboardEnabled = sku == Product.BASIC || sku == Product.BASIC_VPN
                 purchase.apply {
                     this.isASubscriber = true
                     this.isVpnEnabled = isVpnEnabled
@@ -72,7 +75,7 @@ class PurchasesManager(
         try {
             Purchases.sharedInstance.getPurchaserInfo(this)
         } catch (_: UninitializedPropertyAccessException) {
-            Log.w(PurchasesManager::class.java.simpleName, "RevenueCat is not initialized")
+            Log.w(TAG, "RevenueCat is not initialized")
         }
     }
 
