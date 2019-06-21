@@ -48,5 +48,4 @@ public class BrowserApp extends BaseBrowserApp {
             purchasesManager.checkPurchases();
         }
     }
-
 }
