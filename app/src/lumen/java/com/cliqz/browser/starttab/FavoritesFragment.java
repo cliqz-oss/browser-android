@@ -165,4 +165,13 @@ public class FavoritesFragment extends StartTabFragment {
     public int getIconId() {
         return R.drawable.ic_star_white;
     }
+
+    @Override
+    public void updateView() {
+        if (!isAdded() || adapter == null) {
+            return;
+        }
+        prepareListData();
+        adapter.notifyDataSetChanged();
+    }
 }
