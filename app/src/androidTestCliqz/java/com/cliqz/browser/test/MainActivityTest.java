@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
+import static com.cliqz.browser.test.Matchers.withProperty;
 
 /**
  * @author Kiiza Joseph Bazaare
@@ -113,7 +114,7 @@ public class MainActivityTest {
 
     @Test
     public void numberOfInitialTabs() {
-        onView(withId(R.id.open_tabs_count)).check(matches(withText("1")));
+        onView(withId(R.id.open_tabs_count)).check(matches(withProperty("counter", 1)));
     }
 
     // @Test
@@ -140,7 +141,7 @@ public class MainActivityTest {
     public void changeOfNumberOfTabs() {
         onView(withId(R.id.overflow_menu)).perform(click());
         onView(withId(R.id.new_tab_menu_button)).perform(click());
-        onView(withId(R.id.open_tabs_count)).check(matches(withText("2")));
+        onView(withId(R.id.open_tabs_count)).check(matches(withProperty("counter", 2)));
     }
 
     @Test
@@ -154,7 +155,7 @@ public class MainActivityTest {
         onView(withId(R.id.menu_overview)).perform(click());
         onView(withId(R.id.tabs_list_view)).check(matches(isDisplayed()));
         onView(withId(R.id.new_tab_button)).perform(click());
-        onView(withId(R.id.open_tabs_count)).check(matches(withText("2")));
+        onView(withId(R.id.open_tabs_count)).check(matches(withProperty("counter", 2)));
     }
 
     @Test

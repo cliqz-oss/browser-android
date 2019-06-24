@@ -20,9 +20,6 @@
         android:title="@string/imprint"
         android:id="@+id/imprint" />
     <header
-        android:title="@string/title_faq_and_support"
-        android:id="@+id/feedback" />
-    <header
         android:title="@string/faq"
         android:id="@+id/lumen_faq" />
     <header

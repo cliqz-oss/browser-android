@@ -3,7 +3,6 @@
     <string name="support_url">https://cliqz.com/en/support</string>
     <string name="report_site_url">https://cliqz.com/en/report-url</string>
     <string name="tips_and_tricks_url">https://cliqz.com/en/tips-android</string>
-    <string name="imprint_url">https://cliqz.com/legal</string>
     <string name="google_url">https://www.google.com/search?q=</string>
     <string name="yahoo_url">https://search.yahoo.com/search?p=</string>
     <string name="bing_url" translatable="false">https://www.bing.com/search?q=</string>
@@ -16,4 +15,5 @@
     <!-- Lumen -->
     <string name="lumen_faq_url" translatable="false">https://lumenbrowser.com/faq.html</string>
     <string name="lumen_support_mail" translatable="false">support@lumenbrowser.com</string>
+    <string name="lumen_eula" translatable="false">https://lumenbrowser.com/lumen_eula.html</string>
 </resources>

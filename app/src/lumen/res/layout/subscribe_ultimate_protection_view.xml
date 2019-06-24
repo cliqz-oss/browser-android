@@ -4,7 +4,7 @@
     android:id="@+id/subscribe_ultimate_protection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/black"
+    android:background="#0E1329"
     android:orientation="horizontal">
 
     <TextView
@@ -36,9 +36,14 @@
     <Button
         android:id="@+id/subscribe_ultimate_protection_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:paddingStart="25dp"
+        android:paddingRight="25dp"
+        android:paddingEnd="25dp"
+        android:paddingLeft="25dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="20dp"
+        android:textAllCaps="false"
         android:layout_marginBottom="12dp"
         android:background="@drawable/rounded_corner_solid_button"
         android:text="@string/non_subscriber_ultimate_protection_button"

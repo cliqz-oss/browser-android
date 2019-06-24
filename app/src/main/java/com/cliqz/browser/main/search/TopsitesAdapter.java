@@ -27,11 +27,13 @@ import acr.browser.lightning.preference.PreferenceManager;
  * @author Stefano Pacifici
  */
 public class TopsitesAdapter extends BaseAdapter {
+
+
     @SuppressWarnings("WeakerAccess")
-    static final int TOPSITE_TYPE = 0;
-    // Weaker access to keep consistency with TOPSITE_TYPE
+    public static final int TOPSITE_TYPE = 0;
+
     @SuppressWarnings("WeakerAccess")
-    static final int PLACEHOLDER_TYPE = 1;
+    public static final int PLACEHOLDER_TYPE = 1;
 
     private final HistoryDatabase historyDatabase;
 

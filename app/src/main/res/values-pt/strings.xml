@@ -304,7 +304,6 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="menu">Menu</string>
     <string name="make_default_browser">Converta para navegador padrão</string>
     <string name="privacy_policy">Política de privacidade</string>
-    <string name="privacy_policy_url">https://cliqz.com/en/privacy-browser</string>
     <string name="title_activity_eula_setting">EULA</string>
     <plurals name="topsite_deleted">
         <item quantity="one">%d Página excluída</item>

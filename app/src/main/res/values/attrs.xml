@@ -27,4 +27,8 @@
         <attr name="remainderSize" format="dimension" />
         <attr name="deckPadding" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="TabsCounter">
+        <attr name="color" format="color" />
+    </declare-styleable>
 </resources>

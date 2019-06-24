@@ -73,6 +73,9 @@ internal class FreshTab : StartTabFragment() {
     private fun initializeViews() {
         topsites_grid.adapter = topsitesAdapter
         topsites_grid.onItemClickListener = AdapterView.OnItemClickListener { _, view, position, _ ->
+            if (topsitesAdapter.getItemViewType(position) == TopsitesAdapter.PLACEHOLDER_TYPE) {
+                return@OnItemClickListener
+            }
             val topsite = topsitesAdapter.getItem(position) as Topsite
             val animation = ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
                     view.x + view.width / 2, view.y + view.height / 2)
