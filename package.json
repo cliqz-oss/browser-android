@@ -30,7 +30,7 @@
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
     "@cliqz/indexeddbshim": "^4.1.2",
-    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.f964653.tgz",
+    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.71ef1ae.tgz",
     "buffer": "5.0.7",
     "core-js": "2.5.3",
     "https-browserify": "1.0.0",
