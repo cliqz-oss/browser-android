@@ -60,6 +60,8 @@ internal class FreshTab : StartTabFragment() {
         super.onResume()
         bus.register(this)
         topsitesAdapter.fetchTopsites()
+        topsites_grid.visibility =
+                if (preferenceManager.shouldShowTopSites()) View.VISIBLE else View.GONE
     }
 
     override fun onPause() {
