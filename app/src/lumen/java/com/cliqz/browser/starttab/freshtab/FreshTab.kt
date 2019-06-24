@@ -67,7 +67,6 @@ internal class FreshTab : StartTabFragment() {
         bus.unregister(this)
     }
 
-
     private fun initializeViews() {
         topsites_grid.adapter = topsitesAdapter
         topsites_grid.onItemClickListener = AdapterView.OnItemClickListener { _, view, position, _ ->
@@ -146,6 +145,13 @@ internal class FreshTab : StartTabFragment() {
     private fun toggleWelcomeMessage() {
         welcome_message.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
         topsites_grid.visibility = if (isFreshInstall) View.GONE else View.VISIBLE
+    }
+
+    @Subscribe
+    internal fun onPurchaseCompleted(purchaseCompleted: Messages.PurchaseCompleted) {
+        if (purchasesManager.purchase.isASubscriber) {
+            hideAllTrialPeriodViews()
+        }
     }
 
     companion object {

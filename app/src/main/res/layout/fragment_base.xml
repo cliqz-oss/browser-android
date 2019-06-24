@@ -68,13 +68,6 @@
             tools:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <include
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/search_edit_text_h"
-        layout="@layout/control_center_container" />
-
     <!--add views which are fixed to the bottom of the screen here-->
 
     <LinearLayout

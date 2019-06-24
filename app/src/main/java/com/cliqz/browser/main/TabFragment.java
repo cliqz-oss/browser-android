@@ -329,7 +329,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
 
         mControlCenterHelper =
-                new ControlCenterHelper(getChildFragmentManager(), getContext(), view);
+                new ControlCenterHelper(getChildFragmentManager());
 
         if (openTabsCounter != null) {
             openTabsCounter.setCounter(tabsManager.getTabCount());
