@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/history_view_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,45 +16,44 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
-        android:background="@drawable/history_item_bg"
-        android:gravity="center">
+        android:orientation="vertical"
+        android:background="@drawable/history_item_bg">
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/icon_view"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            app:actualImageScaleType="fitXY" />
-
-        <TextView
-            android:id="@+id/history_url"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/icon_view"
-            android:layout_toEndOf="@id/icon_view"
-            android:layout_toRightOf="@id/icon_view"
-            android:paddingStart="10dp"
-            android:paddingLeft="10dp"
-            android:paddingTop="7dp"
-            android:textColor="@color/text_color_primary"
-            android:textSize="12sp"
-            tools:text="facebook.com" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/icon_view"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                tools:background="@color/black"
+                app:actualImageScaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/history_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/text_color_primary"
+                android:textSize="12sp"
+                tools:text="facebook.com" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/history_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/icon_view"
-            android:layout_alignStart="@id/icon_view"
-            android:layout_alignLeft="@id/icon_view"
             android:maxLines="3"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:paddingTop="5dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:paddingBottom="10dp"
             android:textColor="@color/text_color_primary"
             android:textSize="16sp"
@@ -62,17 +61,15 @@
 
         <TextView
             android:id="@+id/history_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom|right"
             android:padding="10dp"
             android:textColor="@color/text_color_primary"
             android:textSize="12sp"
             tools:text="12:00" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <View
         android:id="@+id/selectedOverLay"
