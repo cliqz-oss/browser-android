@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.cliqz.browser.BuildConfig;
+import com.cliqz.browser.CliqzConfig;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.revenuecat.purchases.Purchases;
 
@@ -46,16 +47,16 @@ public class BrowserApp extends BaseBrowserApp {
     }
 
     private void setupCrashReporting() {
-        if (!TextUtils.isEmpty(BuildConfig.SENTRY_TOKEN)) {
-            Sentry.init(BuildConfig.SENTRY_TOKEN, new AndroidSentryClientFactory(this));
+        if (!CliqzConfig.SENTRY_TOKEN.isEmpty()) {
+            Sentry.init(CliqzConfig.SENTRY_TOKEN, new AndroidSentryClientFactory(this));
         }
     }
 
     private void setupSubscriptionSDK() {
         //noinspection ConstantConditions
-        if (!BuildConfig.REVENUECAT_API_KEY.isEmpty()) {
+        if (!CliqzConfig.REVENUECAT_API_KEY.isEmpty()) {
             Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
-            Purchases.configure(this, BuildConfig.REVENUECAT_API_KEY);
+            Purchases.configure(this, CliqzConfig.REVENUECAT_API_KEY);
             purchasesManager.checkPurchases();
         }
     }
