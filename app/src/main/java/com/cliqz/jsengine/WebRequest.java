@@ -90,7 +90,15 @@ public class WebRequest extends ReactContextBaseJavaModule {
 
     private boolean isTabActive(final int tabId) {
         Pair<Uri, WeakReference<WebView>> tuple = tabs.get(tabId);
-        return tuple != null && tuple.second.get() != null;
+        final boolean active = tuple != null && tuple.second.get() != null;
+
+        if (!active) {
+            // send core:tab_close event to notify extension that tab is gone
+            final WritableMap tab = Arguments.createMap();
+            tab.putInt("tabId", tabId);
+            engine.publishEvent("core:tab_close", tab);
+        }
+        return active;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -160,6 +168,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putString("originUrl", originUrl);
         requestInfo.putString("sourceUrl", originUrl);
         requestInfo.putString("frameUrl", originUrl);
+        requestInfo.putString("tabUrl", originUrl);
         requestInfo.putInt("type", contentPolicyType);
 
         final WritableMap requestHeaders = Arguments.createMap();
