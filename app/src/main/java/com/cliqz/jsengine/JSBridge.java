@@ -53,7 +53,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
     private final Map<String, List<WaitingAction>> awaitingRegistration =
             new HashMap<>();
 
-    private static final long ACTION_TIMEOUT = 200;
+    private static final long ACTION_TIMEOUT = 1000;
 
     private final Handler handler;
     private final Bus bus;
