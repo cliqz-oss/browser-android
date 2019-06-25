@@ -98,6 +98,9 @@ class Config {
     var amazonIdentityPoolID = ""
     var amazonApplicationARN = ""
     var amazonSnsTopics = mutableListOf<String>()
+    var vpnApiKey = ""
+    var revenuecatApiKey = ""
+    var sentryToken = ""
 
     @Suppress("UNCHECKED_CAST")
     fun merge(other: Config, logger: Logger? = null): Config {
@@ -117,13 +120,15 @@ class Config {
         property.set(this, topics.toMutableList())
     }
 
-    private fun mergeStringProperty(logger: Logger?, other: Config, property: KMutableProperty1<Config, String>): String {
+    private fun mergeStringProperty(logger: Logger?, other: Config, property: KMutableProperty1<Config, String>) {
         val v1 = property.get(this)
         val v2 = property.get(other)
         if (v1.isNotEmpty() && v2.isNotEmpty()) {
             logger?.warn("Duplicated property ${property.name}")
         }
-        return if (v2.isNotEmpty()) v2 else v1
+        if (v2.isNotEmpty()) {
+            property.set(this, v2)
+        }
     }
 
 }

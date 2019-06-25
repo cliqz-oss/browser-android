@@ -46,6 +46,9 @@ class CliqzPlugin: Plugin<Project> {
         taskProvider.configure {
             it.dependsOn(buildConfigProvider)
         }
+        project.tasks.named("compile${variant.name.capitalize()}Kotlin").configure {
+            it.dependsOn(taskProvider)
+        }
         javaCompileProvider.configure {
             it.dependsOn(taskProvider)
         }
