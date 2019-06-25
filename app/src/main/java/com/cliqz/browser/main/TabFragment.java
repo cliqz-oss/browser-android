@@ -1352,6 +1352,20 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         updateVpnIcon();
     }
 
+    @Subscribe
+    void onSearchBarClearPressed(@Nullable Messages.SearchBarClearPressed msg) {
+        telemetry.sendClearUrlBarSignal(mIsIncognito, searchBar.getSearchText().length(), getTelemetryView());
+        state.setQuery("");
+    }
+
+    @Subscribe
+    void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
+        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
+        if (mLightningView.canGoBack()) {
+            bringWebViewToFront(null);
+        }
+    }
+
     private void updateUI() {
         try {
             final Activity activity = FragmentUtilsV4.getActivity(this);

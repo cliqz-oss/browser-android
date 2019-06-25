@@ -288,4 +288,9 @@ public final class Messages {
     public static class PurchaseCompleted {
     }
 
+    public static class SearchBarBackPressed {
+    }
+
+    public static class SearchBarClearPressed {
+    }
 }
