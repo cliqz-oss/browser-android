@@ -1,6 +1,5 @@
 package com.cliqz.browser.controlcenter;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -36,8 +35,7 @@ public class ControlCenterHelper implements ControlCenterActions {
     @Inject
     Telemetry telemetry;
 
-    public ControlCenterHelper(@NonNull FragmentManager fragmentManager,
-                               @NonNull Context context, View parent) {
+    public ControlCenterHelper(@NonNull FragmentManager fragmentManager) {
         final AppComponent component = BrowserApp.getAppComponent();
         this.mFragmentManager = fragmentManager;
         if (component != null) {

@@ -61,6 +61,7 @@ class PurchasesManager(
             }
             isLoading = false
         } else {
+            purchase.isASubscriber = false
             // Check if in trial period.
             this.loadTrialPeriodInfo(this@PurchasesManager)
         }
@@ -95,12 +96,16 @@ class PurchasesManager(
         })
     }
 
-    fun isDashboardEnabled() : Boolean {
-        return purchase.isDashboardEnabled || trialPeriod != null && trialPeriod!!.isInTrial
+    fun isDashboardEnabled() = if (purchase.isASubscriber) {
+        purchase.isDashboardEnabled
+    } else {
+        trialPeriod != null && trialPeriod!!.isInTrial
     }
 
-    fun isVpnEnabled() : Boolean {
-        return purchase.isVpnEnabled || trialPeriod != null && trialPeriod!!.isInTrial
+    fun isVpnEnabled() = if (purchase.isASubscriber) {
+        purchase.isVpnEnabled
+    } else {
+        trialPeriod != null && trialPeriod!!.isInTrial
     }
 
 }

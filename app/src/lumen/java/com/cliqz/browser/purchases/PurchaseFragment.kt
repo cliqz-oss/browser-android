@@ -151,6 +151,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                             }
                         }
                         purchasesManager.purchase.sku = purchase.sku
+                        purchasesManager.purchase.isASubscriber = true
                         bus.post(Messages.PurchaseCompleted())
                         this@PurchaseFragment.dismiss()
                     }
