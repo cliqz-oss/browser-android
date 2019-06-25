@@ -7,6 +7,7 @@ import com.squareup.javawriter.JavaWriter
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Optional
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -20,8 +21,11 @@ open class CliqzConfigTask @Inject constructor(
         val buildConfigProvider: TaskProvider<GenerateBuildConfig>,
         val flavorNames: Set<String>) : DefaultTask() {
 
-    val inputFile: File by lazy { project.file(CLIQZ_CONFIG_JSON) }
-        @InputFile get
+    val inputFile: File? by lazy {
+        val inFile = project.file(CLIQZ_CONFIG_JSON)
+        if (inFile.isFile) inFile else null
+    }
+        @Optional @InputFile get
 
     private val buildConfigTask: GenerateBuildConfig by lazy { buildConfigProvider.get() }
     private val packageName: String by lazy { buildConfigTask.buildConfigPackageName }
@@ -40,7 +44,7 @@ open class CliqzConfigTask @Inject constructor(
     fun generateCliqzConfig() {
         // Read the json file
         val type = MapTypeToken().type
-        val config = if (!inputFile.exists()) {
+        val config = if (inputFile == null) {
             logger.warn("Missing $CLIQZ_CONFIG_JSON")
             Config()
         } else FileReader(inputFile).use {
