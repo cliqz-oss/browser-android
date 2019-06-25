@@ -19,11 +19,9 @@
         android:orientation="vertical"
         android:background="@drawable/history_item_bg">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content">
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/icon_view"
                 android:layout_width="35dp"
@@ -35,14 +33,17 @@
 
             <TextView
                 android:id="@+id/history_url"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:paddingLeft="10dp"
+                android:layout_marginStart="55dp"
+                android:layout_marginLeft="55dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:textColor="@color/text_color_primary"
                 android:textSize="12sp"
+                android:layout_gravity="center_vertical"
                 tools:text="facebook.com" />
-        </LinearLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/history_title"
