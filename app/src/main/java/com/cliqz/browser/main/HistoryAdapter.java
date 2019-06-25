@@ -155,7 +155,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void loadIcon(final HistoryViewHolder holder, String url) {
-        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), url);
+        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler, false), url);
     }
 
     private class HistoryViewHolder extends IconViewHolder {

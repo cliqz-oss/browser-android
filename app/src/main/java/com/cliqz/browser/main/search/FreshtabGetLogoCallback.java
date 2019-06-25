@@ -25,11 +25,16 @@ public class FreshtabGetLogoCallback implements JSBridge.Callback, Runnable {
 
     private final IconViewHolder holder;
     private final Handler handler;
+    private final boolean roundCorners;
     private ReadableMap mData = null;
 
-    public FreshtabGetLogoCallback(@NonNull IconViewHolder holder, @NonNull Handler handler) {
+    public FreshtabGetLogoCallback(
+            @NonNull IconViewHolder holder,
+            @NonNull Handler handler,
+            boolean roundCorners) {
         this.holder = holder;
         this.handler = handler;
+        this.roundCorners = roundCorners;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class FreshtabGetLogoCallback implements JSBridge.Callback, Runnable {
             alternateText = "";
         }
         final Resources resources = holder.iconView.getResources();
-        final int cornerRadius = resources.getDimensionPixelSize(R.dimen.topsites_logo_cornes_radius);
+        final int cornerRadius = roundCorners ? resources.getDimensionPixelSize(R.dimen.topsites_logo_cornes_radius) : 0;
         final int textSize = resources.getDimensionPixelSize(R.dimen.topsites_logo_textsize);
         final Drawable fallbackDrawable =
                 new DefaultIconDrawable(alternateText, backgroundColor, textSize, cornerRadius);

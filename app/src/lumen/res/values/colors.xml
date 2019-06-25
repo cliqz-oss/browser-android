@@ -38,4 +38,5 @@
     <color name="bond_disabled_text_color">#993073DB</color>
     <color name="dark_transparent_overlay">#99000000</color>
     <color name="bond_disabled_state_color">#BDC0CE</color>
+    <color name="lumen_color_blue_secondary">#304572</color>
 </resources>

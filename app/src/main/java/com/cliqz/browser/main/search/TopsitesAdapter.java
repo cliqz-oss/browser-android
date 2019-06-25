@@ -133,6 +133,6 @@ public class TopsitesAdapter extends BaseAdapter {
     }
 
     private void loadIcon(final TopsitesViewHolder holder, String url) {
-        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), url);
+        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler, true), url);
     }
 }

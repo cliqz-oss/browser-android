@@ -79,7 +79,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     private void loadIcon(final FavoritesViewHolder holder, String url) {
-        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), url);
+        engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler, false), url);
     }
 
     private class FavoritesViewHolder extends IconViewHolder {
