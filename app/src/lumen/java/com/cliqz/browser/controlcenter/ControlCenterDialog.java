@@ -67,6 +67,9 @@ public class ControlCenterDialog extends DialogFragment {
     @BindView(R.id.subscribe_ultimate_protection_btn)
     Button subscribeUltimateProtectionBtn;
 
+    @BindView(R.id.dashboard_disable_overlay)
+    View dashboardDisableOverlay;
+
     @Inject
     AntiTracking antiTracking;
 
@@ -190,6 +193,7 @@ public class ControlCenterDialog extends DialogFragment {
     private void hideSubscribeButton(boolean isDashboardEnabled) {
         ultimateProtectionSwitch.setChecked(isDashboardEnabled);
         subscribeUltimateProtectionView.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
+        dashboardDisableOverlay.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
         ViewExtensionsKt.enableViewHierarchy(ultimateProtectionContainer, isDashboardEnabled);
         ViewExtensionsKt.enableViewHierarchy(controlCenterTabLayout, isDashboardEnabled);
         controlCenterPager.isPagingEnabled = isDashboardEnabled;
