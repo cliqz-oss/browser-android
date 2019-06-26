@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:text="@string/upgrade_button"
         android:textAllCaps="true"
-        android:textColor="@color/accent_color"
-        android:textSize="@dimen/normal_text_size" />
+        android:textColor="#1E97E7"
+        android:textSize="16sp" />
 
 </LinearLayout>
