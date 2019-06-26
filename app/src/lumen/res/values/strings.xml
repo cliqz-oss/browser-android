@@ -99,5 +99,6 @@
     <string name="button_upgrade_subscription">Upgrade</string>
     <string name="text_subscribed">Subscribed</string>
     <string name="subscription_product_row_highlighted">Best offer\nLimited Time Only</string>
+    <string name="per_month_text">%1$s / MONTH</string>
 
 </resources>
