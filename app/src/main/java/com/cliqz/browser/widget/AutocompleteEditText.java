@@ -4,15 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import androidx.annotation.NonNull;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -23,6 +16,12 @@ import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.content.ContextCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.Messages;
@@ -32,7 +31,6 @@ import com.cliqz.nove.Bus;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -69,9 +67,6 @@ public class AutocompleteEditText extends AppCompatEditText {
 
     private AutocompleteRunnable autocompleteRunnable = null;
     private String mQuery = "";
-    private Callable<Void> mBackIconCallback = null;
-    private Callable<Void> mClearQueryCallback = null;
-    private float mLastTouchX = -1;
 
     public AutocompleteEditText(Context context) {
         this(context, null);
@@ -244,16 +239,14 @@ public class AutocompleteEditText extends AppCompatEditText {
     public boolean onTextContextMenuItem(int id) {
         ClipboardManager clipboard = (ClipboardManager) getContext()
                 .getSystemService(Context.CLIPBOARD_SERVICE);
-        switch (id){
-            case android.R.id.paste:
-                final ClipData primaryClip = clipboard.getPrimaryClip();
-                final ClipData.Item item =
-                        (primaryClip != null && primaryClip.getItemCount() > 0) ?
-                        primaryClip.getItemAt(0) : null;
-                final CharSequence text = item != null ? item.getText() : null;
-                final int textLength = text != null ? text.length() : 0;
-                mTelemetry.sendPasteSignal(textLength);
-                break;
+        if (id == android.R.id.paste) {
+            final ClipData primaryClip = clipboard.getPrimaryClip();
+            final ClipData.Item item =
+                    (primaryClip != null && primaryClip.getItemCount() > 0) ?
+                            primaryClip.getItemAt(0) : null;
+            final CharSequence text = item != null ? item.getText() : null;
+            final int textLength = text != null ? text.length() : 0;
+            mTelemetry.sendPasteSignal(textLength);
         }
         return super.onTextContextMenuItem(id);
     }
@@ -278,41 +271,32 @@ public class AutocompleteEditText extends AppCompatEditText {
         }
     }
 
-    public void setBackIconCallback(Callable<Void> callback) {
-        mBackIconCallback = callback;
-    }
-
-    public void setClearQueryCallback(Callable<Void> callback) {
-        mClearQueryCallback = callback;
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mLastTouchX = event.getX();
-        return getVisibility() == VISIBLE && super.onTouchEvent(event);
+        if (getVisibility() != VISIBLE) {
+            return false;
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            final boolean isBackIconClicked = event.getX() < getPaddingLeft() + backIcon.getIntrinsicWidth();
+            final boolean isClearIconClicked = event.getX() > getWidth() - getPaddingRight() - clearIcon.getIntrinsicWidth();
+            if (isBackIconClicked) {
+                bus.post(new Messages.SearchBarBackPressed());
+                return true;
+            } else if (isClearIconClicked) {
+                setText("");
+                bus.post(new Messages.SearchBarClearPressed());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return super.onTouchEvent(event);
+        }
     }
 
     @Override
     public boolean performClick() {
-        final boolean isBackIconClicked = mLastTouchX <  getPaddingLeft() + backIcon.getIntrinsicWidth();
-        final boolean isClearIconClicked = mLastTouchX > getWidth() - getPaddingRight() - clearIcon.getIntrinsicWidth();
-        try {
-            if (isBackIconClicked && mBackIconCallback != null) {
-                mBackIconCallback.call();
-                return true;
-            }
-            if (isClearIconClicked) {
-                setText("");
-                if (mClearQueryCallback != null) {
-                    mClearQueryCallback.call();
-                }
-                return true;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         return super.performClick();
     }
 

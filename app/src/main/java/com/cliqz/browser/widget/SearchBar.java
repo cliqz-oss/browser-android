@@ -29,7 +29,10 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.main.QueryManager;
+import com.cliqz.nove.Bus;
+import com.cliqz.nove.Subscribe;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -55,13 +58,7 @@ public class SearchBar extends FrameLayout {
     public interface Listener extends TextWatcher, OnFocusChangeListener {
         void onTitleClicked(SearchBar searchBar);
 
-        void onStopClicked();
-
-        void onQueryCleared(SearchBar searchBar);
-
         void onKeyboardOpen();
-
-        void onBackIconPressed();
     }
 
     AutocompleteEditText searchEditText;
@@ -83,6 +80,9 @@ public class SearchBar extends FrameLayout {
     @Nullable
     Listener mListener;
 
+    @Inject
+    Bus bus;
+
     public SearchBar(Context context) {
         this(context, null);
     }
@@ -94,6 +94,7 @@ public class SearchBar extends FrameLayout {
     public SearchBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         BrowserApp.getAppComponent().inject(this);
+        bus.register(this);
         inflate(getContext(), R.layout.search_bar_widget, this);
         ButterKnife.bind(this);
         final Drawable clearIcon = VectorDrawableCompat.create(
@@ -134,19 +135,11 @@ public class SearchBar extends FrameLayout {
         final ListenerWrapper wrapper = new ListenerWrapper();
         this.searchEditText.addTextChangedListener(wrapper);
         this.searchEditText.setOnFocusChangeListener(wrapper);
-        this.searchEditText.setBackIconCallback(() -> {
-            showTitleBar();
-            if (mListener != null) {
-                mListener.onBackIconPressed();
-            }
-            return null;
-        });
-        this.searchEditText.setClearQueryCallback(() -> {
-            if (mListener != null) {
-                mListener.onQueryCleared(SearchBar.this);
-            }
-            return null;
-        });
+    }
+
+    @Subscribe
+    void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
+        showTitleBar();
     }
 
     @Nullable
@@ -206,13 +199,6 @@ public class SearchBar extends FrameLayout {
     }
 
     public void showTitleBar() {
-        final String query = searchEditText.getQuery();
-        if (query.length() == 0) {
-            titleBar.setText("");
-            titleBar.setHint(R.string.url_bar_search_hint);
-        } else {
-            titleBar.setText(query);
-        }
         final Animation animation = new ScaleAnimation(1.0f, scaleX, 1.0f, scaleY, pivotX, pivotY);
         animation.setDuration(150);
         searchEditText.startAnimation(animation);
