@@ -16,18 +16,18 @@ class TrialPeriodLocalRepo(private val preferenceManager: PreferenceManager) {
         }
         val bis = ByteArrayInputStream(Base64.decode(preferenceManager.trialPeriodInfo, Base64.DEFAULT))
         ObjectInputStream(bis).use {
-            val trialPeriod = it.readObject() as TrialPeriod
+            val trialPeriod = it.readObject() as ServerData
             trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
         }
     }
 
-    fun saveTrialPeriodInfo(trialPeriod: TrialPeriod?) {
-        if (trialPeriod == null) {
+    fun saveTrialPeriodInfo(serverData: ServerData?) {
+        if (serverData == null) {
             return
         }
         val bos = ByteArrayOutputStream()
         ObjectOutputStream(bos).use {
-            it.writeObject(trialPeriod)
+            it.writeObject(serverData)
             val base64 = Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT)
             preferenceManager.trialPeriodInfo = base64
         }

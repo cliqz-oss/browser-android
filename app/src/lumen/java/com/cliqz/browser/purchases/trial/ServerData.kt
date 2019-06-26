@@ -2,7 +2,9 @@ package com.cliqz.browser.purchases.trial
 
 import java.io.Serializable
 
-class TrialPeriod(
+class ServerData(
         var isInTrial: Boolean,
-        var trialDaysLeft: Int
+        var trialDaysLeft: Int,
+        var userName: String,
+        var password: String
 ) : Serializable
