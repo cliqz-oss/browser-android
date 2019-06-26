@@ -7,16 +7,9 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/dash_board_list_view"
+        android:id="@+id/dashboard_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp" />
-
-    <View
-        android:id="@+id/dashboard_disable_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/dark_transparent_overlay"
-        android:visibility="gone" />
 
 </FrameLayout>

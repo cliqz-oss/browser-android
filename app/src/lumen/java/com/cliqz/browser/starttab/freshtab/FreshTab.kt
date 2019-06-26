@@ -27,6 +27,8 @@ private const val SEVEN_DAYS_IN_MILLIS = 604800000L
 
 internal class FreshTab : StartTabFragment() {
 
+    private var isFreshInstall: Boolean = false
+
     @Inject
     lateinit var purchasesManager: PurchasesManager
 
@@ -35,8 +37,6 @@ internal class FreshTab : StartTabFragment() {
 
     @Inject
     lateinit var bus: Bus
-
-    private var isFreshInstall: Boolean = false
 
     @Inject
     lateinit var topsitesAdapter: TopsitesAdapter
@@ -59,9 +59,7 @@ internal class FreshTab : StartTabFragment() {
     override fun onResume() {
         super.onResume()
         bus.register(this)
-        topsitesAdapter.fetchTopsites()
-        topsites_grid.visibility =
-                if (preferenceManager.shouldShowTopSites()) View.VISIBLE else View.GONE
+        updateView()
     }
 
     override fun onPause() {
@@ -82,11 +80,10 @@ internal class FreshTab : StartTabFragment() {
             bus.post(CliqzMessages.OpenLink.open(topsite.url, animation))
             telemetry.sendTopsitesClickSignal(position, topsitesAdapter.displayedCount)
         }
-        toggleWelcomeMessage()
         if (purchasesManager.purchase.isASubscriber) {
             hideAllTrialPeriodViews()
         } else {
-            bus.post(Messages.OnTrialPeriodResponse())
+            getTrialPeriod(Messages.OnTrialPeriodResponse())
         }
     }
 
@@ -111,7 +108,12 @@ internal class FreshTab : StartTabFragment() {
     override fun getIconId() = R.drawable.ic_fresh_tab
 
     override fun updateView() {
-        //NO-OP
+        if (!isAdded) {
+            return
+        }
+        topsitesAdapter.fetchTopsites()
+        toggleTopSitesView(show = preferenceManager.shouldShowTopSites() && !topsitesAdapter.isEmpty)
+        toggleWelcomeMessage(show = isFreshInstall && topsitesAdapter.isEmpty)
     }
 
     private fun showTrialPeriodExpired() {
@@ -144,9 +146,12 @@ internal class FreshTab : StartTabFragment() {
         trial_over_lumen_upgrade.visibility = View.GONE
     }
 
-    private fun toggleWelcomeMessage() {
-        welcome_message.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
-        topsites_grid.visibility = if (isFreshInstall) View.GONE else View.VISIBLE
+    private fun toggleTopSitesView(show: Boolean) {
+        topsites_grid.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun toggleWelcomeMessage(show: Boolean) {
+        welcome_message.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     @Subscribe
