@@ -137,5 +137,4 @@ public interface AppComponent {
     void inject(ControlCenterHelper controlCenterHelper);
 
     void inject(BrowserApp browserApp);
-
 }

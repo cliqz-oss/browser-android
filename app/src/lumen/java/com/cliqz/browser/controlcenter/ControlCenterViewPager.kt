@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager
 class ControlCenterViewPager @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null) : ViewPager(context, attrs) {
 
+    @JvmField
     internal var isPagingEnabled = true
 
     init {

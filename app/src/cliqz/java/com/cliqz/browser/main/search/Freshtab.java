@@ -234,7 +234,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             holder.setUrl(piece.url);
             holder.titleView.setText(buildTitleSpannable(piece));
             holder.urlView.setText(piece.domain);
-            engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler), piece.url);
+            engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler, true), piece.url);
             if (!isNewsExpanded && count > COLLAPSED_NEWS_NO) {
                 view.setVisibility(GONE);
             }

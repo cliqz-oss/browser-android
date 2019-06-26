@@ -95,9 +95,9 @@ def extPath = file('../external/extension')
 
 def createBloomFilter(File outputDir) {
     def blackList = new File('app/blacklist.txt')
-    def lineCount = 0;
+    def lineCount = 0
     blackList.eachLine { line ->
-        lineCount++;
+        lineCount++
     }
     def bloomFilter = BloomFilter.create(lineCount, 0.0001)
     blackList.eachLine { line ->

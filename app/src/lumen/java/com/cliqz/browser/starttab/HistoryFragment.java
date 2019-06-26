@@ -186,4 +186,14 @@ public class HistoryFragment extends StartTabFragment {
     public int getIconId() {
         return R.drawable.ic_history_white;
     }
+
+    @Override
+    public void updateView() {
+        if (!isAdded() || adapter == null) {
+            return;
+        }
+        prepareListData();
+        adapter.notifyDataSetChanged();
+        historyListView.scrollToPosition(0);
+    }
 }

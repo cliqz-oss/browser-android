@@ -329,7 +329,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
 
         mControlCenterHelper =
-                new ControlCenterHelper(getChildFragmentManager(), getContext(), view);
+                new ControlCenterHelper(getChildFragmentManager());
 
         if (openTabsCounter != null) {
             openTabsCounter.setCounter(tabsManager.getTabCount());
@@ -748,7 +748,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        searchBar.setTitle(webView.getTitle());
+        searchBar.setTitle(BuildConfig.IS_LUMEN ? webView.getUrl() : webView.getTitle());
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
         webView.bringToFront();
@@ -1350,6 +1350,20 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     public void onVpnStateChange(Messages.onVpnStateChange message) {
         updateVpnIcon();
+    }
+
+    @Subscribe
+    void onSearchBarClearPressed(@Nullable Messages.SearchBarClearPressed msg) {
+        telemetry.sendClearUrlBarSignal(mIsIncognito, searchBar.getSearchText().length(), getTelemetryView());
+        state.setQuery("");
+    }
+
+    @Subscribe
+    void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
+        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
+        if (mLightningView.canGoBack()) {
+            bringWebViewToFront(null);
+        }
     }
 
     private void updateUI() {

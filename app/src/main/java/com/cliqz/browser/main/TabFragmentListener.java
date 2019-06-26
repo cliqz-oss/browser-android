@@ -89,7 +89,7 @@ class TabFragmentListener implements SearchBar.Listener {
             fragment.lastQuery = q;
             searchView.updateQuery(q, start, count);
         }
-        // TODO Stefano Are we shure?
+        // TODO Stefano Are we sure?
         // if (q.length() == 0 && fragment.querySuggestor != null) {
         //     fragment.querySuggestor.clearSuggestions();
         // }
@@ -123,26 +123,8 @@ class TabFragmentListener implements SearchBar.Listener {
     }
 
     @Override
-    public void onStopClicked() {
-        fragment.mLightningView.stopLoading();
-    }
-
-    @Override
-    public void onQueryCleared(SearchBar searchBar) {
-        fragment.telemetry.sendClearUrlBarSignal(fragment.mIsIncognito,
-                searchBar.getSearchText().length(), fragment.getTelemetryView());
-        fragment.state.setQuery("");
-    }
-
-    @Override
     public void onKeyboardOpen() {
         fragment.telemetry.sendKeyboardSignal(true, fragment.mIsIncognito,
                 fragment.getTelemetryView());
-    }
-
-    @Override
-    public void onBackIconPressed() {
-        fragment.telemetry.sendBackIconPressedSignal(fragment.mIsIncognito,
-                fragment.searchView.isFreshTabVisible());
     }
 }

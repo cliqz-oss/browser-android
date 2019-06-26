@@ -74,8 +74,8 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
                 val productList = ArrayList<ProductRowData>()
                 var isSubscribed = false
-                entitlementMap[Entitlements.PREMIUM_SALE]?.offerings?.forEach {
-                    (_, offering) -> offering.skuDetails?.apply {
+                entitlementMap[Entitlements.PREMIUM_SALE]?.offerings?.forEach { (_, offering) ->
+                    offering.skuDetails?.apply {
                         if (sku == purchasesManager.purchase.sku) {
                             isSubscribed = true
                             productList.add(ProductRowData(sku, title, price, description, true))
@@ -129,15 +129,29 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                         Log.e(TAG, error.underlyingErrorMessage)
                         Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
                     },
-                    { _, purchaseInfo ->
-                        if (purchaseInfo.allPurchasedSkus.any { it.contains("vpn") }) {
-                            purchasesManager.purchase.isVpnEnabled = true
+                    { purchase, _ ->
+                        when (purchase.sku) {
+                            Product.BASIC_VPN -> {
+                                purchasesManager.purchase.isVpnEnabled = true
+                                purchasesManager.purchase.isDashboardEnabled = true
+                                preferenceManager.isAttrackEnabled = true
+                                preferenceManager.adBlockEnabled = true
+                            }
+                            Product.BASIC -> {
+                                purchasesManager.purchase.isVpnEnabled = false
+                                purchasesManager.purchase.isDashboardEnabled = true
+                                preferenceManager.isAttrackEnabled = true
+                                preferenceManager.adBlockEnabled = true
+                            }
+                            Product.VPN -> {
+                                purchasesManager.purchase.isVpnEnabled = true
+                                purchasesManager.purchase.isDashboardEnabled = false
+                                preferenceManager.isAttrackEnabled = false
+                                preferenceManager.adBlockEnabled = false
+                            }
                         }
-                        if (purchaseInfo.allPurchasedSkus.any { it.contains("basic") }) {
-                            purchasesManager.purchase.isDashboardEnabled = true
-                            preferenceManager.isAttrackEnabled = true
-                            preferenceManager.adBlockEnabled = true
-                        }
+                        purchasesManager.purchase.sku = purchase.sku
+                        purchasesManager.purchase.isASubscriber = true
                         bus.post(Messages.PurchaseCompleted())
                         this@PurchaseFragment.dismiss()
                     }

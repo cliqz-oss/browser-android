@@ -1,6 +1,5 @@
 package com.cliqz.browser.starttab.freshtab
 
-import acr.browser.lightning.bus.BrowserEvents
 import acr.browser.lightning.preference.PreferenceManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.ScaleAnimation
 import android.widget.AdapterView
-
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.Messages
@@ -62,13 +60,14 @@ internal class FreshTab : StartTabFragment() {
         super.onResume()
         bus.register(this)
         topsitesAdapter.fetchTopsites()
+        topsites_grid.visibility =
+                if (preferenceManager.shouldShowTopSites()) View.VISIBLE else View.GONE
     }
 
     override fun onPause() {
         super.onPause()
         bus.unregister(this)
     }
-
 
     private fun initializeViews() {
         topsites_grid.adapter = topsitesAdapter
@@ -93,8 +92,8 @@ internal class FreshTab : StartTabFragment() {
 
     @Subscribe
     fun getTrialPeriod(onTrialPeriodResponse: Messages.OnTrialPeriodResponse) {
-        if (purchasesManager.trialPeriod != null) {
-            purchasesManager.trialPeriod?.apply {
+        if (purchasesManager.serverData != null) {
+            purchasesManager.serverData?.apply {
                 if (isInTrial) {
                     showTrialDaysLeft(trialDaysLeft)
                 } else {
@@ -110,6 +109,10 @@ internal class FreshTab : StartTabFragment() {
     override fun getTitle() = ""
 
     override fun getIconId() = R.drawable.ic_fresh_tab
+
+    override fun updateView() {
+        //NO-OP
+    }
 
     private fun showTrialPeriodExpired() {
         trial_period_lumen_upgrade.visibility = View.GONE
@@ -144,6 +147,13 @@ internal class FreshTab : StartTabFragment() {
     private fun toggleWelcomeMessage() {
         welcome_message.visibility = if (isFreshInstall) View.VISIBLE else View.GONE
         topsites_grid.visibility = if (isFreshInstall) View.GONE else View.VISIBLE
+    }
+
+    @Subscribe
+    internal fun onPurchaseCompleted(purchaseCompleted: Messages.PurchaseCompleted) {
+        if (purchasesManager.purchase.isASubscriber) {
+            hideAllTrialPeriodViews()
+        }
     }
 
     companion object {

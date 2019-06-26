@@ -67,7 +67,7 @@
         android:letterSpacing="0.25"
         android:text="@string/made_in_germany"
         android:textAllCaps="true"
-        android:textColor="#304572"
+        android:textColor="@color/lumen_color_blue_secondary"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

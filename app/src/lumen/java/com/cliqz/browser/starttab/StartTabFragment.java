@@ -12,4 +12,6 @@ abstract public class StartTabFragment extends Fragment {
 
     abstract @DrawableRes
     public int getIconId();
+
+    abstract public void updateView();
 }

@@ -4,7 +4,8 @@ import acr.browser.lightning.preference.PreferenceManager
 import android.content.Context
 import android.util.Log
 import com.cliqz.browser.main.Messages
-import com.cliqz.browser.purchases.trial.TrialPeriod
+import com.cliqz.browser.purchases.SubscriptionConstants.Product
+import com.cliqz.browser.purchases.trial.ServerData
 import com.cliqz.browser.purchases.trial.TrialPeriodLocalRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo
 import com.cliqz.browser.purchases.trial.TrialPeriodResponseListener
@@ -13,6 +14,8 @@ import com.revenuecat.purchases.PurchaserInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesError
 import com.revenuecat.purchases.interfaces.ReceivePurchaserInfoListener
+
+private val TAG = PurchasesManager::class.java.simpleName
 
 class PurchasesManager(
         val context: Context,
@@ -26,15 +29,15 @@ class PurchasesManager(
 
     var purchase = Purchase()
 
-    var trialPeriod: TrialPeriod? = null
+    var serverData: ServerData? = null
 
     var isLoading = true
 
-    override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-        this.trialPeriod = trialPeriod
+    override fun onTrialPeriodResponse(serverData: ServerData?) {
+        this.serverData = serverData
         isLoading = false
-        preferenceManager.adBlockEnabled = trialPeriod == null || trialPeriod.isInTrial
-        preferenceManager.isAttrackEnabled = trialPeriod == null || trialPeriod.isInTrial
+        preferenceManager.adBlockEnabled = serverData == null || serverData.isInTrial
+        preferenceManager.isAttrackEnabled = serverData == null || serverData.isInTrial
 
         bus.post(Messages.OnTrialPeriodResponse())
     }
@@ -43,8 +46,8 @@ class PurchasesManager(
         if (purchaserInfo.activeSubscriptions.isNotEmpty()) {
             // If subscribed, enable features.
             for (sku in purchaserInfo.activeSubscriptions) {
-                val isVpnEnabled = sku.contains("vpn")
-                val isDashboardEnabled = sku.contains("basic")
+                val isVpnEnabled = sku == Product.VPN || sku == Product.BASIC_VPN
+                val isDashboardEnabled = sku == Product.BASIC || sku == Product.BASIC_VPN
                 purchase.apply {
                     this.isASubscriber = true
                     this.isVpnEnabled = isVpnEnabled
@@ -58,6 +61,7 @@ class PurchasesManager(
             }
             isLoading = false
         } else {
+            purchase.isASubscriber = false
             // Check if in trial period.
             this.loadTrialPeriodInfo(this@PurchasesManager)
         }
@@ -72,32 +76,36 @@ class PurchasesManager(
         try {
             Purchases.sharedInstance.getPurchaserInfo(this)
         } catch (_: UninitializedPropertyAccessException) {
-            Log.w(PurchasesManager::class.java.simpleName, "RevenueCat is not initialized")
+            Log.w(TAG, "RevenueCat is not initialized")
         }
     }
 
     private fun loadTrialPeriodInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
         // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-            override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-                trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
+            override fun onTrialPeriodResponse(serverData: ServerData?) {
+                trialPeriodResponseListener.onTrialPeriodResponse(serverData)
                 // TODO: Can avoid querying network if not needed.
                 trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-                    override fun onTrialPeriodResponse(trialPeriod: TrialPeriod?) {
-                        trialPeriodResponseListener.onTrialPeriodResponse(trialPeriod)
-                        trialPeriodLocalRepo.saveTrialPeriodInfo(trialPeriod)
+                    override fun onTrialPeriodResponse(serverData: ServerData?) {
+                        trialPeriodResponseListener.onTrialPeriodResponse(serverData)
+                        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
                     }
                 })
             }
         })
     }
 
-    fun isDashboardEnabled() : Boolean {
-        return purchase.isDashboardEnabled || trialPeriod != null && trialPeriod!!.isInTrial
+    fun isDashboardEnabled() = if (purchase.isASubscriber) {
+        purchase.isDashboardEnabled
+    } else {
+        serverData != null && serverData!!.isInTrial
     }
 
-    fun isVpnEnabled() : Boolean {
-        return purchase.isVpnEnabled || trialPeriod != null && trialPeriod!!.isInTrial
+    fun isVpnEnabled() = if (purchase.isASubscriber) {
+        purchase.isVpnEnabled
+    } else {
+        serverData != null && serverData!!.isInTrial
     }
 
 }

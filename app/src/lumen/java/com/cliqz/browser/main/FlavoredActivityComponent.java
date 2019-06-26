@@ -1,6 +1,7 @@
 package com.cliqz.browser.main;
 
 import com.cliqz.browser.annotations.PerActivity;
+import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.controlcenter.DashboardFragment;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
@@ -34,4 +35,6 @@ public interface FlavoredActivityComponent extends MainActivityComponent {
     void inject(PurchasesManager purchasesManager);
 
     void inject(VpnHandler vpnHandler);
+
+    void inject(ControlCenterDialog controlCenterDialog);
 }
