@@ -37,7 +37,6 @@ import static com.cliqz.browser.controlcenter.DashboardItemEntity.VIEW_TYPE_SHIE
  */
 public class DashboardFragment extends ControlCenterFragment {
 
-    private View mDisableDashboardView;
     private DashboardAdapter mDashboardAdapter;
     private boolean mIsDailyView;
     private final int[] tabsTitleIds = {
@@ -76,8 +75,7 @@ public class DashboardFragment extends ControlCenterFragment {
                              @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.bond_dashboard_fragment, container,
                 false);
-        final RecyclerView dashBoardListView = view.findViewById(R.id.dash_board_list_view);
-        mDisableDashboardView = view.findViewById(R.id.dashboard_disable_view);
+        final RecyclerView dashBoardListView = view.findViewById(R.id.dashboard_list_view);
         mDashboardAdapter = new DashboardAdapter(getContext(), bus);
         updateUI();
         dashBoardListView.setAdapter(mDashboardAdapter);
@@ -93,15 +91,7 @@ public class DashboardFragment extends ControlCenterFragment {
     }
 
     public void changeDashboardState(boolean isEnabled) {
-        final int overlayVisibility;
-        if (isEnabled) {
-            overlayVisibility = View.GONE;
-        } else {
-            overlayVisibility = View.VISIBLE;
-        }
         mDashboardAdapter.setIsDashboardEnabled(isEnabled);
-
-        mDisableDashboardView.setVisibility(overlayVisibility);
     }
 
     @Override
