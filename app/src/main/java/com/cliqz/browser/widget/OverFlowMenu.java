@@ -320,11 +320,13 @@ public class OverFlowMenu extends FrameLayout {
         mDesktopSiteEnabled = isEnabled;
     }
 
-    @SuppressLint("ObsoleteSdkInt")
     private void prepareEntries() {
         List<Entries> entries = new ArrayList<>(
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
 
+        if (BuildConfig.IS_LUMEN) {
+            entries.remove(Entries.DESKTOP_PAIRING);
+        }
         if (!BuildConfig.DEBUG) {
             entries.remove(Entries.REACT_DEBUG);
         }
