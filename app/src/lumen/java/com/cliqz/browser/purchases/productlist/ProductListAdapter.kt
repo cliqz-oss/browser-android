@@ -72,7 +72,7 @@ class ProductListAdapter(private val context: Context?,
             productRowData?.apply {
                 itemView.title.text = title
                 itemView.description.text = description
-                itemView.price.text = price
+                itemView.price.text = context?.getString(R.string.per_month_text, price)
                 if (this@ProductListAdapter.hasSubscription) {
                     if (this.isSubscribed) {
                         itemView.is_subscribed?.visibility = View.VISIBLE
