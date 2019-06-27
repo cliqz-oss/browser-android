@@ -1,49 +1,34 @@
 package com.cliqz.browser.overview;
 
+import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+
 import com.cliqz.browser.R;
-import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.main.TabFragment;
-import com.cliqz.browser.main.TabsManager;
-import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.webview.CliqzMessages;
-import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
+import com.google.android.material.tabs.TabLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import javax.inject.Inject;
+import java.util.Objects;
 
-public class OverviewFragment extends Fragment {
-
-    @Inject
-    Bus bus;
-
-    @Inject
-    TabsManager tabsManager;
-
-    @Inject
-    Telemetry telemetry;
+public class OverviewFragment extends CommonOverviewFragment {
 
     private ViewPager mViewPager;
     private OverviewTabsEnum mSelectedTab = OverviewTabsEnum.UNDEFINED;
@@ -62,15 +47,16 @@ public class OverviewFragment extends Fragment {
         final View deleteButton = view.findViewById(R.id.action_delete);
         deleteButton.setOnClickListener(v -> bus.post(new Messages.OnContextualBarDeletePressed()));
         final int themeResId = R.style.Theme_Cliqz_Overview;
-        final TypedArray typedArray = getActivity().getTheme()
+        final Activity activity = Objects.requireNonNull(getActivity());
+        final TypedArray typedArray = activity.getTheme()
                 .obtainStyledAttributes(themeResId, new int[]{R.attr.colorPrimaryDark});
         final int resourceId = typedArray.getResourceId(0, R.color.normal_tab_primary_color);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivity().getWindow()
-                    .setStatusBarColor(ContextCompat.getColor(getContext(), resourceId));
+            activity.getWindow()
+                    .setStatusBarColor(ContextCompat.getColor(activity, resourceId));
             typedArray.recycle();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(getActivity());
+            SystemBarTintManager tintManager = new SystemBarTintManager(activity);
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setNavigationBarTintEnabled(true);
             tintManager.setTintColor(resourceId);
@@ -81,14 +67,13 @@ public class OverviewFragment extends Fragment {
         mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mPageAdapter);
         final Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle(getContext().getString(R.string.overview));
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        toolbar.setTitle(activity.getString(R.string.overview));
+        ((AppCompatActivity) activity).setSupportActionBar(toolbar);
+        final ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(getContext().getString(R.string.overview));
+            actionBar.setTitle(activity.getString(R.string.overview));
         }
-        setHasOptionsMenu(true);
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         return view;
@@ -101,43 +86,6 @@ public class OverviewFragment extends Fragment {
             final long duration =
                     now - mPageAdapter.getLastShownTime(mCurrentPageIndex);
             telemetry.sendOverviewPageVisibilitySignal(previousName, duration, false);
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_overview_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // All the options close the current visible page
-        sendCurrentPageHideSignal();
-        final int id = item.getItemId();
-        switch (id) {
-            case R.id.action_new_tab:
-                telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, false, TelemetryKeys.OVERVIEW);
-                tabsManager.buildTab().show();
-                return true;
-            case R.id.action_new_forget_tab:
-                telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, false,
-                        TelemetryKeys.OVERVIEW);
-                tabsManager.buildTab().setForgetMode(true).show();
-                return true;
-            case R.id.action_settings:
-                telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, false, TelemetryKeys.OVERVIEW);
-                if (bus != null) {
-                    bus.post(new Messages.GoToSettings());
-                }
-                return true;
-            case R.id.action_close_all_tabs:
-                telemetry.sendMainMenuSignal(TelemetryKeys.CLOSE_ALL_TABS, false,
-                        TelemetryKeys.OVERVIEW);
-                tabsManager.deleteAllTabs();
-                return true;
-            default:
-                return false;
         }
     }
 
@@ -174,16 +122,6 @@ public class OverviewFragment extends Fragment {
     public void onOrientationChanged(Configuration newConfig) {
         telemetry.sendOrientationSignal(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ?
         TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT, TelemetryKeys.OVERVIEW);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getActivity());
-        if (component != null) {
-            component.inject(this);
-            bus.register(this);
-        }
     }
 
     @Override
@@ -269,5 +207,11 @@ public class OverviewFragment extends Fragment {
         public void onPageScrollStateChanged(int state) {
 
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        sendCurrentPageHideSignal();
+        return super.onOptionsItemSelected(item);
     }
 }

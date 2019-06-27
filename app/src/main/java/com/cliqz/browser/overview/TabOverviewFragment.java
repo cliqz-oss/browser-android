@@ -19,6 +19,8 @@ import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.deckview.TabsDeckView;
 import com.cliqz.jsengine.Engine;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -55,16 +57,13 @@ public class TabOverviewFragment extends Fragment implements TabsDeckView.TabsDe
 
     @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NotNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.tabs_overview, container, false);
         ButterKnife.bind(this, view);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                telemetry.sendNewTabSignal(tabsManager.getTabCount()+1);
-                final int position = tabsManager.buildTab().create();
-                tabsManager.showTab(position, R.anim.new_tab_scale_animation);
-            }
+        floatingActionButton.setOnClickListener(v -> {
+            telemetry.sendNewTabSignal(tabsManager.getTabCount()+1);
+            final int position = tabsManager.buildTab().create();
+            tabsManager.showTab(position, R.anim.new_tab_scale_animation);
         });
         deckView.setListener(this);
         return view;
