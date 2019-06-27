@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -24,7 +23,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -112,11 +110,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private CustomViewHandler mCustomViewHandler;
     protected String currentMode;
     private boolean mIsColdStart = true;
-    private boolean mShouldShowLookbackDialog = true;
     private final HashSet<Long> downloadIds = new HashSet<>();
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
-    private ProgressDialog progressDialog = null;
 
     private PurchaseFragment purchaseFragment;
 
@@ -194,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 isIncognito = false;
                 url = null;
                 query = null;
-                progressDialog = new ProgressDialog(this);
+                final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setIndeterminate(true);
                 progressDialog.show();
                 // TODO This break the news on Cliqz. Please, move the loader to the proper, flavor dependent spot
@@ -232,7 +228,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         if (isNotificationClicked) {
             sendNotificationClickedTelemetry(intent);
         }
-        //noinspection ConstantConditions
         if (!isRestored || url != null || query != null) {
             firstTabBuilder = tabsManager.buildTab();
             firstTabBuilder.setForgetMode(isIncognito);
@@ -270,12 +265,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.update_webview_msg)
                     .setCancelable(false)
-                    .setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=" + WEBVIEW_PACKAGE_NAME)));
-                            finish();
-                        }
+                    .setPositiveButton(R.string.update, (dialog, id) -> {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=" + WEBVIEW_PACKAGE_NAME)));
+                        finish();
                     });
             AlertDialog alert = builder.create();
             alert.show();
@@ -477,6 +470,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             WebUtils.clearWebStorage(this);
             final File file = new File(getApplicationInfo().dataDir+"/app_webview", "historyManager-journal");
             if (file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
         }
@@ -484,6 +478,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             WebUtils.clearCookies(this);
             final File file = new File(getApplicationInfo().dataDir+"/app_webview", "Cookies-journal");
             if (file.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
 
@@ -502,12 +497,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     public void openLinkInNewTab(BrowserEvents.OpenUrlInNewTab event) {
         createTab(event.url, event.isIncognito, event.showImmediately);
         bus.post(new Messages.UpdateTabCounter(tabsManager.getTabCount()));
-        Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tabsManager.showTab(tabsManager.getTabCount() - 1);
-            }
-        });
+        Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), v -> tabsManager.showTab(tabsManager.getTabCount() - 1));
     }
 
     @Subscribe
@@ -753,13 +743,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

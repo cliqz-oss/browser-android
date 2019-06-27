@@ -85,6 +85,10 @@ internal class FreshTab : StartTabFragment() {
         } else {
             getTrialPeriod(Messages.OnTrialPeriodResponse())
         }
+
+        trial_period_lumen_upgrade.setOnClickListener {
+            bus.post(Messages.GoToPurchase(0))
+        }
     }
 
     @Subscribe
@@ -136,9 +140,6 @@ internal class FreshTab : StartTabFragment() {
         trial_over_lumen_upgrade.visibility = View.GONE
         trial_period_upgrade_description.text =
                 resources.getQuantityString(R.plurals.trial_period_upgrade_description, daysLeft, daysLeft)
-        trial_period_lumen_upgrade.setOnClickListener {
-            bus.post(Messages.GoToPurchase(0))
-        }
     }
 
     private fun hideAllTrialPeriodViews() {

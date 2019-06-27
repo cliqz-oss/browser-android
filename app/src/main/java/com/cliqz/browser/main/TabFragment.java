@@ -86,7 +86,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -1381,15 +1387,25 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             final Context wrapper = new ContextThemeWrapper(activity, themeId);
             final Resources.Theme theme = wrapper.getTheme();
 
-            final TypedArray typedArray = theme.obtainStyledAttributes(new int[]{
-                    R.attr.colorPrimary,
-                    R.attr.colorPrimaryDark,
-                    R.attr.textColorPrimary,
-            });
-            final int iconColor = typedArray.getColor(2,
-                    ContextCompat.getColor(wrapper, R.color.text_color_primary));
-            final int statusBarColor = typedArray.getColor(1,
+            int[] attrs;
+            try {
+                final Field field = android.R.attr.class.getDeclaredField("statusBarColor");
+                final int attr = field.getInt(null);
+                attrs = new int[] {
+                        attr,
+                        R.attr.textColorPrimary,
+                };
+            } catch (Throwable e) {
+                attrs = new int[] {
+                        R.attr.colorPrimaryDark,
+                        R.attr.textColorPrimary
+                };
+            }
+            final TypedArray typedArray = theme.obtainStyledAttributes(attrs);
+            final int statusBarColor = typedArray.getColor(typedArray.getIndex(0),
                     ContextCompat.getColor(wrapper, R.color.primary_color_dark));
+            final int iconColor = typedArray.getColor(typedArray.getIndex(1),
+                    ContextCompat.getColor(wrapper, R.color.text_color_primary));
             typedArray.recycle();
             overflowMenuIcon.getDrawable().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
             updateToolbarContainer(activity, preferenceManager.isBackgroundImageEnabled());

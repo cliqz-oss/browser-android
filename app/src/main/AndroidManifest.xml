@@ -131,11 +131,19 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".connect.SyncActivity" android:exported="false"
-            android:theme="@style/Theme.AppCompat" android:screenOrientation="portrait" />
-
         <activity android:name=".qrscanner.CodeScannerActivity" android:exported="false"
             android:theme="@style/Theme.AppCompat" android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".settings.EulaSettingActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_activity_eula_setting"
+            android:theme="@style/Theme.SettingsTheme" />
+
+        <activity android:name=".main.search.PrivacyPolicyActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/privacy_policy_title"
+            android:theme="@style/Theme.SettingsTheme" />
 
         <receiver
             android:name=".telemetry.InstallReferrerReceiver"
@@ -225,17 +233,6 @@
             android:authorities="${applicationId}.FacebookInitProvider"
             android:exported="false"
             tools:node="remove" />
-
-        <activity
-            android:name=".settings.EulaSettingActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_activity_eula_setting"
-            android:theme="@style/Theme.SettingsTheme" />
-        <activity android:name=".main.search.PrivacyPolicyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/privacy_policy_title"
-            android:theme="@style/Theme.SettingsTheme"
-            />
     </application>
 
 </manifest>

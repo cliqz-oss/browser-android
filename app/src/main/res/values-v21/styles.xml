@@ -30,6 +30,13 @@
         -->
     </style>
 
+    <style name="Theme.LightTheme.Incognito" parent="Theme.LightTheme">
+        <item name="colorPrimary">@color/incognito_tab_primary_color</item>
+        <item name="colorPrimaryDark">@color/incognito_tab_primary_color_dark</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
+    </style>
+
     <style name="Theme.SettingsTheme" parent="Theme.AppCompat.Light">
         <item name="toolbarSettingsBackground">@drawable/toolbar_elevate</item>
         <item name="listBackground">@drawable/list_bg</item>
@@ -40,7 +47,11 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="dividerColor">@color/divider_light</item>
-        <item name="android:statusBarColor">@color/accent_color</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
     </style>
 
+    <style name="Theme.Purchase.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
+    </style>
 </resources>
