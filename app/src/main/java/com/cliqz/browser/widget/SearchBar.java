@@ -3,7 +3,6 @@ package com.cliqz.browser.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -24,9 +23,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.Messages;
@@ -35,7 +35,6 @@ import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 
 import java.util.Locale;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -49,6 +48,8 @@ import butterknife.ButterKnife;
  */
 public class SearchBar extends FrameLayout {
 
+    public static final String HTTPS_PREFIX = "HTTPS://";
+    public static final String HTTP_PREFIX = "HTTP://";
     private float scaleX;
     private float scaleY;
     private float pivotX;
@@ -65,6 +66,9 @@ public class SearchBar extends FrameLayout {
 
     @Inject
     QueryManager queryManager;
+
+    @BindView(R.id.icon_lock)
+    AppCompatImageView lock;
 
     @BindView(R.id.title_bar)
     TextView titleBar;
@@ -97,10 +101,6 @@ public class SearchBar extends FrameLayout {
         bus.register(this);
         inflate(getContext(), R.layout.search_bar_widget, this);
         ButterKnife.bind(this);
-        final Drawable clearIcon = VectorDrawableCompat.create(
-                context.getResources(), R.drawable.ic_clear_black, null);
-        final int clearIconHeight = Objects.requireNonNull(clearIcon).getIntrinsicHeight();
-        titleBar.setHeight(clearIconHeight);
         if (trackerCounter != null) {
             trackerCounter.setFocusable(false);
             trackerCounter.setFocusableInTouchMode(false);
@@ -226,7 +226,7 @@ public class SearchBar extends FrameLayout {
                 searchEditText.setSelection(0,getSearchText().length()), 200);
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@Nullable String title) {
         // Be sure to not set the trampoline as the title
         final String nnTitle = title == null ? "" : title;
         final Uri titleAsUri = Uri.parse(nnTitle);
@@ -234,7 +234,20 @@ public class SearchBar extends FrameLayout {
                 .getQueryParameter(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME) != null) {
             return;
         }
-        titleBar.setText(title);
+        final String upperCaseTitle = nnTitle.toUpperCase();
+        final String cleanTitle;
+        if (upperCaseTitle.startsWith(HTTPS_PREFIX)) {
+            cleanTitle = nnTitle.substring(HTTPS_PREFIX.length());
+        } else if (upperCaseTitle.startsWith(HTTP_PREFIX)) {
+            cleanTitle = nnTitle.substring(HTTP_PREFIX.length());
+        } else {
+            cleanTitle = nnTitle;
+        }
+        titleBar.setText(cleanTitle);
+    }
+
+    public void setSecure(boolean secure) {
+        lock.setVisibility(secure ? VISIBLE : GONE);
     }
 
     public void setQuery(String query) {
@@ -304,16 +317,31 @@ public class SearchBar extends FrameLayout {
      * @param isIncognito True if the current tab is in incognito mode
      */
     public void setStyle(boolean isIncognito) {
-        if (isIncognito) {
-            searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
-            searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
-            titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_incognito));
-            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_incognito));
+        final Context context = getContext();
+        if (BuildConfig.IS_NOT_LUMEN) {
+            if (isIncognito) {
+                searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
+                searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
+                titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
+                titleBar.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
+            } else {
+                searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
+                searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
+                titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
+                titleBar.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
+            }
         } else {
-            searchEditText.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
-            searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
-            titleBar.setTextColor(ContextCompat.getColor(getContext(), R.color.url_bar_text_color_normal));
-            titleBar.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.url_bar_bg_normal));
+            if (isIncognito) {
+                searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
+                searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
+                titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
+                setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
+            } else {
+                searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
+                searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
+                titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
+                setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
+            }
         }
     }
 

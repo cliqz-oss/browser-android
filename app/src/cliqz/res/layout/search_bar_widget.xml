@@ -5,7 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/searchbar_background"
+    android:gravity="center_vertical"
     android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icon_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_lock_black"
+        app:tint="@color/search_lock_color"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/title_bar"
@@ -20,7 +30,6 @@
         android:paddingLeft="8dp"
         android:textColor="#333333"
         android:textSize="15sp"
-        android:contentDescription="@string/descr_search_bar"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:layout_weight="1" />

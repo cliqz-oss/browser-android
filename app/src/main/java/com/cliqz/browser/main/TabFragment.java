@@ -741,6 +741,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (url != null && !url.isEmpty() && !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             state.setUrl(url);
             searchBar.setTitle(url);
+            searchBar.setSecure(isHttpsUrl(url));
         }
     }
 
@@ -748,7 +749,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        searchBar.setTitle(BuildConfig.IS_LUMEN ? webView.getUrl() : webView.getTitle());
+        final String url = webView.getUrl();
+        searchBar.setTitle(BuildConfig.IS_LUMEN ? url : webView.getTitle());
+        searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
         webView.bringToFront();
@@ -762,6 +765,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         } catch (NoInstanceException e) {
             Log.e(TAG, "Null context", e);
         }
+    }
+
+    private boolean isHttpsUrl(@Nullable String url) {
+        return url != null && url.startsWith("https://");
     }
 
     private void updateToolbarContainer(@NonNull Context context, boolean isBackgroundEnabled) {
@@ -872,6 +879,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final String url = builder.build().toString();
         mLightningView.loadUrl(url);
         searchBar.setTitle(eventUrl);
+        searchBar.setSecure(isHttpsUrl(eventUrl));
         bringWebViewToFront(animation);
         if (quickAccessBar != null) {
             quickAccessBar.hide();

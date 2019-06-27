@@ -76,4 +76,6 @@
     <color name="fresh_tab_news_background_color">#CFFF</color>
     <color name="progress_bar_bg">#E7ECEE</color>
     <color name="progress_bar_color">#2B5993</color>
+
+    <color name="search_lock_color">@color/primary_color</color>
 </resources>

@@ -17,8 +17,8 @@
         android:layout_height="wrap_content"
         tools:layout_height="30dp"
         tools:background="@color/white"
-        android:paddingLeft="@dimen/toolbar_padding"
-        android:paddingRight="@dimen/toolbar_padding"
+        android:layout_marginStart="@dimen/toolbar_padding"
+        android:layout_marginEnd="@dimen/toolbar_padding"
         android:layout_weight="1"/>
 
     <ImageButton
