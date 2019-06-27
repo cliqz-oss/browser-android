@@ -62,10 +62,9 @@ class PurchasesManager(
             isLoading = false
         } else {
             purchase.isASubscriber = false
-            // Check if in trial period.
-            this.loadTrialPeriodInfo(this@PurchasesManager)
         }
-
+        // Get Trial Period data and vpn username, password.
+        this.loadTrialPeriodInfo(this@PurchasesManager)
     }
 
     override fun onError(error: PurchasesError) {

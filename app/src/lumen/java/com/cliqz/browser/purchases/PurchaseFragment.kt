@@ -118,44 +118,75 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     override fun onBuyClicked(position: Int) {
+        mAdapter.getProduct(position)?.apply {
+            restoreExistingPurchase({ activeSku ->
+                Toast.makeText(context, "You are already subscribed to one the packages", Toast.LENGTH_LONG).show()
+                enableFeatures(activeSku)
+            }, {
+                makePurchase(sku)
+            })
+        }
+    }
+
+    private fun restoreExistingPurchase(success: (sku: String) -> Unit, cannotRestore: () -> Unit) {
+        Purchases.sharedInstance.restorePurchasesWith(
+                {
+                    Log.w(TAG, it.message)
+                    cannotRestore()
+                },
+                {
+                    if (it.activeSubscriptions.isEmpty()) {
+                        cannotRestore()
+                    } else {
+                        success(it.activeSubscriptions.first())
+                    }
+                }
+        )
+    }
+
+    private fun makePurchase(sku: String) {
         val oldSku = ArrayList<String>()
         if (purchasesManager.purchase.sku.isNotEmpty()) {
             oldSku.add(purchasesManager.purchase.sku)
         }
-        mAdapter.getProduct(position)?.apply {
-            Purchases.sharedInstance.makePurchaseWith(activity as Activity, sku,
-                    BillingClient.SkuType.SUBS, oldSku,
-                    { error, _ ->
-                        Log.e(TAG, error.underlyingErrorMessage)
+        Purchases.sharedInstance.makePurchaseWith(activity as Activity, sku,
+                BillingClient.SkuType.SUBS, oldSku,
+                { error, userCancelled ->
+                    if (!userCancelled) {
+                        Log.e(TAG, "${error.underlyingErrorMessage}")
                         Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
-                    },
-                    { purchase, _ ->
-                        when (purchase.sku) {
-                            Product.BASIC_VPN -> {
-                                purchasesManager.purchase.isVpnEnabled = true
-                                purchasesManager.purchase.isDashboardEnabled = true
-                                preferenceManager.isAttrackEnabled = true
-                                preferenceManager.adBlockEnabled = true
-                            }
-                            Product.BASIC -> {
-                                purchasesManager.purchase.isVpnEnabled = false
-                                purchasesManager.purchase.isDashboardEnabled = true
-                                preferenceManager.isAttrackEnabled = true
-                                preferenceManager.adBlockEnabled = true
-                            }
-                            Product.VPN -> {
-                                purchasesManager.purchase.isVpnEnabled = true
-                                purchasesManager.purchase.isDashboardEnabled = false
-                                preferenceManager.isAttrackEnabled = false
-                                preferenceManager.adBlockEnabled = false
-                            }
-                        }
-                        purchasesManager.purchase.sku = purchase.sku
-                        purchasesManager.purchase.isASubscriber = true
-                        bus.post(Messages.PurchaseCompleted())
-                        this@PurchaseFragment.dismiss()
                     }
-            )
+                },
+                { purchase, _ ->
+                    enableFeatures(purchase.sku)
+                }
+        )
+    }
+
+    private fun enableFeatures(sku: String) {
+        when (sku) {
+            Product.BASIC_VPN -> {
+                purchasesManager.purchase.isVpnEnabled = true
+                purchasesManager.purchase.isDashboardEnabled = true
+                preferenceManager.isAttrackEnabled = true
+                preferenceManager.adBlockEnabled = true
+            }
+            Product.BASIC -> {
+                purchasesManager.purchase.isVpnEnabled = false
+                purchasesManager.purchase.isDashboardEnabled = true
+                preferenceManager.isAttrackEnabled = true
+                preferenceManager.adBlockEnabled = true
+            }
+            Product.VPN -> {
+                purchasesManager.purchase.isVpnEnabled = true
+                purchasesManager.purchase.isDashboardEnabled = false
+                preferenceManager.isAttrackEnabled = false
+                preferenceManager.adBlockEnabled = false
+            }
         }
+        purchasesManager.purchase.sku = sku
+        purchasesManager.purchase.isASubscriber = true
+        bus.post(Messages.PurchaseCompleted())
+        this@PurchaseFragment.dismiss()
     }
 }
