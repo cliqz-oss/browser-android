@@ -5,8 +5,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.Settings
+import com.cliqz.browser.CliqzConfig
 import android.util.Log
-import com.cliqz.browser.BuildConfig
 import com.cliqz.browser.utils.HttpHandler
 import com.revenuecat.purchases.Purchases
 import de.blinkt.openvpn.ConfigConverter
@@ -23,7 +23,7 @@ private val TAG = TrialPeriodRemoteRepo::class.java.simpleName
 private const val CONTENT_TYPE_JSON = "application/json"
 private val LUMEN_CREDENTIAL_URL = URL("https://auth-staging.lumenbrowser.com/get_credentials")
 
-private val HEADERS = mapOf("x-api-key" to BuildConfig.VPN_API_KEY)
+private val HEADERS = mapOf("x-api-key" to CliqzConfig.VPN_API_KEY)
 
 class TrialPeriodRemoteRepo(private val context: Context) {
 

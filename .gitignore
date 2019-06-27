@@ -68,3 +68,4 @@ app/src/main/assets/jsengine.bundle.js
 node_modules/
 yarn.lock
 app/google-services.json
+app/cliqz-config.json
