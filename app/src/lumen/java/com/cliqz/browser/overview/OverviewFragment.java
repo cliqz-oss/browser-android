@@ -24,15 +24,9 @@ import com.cliqz.nove.Subscribe;
 
 import javax.inject.Inject;
 
-public class OverviewFragment extends Fragment {
+public class OverviewFragment extends CommonOverviewFragment {
 
     private final static String TAB_OVERVIEW_TAG = "tab_overview_tag";
-
-    @Inject
-    TabsManager tabsManager;
-
-    @Inject
-    Bus bus;
 
     public void setDisplayFavorites() {
 
