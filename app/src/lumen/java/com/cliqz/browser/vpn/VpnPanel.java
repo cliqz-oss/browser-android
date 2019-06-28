@@ -9,7 +9,6 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +35,7 @@ import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.inject.Inject;
 
@@ -112,7 +112,11 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        dialog.selectedProfile = ProfileManager.getInstance(source.getContext()).getProfiles().iterator().next();
+        final Collection<VpnProfile> vpnProfiles =
+                ProfileManager.getInstance(source.getContext()).getProfiles();
+        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
+            dialog.selectedProfile = vpnProfiles.iterator().next();
+        }
         return dialog;
     }
 
@@ -164,7 +168,11 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        mSelectedCountry.setText(selectedProfile.getName());
+        if (selectedProfile == null) {
+            mSelectedCountry.setText("US");
+        } else {
+            mSelectedCountry.setText(selectedProfile.getName());
+        }
         mSelectedCountry.setPaintFlags(mSelectedCountry.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         vpnMsgsChangeDrawable(VpnStatus.isVPNConnected() ? R.drawable.ic_check : R.drawable.ic_cross);
@@ -184,7 +192,11 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
 
     @OnClick(R.id.vpn_country)
     void vpnCountryClicked() {
-        showVpnCountriesDialog();
+        if (selectedProfile != null) {
+            showVpnCountriesDialog();
+        } else {
+            unlockVpnDialog();
+        }
     }
 
     @OnClick(R.id.vpn_connect_button)
