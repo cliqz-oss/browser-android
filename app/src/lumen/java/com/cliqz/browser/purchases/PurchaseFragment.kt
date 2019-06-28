@@ -120,8 +120,13 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     override fun onBuyClicked(position: Int) {
         mAdapter.getProduct(position)?.apply {
             restoreExistingPurchase({ activeSku ->
-                Toast.makeText(context, "You are already subscribed to one the packages", Toast.LENGTH_LONG).show()
-                enableFeatures(activeSku)
+                if (activeSku == sku) {
+                    Toast.makeText(context, "You are already subscribed to this package", Toast.LENGTH_LONG).show()
+                    // TODO: Can remove this line and provide a restore button.
+                    enableFeatures(sku)
+                } else {
+                    makePurchase(sku)
+                }
             }, {
                 makePurchase(sku)
             })

@@ -153,8 +153,7 @@ public class PreferenceManager {
      * @return true if adblocking is enabled, false otherwise
      */
     public boolean getAdBlockEnabled() {
-        boolean isDefaultEnabled = BuildConfig.IS_NOT_LUMEN;
-        return mPrefs.getBoolean(Name.BLOCK_ADS, isDefaultEnabled);
+        return mPrefs.getBoolean(Name.BLOCK_ADS, true);
     }
 
     public boolean getOptimizedAdBlockEnabled() {
@@ -446,8 +445,7 @@ public class PreferenceManager {
     }
 
     public boolean isAttrackEnabled() {
-        boolean isDefaultEnabled = BuildConfig.IS_NOT_LUMEN;
-        return mPrefs.getBoolean(Name.ATTRACK_ENABLED, isDefaultEnabled);
+        return mPrefs.getBoolean(Name.ATTRACK_ENABLED, true);
     }
 
     public int getMainActivityLastState() {
