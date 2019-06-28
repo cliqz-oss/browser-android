@@ -37,7 +37,7 @@
         android:id="@+id/vpn_panel_button"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerInside"
         android:layout_gravity="end|right|center_vertical"
         app:srcCompat="@drawable/ic_vpn_on"
         android:background="@color/transparent"

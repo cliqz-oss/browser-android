@@ -13,9 +13,9 @@
       android:fillAlpha="0.99714005">
     <aapt:attr name="android:strokeColor">
       <gradient 
-          android:startY="1.4021033"
+          android:startY="1.8971632"
           android:startX="12"
-          android:endY="22.398647"
+          android:endY="22.458393"
           android:endX="12"
           android:type="linear">
         <item android:offset="0" android:color="#FFDEA8B4"/>
@@ -24,4 +24,10 @@
       </gradient>
     </aapt:attr>
   </path>
+  <path
+      android:pathData="M10,12.1988l1.5892,1.6443l2.5618,-3.843"
+      android:strokeWidth="0.85"
+      android:fillColor="#00000000"
+      android:strokeColor="#FFFFFF"
+      android:fillType="evenOdd"/>
 </vector>

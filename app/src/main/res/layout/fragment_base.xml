@@ -46,7 +46,7 @@
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
                     android:selectAllOnFocus="true"
-                    android:textColor="#333333"
+                    android:textColor="@color/url_bar_text_color_normal"
                     android:textColorHighlight="@color/text_highlight_color"
                     android:textColorHint="@color/url_bar_hint_text_color"
                     android:textCursorDrawable="@drawable/custom_cursor"

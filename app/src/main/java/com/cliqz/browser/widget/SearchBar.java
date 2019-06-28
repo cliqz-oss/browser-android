@@ -217,6 +217,10 @@ public class SearchBar extends FrameLayout {
         }
     }
 
+    public int getProgress() {
+        return progressBar.getProgress();
+    }
+
     public void setSearchText(String text) {
         searchEditText.setText(text);
     }
