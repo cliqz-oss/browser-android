@@ -79,7 +79,7 @@ public class SearchView extends FrameLayout {
         mReactView = engine.reactRootView;
         startTabContainer = new StartTabContainer(this.context);
         startTabContainer.init(context.getSupportFragmentManager(), preferenceManager);
-        incognito = new Incognito(this.context);
+        incognito = BuildConfig.IS_NOT_LUMEN ? new Incognito(this.context) : null;
         // mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
         mReactView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -88,7 +88,10 @@ public class SearchView extends FrameLayout {
             parent.removeView(mReactView);
         }
         addView(mReactView);
-        addView(incognito);
+        if (incognito != null) {
+            incognito.setVisibility(GONE);
+            addView(incognito);
+        }
         addView(startTabContainer);
     }
 
@@ -97,15 +100,7 @@ public class SearchView extends FrameLayout {
         super.bringToFront();
         final String query = state.getQuery();
         if (query.equals("")) {
-            if (state.isIncognito()) {
-                incognito.bringToFront();
-                incognito.setVisibility(View.VISIBLE);
-                startTabContainer.setVisibility(View.GONE);
-            } else {
-                startTabContainer.bringToFront();
-                startTabContainer.setVisibility(View.VISIBLE);
-                incognito.setVisibility(View.GONE);
-            }
+            setIncognito(state.isIncognito());
             mReactView.setVisibility(View.GONE);
         } else {
             mReactView.bringToFront();
@@ -157,30 +152,28 @@ public class SearchView extends FrameLayout {
 
     public void setCurrentTabState(CliqzBrowserState state) {
         this.state = state;
-//        mReactView.setCurrentTabState(state);
-        if (state.isIncognito()) {
-            if (incognito.getVisibility() == VISIBLE) {
-                return;
-            }
+        setIncognito(state.isIncognito());
+    }
+
+    private void setIncognito(boolean enabled) {
+        final boolean shouldShowIncognitoView = enabled && incognito != null && incognito.getVisibility() != VISIBLE;
+        final boolean shouldShowRegularView = !enabled && startTabContainer.getVisibility() != VISIBLE;
+
+        if (shouldShowIncognitoView) {
             incognito.bringToFront();
-            incognito.setVisibility(View.VISIBLE);
-            startTabContainer.setVisibility(View.GONE);
-        } else {
-            if (startTabContainer.getVisibility() == VISIBLE) {
-                return;
-            }
+            incognito.setVisibility(VISIBLE);
+            startTabContainer.setVisibility(GONE);
+        }
+        if (shouldShowRegularView) {
             startTabContainer.bringToFront();
-            startTabContainer.setVisibility(View.VISIBLE);
-            incognito.setVisibility(View.GONE);
+            startTabContainer.setVisibility(VISIBLE);
+            if (incognito != null) {
+                incognito.setVisibility(GONE);
+            }
         }
     }
 
-    public void requestCardUrl() {
-//        cardsView.requestCardUrl();
-    }
-
     public void updateQuery(String query, int start, int count) {
-        //noinspection ConstantConditions
         if (BuildConfig.IS_LUMEN) {
             return;
         }
