@@ -1,66 +1,73 @@
 #!/bin/env groovy
-
+@Library(['cliqz-shared-library@v1.2']) _
+properties([
+    parameters([
+        choice(choices: ['cliqz', 'lumen'], defaultValue: 'lumen', description: 'Which Product ?', name: 'product')
+    ])
+])
 node('master'){
     def imageName = 'android-browser'
-    def branchName = "${BRANCH_NAME}"
-
     stage('Checkout'){
         checkout scm
     }
-
     stage('Build docker image') {
         docker.build(imageName, '--build-arg UID=`id -u` --build-arg GID=`id -g` .')
     }
-
     docker.image(imageName).inside() {
-        stage('Extension') {
-            sh '''
-                set -x
-                set -e
-                yarn  
-                npm run bundle
-            '''
-        }
-
-        withEnv(["GRADLE_USER_HOME=${pwd()}/gradle_home","BN=${branchName}"]) {
-            withCredentials([
-                    file(credentialsId: '263e59fb-e9de-4e51-962c-0237c6ee167b', variable: 'CERT_PATH'),
-                    string(credentialsId: '60354bba-8ed0-4df9-8f8e-5be7454c1680', variable: 'CERT_PASS'),
-                    file(credentialsId: '2939d2e1-dd9a-4097-adc2-430e3d67157a', variable: 'PLAY_STORE_CERT')]) {
-                sh 'echo $BN'
-                if ("${BN}".contains("-re")) {
-                    stage('Compile') {
-                        sh './gradlew clean assembleStandardFatRelease'
-                    }
-                }else {
+        try {
+            stage('Extension') {
+                sh '''#!/bin/bash -l
+                    set -x
+                    set -e
+                    npm ci
+                    npm run bundle
+                '''
+            }
+            withEnv(["GRADLE_USER_HOME=${pwd()}/gradle_home"]) {
+                withCredentials([
+                        file(credentialsId: '263e59fb-e9de-4e51-962c-0237c6ee167b', variable: 'CERT_PATH'),
+                        string(credentialsId: '60354bba-8ed0-4df9-8f8e-5be7454c1680', variable: 'CERT_PASS'),
+                        file(credentialsId: '2939d2e1-dd9a-4097-adc2-430e3d67157a', variable: 'PLAY_STORE_CERT'),
+                        file(credentialsId: '3796eb16-42cd-4551-a5a5-c4fe3a18719a', variable: 'CLIQZ_CONFIG_JSON'),
+                        file(credentialsId: '6006a534-9f2e-4ba8-93f9-f0f27c0713df', variable: 'GOOGLE_SERVICES')]) {
                     stage('Compile and Upload') {
-                        sh '''#!/bin/bash -l
-                            set -x
-                            set -e
-                            fastlane android alpha
-                        '''
+                            sh '''#!/bin/bash -l
+                                set -x
+                                set -e
+                                cp $CLIQZ_CONFIG_JSON app/cliqz-config.json
+                                cp $GOOGLE_SERVICES app/google-services.json
+                            '''
+                            if(params.product == "cliqz") {
+                                sh '''#!/bin/bash -l
+                                    set -x
+                                    set -e
+                                    export APP_PACKAGE="com.cliqz.browser"
+                                    fastlane android internal_cliqz
+                                '''
+                            }
+                            if(params.product == "lumen") {
+                                sh '''#!/bin/bash -l
+                                    set -x
+                                    set -e
+                                    export APP_PACKAGE="com.cliqz.lumen"
+                                    fastlane android internal_lumen
+                                '''
+                            }
+                        }
                     }
                 }
-            }
-        }
-
-    }
-    if ("${branchName}".contains("-re")) {
-        def id = "Cliqz_Browser_android"+"${branchName}".substring("${branchName}".indexOf("v"), "${branchName}".indexOf("-"))
-        stage('Upload') {
-            withCredentials([
-                    [
-                            $class          : 'UsernamePasswordMultiBinding',
-                            credentialsId   : 'f1732e5f-3e84-47ad-9286-a5fa6657ec43',
-                            passwordVariable: 'AWS_SECRET_ACCESS_KEY',
-                            usernameVariable: 'AWS_ACCESS_KEY_ID',
-                    ]
-            ]) {
-                def s3Path = 's3://repository.cliqz.com/dist/android/release/apk'
-                def apkPath = "app/build/outputs/apk/standardFat/release/app-standard-fat-release.apk"
-
-                sh "aws s3 cp --acl public-read --acl bucket-owner-full-control ${apkPath} ${s3Path}/${id}.apk"
-                sh "aws s3 cp --acl public-read --acl bucket-owner-full-control ${s3Path}/${id}.apk ${s3Path}/latest.apk"
+            } finally {
+            stage('Upload Artifacts and Clean Up') {
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'app/build/**/*.apk'
+                sh'''#!/bin/bash -l
+                    set -x
+                    set -e
+                    rm -f app/cliqz-config.json
+                    rm -f app/google-services.json
+                    rm -rf app/build
+                    rm -rf jsengine/*
+                    rm -rf gradle_home/
+                '''
             }
         }
     }

@@ -7,17 +7,28 @@
 #
 
 # Uncomment the line if you want fastlane to automatically update itself
-  update_fastlane
+# update_fastlane
 
 default_platform(:android)
 
 platform :android do
   desc "Submit a new alpha Build to the Google Play Store"
-  lane :alpha do
-    gradle(task: "clean assembleStandardArmRelease assembleStandardX6Release")
+  lane :internal_lumen do
+    gradle(task: "clean assembleLumenRelease")
     upload_to_play_store(
       apk_paths:ENV["GRADLE_ALL_APK_OUTPUT_PATHS"],
-      track:"alpha",
+      track:"internal",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  lane :internal_cliqz do
+    gradle(task: "clean assembleCliqzRelease")
+    upload_to_play_store(
+      apk_paths:ENV["GRADLE_ALL_APK_OUTPUT_PATHS"],
+      track:"internal",
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,

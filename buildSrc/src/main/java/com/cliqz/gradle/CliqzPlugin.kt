@@ -21,10 +21,9 @@ class CliqzPlugin: Plugin<Project> {
             }
         }
 
-        val defaultVersionCode = android.defaultConfig.versionCode
         project.afterEvaluate {
             android.applicationVariants.forEach { variant ->
-                setVersionCode(defaultVersionCode, variant)
+                setVersionCode(variant)
                 createCliqzConfigTasks(project, variant)
             }
         }
@@ -54,14 +53,17 @@ class CliqzPlugin: Plugin<Project> {
         }
     }
 
-    private fun setVersionCode(defaultVersionCode: Int, variant: ApplicationVariant) {
+    private fun setVersionCode(variant: ApplicationVariant) {
+        val buildNumber = System.getenv("BUILD_NUMBER")?.toIntOrNull()
+        if (buildNumber == null) return;
+        val versionCode = 110 + buildNumber
         val apiVersion = variant.productFlavors[0].versionCode
         variant.outputs.forEach { output ->
             val abi = output.filters.find { it.filterType == OutputFile.ABI }
             abi?.let {
                 val abiVersion = ABI_CODES[it.identifier]
                 (output as ApkVariantOutput).versionCodeOverride =
-                        defaultVersionCode * 100 + apiVersion * 10 + abiVersion!!
+                        versionCode * 100 + apiVersion * 10 + abiVersion!!
             }
         }
     }
