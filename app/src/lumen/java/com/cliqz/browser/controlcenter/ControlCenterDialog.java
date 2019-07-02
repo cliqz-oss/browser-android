@@ -208,13 +208,13 @@ public class ControlCenterDialog extends DialogFragment {
         final Context context = getContext();
         if (isEnabled) {
             controlCenterTabLayout.setSelectedTabIndicatorColor(
-                    ContextCompat.getColor(context,R.color.bond_general_color_blue));
+                    ContextCompat.getColor(context, R.color.bond_general_color_blue));
             controlCenterTabLayout.setTabTextColors(
                     ContextCompat.getColor(context, R.color.bond_disabled_text_color),
                     ContextCompat.getColor(context, R.color.bond_general_color_blue));
         } else {
             controlCenterTabLayout.setSelectedTabIndicatorColor(
-                    ContextCompat.getColor(context,R.color.lumen_color_grey_text));
+                    ContextCompat.getColor(context, R.color.lumen_color_grey_text));
             controlCenterTabLayout.setTabTextColors(
                     ContextCompat.getColor(context, R.color.lumen_color_grey_text),
                     ContextCompat.getColor(context, R.color.lumen_color_grey_text));
