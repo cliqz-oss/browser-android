@@ -80,7 +80,8 @@ public class DashboardFragment extends ControlCenterFragment {
         updateUI();
         dashBoardListView.setAdapter(mDashboardAdapter);
         dashBoardListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        changeDashboardState(preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
+        changeDashboardState(purchasesManager.isDashboardEnabled() &&
+                preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
         return view;
     }
 
@@ -135,7 +136,8 @@ public class DashboardFragment extends ControlCenterFragment {
         final MeasurementWrapper trackersDetected;
         final MeasurementWrapper pagesVisited;
 
-        if (preferenceManager.getAdBlockEnabled() && preferenceManager.isAttrackEnabled()) {
+        if (purchasesManager.isDashboardEnabled() &&
+                preferenceManager.getAdBlockEnabled() && preferenceManager.isAttrackEnabled()) {
             dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"));
             adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data,"adsBlocked"));
             trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"));

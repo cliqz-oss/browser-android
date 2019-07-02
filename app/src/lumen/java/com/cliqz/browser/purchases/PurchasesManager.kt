@@ -36,8 +36,6 @@ class PurchasesManager(
     override fun onTrialPeriodResponse(serverData: ServerData?) {
         this.serverData = serverData
         isLoading = false
-        preferenceManager.adBlockEnabled = serverData == null || serverData.isInTrial
-        preferenceManager.isAttrackEnabled = serverData == null || serverData.isInTrial
 
         bus.post(Messages.OnTrialPeriodResponse())
     }
@@ -53,10 +51,6 @@ class PurchasesManager(
                     this.isVpnEnabled = isVpnEnabled
                     this.isDashboardEnabled = isDashboardEnabled
                     this.sku = sku
-                }
-                if (!isDashboardEnabled) {
-                    preferenceManager.adBlockEnabled = false
-                    preferenceManager.isAttrackEnabled = false
                 }
             }
             isLoading = false

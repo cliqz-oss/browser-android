@@ -145,10 +145,7 @@ public class ControlCenterDialog extends DialogFragment {
         controlCenterPager.setAdapter(mControlCenterPagerAdapter);
         controlCenterTabLayout.setupWithViewPager(controlCenterPager);
 
-        boolean isDashboardEnabled =
-                preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled();
-
-        hideSubscribeButton(isDashboardEnabled);
+        hideSubscribeButton(purchasesManager.isDashboardEnabled());
 
         ultimateProtectionSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             mControlCenterPagerAdapter.updateViewComponent(0, isChecked);
@@ -191,7 +188,8 @@ public class ControlCenterDialog extends DialogFragment {
     }
 
     private void hideSubscribeButton(boolean isDashboardEnabled) {
-        ultimateProtectionSwitch.setChecked(isDashboardEnabled);
+        ultimateProtectionSwitch.setChecked(preferenceManager.isAttrackEnabled() &&
+                preferenceManager.getAdBlockEnabled());
         subscribeUltimateProtectionView.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
         dashboardDisableOverlay.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
         ViewExtensionsKt.enableViewHierarchy(ultimateProtectionContainer, isDashboardEnabled);
