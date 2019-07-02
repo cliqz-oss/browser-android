@@ -14,6 +14,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -66,9 +67,6 @@ public class ControlCenterDialog extends DialogFragment {
 
     @BindView(R.id.subscribe_ultimate_protection_btn)
     Button subscribeUltimateProtectionBtn;
-
-    @BindView(R.id.dashboard_disable_overlay)
-    View dashboardDisableOverlay;
 
     @Inject
     AntiTracking antiTracking;
@@ -150,6 +148,7 @@ public class ControlCenterDialog extends DialogFragment {
         ultimateProtectionSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             mControlCenterPagerAdapter.updateViewComponent(0, isChecked);
             mControlCenterPagerAdapter.updateViewComponent(1, isChecked);
+            toggleTabLayout(isChecked);
             try {
                 adblocker.setEnabled(isChecked);
                 antiTracking.setEnabled(isChecked);;
@@ -174,7 +173,7 @@ public class ControlCenterDialog extends DialogFragment {
 
     @Subscribe
     void onPurchaseCompleted(Messages.PurchaseCompleted purchaseCompleted) {
-        hideSubscribeButton(purchasesManager.getPurchase().isDashboardEnabled());
+        hideSubscribeButton(purchasesManager.isDashboardEnabled());
     }
 
     @Override
@@ -188,10 +187,11 @@ public class ControlCenterDialog extends DialogFragment {
     }
 
     private void hideSubscribeButton(boolean isDashboardEnabled) {
+        toggleTabLayout(isDashboardEnabled);
         ultimateProtectionSwitch.setChecked(preferenceManager.isAttrackEnabled() &&
                 preferenceManager.getAdBlockEnabled());
         subscribeUltimateProtectionView.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
-        dashboardDisableOverlay.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);
+        ultimateProtectionContainer.setVisibility(isDashboardEnabled ? View.VISIBLE : View.GONE);
         ViewExtensionsKt.enableViewHierarchy(ultimateProtectionContainer, isDashboardEnabled);
         ViewExtensionsKt.enableViewHierarchy(controlCenterTabLayout, isDashboardEnabled);
         controlCenterPager.isPagingEnabled = isDashboardEnabled;
@@ -202,6 +202,21 @@ public class ControlCenterDialog extends DialogFragment {
         }
     }
 
+    private void toggleTabLayout(boolean isEnabled) {
+        if (isEnabled) {
+            controlCenterTabLayout.setSelectedTabIndicatorColor(
+                    ContextCompat.getColor(getContext(),R.color.bond_general_color_blue));
+            controlCenterTabLayout.setTabTextColors(
+                    ContextCompat.getColor(getContext(), R.color.bond_disabled_text_color),
+                    ContextCompat.getColor(getContext(), R.color.bond_general_color_blue));
+        } else {
+            controlCenterTabLayout.setSelectedTabIndicatorColor(
+                    ContextCompat.getColor(getContext(),R.color.lumen_color_grey_text));
+            controlCenterTabLayout.setTabTextColors(
+                    ContextCompat.getColor(getContext(), R.color.lumen_color_grey_text),
+                    ContextCompat.getColor(getContext(), R.color.lumen_color_grey_text));
+        }
+    }
 
     private void updateUI() {
         for (ControlCenterFragment fragment : mControlCenterPagerAdapter.mFragmentList) {

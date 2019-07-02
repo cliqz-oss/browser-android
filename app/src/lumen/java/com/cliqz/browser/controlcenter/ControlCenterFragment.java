@@ -13,7 +13,5 @@ public abstract class ControlCenterFragment extends Fragment {
 
     public abstract void updateUI();
 
-    public abstract void refreshUI();
-
     public abstract void refreshUIComponent(boolean optionValue);
 }

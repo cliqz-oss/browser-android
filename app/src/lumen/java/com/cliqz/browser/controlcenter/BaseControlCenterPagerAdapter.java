@@ -36,10 +36,6 @@ public abstract class BaseControlCenterPagerAdapter extends FragmentPagerAdapter
         return mFragmentList.get(position).getTitle(mContext, position);
     }
 
-    void updateCurrentView(int position) {
-        mFragmentList.get(position).refreshUI();
-    }
-
     void updateViewComponent(int position, boolean optionValue) {
         mFragmentList.get(position).refreshUIComponent(optionValue);
     }

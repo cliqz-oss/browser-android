@@ -4,18 +4,27 @@
     android:id="@+id/subscribe_ultimate_protection"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/primary_color"
+    android:background="@color/lumen_color_background"
     android:orientation="horizontal">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
 
     <TextView
         android:id="@+id/subscribe_ultimate_protection_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:text="@string/non_subscriber_ultimate_protection"
         android:textColor="@color/white"
+        android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/vertical_guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,31 +33,32 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="0dp"
         android:maxLines="3"
         android:text="@string/non_subscriber_ultimate_protection_desc"
         android:textColor="@color/white"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/subscribe_ultimate_protection_btn"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guideline"
         app:layout_constraintStart_toStartOf="@+id/subscribe_ultimate_protection_title"
         app:layout_constraintTop_toBottomOf="@+id/subscribe_ultimate_protection_title" />
 
     <Button
         android:id="@+id/subscribe_ultimate_protection_btn"
         android:layout_width="wrap_content"
-        android:paddingStart="15dp"
-        android:paddingRight="15dp"
-        android:paddingEnd="15dp"
-        android:paddingLeft="15dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="12dp"
+        android:layout_height="42dp"
+        android:layout_marginEnd="26dp"
         android:background="@drawable/rounded_corner_solid_button"
+        android:paddingStart="18dp"
+        android:paddingLeft="18dp"
+        android:paddingEnd="18dp"
+        android:paddingRight="18dp"
         android:text="@string/non_subscriber_ultimate_protection_button"
         android:textAllCaps="true"
         android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@+id/subscribe_ultimate_protection_desc"
         app:layout_constraintTop_toTopOf="parent" />
 
