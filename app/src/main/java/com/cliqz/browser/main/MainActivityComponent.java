@@ -1,5 +1,6 @@
 package com.cliqz.browser.main;
 
+import com.cliqz.browser.controlcenter.ControlCenterHelper;
 import com.cliqz.browser.main.search.Incognito;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.CommonOverviewFragment;
@@ -46,4 +47,6 @@ interface MainActivityComponent {
     void inject(PasswordManager passwordManager);
 
     void inject(Incognito incognito);
+
+    void inject(ControlCenterHelper controlCenterHelper);
 }

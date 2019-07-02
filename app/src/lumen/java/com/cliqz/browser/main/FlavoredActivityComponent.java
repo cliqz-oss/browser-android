@@ -2,6 +2,7 @@ package com.cliqz.browser.main;
 
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
+import com.cliqz.browser.controlcenter.ControlCenterHelper;
 import com.cliqz.browser.controlcenter.DashboardFragment;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
