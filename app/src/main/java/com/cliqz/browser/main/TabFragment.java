@@ -88,11 +88,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -1011,9 +1006,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void shareLink(Messages.ShareLink event) {
-        if (state.getMode() == Mode.SEARCH) {
-            searchView.requestCardUrl();
-        } else {
+        if (state.getMode() != Mode.SEARCH) {
             final String url = mLightningView.getUrl();
             shareText(url);
             telemetry.sendShareSignal(TelemetryKeys.WEB);
