@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1B1F3D"
+    android:background="@color/lumen_color_background"
     tools:context="com.cliqz.browser.purchases.PurchaseFragment">
 
     <ImageButton
@@ -16,7 +16,8 @@
         android:background="@color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_close_black" />
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_clear_black" />
 
     <ProgressBar
         android:id="@+id/loading"

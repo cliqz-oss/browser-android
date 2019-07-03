@@ -57,7 +57,12 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="actionModeStyle">@style/Widget.Cliqz.ActionMode</item>
-        <item name="android:actionModeCloseDrawable">@drawable/ic_clear_white</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_clear_black</item>
+        <item name="android:actionModeCloseButtonStyle">@style/closeButtonStyle</item>
+    </style>
+
+    <style name="closeButtonStyle" parent="@style/Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:tint">@android:color/white</item>
     </style>
 
     <style name="overFlowButtonStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
