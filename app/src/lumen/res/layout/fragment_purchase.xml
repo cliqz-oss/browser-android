@@ -16,7 +16,8 @@
         android:background="@color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_clear_white" />
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_clear_black" />
 
     <ProgressBar
         android:id="@+id/loading"
