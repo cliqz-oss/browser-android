@@ -288,7 +288,7 @@ public class AutocompleteEditText extends AppCompatEditText {
                 bus.post(new Messages.SearchBarClearPressed());
                 return true;
             } else {
-                return false;
+                return super.onTouchEvent(event);
             }
         } else {
             return super.onTouchEvent(event);

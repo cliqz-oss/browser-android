@@ -84,6 +84,10 @@ public class SearchBar extends FrameLayout {
     @Nullable
     Listener mListener;
 
+    @Nullable
+    @BindView(R.id.reader_mode_button)
+    View readerModeButton;
+
     @Inject
     Bus bus;
 
@@ -297,8 +301,14 @@ public class SearchBar extends FrameLayout {
         if (event.getAction() != MotionEvent.ACTION_DOWN) {
             return super.onInterceptTouchEvent(event);
         }
+
         if (antiTrackingDetails != null && antiTrackingDetails.getVisibility() == VISIBLE
                 && event.getX() >= antiTrackingDetails.getX()) {
+            return super.onInterceptTouchEvent(event);
+        }
+
+        if (readerModeButton != null && readerModeButton.getVisibility() == VISIBLE
+                && event.getX() >= readerModeButton.getX()) {
             return super.onInterceptTouchEvent(event);
         }
 

@@ -6,14 +6,14 @@
     <dimen name="app_defaultsize_h">598.0dp</dimen>
     <dimen name="app_minimumsize_w">632.0dp</dimen>
     <dimen name="app_minimumsize_h">598.0dp</dimen>
-    <dimen name="search_edit_text_h">56.0dp</dimen>
+    <dimen name="search_edit_text_h">46.0dp</dimen>
     <dimen name="toolbar_menu_item_h">36.0dp</dimen>
     <dimen name="toolbar_menu_item_w">36.0dp</dimen>
     <dimen name="toolbar_menu_icon_h">24.0dp</dimen>
     <dimen name="toolbar_menu_icon_w">24.0dp</dimen>
-    <dimen name="toolbar_padding">12.0dp</dimen>
+    <dimen name="toolbar_padding">16.0dp</dimen>
     <dimen name="control_center_layout_w">50.0dp</dimen>
-    <dimen name="title_bar_h">24dp</dimen>
+    <dimen name="title_bar_h">30dp</dimen>
     <dimen name="fallback_logo_text_size">80sp</dimen>
     <dimen name="tab_icon_size">100dp</dimen>
     <dimen name="favorites_side_margins">20dp</dimen>
