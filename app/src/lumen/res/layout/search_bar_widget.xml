@@ -19,7 +19,8 @@
 
     <TextView
         android:id="@+id/title_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="@dimen/title_bar_h"
         android:gravity="start|center_vertical"
         android:hint="@string/url_bar_search_hint"
@@ -30,6 +31,19 @@
         android:singleLine="true"
         android:textColor="#333333"
         android:textColorHint="@color/url_bar_hint_text_color"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:background="@color/accent_color"/>
+
+    <ImageButton
+        android:id="@+id/reader_mode_button"
+        android:layout_width="@dimen/toolbar_menu_icon_w"
+        android:layout_height="@dimen/toolbar_menu_icon_h"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:srcCompat="@drawable/ic_reader_mode_off"
+        android:background="@color/transparent"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </LinearLayout>

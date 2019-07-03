@@ -15,6 +15,7 @@
     <color name="url_bar_text_color_normal">@color/white</color>
     <color name="url_bar_bg_incognito">#464857</color>
     <color name="url_bar_text_color_incognito">@color/white</color>
+    <color name="url_bar_hint_text_color">#9AFFFFFF</color>
     <color name="icon_light_theme">#FFFFFFFF</color>
     <color name="icon_dark_theme">#FF000000</color>
 

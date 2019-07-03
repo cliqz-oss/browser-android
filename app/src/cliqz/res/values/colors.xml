@@ -34,6 +34,7 @@
     <color name="url_bar_text_color_normal">#333333</color>
     <color name="url_bar_bg_incognito">#ffffff</color>
     <color name="url_bar_text_color_incognito">#333333</color>
+    <color name="url_bar_hint_text_color">#AAAAAA</color>
     <color name="toolbar_icon_color_normal">#333333</color>
     <color name="toolbar_icon_color_incognito">#ffffff</color>
 

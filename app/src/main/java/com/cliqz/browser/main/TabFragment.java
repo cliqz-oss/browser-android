@@ -374,7 +374,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         });
         onPageFinished(null);
-        updateCCIcon();
     }
 
     private void updateVpnIcon() {
@@ -387,11 +386,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
-    private void updateCCIcon() {
+    private void updateCCIcon(boolean isLoadingFinished) {
         if (BuildConfig.IS_LUMEN) {
             if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
                     && preferenceManager.isAttrackEnabled()) {
-                ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_on"));
+                ccIcon.setImageResource(getFlavorDrawable(isLoadingFinished
+                        ? "ic_dashboard_checked" : "ic_dashboard_on"));
             } else {
                 ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_off"));
             }
@@ -497,6 +497,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         queryManager.setForgetMode(mIsIncognito);
         mIsReaderModeOn = false;
         readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
+        updateCCIcon(progressBar.getProgress() == 100);
+        updateVpnIcon();
     }
 
     @Override
@@ -815,6 +817,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 Log.e(TAG, "Problem reading the file readability.js", e);
             }
         }
+        updateCCIcon(true);
     }
 
     private ValueCallback<String> readabilityCallBack = new ValueCallback<String>() {
@@ -1227,6 +1230,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             status = event.status;
         }
         ccIcon.setImageLevel(status.ordinal());
+        updateCCIcon(false);
     }
 
     @Subscribe
@@ -1351,7 +1355,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void onDashboardStateChange(Messages.onDashboardStateChange message) {
-        updateCCIcon();
+        updateCCIcon(false);
     }
 
     @Subscribe

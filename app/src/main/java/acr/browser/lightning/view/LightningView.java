@@ -12,9 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +20,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;

@@ -87,7 +87,7 @@ public class AutocompleteEditText extends AppCompatEditText {
         setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_URI);
         setSelectHandDrawable();
         clearIcon = VectorDrawableCompat.create(
-                context.getResources(), R.drawable.ic_clear_black, null);
+                context.getResources(), R.drawable.ic_clear, null);
         backIcon = AutocompleteBackIcon.create(context);
         setDrawable(false);
     }
@@ -288,7 +288,7 @@ public class AutocompleteEditText extends AppCompatEditText {
                 bus.post(new Messages.SearchBarClearPressed());
                 return true;
             } else {
-                return false;
+                return super.onTouchEvent(event);
             }
         } else {
             return super.onTouchEvent(event);
