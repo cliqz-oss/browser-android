@@ -34,8 +34,8 @@ node('master'){
                             sh '''#!/bin/bash -l
                                 set -x
                                 set -e
-                                cp $CLIQZ_CONFIG_JSON app/cliqz-config.json
-                                cp $GOOGLE_SERVICES app/google-services.json
+                                cp "$CLIQZ_CONFIG_JSON" app/cliqz-config.json
+                                cp "$GOOGLE_SERVICES" app/google-services.json
                             '''
                             if(params.product == "cliqz") {
                                 sh '''#!/bin/bash -l
