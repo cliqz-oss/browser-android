@@ -44,8 +44,10 @@ class PurchasesManager(
         if (purchaserInfo.activeSubscriptions.isNotEmpty()) {
             // If subscribed, enable features.
             for (sku in purchaserInfo.activeSubscriptions) {
-                val isVpnEnabled = sku == Product.VPN || sku == Product.BASIC_VPN
-                val isDashboardEnabled = sku == Product.BASIC || sku == Product.BASIC_VPN
+                val isVpnEnabled = sku in setOf(Product.VPN, Product.VPN_STAGING, Product.BASIC_VPN,
+                        Product.BASIC_VPN_STAGING)
+                val isDashboardEnabled = sku in setOf(Product.BASIC, Product.BASIC_STAGING,
+                        Product.BASIC_VPN, Product.BASIC_VPN_STAGING)
                 purchase.apply {
                     this.isASubscriber = true
                     this.isVpnEnabled = isVpnEnabled

@@ -74,7 +74,13 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
                 val productList = ArrayList<ProductRowData>()
                 var isSubscribed = false
-                entitlementMap[Entitlements.PREMIUM_SALE]?.offerings?.forEach { (_, offering) ->
+                val entitlement = if (entitlementMap[Entitlements.PREMIUM_SALE] == null) {
+                    entitlementMap[Entitlements.PREMIUM_SALE_STAGING]
+                } else {
+                    entitlementMap[Entitlements.PREMIUM_SALE]
+                }
+
+                entitlement?.offerings?.forEach { (_, offering) ->
                     offering.skuDetails?.apply {
                         if (sku == purchasesManager.purchase.sku) {
                             isSubscribed = true
@@ -85,13 +91,15 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     }
                 }
                 if (productList.isEmpty()) {
-                    // TODO: Display error
+                    Toast.makeText(context, "Error retrieving available products", Toast.LENGTH_LONG).show()
+                    Log.e(TAG, "Product list is empty.")
+                    dismiss()
                 } else {
                     customSwapProductListElements(productList)
                     mAdapter.setHasSubscription(isSubscribed)
                     mAdapter.updateProductList(productList)
-                    setLoading(false)
                 }
+                setLoading(false)
             }
 
             override fun onError(error: PurchasesError) {
@@ -170,19 +178,19 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     private fun enableFeatures(sku: String) {
         when (sku) {
-            Product.BASIC_VPN -> {
+            Product.BASIC_VPN, Product.BASIC_VPN_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            Product.BASIC -> {
+            Product.BASIC, Product.BASIC_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = false
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            Product.VPN -> {
+            Product.VPN, Product.VPN_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = false
                 preferenceManager.isAttrackEnabled = false
@@ -192,6 +200,6 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         purchasesManager.purchase.sku = sku
         purchasesManager.purchase.isASubscriber = true
         bus.post(Messages.PurchaseCompleted())
-        this@PurchaseFragment.dismiss()
+        dismiss()
     }
 }
