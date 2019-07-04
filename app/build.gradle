@@ -108,6 +108,9 @@ android {
             universalApk false
         }
     }
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dexcount {

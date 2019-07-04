@@ -104,10 +104,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.Optional;
 
-/**
- * @author Stefano Pacifici
- * @author Moaz Mohamed
- */
 public class TabFragment extends BaseFragment implements LightningView.LightingViewListener {
 
     @SuppressWarnings("unused")
@@ -690,7 +686,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             // This if avoids calling searchBar.showTitleBar() multiple times and sending the same
             // telemetry signals multiple times
             if (set != null && imm.isActive(set)) {
-                searchBar.showTitleBar();
+                //searchBar.showTitleBar();
                 final String view = getTelemetryView();
                 telemetry.sendKeyboardSignal(false, mIsIncognito, getTelemetryView());
                 telemetry.sendQuickAccessBarSignal(TelemetryKeys.HIDE, null, view);
@@ -1255,7 +1251,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     public void keyBoardClosed(Messages.KeyBoardClosed event) {
         searchBar.setTitle(searchBar.getQuery());
-        searchBar.showTitleBar();
+        searchBar.clearFocus(); // .showTitleBar();
     }
 
     @Subscribe

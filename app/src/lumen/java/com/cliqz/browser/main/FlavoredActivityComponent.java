@@ -5,8 +5,8 @@ import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.controlcenter.DashboardFragment;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.browser.starttab.FavoritesFragment;
-import com.cliqz.browser.starttab.HistoryFragment;
+import com.cliqz.browser.starttab.FavoritesView;
+import com.cliqz.browser.starttab.HistoryView;
 import com.cliqz.browser.starttab.freshtab.FreshTab;
 import com.cliqz.browser.vpn.VpnHandler;
 import com.cliqz.browser.vpn.VpnPanel;
@@ -26,9 +26,9 @@ public interface FlavoredActivityComponent extends MainActivityComponent {
 
     void inject(FreshTab freshTab);
 
-    void inject(HistoryFragment historyFragment);
+    void inject(HistoryView historyView);
 
-    void inject(FavoritesFragment favoritesFragment);
+    void inject(FavoritesView favoritesView);
 
     void inject(PurchaseFragment purchaseFragment);
 

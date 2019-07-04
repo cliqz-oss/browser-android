@@ -1,31 +1,34 @@
 package com.cliqz.browser.starttab.freshtab
 
 import acr.browser.lightning.preference.PreferenceManager
-import android.os.Bundle
+import android.content.Context
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.ScaleAnimation
 import android.widget.AdapterView
+import android.widget.FrameLayout
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.main.search.TopsitesAdapter
 import com.cliqz.browser.purchases.PurchasesManager
-import com.cliqz.browser.starttab.StartTabFragment
+import com.cliqz.browser.starttab.Updatable
 import com.cliqz.browser.telemetry.Telemetry
 import com.cliqz.browser.webview.CliqzMessages
 import com.cliqz.browser.webview.Topsite
 import com.cliqz.nove.Bus
 import com.cliqz.nove.Subscribe
-import kotlinx.android.synthetic.lumen.fragment_freshtab.*
-import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_over_msg.*
-import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_upgrade_msg.*
+import kotlinx.android.synthetic.lumen.fragment_freshtab.view.*
+import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_over_msg.view.*
+import kotlinx.android.synthetic.lumen.fragment_freshtab_trial_upgrade_msg.view.*
 import javax.inject.Inject
 
 private const val SEVEN_DAYS_IN_MILLIS = 604800000L
 
-internal class FreshTab : StartTabFragment() {
+internal class FreshTab
+    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleRes: Int = 0) :
+        FrameLayout(context, attrs, defStyleRes), Updatable {
 
     private var isFreshInstall: Boolean = false
 
@@ -44,30 +47,11 @@ internal class FreshTab : StartTabFragment() {
     @Inject
     lateinit var telemetry: Telemetry
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        isFreshInstall = arguments?.getBoolean(ARG_IS_FRESH_INSTALL) ?: false
-        BrowserApp.getActivityComponent(activity)?.inject(this)
-        return inflater.inflate(R.layout.fragment_freshtab, container, false)
-    }
+    init {
+        BrowserApp.getActivityComponent(context)?.inject(this)
+        isFreshInstall = preferenceManager.isFreshInstall
+        LayoutInflater.from(context).inflate(R.layout.fragment_freshtab, this)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initializeViews()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        bus.register(this)
-        updateView()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        bus.unregister(this)
-    }
-
-    private fun initializeViews() {
         topsites_grid.adapter = topsitesAdapter
         topsites_grid.onItemClickListener = AdapterView.OnItemClickListener { _, view, position, _ ->
             if (topsitesAdapter.getItemViewType(position) == TopsitesAdapter.PLACEHOLDER_TYPE) {
@@ -91,6 +75,17 @@ internal class FreshTab : StartTabFragment() {
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        bus.register(this)
+        update()
+    }
+
+    override fun onDetachedFromWindow() {
+        bus.unregister(this)
+        super.onDetachedFromWindow()
+    }
+
     @Subscribe
     fun getTrialPeriod(onTrialPeriodResponse: Messages.OnTrialPeriodResponse) {
         if (purchasesManager.purchase.isASubscriber) return
@@ -108,14 +103,7 @@ internal class FreshTab : StartTabFragment() {
         }
     }
 
-    override fun getTitle() = ""
-
-    override fun getIconId() = R.drawable.ic_fresh_tab
-
-    override fun updateView() {
-        if (!isAdded) {
-            return
-        }
+    override fun update() {
         topsitesAdapter.fetchTopsites()
         toggleTopSitesView(show = preferenceManager.shouldShowTopSites() && !topsitesAdapter.isEmpty)
         toggleWelcomeMessage(show = isFreshInstall && topsitesAdapter.isEmpty)
@@ -160,18 +148,6 @@ internal class FreshTab : StartTabFragment() {
     internal fun onPurchaseCompleted(purchaseCompleted: Messages.PurchaseCompleted) {
         if (purchasesManager.purchase.isASubscriber) {
             hideAllTrialPeriodViews()
-        }
-    }
-
-    companion object {
-
-        const val ARG_IS_FRESH_INSTALL = "is_fresh_install"
-
-        @JvmStatic
-        fun newInstance(isFreshInstall: Boolean) = FreshTab().apply{
-            arguments = Bundle().apply {
-                putBoolean(ARG_IS_FRESH_INSTALL, isFreshInstall)
-            }
         }
     }
 }

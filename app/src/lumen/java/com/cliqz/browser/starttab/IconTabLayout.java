@@ -3,12 +3,14 @@ package com.cliqz.browser.starttab;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.Objects;
 
 /**
  * @author Ravjit Uppal
@@ -18,12 +20,10 @@ import com.google.android.material.tabs.TabLayout;
  */
 public class IconTabLayout extends TabLayout {
 
-    abstract static class ImageFragmentPagerAdapter extends FragmentPagerAdapter {
+    abstract static class ImagePagerAdapter extends PagerAdapter {
 
-        ImageFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
+        @SuppressWarnings("WeakerAccess")
+        @DrawableRes
         public abstract int getIcon(int position);
     }
 
@@ -42,9 +42,15 @@ public class IconTabLayout extends TabLayout {
     @Override
     public void setupWithViewPager(@Nullable ViewPager viewPager) {
         super.setupWithViewPager(viewPager);
+        final ImagePagerAdapter adapter =
+                viewPager != null ? (ImagePagerAdapter) viewPager.getAdapter() : null;
+        if (adapter == null) {
+            return;
+        }
         for (int i = 0; i < getTabCount(); i++) {
-            getTabAt(i).setText("");
-            getTabAt(i).setIcon(((ImageFragmentPagerAdapter)viewPager.getAdapter()).getIcon(i));
+            final TabLayout.Tab tab = Objects.requireNonNull(getTabAt(i));
+            tab.setText("");
+            tab.setIcon(adapter.getIcon(i));
         }
     }
 }

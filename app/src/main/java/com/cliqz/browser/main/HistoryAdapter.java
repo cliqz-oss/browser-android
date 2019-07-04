@@ -2,17 +2,22 @@ package com.cliqz.browser.main;
 
 import android.os.Build;
 import android.os.Handler;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.search.IconViewHolder;
 import com.cliqz.browser.main.search.FreshtabGetLogoCallback;
+import com.cliqz.browser.main.search.IconViewHolder;
+import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
+import com.cliqz.nove.Bus;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,40 +29,35 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-
-/**
- * @author vishnu
- * @author Ravjit Singh
- */
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    public interface ClickListener {
-        void onClick(View view, int position);
-
-        void onLongPress(View view, int position);
-    }
 
     public static final int VIEW_TYPE_DATE = 0;
     public static final int VIEW_TYPE_HISTORY = 1;
     public static final int VIEW_TYPE_QUERY = 2;
+    private final Bus bus;
+    private final Engine engine;
+    private final Handler handler;
 
     private ArrayList<HistoryModel> historyList;
-    private Engine engine;
-    private Handler handler;
 
-    ArrayList<Integer> multiSelectList = new ArrayList<>();
-    private ClickListener clickListener;
+    // private ArrayList<Integer> multiSelectList = new ArrayList<>();
 
-    public HistoryAdapter(ArrayList<HistoryModel> historyList, Engine engine, Handler handler,
-                          ClickListener clickListener) {
-        this.historyList = historyList;
+    public HistoryAdapter(Engine engine, Handler handler,
+                   Bus bus) {
+        this.historyList = new ArrayList<>();
         this.engine = engine;
         this.handler = handler;
-        this.clickListener = clickListener;
+        this.bus = bus;
     }
 
+    public void setHistory(ArrayList<HistoryModel> history) {
+        historyList = history;
+        notifyDataSetChanged();
+    }
+
+    @NotNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         final View view;
         switch (viewType) {
             case VIEW_TYPE_HISTORY:
@@ -73,14 +73,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         parent, false);
                 return new QueryViewHolder(view);
             default:
-                //should never be this case
-                return null;
+                throw new RuntimeException("Unknown type");
         }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NotNull RecyclerView.ViewHolder holder, int position) {
         String visitedTime = null;
         String visitedDate = null;
         final Locale defaultLocale = Locale.getDefault();
@@ -121,11 +119,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
                 historyViewHolder.time.setText(visitedTime);
                 loadIcon(historyViewHolder, historyList.get(position).getUrl());
-                if (multiSelectList.contains(position)) {
-                    historyViewHolder.selectedOverlay.setBackgroundColor(0x7700AEF0);
-                } else {
-                    historyViewHolder.selectedOverlay.setBackgroundColor(0x00000000);
-                }
                 break;
             case VIEW_TYPE_DATE:
                 final DateViewHolder dateViewHolder = (DateViewHolder) holder;
@@ -135,11 +128,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 final QueryViewHolder queryViewHolder = (QueryViewHolder) holder;
                 queryViewHolder.query.setText(historyList.get(position).getUrl());
                 queryViewHolder.time.setText(visitedTime);
-                if (multiSelectList.contains(position)) {
-                    queryViewHolder.selectedOverlay.setBackgroundColor(0x7700AEF0);
-                } else {
-                    queryViewHolder.selectedOverlay.setBackgroundColor(0x00000000);
-                }
                 break;
         }
     }
@@ -158,6 +146,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         engine.callAction("getLogoDetails", new FreshtabGetLogoCallback(holder, handler, false), url);
     }
 
+    public long getHistoryId(int position) {
+        return historyList.get(position).getId();
+    }
+
+    public long getQueryId(int position) {
+        return historyList.get(position).getId();
+    }
+
+    public void remove(int position) {
+        historyList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     private class HistoryViewHolder extends IconViewHolder {
 
         public TextView url;
@@ -173,17 +174,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             time = view.findViewById(R.id.history_time);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             historyViewParent = view.findViewById(R.id.history_view_parent);
-            historyViewParent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clickListener.onClick(v, getAdapterPosition());
-                }
-            });
-            historyViewParent.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    clickListener.onLongPress(v, getAdapterPosition());
-                    return true;
+            historyViewParent.setOnClickListener( v -> {
+                final int position = getAdapterPosition();
+                switch (HistoryAdapter.this.getItemViewType(position)) {
+                    case VIEW_TYPE_HISTORY:
+                        bus.post(CliqzMessages.OpenLink.openFromHistory(historyList.get(position).getUrl()));
+                        break;
+                    case VIEW_TYPE_QUERY:
+                        bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
+                        break;
+                    default:
+                        break;
                 }
             });
         }
@@ -214,19 +215,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             time = view.findViewById(R.id.query_time);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             queryViewParent = view.findViewById(R.id.query_view_parent);
-            queryViewParent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clickListener.onClick(v, getAdapterPosition());
-                }
-            });
-            queryViewParent.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    clickListener.onLongPress(v, getAdapterPosition());
-                    return true;
-                }
-            });
+//            queryViewParent.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    clickListener.onClick(v, getAdapterPosition());
+//                }
+//            });
+//            queryViewParent.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    clickListener.onLongPress(v, getAdapterPosition());
+//                    return true;
+//                }
+//            });
         }
     }
 }
