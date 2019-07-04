@@ -1,7 +1,6 @@
 package com.cliqz.browser.controlcenter
 
 import acr.browser.lightning.preference.PreferenceManager
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -69,6 +68,14 @@ class DashboardFragment : Fragment() {
                     .show()
         }
         updateUI()
+    }
+
+    fun getTitle(): String {
+        return if (isDailyView) {
+            context!!.getString(R.string.bond_dashboard_today_title)
+        } else {
+            context!!.getString(R.string.bond_dashboard_week_title)
+        }
     }
 
     fun updateUI() {
