@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- TODO restore the coordinator layout by extracting the freshtab from the TabFragment
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+    -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -67,7 +70,10 @@
             android:background="@color/white"
             tools:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </LinearLayout>
+    <!-- TODO restore the CoordinatorLayout, see above
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    -->
     <!--add views which are fixed to the bottom of the screen here-->
 
     <LinearLayout
