@@ -2,24 +2,28 @@ package com.cliqz.browser.main;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.overview.OverviewTabsEnum;
-import com.cliqz.browser.webview.CliqzMessages;
+import com.cliqz.browser.main.HistoryAdapter;
+import com.cliqz.browser.starttab.HistoryItemTouchHelper;
 import com.cliqz.nove.Subscribe;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,9 +36,8 @@ public class HistoryFragment extends FragmentWithBus {
 
     private boolean isMultiSelect;
     private HistoryAdapter adapter;
-    private final ArrayList<HistoryModel> historyList = new ArrayList<>();
     private View contextualToolBar;
-    private TextView contextualToolBarTitle;
+    // private TextView contextualToolBarTitle;
 
     @BindView(R.id.history_rview)
     RecyclerView historyListView;
@@ -43,11 +46,18 @@ public class HistoryFragment extends FragmentWithBus {
     LinearLayout noHistoryMessage;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        contextualToolBar = ((OverviewFragment)getParentFragment()).contextualToolBar;
-        contextualToolBarTitle = contextualToolBar.findViewById(R.id.contextual_title);
+    public View onCreateView(@NotNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        contextualToolBar = Objects
+                .requireNonNull((OverviewFragment)getParentFragment())
+                .contextualToolBar;
+        // contextualToolBarTitle = contextualToolBar.findViewById(R.id.contextual_title);
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this,view);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(getContext());
+        Objects.requireNonNull(component).inject(this);
+        adapter = new HistoryAdapter(engine, handler, bus);
         return view;
     }
 
@@ -62,45 +72,13 @@ public class HistoryFragment extends FragmentWithBus {
             preferenceManager.setShouldClearQueries(PreferenceManager.ClearQueriesOptions.NO);
         }*/
         prepareListData();
-        if (historyList.size() == 0) {
+        if (adapter.getItemCount() == 0) {
             noHistoryMessage.setVisibility(View.VISIBLE);
             return;
         }
         noHistoryMessage.setVisibility(View.GONE);
         if (adapter == null) {
-            adapter = new HistoryAdapter(historyList, engine, handler, new HistoryAdapter.ClickListener() {
-                @Override
-                public void onClick(View view, int position) {
-                    //ignore click on date
-                    if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE) {
-                        return;
-                    }
-                    if (isMultiSelect) {
-                        multiSelect(position);
-                    } else if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_HISTORY) {
-                        bus.post(CliqzMessages.OpenLink.openFromHistory(historyList.get(position).getUrl()));
-                    } else if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_QUERY) {
-                        bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
-                    }
-                }
-
-                @Override
-                public void onLongPress(View view, int position) {
-                    //if view is being swiped ignore long press
-                    if (view.getTranslationX() != 0) {
-                        return;
-                    }
-                    //ignore long press on date
-                    if (adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE) {
-                        return;
-                    }
-                    if (!isMultiSelect) {
-                        adapter.multiSelectList.clear();
-                        showContextualMenu();
-                    }
-                    multiSelect(position);
-                }
-            });
+            adapter = new HistoryAdapter(engine, handler, bus);
         }
         prepareRecyclerView();
     }
@@ -120,18 +98,25 @@ public class HistoryFragment extends FragmentWithBus {
 
     @Subscribe
     public void onContextualBarCanceled(Messages.OnContextualBarCancelPressed event) {
-        if (((OverviewFragment)getParentFragment()).getCurrentPageIndex()
-                == OverviewTabsEnum.HISTORY.getFragmentIndex()) {
+        final int pageIndex = Objects
+                .requireNonNull((OverviewFragment)getParentFragment())
+                .getCurrentPageIndex();
+        if (pageIndex == OverviewTabsEnum.HISTORY.getFragmentIndex()) {
             hideContextualMenu();
         }
     }
 
     @Subscribe
     public void onContextualBarDelete(Messages.OnContextualBarDeletePressed event) {
-        if (((OverviewFragment)getParentFragment()).getCurrentPageIndex()
-                == OverviewTabsEnum.HISTORY.getFragmentIndex()) {
+        // TODO restore this
+        /*
+        final int pageIndex = Objects
+                .requireNonNull((OverviewFragment)getParentFragment())
+                .getCurrentPageIndex();
+        if (pageIndex == OverviewTabsEnum.HISTORY.getFragmentIndex()) {
             deleteSelectedItems();
         }
+        */
     }
 
     private void prepareRecyclerView() {
@@ -142,59 +127,17 @@ public class HistoryFragment extends FragmentWithBus {
         historyListView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //callback to handle swipe and delete
-        final ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-                    @Override
-                    public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                        //Dont swipe date view and when contextual menu is enabled
-                        if (viewHolder instanceof HistoryAdapter.DateViewHolder || isMultiSelect) {
-                            return 0;
-                        }
-                        return super.getSwipeDirs(recyclerView, viewHolder);
-                    }
-
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                                          RecyclerView.ViewHolder target) {
-                        return false;
-                    }
-
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                        final int position = viewHolder.getAdapterPosition();
-                        final int type = viewHolder.getItemViewType();
-                        if (type == HistoryAdapter.VIEW_TYPE_HISTORY) {
-                            historyDatabase.deleteHistoryPoint(historyList.get(position).getId());
-                        } else {
-                            historyDatabase.deleteQuery(historyList.get(position).getId());
-                        }
-                        historyList.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        //check if date view is to be removed
-                        if ((position == historyList.size()
-                                || historyListView.getAdapter().getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE)
-                                && historyListView.getAdapter().getItemViewType(position - 1 ) == HistoryAdapter.VIEW_TYPE_DATE) {
-                            historyList.remove(position-1);
-                            adapter.notifyItemRemoved(position-1);
-                            if (historyList.size() == 0) {
-                                noHistoryMessage.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-                };
-
-        //callbacks for click and long click on items
-        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new HistoryItemTouchHelper(historyDatabase, adapter));
         itemTouchHelper.attachToRecyclerView(historyListView);
         historyListView.setAdapter(adapter);
-        historyListView.scrollToPosition(historyList.size()-1);
+        historyListView.scrollToPosition(adapter.getItemCount()-1);
     }
 
     private void prepareListData() {
         //TODO historyDatabase.getHistoryItemsCount has to be modified to get the limit correctly;
-        historyList.clear();
-        final Cursor cursor = historyDatabase.getHistoryItemsForRecyclerView(0, historyDatabase.getHistoryItemsCount());
+        final int itemsCount = historyDatabase.getHistoryItemsCount();
+        final ArrayList<HistoryModel> historyList = new ArrayList<>(itemsCount);
+        final Cursor cursor = historyDatabase.getHistoryItemsForRecyclerView(0, itemsCount);
         final int typeIndex = cursor.getColumnIndex("type");
         final int idIndex = cursor.getColumnIndex("id");
         final int urlIndex = cursor.getColumnIndex("url");
@@ -208,8 +151,10 @@ public class HistoryFragment extends FragmentWithBus {
                     cursor.getInt(typeIndex)));
         }
         cursor.close();
+        adapter.setHistory(historyList);
     }
 
+    /*
     private void multiSelect(int position) {
             if (adapter.multiSelectList.contains(position)) {
                 adapter.multiSelectList.remove(Integer.valueOf(position));
@@ -257,10 +202,11 @@ public class HistoryFragment extends FragmentWithBus {
             return;
         }
         isMultiSelect = true;
-        getParentFragment().setHasOptionsMenu(false);
+        Objects.requireNonNull(getParentFragment()).setHasOptionsMenu(false);
         setDisplayHomeAsUpEnabled(false);
         contextualToolBar.setVisibility(View.VISIBLE);
     }
+    */
 
     private void hideContextualMenu() {
         //if its already hidden dont execute the next lines
@@ -268,9 +214,9 @@ public class HistoryFragment extends FragmentWithBus {
             return;
         }
         isMultiSelect = false;
-        adapter.multiSelectList.clear();
+        // adapter.multiSelectList.clear();
         adapter.notifyDataSetChanged();
-        getParentFragment().setHasOptionsMenu(true);
+        Objects.requireNonNull(getParentFragment()).setHasOptionsMenu(true);
         setDisplayHomeAsUpEnabled(true);
         contextualToolBar.setVisibility(View.GONE);
     }

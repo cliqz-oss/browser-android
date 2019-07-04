@@ -55,6 +55,8 @@ public class SearchBar extends FrameLayout {
     private float pivotX;
     private float pivotY;
     private AnimatedProgressBar progressBar;
+    private boolean mShowSearchEditTextAnimationRunning = false;
+    private boolean mShowTitleBarAnimationRunning = false;
 
     public interface Listener extends TextWatcher, OnFocusChangeListener {
         void onTitleClicked(SearchBar searchBar);
@@ -186,27 +188,59 @@ public class SearchBar extends FrameLayout {
     }
 
     public void showSearchEditText() {
-        progressBar.setVisibility(GONE);
-        //Don't redo the animation if the edittext is already visible
-        if (searchEditText.getVisibility() == VISIBLE) {
+        if (mShowSearchEditTextAnimationRunning || searchEditText.getVisibility() == VISIBLE) {
             return;
         }
-        // Postpone the animation in order to avoid the SearchEditText to intercept the same
-        // touch event that shown it
-        post(() -> {
-            searchEditText.setVisibility(VISIBLE);
-            final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
-            animation.setDuration(150);
-            searchEditText.startAnimation(animation);
-            requestSearchFocus();
+        mShowSearchEditTextAnimationRunning = true;
+
+        progressBar.setVisibility(GONE);
+        final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
+        animation.setDuration(150);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                searchEditText.setVisibility(VISIBLE);
+                requestSearchFocus();
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mShowSearchEditTextAnimationRunning = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
         });
+        searchEditText.startAnimation(animation);
     }
 
     public void showTitleBar() {
+        if (mShowTitleBarAnimationRunning || searchEditText.getVisibility() != VISIBLE) {
+            return;
+        }
+        mShowTitleBarAnimationRunning = true;
         final Animation animation = new ScaleAnimation(1.0f, scaleX, 1.0f, scaleY, pivotX, pivotY);
         animation.setDuration(150);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                searchEditText.clearFocus();
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                searchEditText.setVisibility(GONE);
+                mShowTitleBarAnimationRunning = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         searchEditText.startAnimation(animation);
-        searchEditText.setVisibility(View.GONE);
     }
 
     public void showProgressBar() {
@@ -219,10 +253,6 @@ public class SearchBar extends FrameLayout {
         if (progressBar.getVisibility() == VISIBLE) {
             progressBar.setProgress(progress);
         }
-    }
-
-    public int getProgress() {
-        return progressBar.getProgress();
     }
 
     public void setSearchText(String text) {
@@ -359,6 +389,12 @@ public class SearchBar extends FrameLayout {
         }
     }
 
+    @Override
+    public void clearFocus() {
+        searchEditText.clearFocus();
+        super.clearFocus();
+    }
+
     private class ListenerWrapper implements TextWatcher, OnFocusChangeListener {
 
         @Override
@@ -390,9 +426,10 @@ public class SearchBar extends FrameLayout {
 
             if (hasFocus) {
                 post(SearchBar.this::showKeyBoard);
-            } else {
-                showTitleBar();
             }
+//            } else {
+//                showTitleBar();
+//            }
         }
     }
 }

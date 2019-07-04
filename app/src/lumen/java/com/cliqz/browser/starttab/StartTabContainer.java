@@ -8,20 +8,28 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cliqz.browser.R;
+import com.google.android.material.tabs.TabLayout;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnPageChange;
 
 /**
  * @author Ravjit Uppal
  */
-public class StartTabContainer extends FrameLayout implements ViewPager.OnPageChangeListener {
+public class StartTabContainer extends FrameLayout {
 
-    private ViewPager mViewPager;
-    private StartTabAdapter mStartTabAdapter;
+    @BindView(R.id.view_pager)
+    ViewPager mViewPager;
+
+    private final StartTabAdapter mStartTabAdapter;
 
     public StartTabContainer(@NonNull Context context) {
         this(context, null);
@@ -33,41 +41,30 @@ public class StartTabContainer extends FrameLayout implements ViewPager.OnPageCh
 
     public StartTabContainer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.starttab_container_layout, null);
-        addView(view);
-    }
-
-    public void updateFreshTab() {
-    }
-
-    public void init(FragmentManager supportFragmentManager, PreferenceManager preferenceManager) {
-        mViewPager = findViewById(R.id.view_pager);
-        mViewPager.addOnPageChangeListener(this);
-        mStartTabAdapter = new StartTabAdapter(supportFragmentManager, preferenceManager);
+        final LayoutInflater inflater = LayoutInflater.from(context);
+        final View view = inflater.inflate(R.layout.starttab_container_layout, this);
+        ButterKnife.bind(this, view);
+        mStartTabAdapter = new StartTabAdapter(context);
         final IconTabLayout pagerTabStrip = findViewById(R.id.tab_layout);
         mViewPager.setAdapter(mStartTabAdapter);
         pagerTabStrip.setupWithViewPager(mViewPager);
+    }
+
+    public void updateFreshTab() {
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem());
+        mStartTabAdapter.updateView(mViewPager.getCurrentItem());
     }
 
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
         if (visibility == VISIBLE) {
-            mStartTabAdapter.updateView(mViewPager.getCurrentItem());
+            // mStartTabAdapter.updateView(mViewPager.getCurrentItem());
         }
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
+    @OnPageChange(R.id.view_pager)
+    void onPageChange(int position) {
         mStartTabAdapter.updateView(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
     }
 }

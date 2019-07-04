@@ -6,11 +6,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.cliqz.browser.main.search.Freshtab;
-
-import acr.browser.lightning.preference.PreferenceManager;
 
 /**
  * @author Ravjit Uppal
@@ -29,10 +26,7 @@ public class StartTabContainer extends FrameLayout {
 
     public StartTabContainer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public void init(FragmentManager supportFragmentManager, PreferenceManager preferenceManager) {
-        mFreshtab = new Freshtab(getContext());
+        mFreshtab = new Freshtab(context);
         addView(mFreshtab);
     }
 

@@ -78,7 +78,6 @@ public class SearchView extends FrameLayout {
         this.engine = engine;
         mReactView = engine.reactRootView;
         startTabContainer = new StartTabContainer(this.context);
-        startTabContainer.init(context.getSupportFragmentManager(), preferenceManager);
         incognito = BuildConfig.IS_NOT_LUMEN ? new Incognito(this.context) : null;
         // mReactView.setBackgroundColor(ContextCompat.getColor(this.context, R.color.normal_tab_primary_color));
         mReactView.setLayoutParams(
@@ -102,6 +101,7 @@ public class SearchView extends FrameLayout {
         if (query.equals("")) {
             setIncognito(state.isIncognito());
             mReactView.setVisibility(View.GONE);
+            startTabContainer.updateFreshTab();
         } else {
             mReactView.bringToFront();
             startTabContainer.setVisibility(View.GONE);

@@ -3,7 +3,6 @@ package com.cliqz.browser.main;
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.controlcenter.ControlCenterDialog;
 import com.cliqz.browser.main.search.Freshtab;
-import com.cliqz.browser.main.search.Incognito;
 
 import dagger.Subcomponent;
 
