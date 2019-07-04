@@ -1,12 +1,12 @@
 package com.cliqz.browser.controlcenter
 
 import acr.browser.lightning.preference.PreferenceManager
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.extensions.color
@@ -22,12 +22,7 @@ import com.facebook.react.bridge.ReadableMap
 import kotlinx.android.synthetic.lumen.bond_dashboard_fragment.*
 import javax.inject.Inject
 
-private val tabsTitleIds = intArrayOf(
-        R.string.bond_dashboard_today_title,
-        R.string.bond_dashboard_week_title
-)
-
-class DashboardFragment : ControlCenterFragment() {
+class DashboardFragment : Fragment() {
 
     private var isDailyView = false
 
@@ -75,9 +70,15 @@ class DashboardFragment : ControlCenterFragment() {
         updateUI()
     }
 
-    override fun getTitle(context: Context?, pos: Int) = context?.getString(tabsTitleIds[pos])
+    fun getTitle(): String {
+        return if (isDailyView) {
+            context!!.getString(R.string.bond_dashboard_today_title)
+        } else {
+            context!!.getString(R.string.bond_dashboard_week_title)
+        }
+    }
 
-    override fun updateUI() {
+    fun updateUI() {
         val periodType = if (isDailyView) "day" else "week"
         insights.getInsightsData({
             view?.post {
@@ -86,7 +87,7 @@ class DashboardFragment : ControlCenterFragment() {
         }, periodType)
     }
 
-    override fun refreshUIComponent(optionValue: Boolean) {
+    fun refreshUIComponent(optionValue: Boolean) {
         changeDashboardState(optionValue)
     }
 
