@@ -2,7 +2,7 @@
 @Library(['cliqz-shared-library@v1.2']) _
 properties([
     parameters([
-        choice(choices: ['cliqz', 'lumen'], defaultValue: 'lumen', description: 'Which Product ?', name: 'product')
+        choice(choices: ['lumen', 'cliqz'], defaultValue: 'lumen', description: 'Which Product ?', name: 'product')
     ])
 ])
 node('master'){
@@ -23,7 +23,10 @@ node('master'){
                     npm run bundle
                 '''
             }
-            withEnv(["GRADLE_USER_HOME=${pwd()}/gradle_home"]) {
+            withEnv([
+                "GRADLE_USER_HOME=${pwd()}/gradle_home",
+                "BUILD_NUMBER=${BUILD_NUMBER}"
+                ]) {
                 withCredentials([
                         file(credentialsId: '263e59fb-e9de-4e51-962c-0237c6ee167b', variable: 'CERT_PATH'),
                         string(credentialsId: '60354bba-8ed0-4df9-8f8e-5be7454c1680', variable: 'CERT_PASS'),
