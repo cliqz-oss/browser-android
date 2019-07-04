@@ -12,7 +12,6 @@
     <style name="tab_layout_text_style">
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/bond_general_color_blue</item>
     </style>
 
     <style name="required_items">

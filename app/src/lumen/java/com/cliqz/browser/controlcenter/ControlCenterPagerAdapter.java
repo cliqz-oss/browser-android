@@ -1,6 +1,5 @@
 package com.cliqz.browser.controlcenter;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentManager;
@@ -12,8 +11,8 @@ public class ControlCenterPagerAdapter extends BaseControlCenterPagerAdapter {
 
     static final String IS_TODAY = "is_daily";
 
-    ControlCenterPagerAdapter(FragmentManager fm, Context context) {
-        super(fm, context);
+    ControlCenterPagerAdapter(FragmentManager fm) {
+        super(fm);
     }
 
     public void init() {

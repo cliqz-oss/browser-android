@@ -1,7 +1,5 @@
 package com.cliqz.browser.controlcenter;
 
-import android.content.Context;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -16,14 +14,13 @@ import java.util.List;
  */
 public abstract class BaseControlCenterPagerAdapter extends FragmentPagerAdapter {
 
-    private Context mContext;
-    final List<ControlCenterFragment> mFragmentList = new ArrayList<>();
+    final List<DashboardFragment> mFragmentList = new ArrayList<>();
 
-    BaseControlCenterPagerAdapter(FragmentManager fm, Context context) {
+    BaseControlCenterPagerAdapter(FragmentManager fm) {
         super(fm);
-        mContext = context;
     }
 
+    @Override
     public Fragment getItem(int position) {
         return mFragmentList.get(position);
     }
@@ -33,11 +30,7 @@ public abstract class BaseControlCenterPagerAdapter extends FragmentPagerAdapter
     }
 
     public CharSequence getPageTitle(int position) {
-        return mFragmentList.get(position).getTitle(mContext, position);
-    }
-
-    void updateCurrentView(int position) {
-        mFragmentList.get(position).refreshUI();
+        return mFragmentList.get(position).getTitle();
     }
 
     void updateViewComponent(int position, boolean optionValue) {

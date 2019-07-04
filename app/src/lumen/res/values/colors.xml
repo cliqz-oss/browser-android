@@ -43,4 +43,6 @@
     <color name="lumen_color_blue_primary">#1B9CFC</color>
     <color name="lumen_color_background">#0D1429</color>
     <color name="lumen_color_grey_text">#80FFFFFF</color>
+    <color name="lumen_disabled_gray">#4E5363</color>
+    <color name="lumen_color_blue_primary_opaque">#801B9CFC</color>
 </resources>
