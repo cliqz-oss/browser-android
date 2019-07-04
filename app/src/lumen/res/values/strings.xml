@@ -101,4 +101,12 @@
     <string name="subscription_product_row_highlighted">Best offer\nLimited Time Only</string>
     <string name="per_month_text">%1$s / MONTH</string>
 
+    <!-- Restore Subscription -->
+    <string name="restore_subscription">Restore Subscription</string>
+    <string name="restore_subscription_dialog_title">Restore subscriptions?</string>
+    <string name="restore_subscription_dialog_desc">You already have a subscription for package %1$s </string>
+    <string name="restore_subscription_dialog_positive_btn">Restore</string>
+    <string name="restore_subscription_error_msg">Nothing to restore</string>
+    <string name="restore_subscription_success">Subscription restored</string>
+
 </resources>

@@ -140,7 +140,7 @@ public class ControlCenterDialog extends DialogFragment {
                 container, false);
         ButterKnife.bind(this, view);
 
-        mControlCenterPagerAdapter = new ControlCenterPagerAdapter(getChildFragmentManager());
+        mControlCenterPagerAdapter = new ControlCenterPagerAdapter(getChildFragmentManager(), context);
         mControlCenterPagerAdapter.init();
         controlCenterPager.setAdapter(mControlCenterPagerAdapter);
         controlCenterTabLayout.setupWithViewPager(controlCenterPager);
