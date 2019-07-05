@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cliqz.browser.R
-import com.cliqz.browser.purchases.SubscriptionConstants.Product
+import com.cliqz.browser.purchases.SubscriptionConstants.ProductId
 import kotlinx.android.synthetic.lumen.subscription_product_row_default.view.*
 
 interface OnBuyClickListener {
@@ -47,7 +47,11 @@ class ProductListAdapter(private val context: Context?,
 
     override fun getItemViewType(position: Int): Int {
         return mListData?.let {
-            if (it[position].sku == Product.BASIC_VPN) LAYOUT_HIGHLIGHTED else LAYOUT_DEFAULT
+            if (it[position].sku in setOf(ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING)) {
+                LAYOUT_HIGHLIGHTED
+            } else {
+                LAYOUT_DEFAULT
+            }
         } ?: LAYOUT_DEFAULT
     }
 

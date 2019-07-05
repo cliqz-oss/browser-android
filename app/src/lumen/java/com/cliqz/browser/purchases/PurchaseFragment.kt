@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.android.billingclient.api.BillingClient
 
 import com.cliqz.browser.R
@@ -23,7 +24,8 @@ import com.cliqz.browser.purchases.productlist.ProductRowData
 import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
 import kotlinx.android.synthetic.lumen.fragment_purchase.*
 import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
-import com.cliqz.browser.purchases.SubscriptionConstants.Product
+import com.cliqz.browser.purchases.SubscriptionConstants.ProductId
+import com.cliqz.browser.purchases.SubscriptionConstants.ProductName
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.*
 import java.util.*
@@ -58,15 +60,29 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         super.onViewCreated(view, savedInstanceState)
         BrowserApp.getActivityComponent(activity as MainActivity)?.inject(this)
         close_btn.setOnClickListener { dismiss() }
-        initRecyclerView()
+        initializeViews()
         setLoading(true)
         getProductDetails()
     }
 
-    private fun initRecyclerView() {
+    private fun initializeViews() {
         mAdapter = ProductListAdapter(context, null, this)
         product_list.adapter = mAdapter
         product_list.layoutManager = LinearLayoutManager(context)
+
+        restore_purchase.setOnClickListener {
+            checkExistingPurchases(
+                    onSuccess = { activeSku ->
+                        enableFeatures(activeSku)
+                        Toast.makeText(context, getString(R.string.restore_subscription_success),
+                                Toast.LENGTH_LONG).show()
+                    },
+                    onError = {
+                        Toast.makeText(context, R.string.restore_subscription_error_msg,
+                                Toast.LENGTH_LONG).show()
+                    }
+            )
+        }
     }
 
     private fun getProductDetails() {
@@ -115,46 +131,63 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     private fun customSwapProductListElements(productList: List<ProductRowData>) {
         if (productList.size < 2) return
         val middleElement = productList[1]
-        val basicVpnProductElement: ProductRowData = productList.find { it.sku == Product.BASIC_VPN }
-                ?: return
+        val basicVpnProductElement: ProductRowData = productList.find {
+            it.sku in setOf(ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING)
+        } ?: return
         Collections.swap(productList, productList.indexOf(basicVpnProductElement), productList.indexOf(middleElement))
     }
 
     fun setLoading(flag: Boolean) {
         product_list.visibility = if (flag) View.GONE else View.VISIBLE
         loading.visibility = if (flag) View.VISIBLE else View.GONE
+        restore_purchase.visibility = if (flag || purchasesManager.purchase.isASubscriber) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 
     override fun onBuyClicked(position: Int) {
         mAdapter.getProduct(position)?.apply {
-            restoreExistingPurchase({ activeSku ->
-                if (activeSku == sku) {
-                    Toast.makeText(context, "You are already subscribed to this package", Toast.LENGTH_LONG).show()
-                    // TODO: Can remove this line and provide a restore button.
-                    enableFeatures(sku)
-                } else {
-                    makePurchase(sku)
-                }
-            }, {
-                makePurchase(sku)
-            })
+            checkExistingPurchases(
+                    onSuccess = { activeSku -> showRestorePurchasesDialog(sku = activeSku) },
+                    onError = { makePurchase(sku) }
+            )
         }
     }
 
-    private fun restoreExistingPurchase(success: (sku: String) -> Unit, cannotRestore: () -> Unit) {
+    private fun checkExistingPurchases(onSuccess: (activeSku: String) -> Unit, onError: () -> Unit) {
+        if (purchasesManager.purchase.sku.isNotEmpty()) {
+            onError()
+            return
+        }
         Purchases.sharedInstance.restorePurchasesWith(
-                {
+                onError = {
                     Log.w(TAG, it.message)
-                    cannotRestore()
+                    onError()
                 },
-                {
+                onSuccess = {
                     if (it.activeSubscriptions.isEmpty()) {
-                        cannotRestore()
+                        onError()
                     } else {
-                        success(it.activeSubscriptions.first())
+                        onSuccess(it.activeSubscriptions.first())
                     }
                 }
         )
+    }
+
+    private fun showRestorePurchasesDialog(sku: String) {
+        val productName = getProductNameById(sku)
+        AlertDialog.Builder(context!!)
+                .setTitle(R.string.restore_subscription_dialog_title)
+                .setMessage(getString(R.string.restore_subscription_dialog_desc, productName))
+                .setPositiveButton(R.string.restore_subscription_dialog_positive_btn) { _, _ ->
+                    enableFeatures(sku)
+                    Toast.makeText(context, getString(R.string.restore_subscription_success),
+                            Toast.LENGTH_LONG).show()
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
     }
 
     private fun makePurchase(sku: String) {
@@ -162,35 +195,39 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         if (purchasesManager.purchase.sku.isNotEmpty()) {
             oldSku.add(purchasesManager.purchase.sku)
         }
-        Purchases.sharedInstance.makePurchaseWith(activity as Activity, sku,
-                BillingClient.SkuType.SUBS, oldSku,
-                { error, userCancelled ->
+        Purchases.sharedInstance.makePurchaseWith(
+                activity as Activity,
+                sku,
+                BillingClient.SkuType.SUBS,
+                oldSku,
+                onError = { error, userCancelled ->
                     if (!userCancelled) {
                         Log.e(TAG, "${error.underlyingErrorMessage}")
                         Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
                     }
                 },
-                { purchase, _ ->
+                onSuccess = { purchase, _ ->
                     enableFeatures(purchase.sku)
+                    Toast.makeText(context, "Purchase complete!", Toast.LENGTH_SHORT).show()
                 }
         )
     }
 
     private fun enableFeatures(sku: String) {
         when (sku) {
-            Product.BASIC_VPN, Product.BASIC_VPN_STAGING -> {
+            ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            Product.BASIC, Product.BASIC_STAGING -> {
+            ProductId.BASIC, ProductId.BASIC_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = false
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            Product.VPN, Product.VPN_STAGING -> {
+            ProductId.VPN, ProductId.VPN_STAGING -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = false
                 preferenceManager.isAttrackEnabled = false
@@ -201,5 +238,12 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         purchasesManager.purchase.isASubscriber = true
         bus.post(Messages.PurchaseCompleted())
         dismiss()
+    }
+
+    private fun getProductNameById(sku: String) = when (sku) {
+        ProductId.BASIC, ProductId.BASIC_STAGING -> ProductName.BASIC
+        ProductId.VPN, ProductId.VPN_STAGING -> ProductName.VPN
+        ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING -> ProductName.BASIC_VPN
+        else -> IllegalArgumentException("Invalid product id $sku")
     }
 }

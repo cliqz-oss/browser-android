@@ -70,14 +70,6 @@ class DashboardFragment : Fragment() {
         updateUI()
     }
 
-    fun getTitle(): String {
-        return if (isDailyView) {
-            context!!.getString(R.string.bond_dashboard_today_title)
-        } else {
-            context!!.getString(R.string.bond_dashboard_week_title)
-        }
-    }
-
     fun updateUI() {
         val periodType = if (isDailyView) "day" else "week"
         insights.getInsightsData({
