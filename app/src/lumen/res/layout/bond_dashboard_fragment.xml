@@ -118,7 +118,7 @@
         app:layout_constraintEnd_toEndOf="@+id/data_saved"
         app:layout_constraintStart_toStartOf="@+id/data_saved"
         app:layout_constraintTop_toBottomOf="@id/horizontal_line"
-        app:srcCompat="@drawable/ic_kb_data_saved_on" />
+        android:src="@drawable/ic_kb_data_saved_on" />
 
     <TextView
         android:id="@+id/data_saved"
