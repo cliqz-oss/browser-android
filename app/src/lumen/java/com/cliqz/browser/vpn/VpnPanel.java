@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -113,11 +114,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        final Collection<VpnProfile> vpnProfiles =
-                ProfileManager.getInstance(source.getContext()).getProfiles();
-        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
-            dialog.selectedProfile = vpnProfiles.iterator().next();
-        }
+        dialog.selectedProfile = dialog.getSelectedProfile(source.getContext());
         return dialog;
     }
 
@@ -197,7 +194,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
 
     @OnClick(R.id.vpn_country)
     void vpnCountryClicked() {
-        if (selectedProfile != null) {
+        if (selectedProfile != null && purchasesManager.isDashboardEnabled()) {
             showVpnCountriesDialog();
         } else {
             unlockVpnDialog();
@@ -356,6 +353,20 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private void vpnMsgsChangeDrawable(@DrawableRes int id) {
         DrawableExtensionsKt.drawableStart(mVpnMsgLineOne, id);
         DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
+    }
+
+    private VpnProfile getSelectedProfile(Context context) {
+        final Collection<VpnProfile> vpnProfiles =
+                ProfileManager.getInstance(context).getProfiles();
+        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
+            return selectedProfile = vpnProfiles.iterator().next();
+        }
+        return null;
+    }
+
+    @Subscribe
+    public void onTrialPeriodResponse(Messages.OnTrialPeriodResponse onTrialPeriodResponse) {
+        selectedProfile = getSelectedProfile(getDialog().getContext());
     }
 
     @Subscribe
