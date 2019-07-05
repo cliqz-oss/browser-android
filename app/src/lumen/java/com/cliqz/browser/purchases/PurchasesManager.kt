@@ -60,7 +60,7 @@ class PurchasesManager(
             purchase.isASubscriber = false
         }
         // Get Trial Period data and vpn username, password.
-        this.loadTrialPeriodInfo(this@PurchasesManager)
+        this.loadTrialPeriodInfo()
     }
 
     override fun onError(error: PurchasesError) {
@@ -75,15 +75,14 @@ class PurchasesManager(
         }
     }
 
-    private fun loadTrialPeriodInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
+    fun loadTrialPeriodInfo() {
         // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(serverData: ServerData?) {
-                trialPeriodResponseListener.onTrialPeriodResponse(serverData)
-                // TODO: Can avoid querying network if not needed.
+                this@PurchasesManager.onTrialPeriodResponse(serverData)
                 trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
                     override fun onTrialPeriodResponse(serverData: ServerData?) {
-                        trialPeriodResponseListener.onTrialPeriodResponse(serverData)
+                        this@PurchasesManager.onTrialPeriodResponse(serverData)
                         trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
                     }
                 })
