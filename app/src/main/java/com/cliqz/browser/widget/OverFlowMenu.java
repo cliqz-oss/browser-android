@@ -92,6 +92,7 @@ public class OverFlowMenu extends FrameLayout {
         ACTIONS(EntryType.ACTIONS, -1, -1),
         NEW_TAB(EntryType.REGULAR, R.id.new_tab_menu_button, R.string.action_new_tab),
         NEW_INCOGNITO_TAB(EntryType.REGULAR, R.id.new_incognito_tab_menu_button, R.string.action_incognito),
+        TABS(EntryType.REGULAR, R.id.tabs_menu_button, R.string.tabs_word),
         GO_TO_FAVORITES(EntryType.REGULAR, R.id.go_to_favorites_button, R.string.favorites),
 
         SEARCH_IN_PAGE(EntryType.REGULAR, R.id.search_on_page_menu_button, R.string.action_search_on_page),
@@ -118,6 +119,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
+            Entries.TABS,
             Entries.SEARCH_IN_PAGE,
             Entries.GO_TO_FAVORITES,
             Entries.DESKTOP_PAIRING,
@@ -133,6 +135,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.ACTIONS,
             Entries.NEW_TAB,
             Entries.NEW_INCOGNITO_TAB,
+            Entries.TABS,
             Entries.SEARCH_IN_PAGE,
             Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
@@ -326,6 +329,9 @@ public class OverFlowMenu extends FrameLayout {
 
         if (BuildConfig.IS_LUMEN) {
             entries.remove(Entries.DESKTOP_PAIRING);
+        }
+        if (BuildConfig.IS_NOT_LUMEN) {
+            entries.remove(Entries.TABS);
         }
         if (!BuildConfig.DEBUG) {
             entries.remove(Entries.REACT_DEBUG);
@@ -568,6 +574,11 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(false));
+                    break;
+                case TABS:
+                    telemetry.sendMainMenuSignal(TelemetryKeys.TAB_COUNT, isIncognitoMode(),
+                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                    bus.post(new Messages.GoToOverview());
                     break;
                 case SEARCH_IN_PAGE:
                     telemetry.sendMainMenuSignal(TelemetryKeys.PAGE_SEARCH, isIncognitoMode(),
