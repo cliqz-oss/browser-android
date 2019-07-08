@@ -25,8 +25,17 @@ class CliqzPlugin: Plugin<Project> {
             android.applicationVariants.forEach { variant ->
                 setVersionCode(variant)
                 createCliqzConfigTasks(project, variant)
+                if (variant.buildType.isDebuggable) {
+                    createTestdroidTask(project, variant)
+                }
             }
         }
+    }
+
+    private fun createTestdroidTask(project: Project, variant: ApplicationVariant) {
+        val taskName = "connect${variant.name.capitalize()}TestDroid"
+        // Make sure this task depends on the assembling of the app and tests, we need those file to be uploaded
+        project.tasks.register(taskName, TestdroidTask::class.java)
     }
 
     private fun createCliqzConfigTasks(project: Project, variant: ApplicationVariant) {
