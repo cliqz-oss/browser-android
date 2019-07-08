@@ -1373,6 +1373,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
+    @Subscribe
+    void onGoToFavorites(@NonNull Messages.GoToFavorites msg) {
+        if (BuildConfig.IS_NOT_LUMEN) {
+            return;
+        }
+
+        state.setMode(Mode.SEARCH);
+        searchBar.showSearchEditText();
+        searchView.showFavorites();
+    }
+
     private void updateUI() {
         try {
             final Activity activity = FragmentUtilsV4.getActivity(this);

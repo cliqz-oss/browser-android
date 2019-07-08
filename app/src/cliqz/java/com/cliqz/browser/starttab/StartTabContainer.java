@@ -33,4 +33,8 @@ public class StartTabContainer extends FrameLayout {
     public void updateFreshTab() {
         mFreshtab.updateFreshTab();
     }
+
+    public void gotToFavorites() {
+        // NO-OP, stub for supporting the Lumen Flavor
+    }
 }

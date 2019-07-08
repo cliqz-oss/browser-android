@@ -599,8 +599,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void goToFavorites(Messages.GoToFavorites event) {
-        mOverViewFragment.setDisplayFavorites();
-        goToOverView(null);
+        if (BuildConfig.IS_NOT_LUMEN) {
+            mOverViewFragment.setDisplayFavorites();
+            goToOverView(null);
+        }
     }
 
     @Subscribe

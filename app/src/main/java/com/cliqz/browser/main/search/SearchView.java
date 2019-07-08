@@ -44,7 +44,7 @@ public class SearchView extends FrameLayout {
 
     private ReactRootView mReactView;
 
-    public StartTabContainer startTabContainer;
+    private StartTabContainer startTabContainer;
 
     @Inject
     PreferenceManager preferenceManager;
@@ -204,5 +204,9 @@ public class SearchView extends FrameLayout {
     public void handleUrlbarFocusChange(boolean hasFocus) {
         final String eventName = hasFocus ? ExtensionEvents.CLIQZ_EVENT_URL_BAR_FOCUS : ExtensionEvents.CLIQZ_EVENT_URL_BAR_BLUR;
         engine.publishEvent(eventName, Arguments.createMap());
+    }
+
+    public void showFavorites() {
+        startTabContainer.gotToFavorites();
     }
 }
