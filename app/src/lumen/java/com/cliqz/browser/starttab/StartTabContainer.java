@@ -55,6 +55,10 @@ public class StartTabContainer extends FrameLayout {
         mStartTabAdapter.updateView(mViewPager.getCurrentItem());
     }
 
+    public void gotToFavorites() {
+        mViewPager.setCurrentItem(2);
+    }
+
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
