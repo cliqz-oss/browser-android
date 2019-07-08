@@ -379,12 +379,12 @@ public class SearchBar extends FrameLayout {
                 searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
                 searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
                 titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_incognito));
-                setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
+                titleBar.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_incognito));
             } else {
                 searchEditText.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
                 searchEditText.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
                 titleBar.setTextColor(ContextCompat.getColor(context, R.color.url_bar_text_color_normal));
-                setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
+                titleBar.setBackgroundColor(ContextCompat.getColor(context, R.color.url_bar_bg_normal));
             }
         }
     }
