@@ -93,6 +93,8 @@
     <string name="vpn_feature_two">Hide your location</string>
     <string name="vpn_cta_disabled">@string/unlock_vpn_dialog_description</string>
     <string name="vpn_cta_enabled">VPN is short for Virtual Private Network.</string>
+    <string name="vpn_notification_title">Lumen Browser - VPN</string>
+    <string name="vpn_notification_content">You are connected to %s</string>
 
     <!-- Subscription -->
     <string name="button_buy_subscription">Subscribe</string>
