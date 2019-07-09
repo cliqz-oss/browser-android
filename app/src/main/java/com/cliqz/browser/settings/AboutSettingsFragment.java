@@ -3,10 +3,9 @@
  */
 package com.cliqz.browser.settings;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.cliqz.browser.BuildConfig;
@@ -63,9 +62,9 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
                     mAppVerCounter++;
                     return false;
                 } else {
-                    final Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://i.imgur.com/4lpVkTS.gif"));
-                    getActivity().startActivity(intent);
+                    Toast.makeText(getActivity(),
+                            Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID),
+                            Toast.LENGTH_LONG).show();
                     mAppVerCounter = 0;
                     return true;
                 }
