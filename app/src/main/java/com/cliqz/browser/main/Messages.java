@@ -279,7 +279,7 @@ public final class Messages {
     public static class OnTrialPeriodResponse {
     }
 
-    public static class onDashboardStateChange {
+    public static class OnDashboardStateChange {
     }
 
     public static class onVpnStateChange {
