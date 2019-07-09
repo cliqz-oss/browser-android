@@ -1,5 +1,6 @@
 package com.cliqz.browser.vpn;
 
+import android.app.Dialog;
 import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
@@ -18,5 +19,13 @@ public class VpnPanel {
     }
 
     public void show(FragmentManager fragmentManager, String tag) {
+    }
+
+    public boolean isVisible() {
+        return false;
+    }
+
+    public Dialog getDialog() {
+        return null;
     }
 }

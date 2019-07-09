@@ -195,6 +195,9 @@ public final class Messages {
     public static class DismissControlCenter {
     }
 
+    public static class DismissVpnPanel {
+    }
+
     public static class UpdateControlCenterIcon {
         @NonNull public final ControlCenterStatus status;
 
