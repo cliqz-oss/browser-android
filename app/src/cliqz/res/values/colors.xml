@@ -79,4 +79,7 @@
     <color name="progress_bar_color">#2B5993</color>
 
     <color name="search_lock_color">@color/primary_color</color>
+
+    <color name="tabs_overview_background_color">@color/normal_tab_primary_color</color>
+    <color name="tabs_overview_floating_button_color">@color/primary_color</color>
 </resources>

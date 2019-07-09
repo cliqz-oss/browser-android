@@ -7,4 +7,5 @@
     <dimen name="dashboard_item_content_size">14sp</dimen>
     <dimen name="normal_text_size">14sp</dimen>
     <dimen name="title_text_size">19sp</dimen>
+    <dimen name="tab_icon_size">126dp</dimen>
 </resources>

@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Stefano Pacifici
  */
@@ -249,7 +251,7 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
         }
     }
 
-    private void updateViews(@NonNull  RecyclerView.Recycler recycler, RecyclerView.State state) {
+    private void updateViews(@NonNull RecyclerView.Recycler recycler, RecyclerView.State state) {
         final int firstVisible = firstVisibleCard(state);
 
         // We have to remove all the cards if the item count is 0
@@ -291,6 +293,7 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
             final View view;
             if (viewIndex < getChildCount()) {
                 view = getChildAt(viewIndex);
+                assert view != null;
                 final RecyclerView.LayoutParams params =
                         (RecyclerView.LayoutParams) view.getLayoutParams();
                 if (params.isItemRemoved() && !state.isPreLayout()) {
@@ -350,7 +353,7 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void onItemsRemoved(RecyclerView recyclerView, int positionStart, int itemCount) {
+    public void onItemsRemoved(@NotNull RecyclerView recyclerView, int positionStart, int itemCount) {
         super.onItemsRemoved(recyclerView, positionStart, itemCount);
         final int remaining = getItemCount();
         if (remaining >= REMAINDERS_NO + 1 && positionStart == remaining) {

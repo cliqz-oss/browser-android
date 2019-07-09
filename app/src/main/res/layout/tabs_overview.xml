@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/normal_tab_primary_color">
+    android:background="@color/tabs_overview_background_color">
 
     <com.cliqz.deckview.TabsDeckView
         android:id="@+id/tabs_list_view"
@@ -20,8 +20,5 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@drawable/ic_action_add_white"
-        app:backgroundTint="?attr/colorPrimary"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true" />
-</RelativeLayout>
+        app:backgroundTint="@color/tabs_overview_floating_button_color" />
+</FrameLayout>
