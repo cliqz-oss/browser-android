@@ -105,6 +105,7 @@ class Config {
     var vpnApiKey = ""
     var revenuecatApiKey = ""
     var sentryToken = ""
+    var credentialUrl = ""
 
     @Suppress("UNCHECKED_CAST")
     fun merge(other: Config, logger: Logger? = null): Config {
