@@ -143,6 +143,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private boolean mRequestDesktopSite = false;
     private boolean mIsReaderModeOn = false;
 
+    private VpnPanel mVpnPanel;
+
     @BindView(R.id.local_container)
     FrameLayout localContainer;
 
@@ -225,6 +227,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Inject
     VpnHandler vpnHandler;
+
+    @Inject
+    MainActivityHandler mainActivityHandler;
 
     private String mDomainName = "";
 
@@ -326,7 +331,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
 
         mControlCenterHelper =
-                new ControlCenterHelper(getChildFragmentManager());
+                new ControlCenterHelper(getContext(), getChildFragmentManager());
 
         if (openTabsCounter != null) {
             openTabsCounter.setCounter(tabsManager.getTabCount());
@@ -554,6 +559,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
             hideKeyboard(null);
+            bus.post(new Messages.DismissControlCenter());
+            bus.post(new Messages.DismissVpnPanel());
         }
     }
 
@@ -631,8 +638,15 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Optional
     @OnClick(R.id.vpn_panel_button)
     void toggleVpnView() {
-        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar);
-        vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
+        if (mVpnPanel != null && mVpnPanel.isVisible()) {
+            mVpnPanel.getDialog().dismiss();
+            return;
+        }
+        mVpnPanel = VpnPanel.create(mStatusBar);
+        mVpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
+        mainActivityHandler.postDelayed(() -> {
+            bus.post(new Messages.DismissControlCenter());
+        }, 500);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -1375,6 +1389,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (mLightningView.canGoBack()) {
             bringWebViewToFront(null);
         }
+    }
+
+    @Subscribe
+    void onGoToFavorites(@NonNull Messages.GoToFavorites msg) {
+        if (BuildConfig.IS_NOT_LUMEN) {
+            return;
+        }
+
+        state.setMode(Mode.SEARCH);
+        searchBar.showSearchEditText();
+        searchView.showFavorites();
     }
 
     private void updateUI() {

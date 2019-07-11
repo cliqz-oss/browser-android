@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -165,6 +166,14 @@ public class ControlCenterDialog extends DialogFragment {
 
         setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final Window window = getDialog().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        getDialog().setCanceledOnTouchOutside(false);
     }
 
     @Subscribe

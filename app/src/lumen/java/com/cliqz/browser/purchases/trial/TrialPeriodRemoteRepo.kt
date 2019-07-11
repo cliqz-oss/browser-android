@@ -21,7 +21,6 @@ import java.net.URL
 
 private val TAG = TrialPeriodRemoteRepo::class.java.simpleName
 private const val CONTENT_TYPE_JSON = "application/json"
-private val LUMEN_CREDENTIAL_URL = URL("https://auth-staging.lumenbrowser.com/get_credentials")
 
 private val HEADERS = mapOf("x-api-key" to CliqzConfig.VPN_API_KEY)
 
@@ -56,8 +55,8 @@ class TrialPeriodRemoteRepo(private val context: Context) {
             }
 
             override fun doInBackground(vararg params: Void): ServerData {
-                val responseJSON =
-                        HttpHandler.sendRequest("POST", LUMEN_CREDENTIAL_URL, CONTENT_TYPE_JSON, HEADERS, requestBody)
+                val responseJSON = HttpHandler.sendRequest("POST", URL(CliqzConfig.CREDENTIAL_URL),
+                        CONTENT_TYPE_JSON, HEADERS, requestBody)
                 var trialDaysLeft = 0
                 var userName = ""
                 var password = ""

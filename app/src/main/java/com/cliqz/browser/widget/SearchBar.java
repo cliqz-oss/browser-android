@@ -426,6 +426,8 @@ public class SearchBar extends FrameLayout {
 
             if (hasFocus) {
                 post(SearchBar.this::showKeyBoard);
+                bus.post(new Messages.DismissVpnPanel());
+                bus.post(new Messages.DismissControlCenter());
             }
 //            } else {
 //                showTitleBar();

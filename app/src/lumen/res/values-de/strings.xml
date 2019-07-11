@@ -1,14 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="url_bar_search_hint">Lumen Suche</string>
-    <string name="shared_using">Geteilt mit Lumen für Android</string>
     <string name="optimized_block_ads_description">Der Werbeblocker von Lumen ist noch in der Entwicklung (Beta). Die Wahlmöglichkeiten der fertigen Version werden sein: Faire Werbung zulassen (Voreinstellung), jegliche Werbung blockieren, jegliche Werbung akzeptieren. Mehr https://cliqz.com/whycliqz/adblocking</string>
     <string name="antiphishing_message">Lumen hat den Zugriff auf %1$s blockiert, weil diese Seite als Phishing-Website gemeldet wurde. Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldedaten, dein Passwort oder andere vertrauliche Informationen preisgibst. [Mehr erfahren|Link to https://cliqz.com/whycliqz/anti-phishing]</string>
     <string name="rate_us">Lumen Browser bewerten</string>
     <string name="summary_adblock_data">Bitte beachte: Lumen Browser muss größere Informationspakete laden bevor der Werbeblocker effizient funktioniert. Dazu muss die App mit einem WLAN verbunden sein.</string>
     <string name="tips_and_tricks">Hol dir das Beste aus Lumen</string>
     <string name="msg_pairing_instructions_dialog">Öffne den Lumen Browser auf deinem Computer (oder lade ihn von cliqz.com herunter).</string>
-    <string name="app_name">Lumen Browser</string>
     <string name="pairing_information">Verbinde Lumen auf deinem mobilen Endgerät mit Lumen auf deinem Computer. Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicken. Du kannst außerdem Videos direkt auf dein mobiles Gerät herunterladen.</string>
     <string name="request_location_access">Darf Lumen Browser auf deine Standortinformationen zugreifen?</string>
     <string name="msg_new_icon">Hey, das Lumen-logo ist jetzt blau. Schau doch mal in die neue Version rein!</string>
@@ -20,19 +17,89 @@
     <string name="default_browser_message">Du scheinst Lumen gerne zu verwenden. Möchtest du Lumen zu deinem Standardbrowser machen?</string>
     <string name="save_password_text">Soll Lumen dein Passwort für diese Webseite speichern?</string>
     <string name="eula_text">Lumen für Android basiert auf dem Open-Source-Projekt &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Open-Source-Projekt Lightning Browser&lt;/a&gt; und wird unter der &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt; bereitgestellt - einer freien Softwarelizenz, die es dir erlaubt das Programm für jeden Zweck auszuführen, die Funktionsweise des Programms zu untersuchen, das Programm an Freunde weiterzugeben und das Programm nach deinen Bedürfnissen zu modifizieren. Es bestehen keine zusätzlichen Bestimmungen für diese Endnutzer-Lizenzvereinbarung.</string>
-    <string name="welcome_message">Willkommen bei Lumen!</string>
     <string name="agree_privacy_policy_message">Durch Verwendung dieser App stimmst du &lt;font color="#00aef0"&gt;der Datenschutzerklärung von Lumen zu.&lt;/font&gt;</string>
     <string name="privacy_policy_title">Datenschutzerklärung - Lumen</string>
     <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Lumen sammelt streng anonyme Daten darüber, wie du Lumen benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
     <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Lumen Browser erfahren. i</string>
 
+    <string name="non_subscriber_ultimate_protection">Komplettschutz: AUS</string>
+    <string name="non_subscriber_ultimate_protection_desc">Du bist ohne Komplettschutz und Werbeblocker unterwegs.</string>
+    <string name="non_subscriber_ultimate_protection_button">Einschalten</string>
+    <string name="bond_dashboard_clear_dialog_title">Statistiken zurücksetzen?</string>
+    <string name="bond_dashboard_clear_dialog_message">Dies wird alle Daten im Dashboard löschen und kann nicht rückgängig gemacht werden.</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="button_ok">Zurücksetzen</string>
+    <string name="bond_dashboard_ultimate_protection">Komplettschutz:</string>
+    <string name="bond_dashboard_contols_pause">Pause</string>
+    <string name="bond_dashboard_contols_vpn">VPN</string>
+    <string name="bond_dashboard_contols_clear">Zurücksetzen</string>
+    <string name="bond_dashboard_contols_on">AN</string>
+    <string name="bond_dashboard_contols_off">AUS</string>
+    <string name="bond_dashboard_today_title">Heute</string>
+    <string name="bond_dashboard_week_title">Letzte 7 Tage</string>
+    <string name="bond_dashboard_time_saved_title">Zeit gespart</string>
+    <string name="bond_dashboard_ads_blocked_title">Werbungen entfernt</string>
+    <string name="bond_dashboard_data_saved_title">Datenvolumen gespart</string>
+    <string name="bond_dashboard_phishing_protection_title">Webseiten überprüft</string>
+    <string name="bond_dashboard_tracking_companies_title">Datensammler abgewehrt</string>
+    <string name="bond_dashboard_units_seconds">SEK</string>
+    <string name="bond_dashboard_units_minutes">"MIN"</string>
+    <string name="bond_dashboard_units_hours">"H"</string>
+    <string name="bond_dashboard_units_days">TAGE"</string>
+    <string name="bond_dashboard_units_kb">"KB"</string>
+    <string name="bond_dashboard_units_mb">"MB"</string>
+    <string name="bond_dashboard_units_gb">"GB"</string>
+    <string name="bond_dashboard_ultimate_protection_pause_dialog_negative_button">Abbrechen</string>
+    <string name="bond_dashboard_ultimate_protection_pause_dialog_positive_button">Pause</string>
+    <string name="bond_dashboard_contols_start">Start</string>
+    <string name="bond_dashboard_protection_off">Komplettschutz aus</string>
+    <string name="reset_statistics">Statistiken zurücksetzen</string>
+
+
+    <string name="url_bar_search_hint">Suchen oder Adresse eingeben</string>
+    <string name="search_hint">Suchen oder Adresse eingeben</string>
+    <string name="app_name">Lumen Browser</string>
+    <string name="shared_using">Geteilt mit Lumen für Android</string>
+    <string name="welcome_message">Willkommen bei Lumen!</string>
+
     <!-- Start Tab -->
     <string name="start_tab_welcome_message">Willkommen bei Lumen!</string>
 
+    <string name="trial_over_upgrade_lumen_title">Deine Testversion is abgelaufen</string>
+    <string name="trial_over_upgrade_lumen_description">Du kannst Lumen weiter nutzen, aber ohne Komplettschutz und VPN. Oder hol dir Premium.</string>
+    <string name="trial_over_upgrade_lumen_dismiss">Nein, Danke</string>
+    <string name="trial_over_upgrade_lumen_proceed">Mehr Erfahren</string>
     <plurals name="trial_period_upgrade_description">
-        <item quantity="one">Noch 1 Tag in der Test-Version</item>
-        <item quantity="other">Noch %d Tage in der Test-Version</item>
+        <item quantity="one">1 weiterer Tag in der Testversion</item>
+        <item quantity="other">%d weitere Tage in der Testversion</item>
     </plurals>
     <string name="upgrade_button">Upgrade</string>
     <string name="made_in_germany">Made in Germany</string>
+
+    <!-- VPN -->
+    <string name="learn_more_btn">MEHR ERFAHREN</string>
+    <string name="unlock_vpn_dialog_title">VPN-Schutz</string>
+    <string name="unlock_vpn_dialog_description">Schalte VPN frei um das Beste aus Lumen herauszuholen.</string>
+    <string name="unlock_vpn_dialog_negative_btn">Nein, Danke</string>
+    <string name="unlock_vpn_dialog_positive_btn">@string/learn_more</string>
+    <string name="learn_more_link">Schalte VPN frei um das Beste aus Lumen herauszuholen. MEHR ERFAHREN</string>
+    <string name="vpn_feature_one">Schutz vor Hackern</string>
+    <string name="vpn_feature_two">Verschleiert Standort</string>
+    <string name="vpn_cta_disabled">@string/unlock_vpn_dialog_description</string>
+    <string name="vpn_cta_enabled">VPN steht für Virtuelles Privates Netzwerk</string>
+
+    <!-- Subscription -->
+    <string name="button_buy_subscription">Abonnieren</string>
+    <string name="button_upgrade_subscription">Upgrade</string>
+    <string name="text_subscribed">Abonniert</string>
+    <string name="subscription_product_row_highlighted">Bestes Angebot\nNur für kurze Zeit</string>
+    <string name="per_month_text">%1$s / MONAT</string>
+
+    <!-- Restore Subscription -->
+    <string name="restore_subscription">Abo wiederherstellen</string>
+    <string name="restore_subscription_dialog_title">Abo wiederherstellen?</string>
+    <string name="restore_subscription_dialog_desc">Du hast bereits ein Abo für %1$s</string>
+    <string name="restore_subscription_dialog_positive_btn">Wiederherstellen</string>
+    <string name="restore_subscription_error_msg">Kein Abo vorhanden</string>
+    <string name="restore_subscription_success">Abo wiederhergestellt</string>
 </resources>
