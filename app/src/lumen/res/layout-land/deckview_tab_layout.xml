@@ -10,9 +10,9 @@
     <com.cliqz.widget.CliqzTextView
         android:id="@+id/titleTv"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="46dp"
         android:paddingEnd="66dp"
-        android:paddingStart="72dp"
+        android:paddingStart="88dp"
         android:gravity="center_vertical"
         android:ellipsize="end"
         android:lines="1"
@@ -27,17 +27,19 @@
         android:id="@+id/favIconImg"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="46dp"
         tools:srcCompat="@android:drawable/ic_media_play"
         tools:background="#6D6" />
 
     <ImageButton
         android:id="@+id/closeBtn"
         style="@style/Widget.AppCompat.ImageButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="end"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="start"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
         android:background="@null"
         app:srcCompat="@drawable/ic_clear_black" />
 
@@ -51,7 +53,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="46dp"
         android:id="@+id/backgroundFl"
         tools:background="#66D">
 
