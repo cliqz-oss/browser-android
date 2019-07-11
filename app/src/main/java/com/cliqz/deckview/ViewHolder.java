@@ -7,16 +7,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cliqz.browser.R;
+import com.cliqz.widget.CliqzFrameLayout;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.cliqz.widget.CliqzTextView;
 
 /**
  * @author Stefano Pacifici
  */
 class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    final TextView titleTv;
+    final CliqzTextView titleTv;
     final TextView urlTv;
     final View backgroundView;
-    final View rootView;
+    final CliqzFrameLayout rootView;
     final ImageView favIconIV;
     final SimpleDraweeView bigIconIV;
 
@@ -27,7 +29,7 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
         titleTv = itemView.findViewById(R.id.titleTv);
         urlTv = itemView.findViewById(R.id.urlTv);
         backgroundView = itemView.findViewById(R.id.backgroundFl);
-        rootView = itemView;
+        rootView = (CliqzFrameLayout) itemView;
         favIconIV = itemView.findViewById(R.id.favIconImg);
         bigIconIV = itemView.findViewById(R.id.bigIconImg);
         final ImageButton closeButton = itemView.findViewById(R.id.closeBtn);

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.cliqz.widget.CliqzFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tabCl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/deckview_tab_background">
+
+    <ImageView
+        android:id="@+id/favIconImg"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        app:srcCompat="@android:drawable/ic_media_play"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <ImageButton
+        android:id="@+id/closeBtn"
+        style="@style/Widget.AppCompat.ImageButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginRight="8dp"
+        android:background="@null"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="right"
+        app:srcCompat="@drawable/ic_clear_black" />
+
+    <com.cliqz.widget.CliqzTextView
+        android:id="@+id/titleTv"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        tools:text="A possibly very very very long title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="44dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
+
+        <TextView
+            android:id="@+id/urlTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/primary_color"
+            tools:text="http://it.m.subdomain.example.com/folder/folder/search.php?q=long%20long%20query" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            tools:background="#00F"
+            android:id="@+id/backgroundFl">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/bigIconImg"
+                android:layout_width="@dimen/tab_icon_size"
+                android:layout_height="@dimen/tab_icon_size"
+                android:layout_gravity="center"
+                tools:placeholderImage="@mipmap/ic_launcher"
+                app:actualImageScaleType="fitCenter" />
+        </FrameLayout>
+    </LinearLayout>
+
+</com.cliqz.widget.CliqzFrameLayout>

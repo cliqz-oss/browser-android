@@ -13,7 +13,7 @@
         android:layout_width="137dp"
         android:layout_height="137dp"
         android:contentDescription="@string/lumen_logo_description"
-        app:srcCompat="@drawable/lumen_logo_start_tab" />
+        app:srcCompat="@drawable/logo_start_tab" />
 
     <TextView
         android:layout_width="wrap_content"
