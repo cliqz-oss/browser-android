@@ -1,13 +1,12 @@
 package com.cliqz.deckview;
 
 import android.content.res.Configuration;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * @author Stefano Pacifici
@@ -353,7 +352,7 @@ class DeckLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void onItemsRemoved(@NotNull RecyclerView recyclerView, int positionStart, int itemCount) {
+    public void onItemsRemoved(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
         super.onItemsRemoved(recyclerView, positionStart, itemCount);
         final int remaining = getItemCount();
         if (remaining >= REMAINDERS_NO + 1 && positionStart == remaining) {

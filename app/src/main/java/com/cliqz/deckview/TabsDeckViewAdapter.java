@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +23,6 @@ import com.cliqz.browser.main.search.Logo;
 import com.cliqz.jsengine.JSBridge;
 import com.facebook.react.bridge.ReadableMap;
 
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Stefano Pacifici
@@ -56,9 +56,9 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
                 ContextCompat.getColor(context, R.color.accent_color);
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View card;
         card = inflater.inflate(R.layout.deckview_tab_layout, parent, false);
         if (viewType == INCOGNITO_TYPE) {
@@ -73,7 +73,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NotNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final CliqzBrowserState entry = tabsDeckView.entries.get(position);
         final String entryTitle = entry.getTitle();
         final String entryUrl = entry.getUrl();
