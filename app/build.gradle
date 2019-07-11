@@ -26,6 +26,7 @@ android {
         buildConfigField 'int', "VISIBLE_TOP_SITES", '4'
         
         applicationId "com.cliqz.browser"
+        testApplicationId "com.cliqz.browser.test"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -37,9 +38,7 @@ android {
             shrinkResources false
             proguardFiles 'proguard-project.txt'
             versionNameSuffix '-debug'
-            dexcount {
-                enabled false
-            }
+            dexcount.enabled = false
         }
 
         release {
@@ -224,7 +223,7 @@ dependencies {
     lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
 
     // vpn module
-    lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.4'
+    lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.1'
 
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'

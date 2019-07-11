@@ -103,7 +103,7 @@ public class SettingsActivityTest {
         onView(withText(equalToIgnoringCase("Complementary search engine"))).perform(click());
         onView(withText(equalToIgnoringCase(engine))).perform(click());
         onView(withText(equalToIgnoringCase("OK"))).perform(click());
-        onView(withText(equalToIgnoringCase("General"))).perform(pressBack());
+        onView(withText(equalToIgnoringCase("Search results for"))).perform(pressBack());
         onView(withText(equalToIgnoringCase("Settings"))).perform(pressBack());
         onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text)).perform(typeText(query),

@@ -10,6 +10,7 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "com.android.tools.build:gradle:3.4.1"
+    implementation "com.squareup.okhttp3:okhttp:4.0.1"
 }
 
 // Clearing dependencies order, we do not want to compile java at all

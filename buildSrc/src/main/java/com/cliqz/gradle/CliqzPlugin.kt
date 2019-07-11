@@ -35,7 +35,12 @@ class CliqzPlugin: Plugin<Project> {
     private fun createTestdroidTask(project: Project, variant: ApplicationVariant) {
         val taskName = "connect${variant.name.capitalize()}TestDroid"
         // Make sure this task depends on the assembling of the app and tests, we need those file to be uploaded
-        project.tasks.register(taskName, TestdroidTask::class.java)
+        val assembleTestProvider = project.tasks.named("assemble${variant.name.capitalize()}AndroidTest")
+        val assembleProvider = project.tasks.named("assemble${variant.name.capitalize()}")
+        val taskProvider = project.tasks.register(taskName, TestDroidTask::class.java)
+        taskProvider.configure {
+            it.dependsOn(assembleProvider, assembleTestProvider)
+        }
     }
 
     private fun createCliqzConfigTasks(project: Project, variant: ApplicationVariant) {
