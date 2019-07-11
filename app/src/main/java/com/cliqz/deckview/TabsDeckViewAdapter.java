@@ -48,9 +48,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         this.tabsDeckView = tabsDeckView;
         this.context = tabsDeckView.getContext();
         this.inflater = LayoutInflater.from(context);
-        this.tabDefaultIcon = BuildConfig.IS_LUMEN ?
-                ContextCompat.getDrawable(context, R.drawable.lumen_logo_start_tab) :
-                ContextCompat.getDrawable(context, R.drawable.ic_cliqz_tab);
+        this.tabDefaultIcon = ContextCompat.getDrawable(context, R.drawable.logo_start_tab);
         this.defaultFavicon = BitmapFactory
                 .decodeResource(context.getResources(), R.drawable.ic_webpage);
         this.defaultBackgroundColor = BuildConfig.IS_LUMEN ?
@@ -62,15 +60,15 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         final View card;
+        card = inflater.inflate(R.layout.deckview_tab_layout, parent, false);
         if (viewType == INCOGNITO_TYPE) {
-            card = inflater.inflate(R.layout.deckview_tab_layout, parent, false);
             card.setId(R.id.incognito_tab_id);
         } else {
-            card = inflater.inflate(R.layout.deckview_tab_layout, parent, false);
             card.setId(R.id.regular_tab_id);
         }
         final ViewHolder viewHolder = new ViewHolder(tabsDeckView, card);
         viewHolder.titleTv.setIncognito(viewType == INCOGNITO_TYPE);
+        viewHolder.rootView.setIncognito(viewType == INCOGNITO_TYPE);
         return viewHolder;
     }
 
@@ -88,13 +86,6 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         } else {
             url = context.getString(R.string.action_new_tab);
             title = context.getString(R.string.home_title);
-        }
-        if (BuildConfig.IS_NOT_LUMEN) {
-            final int textColor = entry.isIncognito() ? R.color.normal_tab_primary_color :
-                    R.color.incognito_tab_primary_color;
-            holder.rootView.setBackground(ContextCompat.getDrawable(context,
-                    entry.isIncognito() ? R.drawable.tab_background_dark : R.drawable.tab_background));
-            holder.titleTv.setTextColor(ContextCompat.getColor(context, textColor));
         }
         holder.urlTv.setText(url);
         holder.titleTv.setText(title);

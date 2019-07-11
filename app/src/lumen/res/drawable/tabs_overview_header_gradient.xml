@@ -6,8 +6,8 @@
     <item app:state_incognito="true">
         <shape android:shape="rectangle">
             <gradient
-                android:startColor="#000"
-                android:endColor="#FFF"
+                android:startColor="#484c5a"
+                android:endColor="#3B3F49"
                 android:angle="270" />
 
         </shape>
