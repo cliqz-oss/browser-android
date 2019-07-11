@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConnectionStatus;
+import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VpnStatus;
 
@@ -57,7 +58,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private static String TAG = VpnPanel.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
-
+    public static final String ACTION_DISCONNECT_VPN = OpenVPNService.DISCONNECT_VPN;
     public static final int VPN_LAUNCH_REQUEST_CODE = 70;
 
     private int mAnchorHeight;
