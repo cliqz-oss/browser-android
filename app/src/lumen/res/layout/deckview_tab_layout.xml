@@ -7,7 +7,7 @@
     android:layout_height="366dp"
     android:background="#E6E7E9">
 
-    <TextView
+    <com.cliqz.widget.CliqzTextView
         android:id="@+id/titleTv"
         android:layout_width="match_parent"
         android:layout_height="50dp"

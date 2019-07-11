@@ -8,12 +8,13 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.cliqz.widget.CliqzTextView;
 
 /**
  * @author Stefano Pacifici
  */
 class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    final TextView titleTv;
+    final CliqzTextView titleTv;
     final TextView urlTv;
     final View backgroundView;
     final View rootView;

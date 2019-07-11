@@ -69,7 +69,9 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
             card = inflater.inflate(R.layout.deckview_tab_layout, parent, false);
             card.setId(R.id.regular_tab_id);
         }
-        return new ViewHolder(tabsDeckView, card);
+        final ViewHolder viewHolder = new ViewHolder(tabsDeckView, card);
+        viewHolder.titleTv.setIncognito(viewType == INCOGNITO_TYPE);
+        return viewHolder;
     }
 
     @Override
