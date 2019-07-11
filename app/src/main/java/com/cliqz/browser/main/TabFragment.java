@@ -393,6 +393,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     private void updateCCIcon(boolean isLoadingFinished) {
         if (BuildConfig.IS_LUMEN) {
+            final String url = mLightningView.getWebView().getUrl();
+            if (url != null && url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+                return; //We don't update dashboard icon states for trampoline redirects
+            }
             if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
                     && preferenceManager.isAttrackEnabled()) {
                 ccIcon.setImageResource(getFlavorDrawable(isLoadingFinished
