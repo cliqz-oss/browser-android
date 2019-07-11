@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.extensions.color
-import com.cliqz.browser.extensions.setDrawable
 import com.cliqz.browser.extensions.tintVectorDrawable
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
@@ -109,7 +108,7 @@ class DashboardFragment : Fragment() {
         data_saved.text = dataSaved.value
         phishing_checked.text = pagesVisited.value
 
-        data_saved_icon.setDrawable(when (dataSaved.unit) {
+        data_saved_icon.setImageResource(when (dataSaved.unit) {
             R.string.bond_dashboard_units_kb -> R.drawable.ic_kb_data_saved_on
             R.string.bond_dashboard_units_mb -> R.drawable.ic_mb_data_saved_on
             R.string.bond_dashboard_units_gb -> R.drawable.ic_gb_data_saved_on

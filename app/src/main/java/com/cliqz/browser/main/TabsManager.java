@@ -3,10 +3,11 @@ package com.cliqz.browser.main;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.webkit.WebView;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -41,6 +42,7 @@ public class TabsManager {
         private String mId = null;
         private String mTitle = "";
         private boolean mRestore = false;
+        private boolean mOpenVpnPanel = false;
 
         private Builder() {}
 
@@ -84,6 +86,11 @@ public class TabsManager {
             return this;
         }
 
+        public Builder setOpenVpnPanel() {
+            this.mOpenVpnPanel = true;
+            return this;
+        }
+
         public int create() {
             if (mWasCreated) {
                 throw new RuntimeException("Can't use the same builder twice");
@@ -93,6 +100,7 @@ public class TabsManager {
             final TabFragment newTab = new TabFragment();
             final Bundle arguments = new Bundle();
             arguments.putBoolean(MainActivity.EXTRA_IS_PRIVATE, mForgetMode);
+            arguments.putBoolean(TabFragment.KEY_OPEN_VPN_PANEL, mOpenVpnPanel);
             if (mUrl != null) {
                 arguments.putString(TabFragment.KEY_URL, mUrl);
             }

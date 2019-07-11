@@ -5,13 +5,16 @@
         <service android:name="de.blinkt.openvpn.core.OpenVPNService">
             <meta-data
                 android:name="notification_title"
-                android:resource="@string/vpn_notification_title"/>
+                android:resource="@string/vpn_notification_title" />
             <meta-data
                 android:name="notification_content"
-                android:resource="@string/vpn_notification_content"/>
+                android:resource="@string/vpn_notification_content" />
             <meta-data
                 android:name="notification_icon"
-                android:resource="@drawable/ic_vpn_on"/>
+                android:resource="@android:drawable/ic_secure" />
+            <meta-data
+                android:name="app_package_name"
+                android:value="@string/application_id" />
         </service>
     </application>
 </manifest>
