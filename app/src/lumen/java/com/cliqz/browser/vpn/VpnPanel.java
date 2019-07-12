@@ -20,6 +20,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -114,7 +115,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        dialog.selectedProfile = dialog.getSelectedProfile(source.getContext());
+        dialog.setSelectedProfile(source.getContext());
         return dialog;
     }
 
@@ -194,7 +195,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
 
     @OnClick(R.id.vpn_country)
     void vpnCountryClicked() {
-        if (selectedProfile != null && purchasesManager.isDashboardEnabled()) {
+        if (selectedProfile != null && purchasesManager.isVpnEnabled()) {
             showVpnCountriesDialog();
         } else {
             unlockVpnDialog();
@@ -208,6 +209,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
                 vpnHandler.disconnectVpn();
                 updateStateToConnect();
             } else {
+                if (selectedProfile == null) {
+                    Toast.makeText(getContext(), "Please try again later", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 vpnHandler.connectVpn(selectedProfile);
             }
         } else {
@@ -355,18 +360,18 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
     }
 
-    private VpnProfile getSelectedProfile(Context context) {
+    private void setSelectedProfile(Context context) {
         final Collection<VpnProfile> vpnProfiles =
                 ProfileManager.getInstance(context).getProfiles();
         if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
-            return selectedProfile = vpnProfiles.iterator().next();
+            selectedProfile = vpnProfiles.iterator().next();
         }
-        return null;
     }
 
     @Subscribe
-    public void onTrialPeriodResponse(Messages.OnTrialPeriodResponse onTrialPeriodResponse) {
-        selectedProfile = getSelectedProfile(getDialog().getContext());
+    public void onTrialPeriodResponse(Messages.OnAllProfilesImported onTrialPeriodResponse) {
+        setSelectedProfile(getDialog().getContext());
+        mSelectedCountry.setText(selectedProfile.getName());
     }
 
     @Subscribe

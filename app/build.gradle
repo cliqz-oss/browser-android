@@ -224,7 +224,7 @@ dependencies {
     lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
 
     // vpn module
-    lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.3'
+    lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.4'
 
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'

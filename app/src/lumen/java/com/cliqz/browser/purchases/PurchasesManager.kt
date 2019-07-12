@@ -25,7 +25,6 @@ class PurchasesManager(
         ReceivePurchaserInfoListener {
 
     private val trialPeriodLocalRepo = TrialPeriodLocalRepo(preferenceManager)
-    private val trialPeriodRemoteRepo = TrialPeriodRemoteRepo(context)
 
     var purchase = Purchase()
 
@@ -36,8 +35,8 @@ class PurchasesManager(
     override fun onTrialPeriodResponse(serverData: ServerData?) {
         this.serverData = serverData
         isLoading = false
-
         bus.post(Messages.OnTrialPeriodResponse())
+        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
     }
 
     override fun onReceived(purchaserInfo: PurchaserInfo) {
@@ -80,12 +79,7 @@ class PurchasesManager(
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(serverData: ServerData?) {
                 this@PurchasesManager.onTrialPeriodResponse(serverData)
-                trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-                    override fun onTrialPeriodResponse(serverData: ServerData?) {
-                        this@PurchasesManager.onTrialPeriodResponse(serverData)
-                        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
-                    }
-                })
+                TrialPeriodRemoteRepo(context, this@PurchasesManager).execute()
             }
         })
     }

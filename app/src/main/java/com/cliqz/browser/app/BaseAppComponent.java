@@ -37,20 +37,15 @@ import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.browser.widget.SearchBar;
 import com.cliqz.jsengine.Engine;
 
-import javax.inject.Singleton;
-
 import acr.browser.lightning.activity.SettingsActivity;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
-import dagger.Component;
 
 /**
  * @author Stefano Pacifici
  */
-@Singleton
-@Component(modules = {AppModule.class})
-public interface AppComponent {
+public interface BaseAppComponent {
 
     PreferenceManager getPreferenceManager();
 
