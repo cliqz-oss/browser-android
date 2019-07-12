@@ -193,12 +193,7 @@ public class TabsManager {
      * @param position Position of the tab to switch to
      */
     public void showTab(int position) {
-        final TabFragment tab = mFragmentsList.get(position);
-        mFragmentManager.beginTransaction()
-                .replace(R.id.content_frame, tab, MainActivity.TAB_FRAGMENT_TAG)
-                .commitAllowingStateLoss();
-        currentVisibleTab = position;
-        persister.visit(tab.getTabId());
+        showTab(position, 0);
     }
 
     /**
@@ -208,9 +203,14 @@ public class TabsManager {
      * @param animation Animation for the enter transition
      */
     public void showTab(int position, int animation) {
+        final TabFragment currentTab = getCurrentTab();
+        if (currentTab != null) {
+            currentTab.state.setSelected(false);
+        }
         final TabFragment tab = mFragmentsList.get(position);
+        tab.state.setSelected(true);
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M && animation != 0) {
             //cannot pass null for exit animation
             transaction.setCustomAnimations(animation, R.anim.dummy_transition);
         }

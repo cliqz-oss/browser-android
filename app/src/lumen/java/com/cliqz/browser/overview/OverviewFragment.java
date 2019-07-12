@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
@@ -47,12 +48,14 @@ public class OverviewFragment extends CommonOverviewFragment {
         final Toolbar toolbar = view.findViewById(R.id.toolbar);
         final AppCompatActivity activity = (AppCompatActivity) getActivity();
         assert activity != null;
-        toolbar.setTitle(activity.getString(R.string.overview));
+        final String title =
+                activity.getString(BuildConfig.IS_LUMEN ? R.string.open_tabs : R.string.overview);
+        toolbar.setTitle(title);
         activity.setSupportActionBar(toolbar);
         final ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(activity.getString(R.string.overview));
+            actionBar.setTitle(title);
         }
 
         return view;
