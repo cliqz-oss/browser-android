@@ -1,5 +1,6 @@
 package com.cliqz.browser.controlcenter;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.nove.Bus;
@@ -35,9 +37,10 @@ public class ControlCenterHelper implements ControlCenterActions {
     @Inject
     Telemetry telemetry;
 
-    public ControlCenterHelper(@NonNull FragmentManager fragmentManager) {
-        final AppComponent component = BrowserApp.getAppComponent();
+    public ControlCenterHelper(Context context, @NonNull FragmentManager fragmentManager) {
         this.mFragmentManager = fragmentManager;
+        final FlavoredActivityComponent component = context != null ?
+                BrowserApp.getActivityComponent(context) : null;
         if (component != null) {
             component.inject(this);
         }

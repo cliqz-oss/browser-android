@@ -31,4 +31,8 @@
     <declare-styleable name="TabsCounter">
         <attr name="color" format="color" />
     </declare-styleable>
+    
+    <declare-styleable name="IncognitoState">
+        <attr name="state_incognito" format="boolean" />
+    </declare-styleable>
 </resources>

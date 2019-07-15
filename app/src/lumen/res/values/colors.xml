@@ -45,4 +45,7 @@
     <color name="lumen_color_grey_text">#80FFFFFF</color>
     <color name="lumen_disabled_gray">#4E5363</color>
     <color name="lumen_color_blue_primary_opaque">#801B9CFC</color>
+
+    <color name="tabs_overview_background_color">@color/primary_color</color>
+    <color name="tabs_overview_floating_button_color">@color/bond_general_color_blue</color>
 </resources>

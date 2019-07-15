@@ -236,6 +236,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         }
         purchasesManager.purchase.sku = sku
         purchasesManager.purchase.isASubscriber = true
+        if (purchasesManager.purchase.isVpnEnabled) {
+            purchasesManager.loadTrialPeriodInfo()
+        }
         bus.post(Messages.PurchaseCompleted())
         dismiss()
     }

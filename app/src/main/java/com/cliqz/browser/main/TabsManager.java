@@ -3,10 +3,11 @@ package com.cliqz.browser.main;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.webkit.WebView;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.webkit.WebView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -41,6 +42,7 @@ public class TabsManager {
         private String mId = null;
         private String mTitle = "";
         private boolean mRestore = false;
+        private boolean mOpenVpnPanel = false;
 
         private Builder() {}
 
@@ -84,6 +86,11 @@ public class TabsManager {
             return this;
         }
 
+        public Builder setOpenVpnPanel() {
+            this.mOpenVpnPanel = true;
+            return this;
+        }
+
         public int create() {
             if (mWasCreated) {
                 throw new RuntimeException("Can't use the same builder twice");
@@ -93,6 +100,7 @@ public class TabsManager {
             final TabFragment newTab = new TabFragment();
             final Bundle arguments = new Bundle();
             arguments.putBoolean(MainActivity.EXTRA_IS_PRIVATE, mForgetMode);
+            arguments.putBoolean(TabFragment.KEY_OPEN_VPN_PANEL, mOpenVpnPanel);
             if (mUrl != null) {
                 arguments.putString(TabFragment.KEY_URL, mUrl);
             }
@@ -185,12 +193,7 @@ public class TabsManager {
      * @param position Position of the tab to switch to
      */
     public void showTab(int position) {
-        final TabFragment tab = mFragmentsList.get(position);
-        mFragmentManager.beginTransaction()
-                .replace(R.id.content_frame, tab, MainActivity.TAB_FRAGMENT_TAG)
-                .commitAllowingStateLoss();
-        currentVisibleTab = position;
-        persister.visit(tab.getTabId());
+        showTab(position, 0);
     }
 
     /**
@@ -200,9 +203,14 @@ public class TabsManager {
      * @param animation Animation for the enter transition
      */
     public void showTab(int position, int animation) {
+        final TabFragment currentTab = getCurrentTab();
+        if (currentTab != null) {
+            currentTab.state.setSelected(false);
+        }
         final TabFragment tab = mFragmentsList.get(position);
+        tab.state.setSelected(true);
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M && animation != 0) {
             //cannot pass null for exit animation
             transaction.setCustomAnimations(animation, R.anim.dummy_transition);
         }

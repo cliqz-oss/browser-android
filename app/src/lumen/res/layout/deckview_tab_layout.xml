@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.cliqz.widget.CliqzFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tabCl"
+    android:layout_width="match_parent"
+    android:layout_height="366dp"
+    android:background="#E6E7E9">
+
+    <com.cliqz.widget.CliqzTextView
+        android:id="@+id/titleTv"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingEnd="66dp"
+        android:paddingStart="72dp"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:lines="1"
+        android:singleLine="true"
+        android:textSize="15sp"
+        android:textColor="@drawable/tabs_title_color"
+        android:background="@drawable/tabs_overview_header_gradient"
+        tools:text="A possibly very very very long title" />
+
+    <com.cliqz.widget.CliqzImageView
+        android:id="@+id/favIconImg"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        tools:background="#6D6" />
+
+    <com.cliqz.widget.CliqzImageButton
+        android:id="@+id/closeBtn"
+        style="@style/Widget.AppCompat.ImageButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end"
+        android:background="@null"
+        app:srcCompat="@drawable/ic_tab_close" />
+
+    <!-- Keeping this View just for Cliqz Browser compability -->
+    <TextView
+        android:id="@+id/urlTv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:id="@+id/backgroundFl"
+        tools:background="#66D">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/bigIconImg"
+            android:layout_width="@dimen/tab_icon_size"
+            android:layout_height="@dimen/tab_icon_size"
+            android:layout_gravity="center"
+            tools:placeholderImage="@mipmap/ic_launcher"
+            app:actualImageScaleType="fitCenter"
+            tools:background="#D66"/>
+    </FrameLayout>
+
+</com.cliqz.widget.CliqzFrameLayout>

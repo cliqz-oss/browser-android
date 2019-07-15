@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -14,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -26,10 +29,10 @@ import androidx.fragment.app.DialogFragment;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.extensions.DrawableExtensionsKt;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
-import com.cliqz.browser.extensions.DrawableExtensionsKt;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
@@ -40,12 +43,12 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
-import de.blinkt.openvpn.VpnProfile;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConnectionStatus;
-import de.blinkt.openvpn.core.LogItem;
+import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VpnStatus;
 
@@ -57,7 +60,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private static String TAG = VpnPanel.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
-
+    public static final String ACTION_DISCONNECT_VPN = OpenVPNService.DISCONNECT_VPN;
     public static final int VPN_LAUNCH_REQUEST_CODE = 70;
 
     private int mAnchorHeight;
@@ -112,11 +115,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        final Collection<VpnProfile> vpnProfiles =
-                ProfileManager.getInstance(source.getContext()).getProfiles();
-        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
-            dialog.selectedProfile = vpnProfiles.iterator().next();
-        }
+        dialog.setSelectedProfile(source.getContext());
         return dialog;
     }
 
@@ -181,6 +180,9 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
                 getString(R.string.vpn_cta_enabled) : getString(R.string.vpn_cta_disabled));
 
         mMainHandler = new Handler(getContext().getMainLooper());
+        final Window window = getDialog().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        getDialog().setCanceledOnTouchOutside(false);
     }
 
     @Nullable
@@ -190,9 +192,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         return inflater.inflate(R.layout.home_vpn_panel, container, false);
     }
 
+
     @OnClick(R.id.vpn_country)
     void vpnCountryClicked() {
-        if (selectedProfile != null) {
+        if (selectedProfile != null && purchasesManager.isVpnEnabled()) {
             showVpnCountriesDialog();
         } else {
             unlockVpnDialog();
@@ -206,6 +209,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
                 vpnHandler.disconnectVpn();
                 updateStateToConnect();
             } else {
+                if (selectedProfile == null) {
+                    Toast.makeText(getContext(), "Please try again later", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 vpnHandler.connectVpn(selectedProfile);
             }
         } else {
@@ -351,5 +358,24 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private void vpnMsgsChangeDrawable(@DrawableRes int id) {
         DrawableExtensionsKt.drawableStart(mVpnMsgLineOne, id);
         DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
+    }
+
+    private void setSelectedProfile(Context context) {
+        final Collection<VpnProfile> vpnProfiles =
+                ProfileManager.getInstance(context).getProfiles();
+        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
+            selectedProfile = vpnProfiles.iterator().next();
+        }
+    }
+
+    @Subscribe
+    public void onTrialPeriodResponse(Messages.OnAllProfilesImported onTrialPeriodResponse) {
+        setSelectedProfile(getDialog().getContext());
+        mSelectedCountry.setText(selectedProfile.getName());
+    }
+
+    @Subscribe
+    void dismissVpnPanel(Messages.DismissVpnPanel event) {
+        dismissAllowingStateLoss();
     }
 }

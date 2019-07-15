@@ -22,6 +22,7 @@ public class CliqzBrowserState implements Serializable {
     private Mode mode = Mode.SEARCH;
     private boolean incognito;
     private Bitmap favicon = null;
+    private boolean selected = false;
 
     public String getQuery() {
         return query;
@@ -69,6 +70,14 @@ public class CliqzBrowserState implements Serializable {
 
     public Bitmap getFavIcon() {
         return favicon;
+    }
+
+    void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 
     public CliqzBrowserState() {

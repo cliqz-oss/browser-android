@@ -3,15 +3,16 @@ package com.cliqz.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 public final class SpannableUtils {
 
     private static final Pattern MARKDOWN_PATTERN =
-            Pattern.compile("((!?)\\[(.*?)\\]\\((.*?)\\))|(<br\\s*>)");
+            Pattern.compile("((!?)\\[(.*?)]\\((.*?)\\))|(<br\\s*>)");
 
     private SpannableUtils() {
     } // No instances
@@ -67,7 +68,8 @@ public final class SpannableUtils {
                 if (drawableId == 0) {
                     drawable = null;
                 } else {
-                    drawable = ContextCompat.getDrawable(context, drawableId);
+                    drawable = AppCompatResources.getDrawable(context, drawableId);
+                    assert drawable != null;
                     drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 }
                 region = new SpannableRegion(matcher.start(), matcher.end(),
@@ -110,7 +112,7 @@ public final class SpannableUtils {
             prev = region.regionEnd;
         }
         if (prev < in.length()) {
-            builder.append(in.substring(prev, in.length()));
+            builder.append(in.substring(prev));
         }
         return builder;
     }

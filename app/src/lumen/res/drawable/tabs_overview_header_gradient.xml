@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:constantSize="true">
+    <item app:state_incognito="true">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#484c5a"
+                android:endColor="#3B3F49"
+                android:angle="270" />
+
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#CCCECF"
+                android:endColor="#BDBDBF"
+                android:angle="270" />
+        </shape>
+    </item>
+</selector>

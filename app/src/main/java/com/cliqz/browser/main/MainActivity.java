@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Task description
         ActivityUtils.setTaskDescription(this, R.string.app_name, R.color.primary_color_dark,
                 R.mipmap.ic_launcher);
@@ -292,6 +291,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
             telemetry.sendStartingSignals("cards", "cold");
         }
+        final String action = getIntent().getAction();
+        if (action != null && action.equals(VpnPanel.ACTION_DISCONNECT_VPN)) {
+            showVpnPanel();
+        }
+    }
+
+    private void showVpnPanel() {
+        tabsManager.buildTab().setOpenVpnPanel().show();
     }
 
     // Workaround for a bug in Android 9 (Pie) as reported here
@@ -412,6 +419,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final TabsManager.Builder builder = handleIntent(intent);
         if (builder != null) {
             builder.show();
+        }
+        if (action != null && action.equals(VpnPanel.ACTION_DISCONNECT_VPN)) {
+            showVpnPanel();
         }
     }
 

@@ -115,6 +115,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public static final String KEY_TAB_ID = "tab_id";
     public static final String KEY_TITLE = "tab_title";
     public static final String KEY_FORCE_RESTORE = "tab_force_restore";
+    public static final String KEY_OPEN_VPN_PANEL = "open_vpn_panel";
 
     private OverFlowMenu mOverFlowMenu = null;
     protected boolean mIsIncognito = false;
@@ -124,6 +125,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private CliqzMessages.OpenLink mOverviewEvent = null;
     // indicate that we should not load the mInitialUrl because we are restoring a persisted tab
     private boolean mShouldRestore = false;
+    private boolean mShouldShowVpnPanel = false;
     private String mSearchEngine;
     private Message newTabMessage = null;
     private String mExternalQuery = null;
@@ -142,6 +144,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     protected boolean mShowWebPageAgain = false;
     private boolean mRequestDesktopSite = false;
     private boolean mIsReaderModeOn = false;
+
+    private VpnPanel mVpnPanel;
 
     @BindView(R.id.local_container)
     FrameLayout localContainer;
@@ -226,6 +230,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Inject
     VpnHandler vpnHandler;
 
+    @Inject
+    MainActivityHandler mainActivityHandler;
+
     private String mDomainName = "";
 
     @NonNull
@@ -282,12 +289,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (mInitialTitle != null) {
             state.setTitle(mInitialTitle);
         }
+        mShouldShowVpnPanel = arguments.getBoolean(KEY_OPEN_VPN_PANEL);
         // We need to remove the key, otherwise the url/query/msg gets reloaded for each resume
         arguments.remove(KEY_URL);
         arguments.remove(KEY_NEW_TAB_MESSAGE);
         arguments.remove(KEY_QUERY);
         arguments.remove(KEY_TAB_ID);
         arguments.remove(KEY_FORCE_RESTORE);
+        arguments.remove(KEY_OPEN_VPN_PANEL);
     }
 
     // Use this to get which view is visible between home, cards or web
@@ -326,7 +335,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
 
         mControlCenterHelper =
-                new ControlCenterHelper(getChildFragmentManager());
+                new ControlCenterHelper(getContext(), getChildFragmentManager());
 
         if (openTabsCounter != null) {
             openTabsCounter.setCounter(tabsManager.getTabCount());
@@ -384,6 +393,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     private void updateCCIcon(boolean isLoadingFinished) {
         if (BuildConfig.IS_LUMEN) {
+            final String url = mLightningView.getWebView().getUrl();
+            if (url != null && url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+                return; //We don't update dashboard icon states for trampoline redirects
+            }
             if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
                     && preferenceManager.isAttrackEnabled()) {
                 ccIcon.setImageResource(getFlavorDrawable(isLoadingFinished
@@ -407,7 +420,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mDelayedUrl = null;
         }
     }
-
+    
     @Override
     public void onResume() {
         super.onResume();
@@ -495,6 +508,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
         updateCCIcon(progressBar.getProgress() == 100);
         updateVpnIcon();
+        if (mShouldShowVpnPanel) {
+            getView().post(() -> {
+                toggleVpnView();
+                mShouldShowVpnPanel = false;
+            });
+        }
     }
 
     @Override
@@ -550,6 +569,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
             hideKeyboard(null);
+            bus.post(new Messages.DismissControlCenter());
+            bus.post(new Messages.DismissVpnPanel());
         }
     }
 
@@ -627,8 +648,15 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Optional
     @OnClick(R.id.vpn_panel_button)
     void toggleVpnView() {
-        final VpnPanel vpnPanel = VpnPanel.create(mStatusBar);
-        vpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
+        if (mVpnPanel != null && mVpnPanel.isVisible()) {
+            mVpnPanel.getDialog().dismiss();
+            return;
+        }
+        mVpnPanel = VpnPanel.create(mStatusBar);
+        mVpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
+        mainActivityHandler.postDelayed(() -> {
+            bus.post(new Messages.DismissControlCenter());
+        }, 500);
     }
 
     @SuppressWarnings("UnusedParameters")
