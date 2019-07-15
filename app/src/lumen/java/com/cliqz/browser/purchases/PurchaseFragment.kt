@@ -149,9 +149,22 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     override fun onBuyClicked(position: Int) {
         mAdapter.getProduct(position)?.apply {
+            val contentView = view?.rootView?.findViewById<ViewGroup>(android.R.id.content)
+            val progress = LayoutInflater.from(context)
+                    .inflate(R.layout.fullscreen_progress, contentView, false)
+            contentView?.addView(progress)
+
+            // Please notice, it is pointless to add an animation to make the progress disappear,
+            // the payment interface will appear in any case half a second after the animation ends
             checkExistingPurchases(
-                    onSuccess = { activeSku -> showRestorePurchasesDialog(sku = activeSku) },
-                    onError = { makePurchase(sku) }
+                    onSuccess = {activeSku ->
+                        contentView?.removeView(progress)
+                        showRestorePurchasesDialog(sku = activeSku)
+                    },
+                    onError = {
+                        contentView?.removeView(progress)
+                        makePurchase(sku)
+                    }
             )
         }
     }
