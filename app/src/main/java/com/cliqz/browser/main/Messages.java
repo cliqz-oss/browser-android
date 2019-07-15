@@ -296,4 +296,7 @@ public final class Messages {
 
     public static class SearchBarClearPressed {
     }
+
+    public static class OnAllProfilesImported {
+    }
 }

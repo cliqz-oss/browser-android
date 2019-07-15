@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -125,7 +126,7 @@ public class AutocompleteEditText extends AppCompatEditText {
     }
 
     private Drawable setDrawableColorFilter(int drawableId){
-        final Drawable drawable =  ContextCompat.getDrawable(getContext(),drawableId);
+        final Drawable drawable =  AppCompatResources.getDrawable(getContext(),drawableId);
         if (drawable != null) {
             drawable.setColorFilter(ContextCompat.getColor(getContext(), R.color.primary_color), PorterDuff.Mode.SRC_ATOP);
         }

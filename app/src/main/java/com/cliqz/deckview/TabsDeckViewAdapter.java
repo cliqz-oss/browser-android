@@ -2,17 +2,18 @@ package com.cliqz.deckview;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
@@ -41,16 +42,13 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     private final Drawable tabDefaultIcon;
     private final Context context;
     private static final String GET_LOGO_FUNCTION = "getLogoDetails";
-    private final Bitmap defaultFavicon;
     private final int defaultBackgroundColor;
 
     TabsDeckViewAdapter(TabsDeckView tabsDeckView) {
         this.tabsDeckView = tabsDeckView;
         this.context = tabsDeckView.getContext();
         this.inflater = LayoutInflater.from(context);
-        this.tabDefaultIcon = ContextCompat.getDrawable(context, R.drawable.logo_start_tab);
-        this.defaultFavicon = BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.ic_webpage);
+        this.tabDefaultIcon = AppCompatResources.getDrawable(context, R.drawable.logo_start_tab);
         this.defaultBackgroundColor = BuildConfig.IS_LUMEN ?
                 ContextCompat.getColor(context, R.color.secondary_color) :
                 ContextCompat.getColor(context, R.color.accent_color);
@@ -67,8 +65,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
             card.setId(R.id.regular_tab_id);
         }
         final ViewHolder viewHolder = new ViewHolder(tabsDeckView, card);
-        viewHolder.titleTv.setIncognito(viewType == INCOGNITO_TYPE);
-        viewHolder.rootView.setIncognito(viewType == INCOGNITO_TYPE);
+        viewHolder.setIncognito(viewType == INCOGNITO_TYPE);
         return viewHolder;
     }
 
@@ -88,10 +85,16 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
             title = context.getString(R.string.home_title);
         }
         holder.urlTv.setText(url);
+        final Typeface typeface = holder.titleTv.getTypeface();
+        if (BuildConfig.IS_LUMEN && entry.isSelected()) {
+            holder.titleTv.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.titleTv.setTypeface(null, Typeface.NORMAL);
+        }
         holder.titleTv.setText(title);
 
         if (mode != Mode.WEBPAGE || entry.getFavIcon() == null) {
-            holder.favIconIV.setImageBitmap(defaultFavicon);
+            holder.favIconIV.setImageResource(R.drawable.tab_default_favicon);
         } else {
             holder.favIconIV.setImageBitmap(entry.getFavIcon());
         }

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/deckview_tab_background">
 
-    <ImageButton
+    <com.cliqz.widget.CliqzImageButton
         android:id="@+id/closeBtn"
         style="@style/Widget.AppCompat.ImageButton"
         android:layout_width="30dp"
@@ -17,14 +17,16 @@
         android:layout_marginTop="8dp"
         android:background="@null"
         app:srcCompat="@drawable/ic_clear_black"
+        tools:src="@drawable/ic_clear_black"
         tools:ignore="ContentDescription" />
 
-    <ImageView
+    <com.cliqz.widget.CliqzImageView
         android:id="@+id/favIconImg"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="46dp"
         app:srcCompat="@android:drawable/ic_media_play"
+        tools:src="@android:drawable/ic_media_play"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="0dp"
         tools:ignore="ContentDescription" />
