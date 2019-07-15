@@ -19,6 +19,7 @@
 
     <TextView
         android:id="@+id/title_bar"
+        android:focusable="true"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="@dimen/title_bar_h"

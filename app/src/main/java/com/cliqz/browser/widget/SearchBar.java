@@ -226,7 +226,9 @@ public class SearchBar extends FrameLayout {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                searchEditText.clearFocus();
+                // We can't searchEditText.clearFocus() because it first requests focus bringing
+                // the SearchView to front.
+                titleBar.requestFocus();
             }
 
             @Override
