@@ -25,7 +25,6 @@ class PurchasesManager(
         ReceivePurchaserInfoListener {
 
     private val trialPeriodLocalRepo = TrialPeriodLocalRepo(preferenceManager)
-    private val trialPeriodRemoteRepo = TrialPeriodRemoteRepo(context)
 
     var purchase = Purchase()
 
@@ -36,8 +35,8 @@ class PurchasesManager(
     override fun onTrialPeriodResponse(serverData: ServerData?) {
         this.serverData = serverData
         isLoading = false
-
         bus.post(Messages.OnTrialPeriodResponse())
+        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
     }
 
     override fun onReceived(purchaserInfo: PurchaserInfo) {
@@ -60,7 +59,7 @@ class PurchasesManager(
             purchase.isASubscriber = false
         }
         // Get Trial Period data and vpn username, password.
-        this.loadTrialPeriodInfo(this@PurchasesManager)
+        this.loadTrialPeriodInfo()
     }
 
     override fun onError(error: PurchasesError) {
@@ -75,18 +74,12 @@ class PurchasesManager(
         }
     }
 
-    private fun loadTrialPeriodInfo(trialPeriodResponseListener: TrialPeriodResponseListener) {
+    fun loadTrialPeriodInfo() {
         // Read trial period object from cache
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(serverData: ServerData?) {
-                trialPeriodResponseListener.onTrialPeriodResponse(serverData)
-                // TODO: Can avoid querying network if not needed.
-                trialPeriodRemoteRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
-                    override fun onTrialPeriodResponse(serverData: ServerData?) {
-                        trialPeriodResponseListener.onTrialPeriodResponse(serverData)
-                        trialPeriodLocalRepo.saveTrialPeriodInfo(serverData)
-                    }
-                })
+                this@PurchasesManager.onTrialPeriodResponse(serverData)
+                TrialPeriodRemoteRepo(context, this@PurchasesManager).execute()
             }
         })
     }

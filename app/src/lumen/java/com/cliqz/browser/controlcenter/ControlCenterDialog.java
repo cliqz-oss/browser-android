@@ -198,7 +198,8 @@ public class ControlCenterDialog extends DialogFragment {
     }
 
     private void hideSubscribeButton(boolean isDashboardEnabled) {
-        toggleTabLayout(isDashboardEnabled);
+        toggleTabLayout(isDashboardEnabled &&
+                preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
         ultimateProtectionSwitch.setChecked(preferenceManager.isAttrackEnabled() &&
                 preferenceManager.getAdBlockEnabled());
         subscribeUltimateProtectionView.setVisibility(isDashboardEnabled ? View.GONE : View.VISIBLE);

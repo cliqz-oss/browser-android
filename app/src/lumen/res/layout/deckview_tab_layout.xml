@@ -18,28 +18,26 @@
         android:lines="1"
         android:singleLine="true"
         android:textSize="15sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
+        android:textColor="@drawable/tabs_title_color"
         android:background="@drawable/tabs_overview_header_gradient"
         tools:text="A possibly very very very long title" />
 
-    <ImageView
+    <com.cliqz.widget.CliqzImageView
         android:id="@+id/favIconImg"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        tools:srcCompat="@android:drawable/ic_media_play"
         tools:background="#6D6" />
 
-    <ImageButton
+    <com.cliqz.widget.CliqzImageButton
         android:id="@+id/closeBtn"
         style="@style/Widget.AppCompat.ImageButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="end"
         android:background="@null"
-        app:srcCompat="@drawable/ic_clear_black" />
+        app:srcCompat="@drawable/ic_tab_close" />
 
     <!-- Keeping this View just for Cliqz Browser compability -->
     <TextView

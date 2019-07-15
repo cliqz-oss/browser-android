@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -113,11 +115,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        final Collection<VpnProfile> vpnProfiles =
-                ProfileManager.getInstance(source.getContext()).getProfiles();
-        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
-            dialog.selectedProfile = vpnProfiles.iterator().next();
-        }
+        dialog.setSelectedProfile(source.getContext());
         return dialog;
     }
 
@@ -197,7 +195,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
 
     @OnClick(R.id.vpn_country)
     void vpnCountryClicked() {
-        if (selectedProfile != null) {
+        if (selectedProfile != null && purchasesManager.isVpnEnabled()) {
             showVpnCountriesDialog();
         } else {
             unlockVpnDialog();
@@ -211,6 +209,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
                 vpnHandler.disconnectVpn();
                 updateStateToConnect();
             } else {
+                if (selectedProfile == null) {
+                    Toast.makeText(getContext(), "Please try again later", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 vpnHandler.connectVpn(selectedProfile);
             }
         } else {
@@ -356,6 +358,20 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private void vpnMsgsChangeDrawable(@DrawableRes int id) {
         DrawableExtensionsKt.drawableStart(mVpnMsgLineOne, id);
         DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
+    }
+
+    private void setSelectedProfile(Context context) {
+        final Collection<VpnProfile> vpnProfiles =
+                ProfileManager.getInstance(context).getProfiles();
+        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
+            selectedProfile = vpnProfiles.iterator().next();
+        }
+    }
+
+    @Subscribe
+    public void onTrialPeriodResponse(Messages.OnAllProfilesImported onTrialPeriodResponse) {
+        setSelectedProfile(getDialog().getContext());
+        mSelectedCountry.setText(selectedProfile.getName());
     }
 
     @Subscribe
