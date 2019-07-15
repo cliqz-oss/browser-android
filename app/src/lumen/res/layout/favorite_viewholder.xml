@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:background="@color/lumen_history_entry_background">
+
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/icon_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="center_vertical"
+        tools:background="@color/black"
+        app:actualImageScaleType="fitXY" />
+
+
+    <LinearLayout
+        android:id="@+id/history_view_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/history_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/text_color_primary"
+            android:textSize="@dimen/title_text_size"
+            tools:text="Facebook - log in or sign up" />
+
+
+        <TextView
+            android:id="@+id/history_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/lumen_history_url"
+            android:textSize="@dimen/small_text_size"
+            android:ellipsize="end"
+            tools:text="facebook.com" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/selectedOverLay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp" />
+
+</FrameLayout>

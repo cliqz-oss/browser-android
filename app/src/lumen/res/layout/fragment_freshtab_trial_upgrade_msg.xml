@@ -15,20 +15,25 @@
     <!-- tools:showIn="@layout/fragment_freshtab" -->
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="21dp"
+        android:text="@string/upgrade_button"
+        android:letterSpacing="0.35"
+        android:textAllCaps="true"
+        android:textColor="#1B9CFC"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:targetApi="lollipop" />
+
+    <TextView
         android:id="@+id/trial_period_upgrade_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="true"
-        android:textColor="@color/accent_color"
-        android:textSize="@dimen/normal_text_size"
-        tools:text="1 more days in the Test-Version" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/upgrade_button"
-        android:textAllCaps="true"
-        android:textColor="#1E97E7"
-        android:textSize="16sp" />
+        android:textColor="#92B6FF "
+        android:letterSpacing="0.1"
+        android:textSize="12sp"
+        tools:text="1 more days in the Test-Version"
+        tools:targetApi="lollipop" />
 
 </LinearLayout>

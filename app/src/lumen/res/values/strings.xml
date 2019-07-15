@@ -74,7 +74,7 @@
     <string name="trial_over_upgrade_lumen_title">Your Trial is Over</string>
     <string name="trial_over_upgrade_lumen_description">You can still use Lumen, but without ultimate protection and VPN. Or go premium.</string>
     <string name="trial_over_upgrade_lumen_dismiss">No, Thanks</string>
-    <string name="trial_over_upgrade_lumen_proceed">Learn More</string>
+    <string name="trial_over_upgrade_lumen_proceed">Upgrade</string>
     <plurals name="trial_period_upgrade_description">
         <item quantity="one">1 more day in the Test-Version</item>
         <item quantity="other">%d more days in the Test-Version</item>

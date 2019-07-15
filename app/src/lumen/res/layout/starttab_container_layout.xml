@@ -3,16 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <!-- <com.cliqz.browser.starttab.IconTabLayout -->
     <com.cliqz.browser.starttab.IconTabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_color"
+        tools:layout_height="32dp"
+        android:background="@drawable/lumen_tab_layout_background"
+        app:tabIndicatorColor="#1B9CFC"
         app:tabTextColor="@color/white"
-        app:tabIconTint="@color/white"/>
+        app:tabIconTint="#1B9CFC"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"

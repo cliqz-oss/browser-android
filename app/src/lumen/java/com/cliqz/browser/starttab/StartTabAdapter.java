@@ -17,8 +17,8 @@ public class StartTabAdapter extends IconTabLayout.ImagePagerAdapter {
     private final View[] views;
     private final int[] icons = new int[] {
             R.drawable.ic_fresh_tab,
-            R.drawable.ic_history_white,
-            R.drawable.ic_star_white
+            R.drawable.ic_history_tab,
+            R.drawable.ic_favorite_tab
     };
     StartTabAdapter(@NonNull Context context) {
         views = new View[] {
