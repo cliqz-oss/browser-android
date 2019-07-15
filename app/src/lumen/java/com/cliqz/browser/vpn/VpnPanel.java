@@ -369,9 +369,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     }
 
     @Subscribe
-    public void onTrialPeriodResponse(Messages.OnAllProfilesImported onTrialPeriodResponse) {
+    public void onAllProfilesImported(Messages.OnAllProfilesImported onAllProfilesImported) {
         setSelectedProfile(getDialog().getContext());
         mSelectedCountry.setText(selectedProfile.getName());
+        mVpnCtaTitle.setText(R.string.vpn_cta_enabled);
     }
 
     @Subscribe
