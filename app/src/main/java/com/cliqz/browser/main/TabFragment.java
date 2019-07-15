@@ -1378,7 +1378,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     @Subscribe
-    public void onDashboardStateChange(Messages.onDashboardStateChange message) {
+    public void onDashboardStateChange(Messages.OnDashboardStateChange message) {
         updateCCIcon(false);
     }
 

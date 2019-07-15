@@ -3,5 +3,6 @@
     android:id="@+id/history_rview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="24dp"
     android:background="@drawable/tab_fragment_background"
     android:paddingBottom="10dp" />

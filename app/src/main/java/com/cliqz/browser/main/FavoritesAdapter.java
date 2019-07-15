@@ -47,7 +47,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_viewholder,
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.favorite_viewholder,
                 parent, false);
         return new FavoritesViewHolder(view);
     }
@@ -92,32 +92,15 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         FavoritesViewHolder(View view) {
             super(view);
             final Resources resources = view.getResources();
-            final int sideMargin = resources.getDimensionPixelSize(R.dimen.favorites_side_margins);
-            final int topMargin = resources.getDimensionPixelSize(R.dimen.favorites_top_margins);
             url = view.findViewById(R.id.history_url);
             title = view.findViewById(R.id.history_title);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             favorites_view_parent = view.findViewById(R.id.history_view_parent);
             favorites_view_parent.setId(R.id.favorites_view_parent);
-            final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) favorites_view_parent.getLayoutParams();
-            layoutParams.setMargins(sideMargin, topMargin, sideMargin, topMargin);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                layoutParams.setMarginEnd(sideMargin);
-                layoutParams.setMarginStart(sideMargin);
-            }
-            favorites_view_parent.setLayoutParams(layoutParams);
-            favorites_view_parent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clickListener.onClick(v, getAdapterPosition());
-                }
-            });
-            favorites_view_parent.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    clickListener.onLongPress(v, getAdapterPosition());
-                    return true;
-                }
+            favorites_view_parent.setOnClickListener(v -> clickListener.onClick(v, getAdapterPosition()));
+            favorites_view_parent.setOnLongClickListener(v -> {
+                clickListener.onLongPress(v, getAdapterPosition());
+                return true;
             });
         }
     }

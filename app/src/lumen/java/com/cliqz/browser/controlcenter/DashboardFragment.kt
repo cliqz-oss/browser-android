@@ -167,6 +167,7 @@ class DashboardFragment : Fragment() {
         if (purchasesManager.purchase.isDashboardEnabled) {
             bus.post(Messages.EnableAdBlock())
             bus.post(Messages.EnableAttrack())
+            bus.post(Messages.OnDashboardStateChange())
             changeDashboardState(true)
         }
     }

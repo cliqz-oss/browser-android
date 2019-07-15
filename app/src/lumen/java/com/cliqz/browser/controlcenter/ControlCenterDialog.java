@@ -157,7 +157,7 @@ public class ControlCenterDialog extends DialogFragment {
                 antiTracking.setEnabled(isChecked);
                 preferenceManager.setAttrackEnabled(isChecked);
                 preferenceManager.setAdBlockEnabled(isChecked);
-                bus.post(new Messages.onDashboardStateChange());
+                bus.post(new Messages.OnDashboardStateChange());
             } catch (EngineNotYetAvailable engineNotYetAvailable) {
                 Log.e("JsEngineError", "Cannot enable/disable tracking modules",
                         engineNotYetAvailable);
