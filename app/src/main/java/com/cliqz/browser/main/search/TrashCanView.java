@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.R;
 
@@ -24,7 +26,7 @@ class TrashCanView extends AppCompatTextView {
     public TrashCanView(Context context) {
         super(context);
         defaultTint = ContextCompat.getColor(context, R.color.white);
-        drawable = ContextCompat.getDrawable(context,R.drawable.ic_delete);
+        drawable = AppCompatResources.getDrawable(context,R.drawable.ic_delete);
         if (drawable == null) {
             throw new RuntimeException("Null drawable");
         }

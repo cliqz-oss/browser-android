@@ -235,7 +235,7 @@ public class OverFlowMenu extends FrameLayout {
         overFlowMenuAdapter = new OverFlowMenuAdapter();
         listView.setAdapter(overFlowMenuAdapter);
         listView.setOnItemClickListener(new MenuItemClickListener());
-        final Drawable drawable = ContextCompat.getDrawable(activity, android.R.drawable.dialog_holo_light_frame);
+        final Drawable drawable = AppCompatResources.getDrawable(activity, android.R.drawable.dialog_holo_light_frame);
         listView.setBackground(drawable);
         listView.setDivider(null);
     }

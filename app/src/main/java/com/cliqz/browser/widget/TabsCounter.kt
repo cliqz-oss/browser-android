@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
+import androidx.appcompat.content.res.AppCompatResources
 import com.cliqz.browser.R
 import kotlin.math.min
 
@@ -14,7 +14,7 @@ class TabsCounter @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private val counterBackground: Drawable = ContextCompat.getDrawable(context, R.drawable.tab_counter)!!
+    private val counterBackground: Drawable = AppCompatResources.getDrawable(context, R.drawable.tab_counter)!!
     private val counterBounds = Rect()
     private val textBounds = Rect()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FAKE_BOLD_TEXT_FLAG)

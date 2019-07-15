@@ -8,16 +8,17 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 
 fun TextView.drawableStart(@DrawableRes id: Int) {
-    val drawable = ContextCompat.getDrawable(context, id)
+    val drawable = AppCompatResources.getDrawable(context, id)
     setCompoundDrawablesWithIntrinsicBounds(drawable, null, null,  null)
 }
 
 fun ImageView.setDrawable(@DrawableRes id: Int) {
-    setImageDrawable(ContextCompat.getDrawable(context, id))
+    setImageDrawable(AppCompatResources.getDrawable(context, id))
 }
 
 @ColorInt fun Context.getColorCompat(@ColorRes id: Int): Int {
