@@ -57,6 +57,20 @@ class TestDroidTask extends DefaultTask {
         // 5. Download the artifacts and put them in a predefined folder (where Azure/Jenkins can find it)
         fetchTestRunArtifacts(runID)
         // 6. log error if any test failed, otherwise just return
+        Float successRatio = errorLogger(runID)
+        if (successRatio == 1){
+            logger.info("Test Run was successful")
+            println("Test Run was successful")
+        }else if (successRatio < 1  && successRatio > 0.90){
+            logger.info("Need to get session success Ratios")
+            Float sessionSuccessRatio = sessionErrorLogger(runID)
+            if (sessionSuccessRatio < 0.50){
+                logger.error("Need to check tests that are failing")
+                throw new Exception('Tests are failing')
+            }else {
+               logger.info("Test run was not 100% successful but that's okay")
+            }
+        }
     }
 
     def getBasicAuth(String apiKey) {
@@ -153,6 +167,36 @@ class TestDroidTask extends DefaultTask {
             }
         } else{
             logger.error("No session data for test run ${testRunID}")
+        }
+    }
+    def errorLogger(long testRunID){
+        final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}")
+        final testRun = url.openConnection()
+        testRun.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
+        if (testRun.responseCode == HttpURLConnection.HTTP_OK) {
+            final testRunResult = slurper.parse(testRun.inputStream)
+            testRunResult.successRatio
+        }
+        else {
+            logger.error("No Test Run for the given id: ${testRunID}")
+        }
+    }
+    def sessionErrorLogger(long testRunID){
+        final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions")
+        final sessions = url.openConnection()
+        sessions.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
+        if (sessions.responseCode == HttpURLConnection.HTTP_OK) {
+            final sessionResults = slurper.parse(sessions.inputStream)
+            sessionResults.data.each { session ->
+                println "Device: ${session.device.displayName} ID: ${session.id} SuccessRatio: ${session.successRatio}"
+                if (session.successRatio < 0.5){
+                    logger.error("Tests are failing on ${session.displayName}")
+                    session.successRatio
+                }else{
+                    logger.info("Tests are failing but that's okay")
+                    session.successRatio
+                }
+            }
         }
     }
 }
