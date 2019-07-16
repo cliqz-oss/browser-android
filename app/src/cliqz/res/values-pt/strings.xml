@@ -23,4 +23,12 @@
     <string name="save_password_text">Você quer Cliqz salva suas senhas para esta página?</string>
     <string name="eula_text">O Navegador Cliqz para Android é desenvolvido com a utilização do &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;projeto open source Lightning Browser&lt;/a&gt;, à nossa disposição nós temos da &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, uma licença para software livre que concedem aos usuários a liberdade de controle na execução, análise, alterações e permite compartilhar com amigos. Não existe um Acordo de Licença do Usuário Final (EULA) separado.</string>
     <string name="send_usage_data_summary">Ajude-nos a melhorar sua experiência de navegação. Cliqz coleta dados de uso estritamente anônimos. Em nenhuma ocasião, qualquer informação pessoal seja coletada.</string>
+    <string name="action_incognito">Novo separador incógnito</string>
+    <string name="open_in_incognito_tab">Abrir em separador incógnito</string>
+    <string name="switched_to_forget">Modo privado automático ativado</string>
+    <string name="open_link_forget_tab">Abrir ligação num novo separador privado</string>
+    <string name="open_image_forget_tab">Abrir imagem num novo separador privado</string>
+    <string name="incognito_tab_title">Separador incógnito</string>
+    <string name="incognito_tab_description">Está a navegar em modo privado:Não vamos salvar nenhum histórico e dados locais, incluindo cookies, não serão salvadas.</string>
+    <string name="auto_forget_tab">Modo privado automático ativado</string>
 </resources>

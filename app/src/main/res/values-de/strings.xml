@@ -1,19 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  Copyright 2014  The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <resources>
     <string name="action_new_tab">Neuer Tab</string>
     <string name="action_copy">Link kopieren</string>
@@ -45,7 +30,6 @@
     <string name="size_small">Klein</string>
     <string name="size_smallest">Sehr klein</string>
     <string name="title_error">Fehler</string>
-    <string name="action_incognito">Neuer Vergessen-Tab</string>
     <string name="action_find">Auf Seite suchen</string>
     <string name="cannot_download">Herunterladen nur bei \"http\" oder \"https\" URLs möglich.</string>
     <string name="download_no_sdcard_dlg_title">Keine SD-Karte</string>
@@ -105,7 +89,6 @@
     <string name="share_link">Teilen über</string>
     <string name="gps_permission">Für bessere Suchergebnisse aktivieren Sie bitte GPS</string>
     <string name="open_in_new_tab">In neuem Tab öffnen</string>
-    <string name="open_in_incognito_tab">In neuem Vergessen-Tab öffnen</string>
     <string name="not_shareable">Diese Karte kann nicht geteilt werden</string>
     <string name="clear_favorites">Favoriten löschen</string>
     <string name="clear_history">Verlauf löschen</string>
@@ -161,12 +144,9 @@
     <string name="antiphishing_text">Keine verdächtigen Aktivitäten entdeckt</string>
     <string name="antiphishing_desc">Potentiell betrügerische Webseites, die es auf deine Passwörter und Kontodaten abgesehen haben, werden mit der Anti-Phishing Technologie vorzeitig erkannt und blockiert.</string>
     <string name="learn_more"><u>mehr erfahren</u></string>
-    <string name="switched_to_forget">Vergessen-Tab automatisch aktiviert</string>
     <string name="download_image">Bild herunterladen</string>
     <string name="open_link_new_tab">Link in neuem Tab öffnen</string>
-    <string name="open_link_forget_tab">Link in Vergessen-Tab öffnen</string>
     <string name="open_image_new_tab">Bild in neuem Tab öffnen</string>
-    <string name="open_image_forget_tab">Bild in Vergessen-Tab öffnen</string>
     <string name="update_webview_msg">Dein System ist nicht auf dem aktuellsten Stand. Aktualisiere Android System WebView, um weiterhin sicher zu surfen.</string>
     <string name="update">Aktualisieren</string>
     <string name="ad_blocker_disabled_header">Werbungen werden angezeigt</string>
@@ -190,8 +170,6 @@
     <string name="device_paired_and_connected">Verbunden</string>
     <string name="device_paired_but_offline">Desktop offline</string>
     <string name="qrcode_scanner_pairing_instructions">Gehe zu ![firefox menu](firefox_menu) und wähle \'Connect\', um den QR-Code zu scannen.</string>
-    <string name="incognito_tab_title">Vergessen Tab</string>
-    <string name="incognito_tab_description">Du surfst im Vergessen-Modus: Webseiten, die du in diesem Modus besuchst, werden nicht in deinem Verlauf auftauchen. Auch werden lokale Daten, Cookies mit eingeschlossen, nicht gespeichert.</string>
     <string name="action_retry">Erneut versuchen</string>
     <string name="descr_search_bar">Suchleiste</string>
     <string name="humanweb">Human Web</string>
@@ -228,7 +206,6 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="showcase_youtube_title">Video Downloader</string>
     <string name="showcase_youtube_message">Lade YouTube-Videos auf dein Smartphone herunter.</string>
     <string name="please_wait">Bitte warten…</string>
-    <string name="auto_forget_tab">Automatisches Vergessen-Tab</string>
     <string name="code_scanner">QR-Code Scanner</string>
     <string name="qrcode_scanner_scanning_instructions">![QR-Code example](qr_code_icon_small) QR-Code scannen</string>
     <string name="code_scanner_title">QR-Code Scanner</string>

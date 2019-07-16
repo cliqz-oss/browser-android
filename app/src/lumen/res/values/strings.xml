@@ -111,4 +111,14 @@
     <string name="restore_subscription_error_msg">Nothing to restore</string>
     <string name="restore_subscription_success">Subscription restored</string>
 
+    <!-- Private Tab -->
+    <string name="action_incognito">New Private Tab</string>
+    <string name="open_in_incognito_tab">Open in new Private Tab</string>
+    <string name="switched_to_forget">Automatic Private Tab enabled</string>
+    <string name="open_link_forget_tab">Open link in Private Tab</string>
+    <string name="open_image_forget_tab">Open image in Private Tab</string>
+    <string name="incognito_tab_title">Private Tab</string>
+    <string name="incognito_tab_description">You are browsing in Private Mode: websites you visit in this mode will not be saved in your history, and local data, including cookies, will not be stored.</string>
+    <string name="auto_forget_tab">Automatic Private Tab</string>
+
 </resources>

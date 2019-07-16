@@ -25,5 +25,13 @@
     <string name="privacy_policy_title">Datenschutzerklärung - Cliqz</string>
     <string name="send_usage_data_summary">Hilf uns deine Browsernutzung zu verbessern. Cliqz sammelt streng anonyme Daten darüber, wie du Cliqz benutzt. Zu keinem Zeitpunkt wird eine PII erfasst.</string>
     <string name="user_sentiment_survey_first_line_msg">Hallo! Wir möchten sehr gerne etwas über Ihre Meinung zum Cliqz Browser erfahren. i</string>
+    <string name="action_incognito">Neuer Vergessen-Tab</string>
+    <string name="open_in_incognito_tab">In neuem Vergessen-Tab öffnen</string>
+    <string name="switched_to_forget">Vergessen-Tab automatisch aktiviert</string>
+    <string name="open_link_forget_tab">Link in Vergessen-Tab öffnen</string>
+    <string name="open_image_forget_tab">Bild in Vergessen-Tab öffnen</string>
+    <string name="incognito_tab_title">Vergessen Tab</string>
+    <string name="incognito_tab_description">Du surfst im Vergessen-Modus: Webseiten, die du in diesem Modus besuchst, werden nicht in deinem Verlauf auftauchen. Auch werden lokale Daten, Cookies mit eingeschlossen, nicht gespeichert.</string>
+    <string name="auto_forget_tab">Automatisches Vergessen-Tab</string>
 </resources>
 

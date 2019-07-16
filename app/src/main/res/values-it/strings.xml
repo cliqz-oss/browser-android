@@ -1,19 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  Copyright 2013 The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Nuovo tab</string>
     <string name="action_copy">Copia link</string>
@@ -45,7 +30,6 @@
     <string name="size_small">Piccolo</string>
     <string name="size_smallest">Più piccolo</string>
     <string name="title_error">Errore</string>
-    <string name="action_incognito">Nuovo tab in Modalità Oblio</string>
     <string name="action_find">Trova nella pagina</string>
     <string name="download_pending">Inizio download</string>
     <string name="cannot_download">Puoi scaricare solo URL con \"http\" o \"https\".</string>
@@ -110,7 +94,6 @@ Procedere comunque?</string>
     <string name="deleting_in_progress_message">Cancellazione in corso…</string>
     <string name="gps_permission">Attiva il GPS per una ricerca migliore</string>
     <string name="not_shareable">Questa scheda non può essere condivisa</string>
-    <string name="open_in_incognito_tab">Apri in Modalità Oblio</string>
     <string name="open_in_new_tab">Apri in nuovo tab</string>
     <string name="add_to_favourites">Aggiungi ai segnalibri</string>
     <string name="save_link">Salva link</string>
@@ -153,9 +136,7 @@ Procedere comunque?</string>
     <string name="autocompletion_enabled">Attiva autocompletamento</string>
     <string name="request_desktop_site">Modalità Desktop</string>
     <string name="learn_more"><u>Per saperne di più</u></string>
-    <string name="switched_to_forget">Modalità Oblio automatica attivata</string>
     <string name="open_link_new_tab">Apri link in nuovo tab</string>
-    <string name="open_link_forget_tab">Apri link in nuovo tab Modalità Oblio</string>
     <string name="open_image_new_tab">Apri immagine in nuovo tab</string>
     <string name="download_image">Scarica immagine</string>
     <string name="update_webview_msg">Il tuo sistema operativo non è aggiornato. Per navigare in modo sicuro, aggiorna Android System Webview.</string>
@@ -184,8 +165,6 @@ Procedere comunque?</string>
     <string name="usa">Stati Uniti</string>
     <string name="regional_settings">Risultati di ricerca per</string>
     <string name="report_site">Segnala un sito web</string>
-    <string name="incognito_tab_title">Modalità Oblio</string>
-    <string name="incognito_tab_description">Stai navigando in Modalità Oblio: i siti web che visiti in questa modalità non saranno salvati nella tua cronologia e i tuoi dati locali, cookie inclusi, non verranno salvati.</string>
     <string name="humanweb">Human Web</string>
     <string name="descr_search_bar">Barra di ricerca</string>
     <string name="showcase_antitracking_title">Pannello di Controllo</string>
@@ -214,7 +193,6 @@ Procedere comunque?</string>
     <string name="resume_tab_dialog_msg">Vuoi ripristinare i tab precedentemente aperti?</string>
     <string name="action_resume">Ripristina</string>
     <string name="action_close_all_tabs">Chiudi tutti i tab</string>
-    <string name="auto_forget_tab">Modalità Oblio automatica</string>
     <string name="showcase_youtube_title">Downloader video</string>
     <string name="showcase_youtube_message">Scarica video da YouTube direttamente sul tuo smartphone.</string>
     <string name="please_wait">Un attimo, per favore…</string>
@@ -277,7 +255,6 @@ Procedere comunque?</string>
         <item quantity="other">%d elementi selezionati</item>
     </plurals>
     <string name="message_url_copied">URL copiata</string>
-    <string name="open_image_forget_tab">Apri immagine in Modalità Oblio</string>
     <string name="control_center_header_overview">PANORAMICA</string>
     <string name="control_center_header_trackers">TRACKER</string>
     <string name="trust_site">Sito affidabile</string>

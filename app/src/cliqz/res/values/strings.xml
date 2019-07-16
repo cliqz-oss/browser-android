@@ -26,4 +26,12 @@
     <string name="privacy_policy_title">Privacy Policy - Cliqz</string>
     <string name="send_usage_data_summary">Help us improve your browsing experience. Cliqz collects strictly anonymous usage data. At no occasion is any PII collected.</string>
     <string name="user_sentiment_survey_first_line_msg" tools:ignore="MissingTranslation">Hello! We’d like to know your opinion about the Cliqz Browser. i</string>
+    <string name="action_incognito">New Forget Tab</string>
+    <string name="open_in_incognito_tab">Open in new Forget Tab</string>
+    <string name="switched_to_forget">Automatic Forget Tab enabled</string>
+    <string name="open_link_forget_tab">Open link in Forget Tab</string>
+    <string name="open_image_forget_tab">Open image in Forget Tab</string>
+    <string name="incognito_tab_title">Forget Tab</string>
+    <string name="incognito_tab_description">You are browsing in Forget Mode: websites you visit in this mode will not be saved in your history, and local data, including cookies, will not be stored.</string>
+    <string name="auto_forget_tab">Automatic Forget Tab</string>
 </resources>

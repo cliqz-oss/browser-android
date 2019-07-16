@@ -23,4 +23,12 @@
     <string name="welcome_message">Bienvenu sur Cliqz !</string>
     <string name="agree_privacy_policy_message">Em utilisant cette application, vous acceptez les termes la &lt;font color="#00aef0"&gt;politique de confidentialié de Cliqz&lt;/font&gt;</string>
     <string name="privacy_policy_title">Politique de confidentialité - Cliqz</string>
+    <string name="action_incognito">Nouvel Onglet en Mode Oubli</string>
+    <string name="open_in_incognito_tab">Ouvrir dans un Onglet Mode Oubli</string>
+    <string name="switched_to_forget">Mode Oubli Automatique activé</string>
+    <string name="open_link_forget_tab">Ouvrir dans un Onglet Mode Oubli</string>
+    <string name="open_image_forget_tab">Ouvrir l\'image dans un Onglet Mode Oubli</string>
+    <string name="incognito_tab_title">Mode Oubli</string>
+    <string name="incognito_tab_description">Vous surfez en Mode Oubli : les sites web que vous visitez dans ce mode ne seront pas sauvegardés dans votre historique et les données locales, cookies inclus, ne seront pas conservées.</string>
+    <string name="auto_forget_tab">Mode Oubli Automatique</string>
 </resources>

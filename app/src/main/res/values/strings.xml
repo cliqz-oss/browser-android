@@ -30,7 +30,6 @@
     <string name="size_small">Small</string>x
     <string name="size_smallest">Smallest</string>
     <string name="title_error">Error</string>
-    <string name="action_incognito">New Forget Tab</string>
     <string name="action_find">Find in Page</string>
     <string name="download_pending">Pending download</string>
     <string name="cannot_download">Can only download \"http\" or \"https\" URLs.</string>
@@ -93,7 +92,6 @@
     <string name="share_link">Share using</string>
     <string name="gps_permission">Please enable GPS for better search results</string>
     <string name="open_in_new_tab">Open in new tab</string>
-    <string name="open_in_incognito_tab">Open in new Forget Tab</string>
     <string name="not_shareable">This card is not shareable</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_favorites">Clear favorites</string>
@@ -160,12 +158,9 @@
     <string name="antiphishing_text">No phishing activities detected</string>
     <string name="antiphishing_desc">Anti-Phishing technology identifies and blocks potentially deceptive websites that try to get your passwords or account data before you visit the site.</string>
     <string name="learn_more"><u>Learn more</u></string>
-    <string name="switched_to_forget">Automatic Forget Tab enabled</string>
     <string name="extension_version" translatable="false">Extension Version</string>
     <string name="open_link_new_tab">Open link in new tab</string>
-    <string name="open_link_forget_tab">Open link in Forget Tab</string>
     <string name="open_image_new_tab">Open image in new tab</string>
-    <string name="open_image_forget_tab">Open image in Forget Tab</string>
     <string name="download_image">Download image</string>
     <string name="update_webview_msg">Your system is not up-to-date. To browse securely, please update Android System WebView.</string>
     <string name="update">Update</string>
@@ -195,8 +190,6 @@
     <string name="pairing_successful_message">You connected your first device!
 
 Now you are ready to send tabs between your desktop and your mobile device. You can also directly download videos from your desktop browser to your mobile device.</string>
-    <string name="incognito_tab_title">Forget Tab</string>
-    <string name="incognito_tab_description">You are browsing in Forget Mode: websites you visit in this mode will not be saved in your history, and local data, including cookies, will not be stored.</string>
     <string name="rename_paired_device">Rename</string>
     <string name="pairing_device_rename_title">Rename connection</string>
     <string name="pairing_device_rename_message">Enter a new name for the connection:</string>
@@ -231,7 +224,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cdn">CDN</string>
     <string name="control_center_tracker_ad_blocked">%1$d Trackers</string>
     <string name="action_close_all_tabs">Close All Tabs</string>
-    <string name="auto_forget_tab">Automatic Forget Tab</string>
     <string name="showcase_youtube_title">Video Downloader</string>
     <string name="showcase_youtube_message">Download YouTube videos to your Smartphone.</string>
     <string name="please_wait">Please, wait…</string>

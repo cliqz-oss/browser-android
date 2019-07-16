@@ -39,7 +39,6 @@
     <string name="title_warning">Advertencia</string>
     <string name="size_largest">Extra grande</string>
     <string name="size_large">Grande</string>
-    <string name="action_incognito">Nueva pestaña privada</string>
     <string name="cannot_download">Sólo se descargan páginas \"http\" o \"https\".</string>
     <string name="problem_download">Página no válida, imposible descargar</string>
     <string name="download_sdcard_busy_dlg_msg">Almacenamiento casi lleno. Para realizar descargas, desactiva el almacenamiento USB.</string>
@@ -91,7 +90,6 @@
     <string name="share_link">Compartir usando</string>
     <string name="gps_permission">Activa el GPS para tener mejores resultados de búsqueda</string>
     <string name="open_in_new_tab">Abrir en una pestaña nueva</string>
-    <string name="open_in_incognito_tab">Abrir en una pestaña privada</string>
     <string name="not_shareable">No se puede compartir</string>
     <string name="clear_history">Eliminar historial</string>
     <string name="clear_favorites">Eliminar favoritos</string>
@@ -159,11 +157,8 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="antiphishing_header">Navegas seguro</string>
     <string name="antiphishing_text">No se han detectado actividades sospechosas</string>
     <string name="learn_more"><u>Saber más</u></string>
-    <string name="switched_to_forget">Modo privado automático activado</string>
     <string name="open_link_new_tab">Abrir en una pestaña nueva</string>
-    <string name="open_link_forget_tab">Abrir en una pestaña privada</string>
     <string name="open_image_new_tab">Abrir imagen en una pestaña nueva</string>
-    <string name="open_image_forget_tab">Abrir imagen en pestaña privada</string>
     <string name="download_image">Descargar imagen</string>
     <string name="update_webview_msg">Tu sistema no está actualizado. Para navegar seguro, por favor actualiza WebView del sistema Android.</string>
     <string name="update">Actualizar</string>
@@ -189,8 +184,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="action_retry">Reintentar</string>
     <string name="pairing_successful_title">Conexión establecida</string>
     <string name="pairing_successful_message">¡Has conectado tu primer dispositivo!\n\nAhora puedes enviar pestañas entre el ordenador y tu dispositivo portátil. También puedes descargar vídeos directamente desde el ordenador a tu terminal.</string>
-    <string name="incognito_tab_title">Pestaña privada</string>
-    <string name="incognito_tab_description">Estás navegando en modo privado: las páginas que visites no se guardarán en tu historial ni se almacenará información local, cookies incluidas.</string>
     <string name="rename_paired_device">Renombrar</string>
     <string name="pairing_device_rename_title">Renombrar conexión</string>
     <string name="pairing_device_rename_message">Introduce un nombre nuevo para la conexión:</string>
@@ -204,7 +197,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="resume_tab_dialog_msg">¿Quieres restaurar las pestañas abiertas previamente?</string>
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Cerrar todas las pestañas</string>
-    <string name="auto_forget_tab">Pestañas privadas automáticas</string>
     <string name="showcase_youtube_title">Descarga de vídeos</string>
     <string name="showcase_youtube_message">Descarga vídeos de YouTube en tu teléfono.</string>
     <string name="please_wait">Por favor, espera…</string>

@@ -30,7 +30,6 @@
     <string name="size_small">Pequeno</string>
     <string name="size_smallest">Menor</string>
     <string name="title_error">Erro</string>
-    <string name="action_incognito">Novo separador incógnito</string>
     <string name="action_find">Localizar na página</string>
     <string name="cannot_download">Apenas possível para os URL \\\"http\\\" ou \\\"https\\\".</string>
     <string name="problem_download">URL inválido e a descarga não é possível</string>
@@ -93,7 +92,6 @@ Gostaria de utilizar a sua localização</string>
     <string name="share_link">Compartilhar usando</string>
     <string name="gps_permission">Ativa GPS para ter melhor resultados de busca</string>
     <string name="open_in_new_tab">Abrir em novo separador</string>
-    <string name="open_in_incognito_tab">Abrir em separador incógnito</string>
     <string name="not_shareable">Não pode compartilhar</string>
     <string name="clear_history">Limpar histórico</string>
     <string name="clear_favorites">Limpar favoritos</string>
@@ -154,9 +152,7 @@ Gostaria de utilizar a sua localização</string>
     <string name="antiphishing_text">Não foram identificado atividades suspeitas</string>
     <string name="learn_more"><u> 1Sabe mais</u> 2</string>
     <string name="open_link_new_tab">Abrir ligação num novo separador</string>
-    <string name="open_link_forget_tab">Abrir ligação num novo separador privado</string>
     <string name="open_image_new_tab">Abrir imagem num novo separador</string>
-    <string name="open_image_forget_tab">Abrir imagem num novo separador privado</string>
     <string name="download_image">Descargar imagem</string>
     <string name="update">Atualizar</string>
     <string name="ad_blocker_disabled_header">Anúncios visíveis</string>
@@ -178,7 +174,6 @@ Gostaria de utilizar a sua localização</string>
  ![cc_enabled](ic_cc_enabled_white_bg) Proteção ativada&lt;br&gt;
  ![cc_disabled](ic_cc_whitelisted_white_bg) Proteção desativada</string>
     <string name="antiphishing_desc">A tecnologia Anti-Phishing identifica e bloqueia sites enganosos, que tentam roubar suas palavras-passe ou outros dados sensíveis.</string>
-    <string name="switched_to_forget">Modo privado automático ativado</string>
     <string name="update_webview_msg">Seu sistema não está atualizado. Para navegar seguro, por favor atualiza Android System WebView.</string>
     <string name="msg_camera_framework_bug">Desculpe, tem um problema com a câmara. Talvez precisa reiniciar o dispositivo.</string>
     <string name="report_site">Denunciar uma página</string>
@@ -190,8 +185,6 @@ Gostaria de utilizar a sua localização</string>
     <string name="pairing_successful_message">Você conectou seu primeiro dispositivo!
 
 Está pronto para mandar separadores entre seu computador e seu telemóvel. Também pode descarregar vídeos desde o navegador do seu computador e seu telemóvel.</string>
-    <string name="incognito_tab_title">Separador incógnito</string>
-    <string name="incognito_tab_description">Está a navegar em modo privado:Não vamos salvar nenhum histórico e dados locais, incluindo cookies, não serão salvadas.</string>
     <string name="rename_paired_device">Renomear</string>
     <string name="pairing_device_rename_title">Renomear ligação</string>
     <string name="pairing_device_rename_hint">Novo nome</string>
@@ -204,7 +197,6 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="resume_tab_dialog_msg">Gostaria de restaurar todos os separadores abertos anteriormente?</string>
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Fechar todos os separadores</string>
-    <string name="auto_forget_tab">Modo privado automático ativado</string>
     <string name="showcase_youtube_title">Descarregar vidoes</string>
     <string name="showcase_youtube_message">"Descarregar vídeos de YouTube  em seu telemóvel."</string>
     <string name="please_wait">Por favor, aguarde…</string>
