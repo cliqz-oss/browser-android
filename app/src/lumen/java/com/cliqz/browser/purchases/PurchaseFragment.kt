@@ -3,34 +3,28 @@ package com.cliqz.browser.purchases
 import acr.browser.lightning.preference.PreferenceManager
 import android.app.Activity
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.BillingClient
-
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.MainActivity
 import com.cliqz.browser.main.Messages
+import com.cliqz.browser.purchases.Products.PRODUCTS_LIST
 import com.cliqz.browser.purchases.productlist.OnBuyClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
-import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
-import kotlinx.android.synthetic.lumen.fragment_purchase.*
-import com.cliqz.browser.purchases.SubscriptionConstants.Entitlements
-import com.cliqz.browser.purchases.SubscriptionConstants.ProductId
-import com.cliqz.browser.purchases.SubscriptionConstants.ProductName
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.*
-import java.util.*
+import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
+import kotlinx.android.synthetic.lumen.fragment_purchase.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 private val TAG = PurchaseFragment::class.java.simpleName
 
@@ -66,7 +60,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     private fun initializeViews() {
-        mAdapter = ProductListAdapter(context, null, this)
+        mAdapter = ProductListAdapter(context, this)
         product_list.adapter = mAdapter
         product_list.layoutManager = LinearLayoutManager(context)
 
@@ -88,31 +82,28 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     private fun getProductDetails() {
         Purchases.sharedInstance.getEntitlements(object : ReceiveEntitlementsListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
-                val productList = ArrayList<ProductRowData>()
-                var isSubscribed = false
-                val entitlement = if (entitlementMap[Entitlements.PREMIUM_SALE] == null) {
-                    entitlementMap[Entitlements.PREMIUM_SALE_STAGING]
-                } else {
-                    entitlementMap[Entitlements.PREMIUM_SALE]
-                }
+                val entitlement = entitlementMap[Entitlements.PREMIUM_SALE] ?: entitlementMap[Entitlements.PREMIUM_SALE_STAGING]
 
-                entitlement?.offerings?.forEach { (_, offering) ->
-                    offering.skuDetails?.apply {
-                        if (sku == purchasesManager.purchase.sku) {
-                            isSubscribed = true
-                            productList.add(ProductRowData(sku, title, price, description, true))
-                        } else {
-                            productList.add(ProductRowData(sku, title, price, description, false))
-                        }
-                    }
-                }
+                val productSet = entitlement?.offerings?.map { (_, offering) ->
+                    offering.activeProductIdentifier to offering.skuDetails
+                }?.toMap() ?: emptyMap()
+                val productList = PRODUCTS_LIST
+                        .mapNotNull { sku -> productSet[sku] }
+                        .map { ProductRowData(
+                                it.sku,
+                                it.title,
+                                it.price,
+                                it.description,
+                                it.sku == purchasesManager.purchase.sku
+                        )}
+                val subscription = productList.find { it.isSubscribed }
+
                 if (productList.isEmpty()) {
                     Toast.makeText(context, "Error retrieving available products", Toast.LENGTH_LONG).show()
                     Log.e(TAG, "Product list is empty.")
                     dismiss()
                 } else {
-                    customSwapProductListElements(productList)
-                    mAdapter.setHasSubscription(isSubscribed)
+                    mAdapter.setSubscription(subscription)
                     mAdapter.updateProductList(productList)
                 }
                 setLoading(false)
@@ -123,18 +114,6 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                 // TODO: Display error
             }
         })
-    }
-
-    /**
-     * The middle product in the list should always be "Basic + VPN".
-     */
-    private fun customSwapProductListElements(productList: List<ProductRowData>) {
-        if (productList.size < 2) return
-        val middleElement = productList[1]
-        val basicVpnProductElement: ProductRowData = productList.find {
-            it.sku in setOf(ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING)
-        } ?: return
-        Collections.swap(productList, productList.indexOf(basicVpnProductElement), productList.indexOf(middleElement))
     }
 
     fun setLoading(flag: Boolean) {
@@ -148,7 +127,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     override fun onBuyClicked(position: Int) {
-        mAdapter.getProduct(position)?.apply {
+        mAdapter.getProduct(position).apply {
             val contentView = view?.rootView?.findViewById<ViewGroup>(android.R.id.content)
             val progress = LayoutInflater.from(context)
                     .inflate(R.layout.fullscreen_progress, contentView, false)
@@ -228,19 +207,19 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
 
     private fun enableFeatures(sku: String) {
         when (sku) {
-            ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING -> {
+            Products.BASIC_PLUS_VPN -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            ProductId.BASIC, ProductId.BASIC_STAGING -> {
+            Products.BASIC -> {
                 purchasesManager.purchase.isVpnEnabled = false
                 purchasesManager.purchase.isDashboardEnabled = true
                 preferenceManager.isAttrackEnabled = true
                 preferenceManager.adBlockEnabled = true
             }
-            ProductId.VPN, ProductId.VPN_STAGING -> {
+            Products.VPN -> {
                 purchasesManager.purchase.isVpnEnabled = true
                 purchasesManager.purchase.isDashboardEnabled = false
                 preferenceManager.isAttrackEnabled = false
@@ -257,9 +236,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     private fun getProductNameById(sku: String) = when (sku) {
-        ProductId.BASIC, ProductId.BASIC_STAGING -> ProductName.BASIC
-        ProductId.VPN, ProductId.VPN_STAGING -> ProductName.VPN
-        ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING -> ProductName.BASIC_VPN
+        Products.BASIC -> ProductName.BASIC
+        Products.VPN -> ProductName.VPN
+        Products.BASIC_PLUS_VPN -> ProductName.BASIC_VPN
         else -> IllegalArgumentException("Invalid product id $sku")
     }
 }
