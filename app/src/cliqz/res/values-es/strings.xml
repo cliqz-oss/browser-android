@@ -23,4 +23,12 @@
     <string name="eula_text">Cliqz para Android se basa en el &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;proyecto de código abierto Lightning Browser&lt;/a&gt;, y se distribuye bajo los términos de&lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, una licencia de software libre que permite utilizar este programa con cualquier objetivo, estudiar su funcionamiento, compartirlo con tus amigos y modificarlo según tus propias necesidades. No existe un Acuerdo de Licencia de Usuario Final (ALUF) adicional.</string>
     <string name="privacy_policy_title">Política de privacidad - Cliqz</string>
     <string name="send_usage_data_summary">Ayúdanos a mejorar tu experiencia de usuario. Cliqz recopila datos anónimos sobre el uso de la aplicación. Cliqz no recopila información personal en ningún momento.</string>
+    <string name="action_incognito">Nueva pestaña privada</string>
+    <string name="open_in_incognito_tab">Abrir en una pestaña privada</string>
+    <string name="switched_to_forget">Modo privado automático activado</string>
+    <string name="open_link_forget_tab">Abrir en una pestaña privada</string>
+    <string name="open_image_forget_tab">Abrir imagen en pestaña privada</string>
+    <string name="incognito_tab_title">Pestaña privada</string>
+    <string name="incognito_tab_description">Estás navegando en modo privado: las páginas que visites no se guardarán en tu historial ni se almacenará información local, cookies incluidas.</string>
+    <string name="auto_forget_tab">Pestañas privadas automáticas</string>
 </resources>

@@ -22,7 +22,6 @@
     <string name="size_small">Mały</string>
     <string name="size_smallest">Najmniejszy</string>
     <string name="title_error">Błąd</string>
-    <string name="action_incognito">Nowa karta prywatna</string>
     <string name="action_find">Znajdź na stronie</string>
     <string name="download_no_sdcard_dlg_title">Brak karty SD</string>
     <string name="block_ads">Blokowanie reklam</string>
@@ -91,7 +90,6 @@
     <string name="share_link">Udostępnij za pomocą</string>
     <string name="gps_permission">Aktywuj GPS, aby uzyskać lepsze wyniki wyszukiwania</string>
     <string name="open_in_new_tab">Otwórz w nowej karcie</string>
-    <string name="open_in_incognito_tab">Otwórz w nowej karcie prywatnej</string>
     <string name="not_shareable">Tej karty nie można udostępnić</string>
     <string name="clear_history">Wyczyść historię</string>
     <string name="clear_favorites">Wyczyść ulubione</string>
@@ -152,11 +150,8 @@
     <string name="antiphishing_text">Nie wykryto podejrzanej aktywności</string>
     <string name="antiphishing_desc">Technologia przeciwdziałająca zwodniczym stronom (anti-phishing) rozpoznaje i blokuje strony, które mogą próbować uzyskać dostęp do Twoich haseł i kont zanim odwiedzisz te strony.</string>
     <string name="learn_more"><u>Czytaj więcej</u></string>
-    <string name="switched_to_forget">Automatyczne przełączanie w tryb prywatny zostało włączone</string>
     <string name="open_link_new_tab">Otwórz link w nowej karcie</string>
-    <string name="open_link_forget_tab">Otwórz link w nowej prywatnej karcie</string>
     <string name="open_image_new_tab">Otwórz obraz w nowej karcie</string>
-    <string name="open_image_forget_tab">Otwórz obraz w nowej prywatnej karcie</string>
     <string name="download_image">Zapisz obraz</string>
     <string name="update_webview_msg">Twój system nie jest aktualny. Aby bezpiecznie przeglądać Internet, zaktualizuj Android System WebView.</string>
     <string name="update">Aktualizacja</string>
@@ -184,8 +179,6 @@
     <string name="action_retry">Ponów</string>
     <string name="pairing_successful_title">Połączenie zakończone sukcesem</string>
     <string name="pairing_successful_message">Połączyłeś swoje pierwsze urządzenie.\n\nMożesz teraz przesyłać karty między przeglądarką desktopową i Twoim urządzeniem mobilnym. Możesz także ściągać filmy bezpośrednio z przeglądarki desktopowej na swoje urządzenie mobilne.</string>
-    <string name="incognito_tab_title">Karta prywatna</string>
-    <string name="incognito_tab_description">Przeglądasz Intertet w trybie prywatnym: odwiedzane przez Ciebie strony internetowe nie będą zapisane w Twojej historii, a dane lokalne, wliczając także cookies, nie będą zapisane.</string>
     <string name="rename_paired_device">Zmień nazwę</string>
     <string name="pairing_device_rename_title">Zmień nazwę połączenia</string>
     <string name="pairing_device_rename_message">Wprowadź nową nazwę połączenia:</string>
@@ -199,7 +192,6 @@
     <string name="resume_tab_dialog_msg">Czy chcesz przywrócić wszystkie poprzednio otwarte karty?</string>
     <string name="action_resume">Przywróć</string>
     <string name="action_close_all_tabs">Zamknij wszystkie karty</string>
-    <string name="auto_forget_tab">Automatyczny tryb prywatny</string>
     <string name="showcase_youtube_title">Asystent pobierania plików</string>
     <string name="showcase_youtube_message">Pobierz filmy z YouTube na swój smartfon.</string>
     <string name="please_wait">Proszę czekać…</string>

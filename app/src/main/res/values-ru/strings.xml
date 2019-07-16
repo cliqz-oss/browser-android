@@ -28,7 +28,6 @@
     <string name="size_small">Маленький</string>
     <string name="size_smallest">Мелкий</string>
     <string name="title_error">Ошибка</string>
-    <string name="action_incognito">Приватная вкладка</string>
     <string name="action_find">Найти на странице</string>
     <string name="download_no_sdcard_dlg_title">Нет карты памяти</string>
     <string name="download_sdcard_busy_dlg_title">USB хранилище недоступно</string>
@@ -77,7 +76,6 @@
     <string name="imprint">Правовая информация</string>
     <string name="gps_permission">Пожалуйста, включите GPS для улучшения результатов поиска</string>
     <string name="open_in_new_tab">Открыть в новой вкладке</string>
-    <string name="open_in_incognito_tab">Открыть в приватной вкладке</string>
     <string name="clear_history">Очистить историю</string>
     <string name="clear_favorites">Очистить закладки</string>
     <string name="deleting_in_progress_message">Удаление…</string>
@@ -126,9 +124,7 @@
     <string name="antiphishing_text">Не было замечено подозрительной активности</string>
     <string name="learn_more"><u>Узнать больше</u></string>
     <string name="open_link_new_tab">Открыть ссылку в новой вкладке</string>
-    <string name="open_link_forget_tab">Открыть ссылку в приватной вкладке</string>
     <string name="open_image_new_tab">Открыть картинку в новой вкладке</string>
-    <string name="open_image_forget_tab">Открыть картинку в приватной вкладке</string>
     <string name="download_image">Скачать картинку</string>
     <string name="update">Обновить</string>
     <string name="ad_blocker_disabled_header">Реклама отображается</string>
@@ -151,7 +147,6 @@
     <string name="pairing_error_title">Ошибка соединения</string>
     <string name="action_retry">Попробуйте ещё раз</string>
     <string name="pairing_successful_title">Соединение установлено</string>
-    <string name="incognito_tab_title">Приватная вкладка</string>
     <string name="rename_paired_device">Переименовать</string>
     <string name="pairing_device_rename_title">Переименовать соединение</string>
     <string name="pairing_device_rename_message">Введите новое имя для соединения:</string>
@@ -204,17 +199,14 @@
     <string name="adblocking_header">Вы сёрфите в интернете без рекламы</string>
     <string name="adblocking_header_disabled">Вы сёрфите в интернете с рекламой</string>
     <string name="antiphishing_desc">Технология Anti-Phishing идентифицирует и блокирует потенциально опасные веб-сайты, которые пытаются получить ваши пароли или информацию об аккаунте.</string>
-    <string name="switched_to_forget">Автоматическая приватная вкладка включена</string>
     <string name="update_webview_msg">Ваша система не обновлена. Чтобы безопасно просматривать страницы, обновите Android System WebView.</string>
     <string name="msg_camera_framework_bug">Извините, у камеры Android возникла проблема. Возможно, вам потребуется перезапустить устройство.</string>
     <string name="device_paired_but_offline">Компьютер оффлайн</string>
     <string name="report_site">Сообщить о веб-сайте</string>
     <string name="pairing_successful_message">Вы подключили ваше первое устройство!\n\nТеперь вы можете передавать вкладки между вашим компьютером и вашим мобильным устройством. Вы также можете скачивать видео напрямую с вашего компьютера на ваше мобильное устройство.</string>
-    <string name="incognito_tab_description">Вы находитесь в приватном режиме: веб-сайты, которые вы посещаете в этом режиме, не будут сохранены в истории; локальные данные, включая куки, также не будут сохранены.</string>
     <string name="query_suggestion">Искать в предложенных запросах</string>
     <string name="action_undo">Отменить</string>
     <string name="resume_tab_dialog_msg">Вы хотите восстановить все предыдущие открытые вкладки?</string>
-    <string name="auto_forget_tab">Автоматическая приватная вкладка</string>
     <string name="action_go_to_connect">Перейти в \'Connect\'</string>
     <string name="subscribe_soccer_league">Лига</string>
     <string name="subscribe_soccer_club">Команда</string>

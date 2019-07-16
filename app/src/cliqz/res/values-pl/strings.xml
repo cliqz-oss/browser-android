@@ -24,4 +24,12 @@
     <string name="privacy_policy_title">Polityka prywatności - Cliqz</string>
     <string name="settings_category_user_data_choices">Dane zbierane przez Cliqz</string>
     <string name="send_usage_data_summary">Pomóż nam udoskonalić Cliqz. Wszysztkie dane zbierane przez Cliqz są anonimowe.</string>
+    <string name="action_incognito">Nowa karta prywatna</string>
+    <string name="open_in_incognito_tab">Otwórz w nowej karcie prywatnej</string>
+    <string name="switched_to_forget">Automatyczne przełączanie w tryb prywatny zostało włączone</string>
+    <string name="open_link_forget_tab">Otwórz link w nowej prywatnej karcie</string>
+    <string name="open_image_forget_tab">Otwórz obraz w nowej prywatnej karcie</string>
+    <string name="incognito_tab_title">Karta prywatna</string>
+    <string name="incognito_tab_description">Przeglądasz Intertet w trybie prywatnym: odwiedzane przez Ciebie strony internetowe nie będą zapisane w Twojej historii, a dane lokalne, wliczając także cookies, nie będą zapisane.</string>
+    <string name="auto_forget_tab">Automatyczny tryb prywatny</string>
 </resources>

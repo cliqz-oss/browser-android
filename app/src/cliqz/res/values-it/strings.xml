@@ -25,4 +25,12 @@
     <string name="welcome_message">Cliqz ti dà il benvenuto!</string>
     <string name="privacy_policy_title">Informativa sulla Privacy - Cliqz</string>
     <string name="send_usage_data_summary">Aiutaci a migliorare la tua esperienza di navigazione. Cliqz raccoglie dati di utilizzo in forma anonima. In nessun caso vengono raccolte informazioni personali.</string>
+    <string name="action_incognito">Nuovo tab in Modalità Oblio</string>
+    <string name="open_in_incognito_tab">Apri in Modalità Oblio</string>
+    <string name="switched_to_forget">Modalità Oblio automatica attivata</string>
+    <string name="open_link_forget_tab">Apri link in nuovo tab Modalità Oblio</string>
+    <string name="open_image_forget_tab">Apri immagine in Modalità Oblio</string>
+    <string name="incognito_tab_title">Modalità Oblio</string>
+    <string name="incognito_tab_description">Stai navigando in Modalità Oblio: i siti web che visiti in questa modalità non saranno salvati nella tua cronologia e i tuoi dati locali, cookie inclusi, non verranno salvati.</string>
+    <string name="auto_forget_tab">Modalità Oblio automatica</string>
 </resources>

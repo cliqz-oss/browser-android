@@ -603,7 +603,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         currentMode = tabsManager.getCurrentTab().getTelemetryView();
         transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     @SuppressWarnings("UnusedParameters")

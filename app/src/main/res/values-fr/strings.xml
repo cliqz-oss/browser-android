@@ -1,19 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  Copyright 2013 The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="action_new_tab">Nouvel onglet</string>
     <string name="action_copy">Copier le lien</string>
@@ -45,7 +30,6 @@
     <string name="size_small">Petit</string>
     <string name="size_smallest">Très petit</string>
     <string name="title_error">Erreur</string>
-    <string name="action_incognito">Nouvel Onglet en Mode Oubli</string>
     <string name="action_find">Chercher dans la page</string>
     <string name="cannot_download">On ne peut télécharger que les URLs « http » ou « https ».</string>
     <string name="problem_download">URL non valide rencontrée, téléchargement impossible</string>
@@ -107,7 +91,6 @@ Continuer tout de même ?</string>
     <string name="share_link">Partager avec</string>
     <string name="gps_permission">Veuillez activer votre GPS pour de meilleur résultats de recherche</string>
     <string name="open_in_new_tab">Ouvrir dans un nouvel onglet</string>
-    <string name="open_in_incognito_tab">Ouvrir dans un Onglet Mode Oubli</string>
     <string name="not_shareable">Cette carte n\'est pas partageable</string>
     <string name="clear_history">Supprimer l\'historique</string>
     <string name="clear_favorites">Supprimer les marque-pages</string>
@@ -182,13 +165,8 @@ Continuer tout de même ?</string>
     <string name="control_center_header_adblocking">Bloqueur de Pubs</string>
     <string name="update">Mettre à jour</string>
     <string name="update_webview_msg">Le système n\'est pas à jour. Afin de naviguer en toute sécurité, bien vouloir mettre à jour la version Android.</string>
-    <string name="open_image_forget_tab">Ouvrir l\'image dans un Onglet Mode Oubli</string>
     <string name="open_image_new_tab">Ouvrir l\'image dans un nouvel onglet</string>
-    <string name="open_link_forget_tab">Ouvrir dans un Onglet Mode Oubli</string>
     <string name="open_link_new_tab">Ouvrir dans un nouvel onglet</string>
-    <string name="switched_to_forget">Mode Oubli Automatique activé</string>
-    <string name="incognito_tab_title">Mode Oubli</string>
-    <string name="incognito_tab_description">Vous surfez en Mode Oubli : les sites web que vous visitez dans ce mode ne seront pas sauvegardés dans votre historique et les données locales, cookies inclus, ne seront pas conservées.</string>
     <string name="desktop_pairing">Connect</string>
     <string name="unpair_device">Éliminer</string>
     <string name="device_paired_and_connected">Connecté</string>
@@ -217,7 +195,6 @@ Continuer tout de même ?</string>
     <string name="action_resume">Restaurer</string>
     <string name="resume_tab_dialog_msg">Voulez-vous restaurer tous les onglets précédents ?</string>
     <string name="action_close_all_tabs">Fermer tous les onglets</string>
-    <string name="auto_forget_tab">Mode Oubli Automatique</string>
     <string name="showcase_youtube_title">Téléchargeur des vidéos</string>
     <string name="showcase_youtube_message">Téléchargez des vidéos sur votre smartphone.</string>
     <string name="please_wait">Attendez SVP…</string>

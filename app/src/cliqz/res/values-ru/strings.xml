@@ -23,4 +23,12 @@
     <string name="eula_text">Cliqz браузер для Android разработан на основе &lt;a href=https://github.com/anthonycr/Lightning-Browser/blob/dev/LICENSE&gt;Lightning Browser открытого программного обеспечения&lt;/a&gt; и доступен Вам на основе условий &lt;a href=https://www.mozilla.org/en-US/MPL/2.0/&gt;Mozilla Public License 2.0&lt;/a&gt;, лицензии свободного ПО, которая даёт Вам право использовать программу для любых целей, изучать, как она работает, передавать копии Вашим друзьям и вносить в нее свои изменения. Отдельного лицензионного соглашениея с конечным пользователем (EULA) не существует.</string>
     <string name="privacy_policy_title">Политика безопасности - Cliqz</string>
     <string name="send_usage_data_summary">Помогите нам улучшить процесс просмотра веб-страниц. Cliqz собирает только анонимные пользовательские данные. Персональные данные не собираются ни при каких обстоятельствах.</string>
+    <string name="action_incognito">Приватная вкладка</string>
+    <string name="open_in_incognito_tab">Открыть в приватной вкладке</string>
+    <string name="switched_to_forget">Автоматическая приватная вкладка включена</string>
+    <string name="open_link_forget_tab">Открыть ссылку в приватной вкладке</string>
+    <string name="open_image_forget_tab">Открыть картинку в приватной вкладке</string>
+    <string name="incognito_tab_title">Приватная вкладка</string>
+    <string name="incognito_tab_description">Вы находитесь в приватном режиме: веб-сайты, которые вы посещаете в этом режиме, не будут сохранены в истории; локальные данные, включая куки, также не будут сохранены.</string>
+    <string name="auto_forget_tab">Автоматическая приватная вкладка</string>
 </resources>
