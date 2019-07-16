@@ -78,12 +78,12 @@ To also develop code from `browser-core`, follow these steps:
  ```
  3. Now, build the extension, and direct the build output to the android browser's node_modules directory. Use the `fern serve` command means that the project will be rebuild if you make code changes:
  ```shell
-  CLIQZ_OUTPUT_PATH=/path/to/android-browser/node_modules/browser-core/build/ ./fern.js serve configs/react-native.json
+  CLIQZ_OUTPUT_PATH=/path/to/android-browser/node_modules/browser-core/build/ ./fern.js serve configs/cliqz-android.js
   ```
   
 Now the dev server will see and load the updated files outputed from the fern build when you reload the code in the app.
 
-### Degugging
+### Debugging
 
 To work with react live reloading server, the Developer Support option has to
 be set on ReactInstanceManager in `/app/src/main/java/com/cliqz/jsengine/Engine.java`,
