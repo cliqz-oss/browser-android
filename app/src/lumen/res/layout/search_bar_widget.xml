@@ -6,13 +6,16 @@
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/gray_dark">
+    android:background="@color/accent_color"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/icon_lock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_lock_black"
+        android:layout_marginEnd="4dp"
+        app:srcCompat="@drawable/ic_lock_lumen"
         app:tint="@color/white"
         android:visibility="gone"
         tools:visibility="visible" />
@@ -25,22 +28,16 @@
         android:layout_height="@dimen/title_bar_h"
         android:gravity="start|center_vertical"
         android:hint="@string/url_bar_search_hint"
-        android:paddingStart="8dp"
-        android:paddingLeft="8dp"
-        android:paddingEnd="8dp"
-        android:paddingRight="8dp"
         android:singleLine="true"
         android:textColor="#333333"
         android:textColorHint="@color/url_bar_hint_text_color"
-        android:textSize="15sp"
-        android:background="@color/accent_color"/>
+        android:textSize="15sp" />
 
     <ImageButton
         android:id="@+id/reader_mode_button"
         android:layout_width="@dimen/toolbar_menu_icon_w"
         android:layout_height="@dimen/toolbar_menu_icon_h"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="4dp"
         app:srcCompat="@drawable/ic_reader_mode_off"
         android:background="@color/transparent"
         android:scaleType="fitXY"
