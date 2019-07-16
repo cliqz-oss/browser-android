@@ -95,6 +95,8 @@
     <string name="vpn_cta_enabled">VPN is short for Virtual Private Network.</string>
     <string name="vpn_notification_title">Lumen Browser - VPN</string>
     <string name="vpn_notification_content">You are connected to %s</string>
+    <string name="vpn_action_connect">Connect</string>
+    <string name="vpn_action_disconnect">Disconnect</string>
     
     <!-- VPN VpnCountries -->
     <string name="vpn_austria">Austria</string>
@@ -126,6 +128,7 @@
     <string name="text_subscribed">Subscribed</string>
     <string name="subscription_product_row_highlighted">Best offer\nLimited Time Only</string>
     <string name="per_month_text">%1$s / MONTH</string>
+    <string name="purchase_message_complete">Purchase complete!</string>
 
     <!-- Restore Subscription -->
     <string name="restore_subscription">Restore Subscription</string>

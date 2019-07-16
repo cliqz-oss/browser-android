@@ -102,4 +102,7 @@
     <string name="restore_subscription_dialog_positive_btn">Wiederherstellen</string>
     <string name="restore_subscription_error_msg">Kein Abo vorhanden</string>
     <string name="restore_subscription_success">Abo wiederhergestellt</string>
+    <string name="purchase_message_complete">Kauf abgeschlossen!</string>
+    <string name="vpn_action_disconnect">Trennen</string>
+    <string name="vpn_action_connect">Verbinden</string>
 </resources>
