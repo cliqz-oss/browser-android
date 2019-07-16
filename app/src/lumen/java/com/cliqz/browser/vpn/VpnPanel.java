@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -38,7 +37,8 @@ import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.inject.Inject;
 
@@ -115,7 +115,6 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final Bundle arguments = new Bundle();
         arguments.putInt(KEY_ANCHOR_HEIGHT, source.getHeight());
         dialog.setArguments(arguments);
-        dialog.setSelectedProfile(source.getContext());
         return dialog;
     }
 
@@ -133,6 +132,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
             mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
         }
         bus.register(this);
+        setSelectedProfile();
     }
 
     @Override
@@ -168,9 +168,9 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         if (selectedProfile == null) {
-            mSelectedCountry.setText("US");
+            mSelectedCountry.setText(R.string.germany);
         } else {
-            mSelectedCountry.setText(selectedProfile.getName());
+            mSelectedCountry.setText(selectedProfile.profileNameRes);
         }
         mSelectedCountry.setPaintFlags(mSelectedCountry.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
@@ -233,15 +233,16 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private void showVpnCountriesDialog() {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
         final ArrayList<VpnProfile> vpnProfiles = new ArrayList<>(ProfileManager.getInstance(getContext()).getProfiles());
+        Collections.sort(vpnProfiles, vpnListComparator);
         final String[] vpnCountryNames = new String[vpnProfiles.size()];
         for (int i = 0; i < vpnProfiles.size();  i++) {
-            vpnCountryNames[i] = vpnProfiles.get(i).getName();
+            vpnCountryNames[i] = getString(vpnProfiles.get(i).profileNameRes);
         }
         mBuilder.setTitle("Choose an item");
         mBuilder.setSingleChoiceItems(vpnCountryNames, checkedItem, (dialogInterface, i) -> {
             checkedItem =  i;
             selectedProfile = vpnProfiles.get(i);
-            mSelectedCountry.setText(selectedProfile.getName());
+            mSelectedCountry.setText(selectedProfile.profileNameRes);
             dialogInterface.dismiss();
             vpnHandler.disconnectVpn();
             vpnHandler.connectVpn(selectedProfile);
@@ -360,18 +361,25 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         DrawableExtensionsKt.drawableStart(mVpnMsgLineTwo, id);
     }
 
-    private void setSelectedProfile(Context context) {
-        final Collection<VpnProfile> vpnProfiles =
-                ProfileManager.getInstance(context).getProfiles();
-        if (vpnProfiles != null && !vpnProfiles.isEmpty()) {
-            selectedProfile = vpnProfiles.iterator().next();
+    private void setSelectedProfile() {
+        final ArrayList<VpnProfile> vpnProfiles =
+                new ArrayList<>(ProfileManager.getInstance(getContext()).getProfiles());
+        if (!vpnProfiles.isEmpty()) {
+            Collections.sort(vpnProfiles, vpnListComparator);
+            if (VpnStatus.isVPNConnected()) {
+                selectedProfile = ProfileManager.get(getContext(), VpnStatus.getLastConnectedVPNProfile());
+                checkedItem = vpnProfiles.indexOf(selectedProfile);
+            } else {
+                selectedProfile = vpnProfiles.get(0);
+                checkedItem = 0;
+            }
         }
     }
 
     @Subscribe
     public void onAllProfilesImported(Messages.OnAllProfilesImported onAllProfilesImported) {
-        setSelectedProfile(getDialog().getContext());
-        mSelectedCountry.setText(selectedProfile.getName());
+        setSelectedProfile();
+        mSelectedCountry.setText(selectedProfile.profileNameRes);
         mVpnCtaTitle.setText(R.string.vpn_cta_enabled);
     }
 
@@ -379,4 +387,22 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     void dismissVpnPanel(Messages.DismissVpnPanel event) {
         dismissAllowingStateLoss();
     }
+
+    private Comparator<VpnProfile> vpnListComparator = (v1, v2) -> {
+        final String country1 = getString(v1.profileNameRes);
+        final String country2 = getString(v2.profileNameRes);
+        if (v1.profileNameRes == R.string.vpn_usa && v2.profileNameRes == R.string.vpn_germany) {
+            return 1;
+        }
+        if (v1.profileNameRes == R.string.vpn_germany && v2.profileNameRes == R.string.vpn_usa) {
+            return -1;
+        }
+        if (v1.profileNameRes == R.string.vpn_usa || v1.profileNameRes == R.string.vpn_germany) {
+            return -1;
+        }
+        if (v2.profileNameRes == R.string.vpn_usa || v2.profileNameRes == R.string.vpn_germany) {
+            return 1;
+        }
+        return country1.compareTo(country2);
+    };
 }
