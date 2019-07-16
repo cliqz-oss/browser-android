@@ -329,6 +329,7 @@ public class OverFlowMenu extends FrameLayout {
 
         if (BuildConfig.IS_LUMEN) {
             entries.remove(Entries.DESKTOP_PAIRING);
+            entries.remove(Entries.SEND_TAB_TO_DESKTOP);
         }
         if (BuildConfig.IS_NOT_LUMEN) {
             entries.remove(Entries.TABS);
