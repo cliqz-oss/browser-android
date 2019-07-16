@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cliqz.browser.R
-import com.cliqz.browser.purchases.SubscriptionConstants.ProductId
+import com.cliqz.browser.purchases.Products
+import com.cliqz.browser.purchases.Products.UPGRADE_MAP
 import kotlinx.android.synthetic.lumen.subscription_product_row_default.view.*
 
 interface OnBuyClickListener {
@@ -17,11 +18,12 @@ const val LAYOUT_DEFAULT = 0
 const val LAYOUT_HIGHLIGHTED = 1
 
 class ProductListAdapter(private val context: Context?,
-                         private var mListData: List<ProductRowData>?,
                          private val onBuyClickListener: OnBuyClickListener) :
         RecyclerView.Adapter<ProductListAdapter.ProductRowViewHolder>() {
 
-    private var hasSubscription = false
+    private var subscription: ProductRowData? = null
+
+    private var mListData = emptyList<ProductRowData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductRowViewHolder {
         val layoutResource = when (viewType) {
@@ -33,7 +35,7 @@ class ProductListAdapter(private val context: Context?,
                 .inflate(layoutResource, parent, false))
     }
 
-    override fun getItemCount() = mListData?.size ?: 0
+    override fun getItemCount() = mListData.size
 
     override fun onBindViewHolder(holder: ProductRowViewHolder, position: Int) {
         holder.bindData(getProduct(position))
@@ -46,23 +48,21 @@ class ProductListAdapter(private val context: Context?,
     }
 
     override fun getItemViewType(position: Int): Int {
-        return mListData?.let {
-            if (it[position].sku in setOf(ProductId.BASIC_VPN, ProductId.BASIC_VPN_STAGING)) {
+        return if (mListData[position].sku == Products.BASIC_PLUS_VPN) {
                 LAYOUT_HIGHLIGHTED
             } else {
                 LAYOUT_DEFAULT
             }
-        } ?: LAYOUT_DEFAULT
     }
 
-    fun getProduct(position: Int) = mListData?.get(position)
+    fun getProduct(position: Int) = mListData[position]
 
     fun updateProductList(data: List<ProductRowData>) {
         mListData = data
     }
 
-    fun setHasSubscription(hasSubscription: Boolean) {
-        this.hasSubscription = hasSubscription
+    fun setSubscription(subscription: ProductRowData?) {
+        this.subscription = subscription
     }
 
     inner class ProductRowViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -77,16 +77,23 @@ class ProductListAdapter(private val context: Context?,
                 itemView.title.text = title
                 itemView.description.text = description
                 itemView.price.text = context?.getString(R.string.per_month_text, price)
-                if (this@ProductListAdapter.hasSubscription) {
-                    if (this.isSubscribed) {
+                val subscription = this@ProductListAdapter.subscription
+                when {
+                    subscription == null -> {
+                        itemView.is_subscribed?.visibility = View.GONE
+                        itemView.buy_subscription.visibility = View.VISIBLE
+                    }
+                    this.isSubscribed -> {
                         itemView.is_subscribed?.visibility = View.VISIBLE
                         itemView.buy_subscription.visibility = View.GONE
-                    } else {
+                    }
+                    UPGRADE_MAP[subscription.sku]?.contains(this.sku) ?: false -> {
                         itemView.buy_subscription.text = context?.getString(R.string.upgrade_button)
                     }
-                } else {
-                    itemView.is_subscribed?.visibility = View.GONE
-                    itemView.buy_subscription.visibility = View.VISIBLE
+                    else -> {
+                        itemView.is_subscribed?.visibility = View.GONE
+                        itemView.buy_subscription.visibility = View.GONE
+                    }
                 }
             }
         }
