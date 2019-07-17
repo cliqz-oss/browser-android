@@ -389,16 +389,16 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private Comparator<VpnProfile> vpnListComparator = (v1, v2) -> {
         final String country1 = getString(v1.profileNameRes);
         final String country2 = getString(v2.profileNameRes);
-        if (v1.profileNameRes == R.string.vpn_usa && v2.profileNameRes == R.string.vpn_germany) {
+        if (v2.profileNameRes == R.string.vpn_country_name_de) {
             return 1;
         }
-        if (v1.profileNameRes == R.string.vpn_germany && v2.profileNameRes == R.string.vpn_usa) {
+        if (v1.profileNameRes == R.string.vpn_country_name_de) {
             return -1;
         }
-        if (v1.profileNameRes == R.string.vpn_usa || v1.profileNameRes == R.string.vpn_germany) {
+        if (v1.profileNameRes == R.string.vpn_country_name_us) {
             return -1;
         }
-        if (v2.profileNameRes == R.string.vpn_usa || v2.profileNameRes == R.string.vpn_germany) {
+        if (v2.profileNameRes == R.string.vpn_country_name_us) {
             return 1;
         }
         return country1.compareTo(country2);

@@ -99,28 +99,28 @@
     <string name="vpn_action_disconnect">Disconnect</string>
     
     <!-- VPN VpnCountries -->
-    <string name="vpn_austria">Austria</string>
-    <string name="vpn_bosnia">Bosnia</string>
-    <string name="vpn_bulgaria">Bulgaria</string>
-    <string name="vpn_canada">Canada</string>
-    <string name="vpn_germany">Germany</string>
-    <string name="vpn_spain">Spain</string>
-    <string name="vpn_france">France</string>
-    <string name="vpn_greece">Greece</string>
-    <string name="vpn_croatia">Croatia</string>
-    <string name="vpn_hungary">Hungary</string>
-    <string name="vpn_india">India</string>
-    <string name="vpn_italy">Italy</string>
-    <string name="vpn_netherlands">Netherlands</string>
-    <string name="vpn_poland">Poland</string>
-    <string name="vpn_portugal">Portugal</string>
-    <string name="vpn_romania">Romania</string>
-    <string name="vpn_serbia">Serbia</string>
-    <string name="vpn_turkey">Turkey</string>
-    <string name="vpn_ukraine">Ukraine</string>
-    <string name="vpn_uk">UK</string>
-    <string name="vpn_usa">USA</string>
-    <string name="vpn_vietnam">Vietnam</string>
+    <string name="vpn_country_name_at">Austria</string>
+    <string name="vpn_country_name_ba">Bosnia</string>
+    <string name="vpn_country_name_bg">Bulgaria</string>
+    <string name="vpn_country_name_ca">Canada</string>
+    <string name="vpn_country_name_de">Germany</string>
+    <string name="vpn_country_name_es">Spain</string>
+    <string name="vpn_country_name_fr">France</string>
+    <string name="vpn_country_name_gr">Greece</string>
+    <string name="vpn_country_name_hr">Croatia</string>
+    <string name="vpn_country_name_hu">Hungary</string>
+    <string name="vpn_country_name_in">India</string>
+    <string name="vpn_country_name_it">Italy</string>
+    <string name="vpn_country_name_nl">Netherlands</string>
+    <string name="vpn_country_name_pl">Poland</string>
+    <string name="vpn_country_name_pt">Portugal</string>
+    <string name="vpn_country_name_ro">Romania</string>
+    <string name="vpn_country_name_rs">Serbia</string>
+    <string name="vpn_country_name_tr">Turkey</string>
+    <string name="vpn_country_name_ua">Ukraine</string>
+    <string name="vpn_country_name_uk">UK</string>
+    <string name="vpn_country_name_us">USA</string>
+    <string name="vpn_country_name_vn">Vietnam</string>
 
     <!-- Subscription -->
     <string name="button_buy_subscription">Subscribe</string>

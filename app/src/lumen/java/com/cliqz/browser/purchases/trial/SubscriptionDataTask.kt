@@ -6,13 +6,15 @@ import android.os.AsyncTask
 import android.provider.Settings
 import android.util.Log
 import com.cliqz.browser.CliqzConfig
+import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
+import com.cliqz.browser.extensions.getStringIdByName
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.utils.HttpHandler
-import com.cliqz.browser.vpn.VpnCountries
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.Purchases
 import de.blinkt.openvpn.ConfigConverter
+import de.blinkt.openvpn.VpnProfile
 import de.blinkt.openvpn.core.ProfileManager
 import org.json.JSONObject
 import java.io.BufferedWriter
@@ -23,13 +25,17 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
 
-private val TAG = TrialPeriodRemoteRepo::class.java.simpleName
+private val TAG = SubscriptionDataTask::class.java.simpleName
 private const val CONTENT_TYPE_JSON = "application/json"
 
 private val HEADERS = mapOf("x-api-key" to CliqzConfig.VPN_API_KEY)
 
-class TrialPeriodRemoteRepo(private val context: Context,
-                            private val trialPeriodResponseListener: TrialPeriodResponseListener) : AsyncTask<Void, Void, ServerData>() {
+/**
+ * Load Subscriptions from the endpoint. It also have the side effect of refreshing the vpn
+ * profiles.
+ */
+class SubscriptionDataTask(private val context: Context,
+                           private val trialPeriodResponseListener: TrialPeriodResponseListener) : AsyncTask<Void, Void, ServerData>() {
 
     @Inject
     lateinit var bus: Bus
@@ -81,7 +87,8 @@ class TrialPeriodRemoteRepo(private val context: Context,
             return
         }
         val profileManager = ProfileManager.getInstance(context)
-        if (profileManager.getProfileByName(countryCode) == null) {
+        val vpnProfile = profileManager.getProfileByName(countryCode)
+        if (vpnProfile == null) {
             val outputDir = context.cacheDir
             val outputFile = File.createTempFile(countryCode + "vpn", ".ovpn", outputDir)
             outputFile.deleteOnExit()
@@ -98,13 +105,23 @@ class TrialPeriodRemoteRepo(private val context: Context,
                 //No use of posting this message unless all profiles have been imported
                 if (totalProfiles == ProfileManager.getInstance(context).profiles.size) {
                     bus.post(Messages.OnAllProfilesImported())
-                    for (vpnProfile in ProfileManager.getInstance(context).profiles) {
-                        vpnProfile.profileNameRes = VpnCountries.getCountryName(vpnProfile.name)
-                        ProfileManager.getInstance(context).saveProfile(context, vpnProfile)
+                    for (newVpnProfile in ProfileManager.getInstance(context).profiles) {
+                        refreshProfileName(newVpnProfile)
                     }
                 }
             }
             configConverter.startImportTask(vpnConfigUri, countryCode)
+        } else {
+            // Sanitize the profile name
+            if (vpnProfile.profileNameRes == 0 || vpnProfile.profileNameRes == R.string.vpn_country_name_unknown) {
+                refreshProfileName(vpnProfile)
+            }
         }
+    }
+
+    private fun refreshProfileName(vpnProfile: VpnProfile) {
+        vpnProfile.profileNameRes = context
+                .getStringIdByName("vpn_country_name_${vpnProfile.name.toLowerCase()}")
+        ProfileManager.getInstance(context).saveProfile(context, vpnProfile)
     }
 }

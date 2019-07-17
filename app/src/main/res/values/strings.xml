@@ -324,4 +324,5 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="lumen_logo_description" translatable="false">Lumen Logo</string>
     <string name="faq">FAQ</string>
     <string name="support">Support</string>
+    <string name="vpn_country_name_unknown">Country Unknown</string>
 </resources>
