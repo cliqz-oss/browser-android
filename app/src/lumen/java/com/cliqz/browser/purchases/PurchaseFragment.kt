@@ -82,20 +82,24 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     private fun getProductDetails() {
         Purchases.sharedInstance.getEntitlements(object : ReceiveEntitlementsListener {
             override fun onReceived(entitlementMap: Map<String, Entitlement>) {
-                val entitlement = entitlementMap[Entitlements.PREMIUM_SALE] ?: entitlementMap[Entitlements.PREMIUM_SALE_STAGING]
+                val entitlement =
+                        entitlementMap[Entitlements.PREMIUM_SALE] ?:
+                        entitlementMap[Entitlements.PREMIUM_SALE_STAGING]
 
-                val productSet = entitlement?.offerings?.map { (_, offering) ->
-                    offering.activeProductIdentifier to offering.skuDetails
-                }?.toMap() ?: emptyMap()
-                val productList = PRODUCTS_LIST
-                        .mapNotNull { sku -> productSet[sku] }
-                        .map { ProductRowData(
-                                it.sku,
-                                it.title,
-                                it.price,
-                                it.description,
-                                it.sku == purchasesManager.purchase.sku
-                        )}
+                val productSet = (entitlement?.offerings ?: emptyMap())
+                        .map { (_, off) -> off.activeProductIdentifier to off.skuDetails }
+                        .toMap()
+                val productList = PRODUCTS_LIST.mapNotNull { sku ->
+                    productSet[sku]?.let { detail ->
+                        ProductRowData(
+                                detail.sku,
+                                detail.title,
+                                detail.price,
+                                detail.description,
+                                detail.sku == purchasesManager.purchase.sku
+                        )
+                    }
+                }
                 val subscription = productList.find { it.isSubscribed }
 
                 if (productList.isEmpty()) {
