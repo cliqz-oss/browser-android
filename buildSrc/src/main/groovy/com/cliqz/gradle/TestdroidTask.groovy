@@ -5,6 +5,7 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import groovy.json.JsonSlurper
@@ -58,13 +59,13 @@ class TestDroidTask extends DefaultTask {
         fetchTestRunArtifacts(runID)
         // 6. log error if any test failed, otherwise just return
         Float successRatio = errorLogger(runID)
-        if (successRatio == 1){
+        if (successRatio >= 0.9999){
             logger.info("Test Run was successful")
             println("Test Run was successful")
         }else if (successRatio < 1  && successRatio > 0.90){
             logger.info("Need to get session success Ratios")
             Float sessionSuccessRatio = sessionErrorLogger(runID)
-            if (sessionSuccessRatio < 0.50){
+            if (sessionSuccessRatio < 0.50 && sessionSuccessRatio > 0.000){
                 logger.error("Need to check tests that are failing")
                 throw new Exception('Tests are failing')
             }else {
@@ -137,28 +138,27 @@ class TestDroidTask extends DefaultTask {
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions")
         final sessions = url.openConnection()
         sessions.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
+        new File("./artifacts").eachFile {file ->
+            if (file.name.contains(".zip")) file.delete()
+        }
         if (sessions.responseCode == HttpURLConnection.HTTP_OK){
             final sessionResults = slurper.parse(sessions.inputStream)
             sessionResults.data.each{ session ->
                 println "Device: ${session.device.displayName} ID: ${session.id} SuccessRatio: ${session.successRatio}"
                 if (session.successRatio < 1){
-                    def request = new Request.Builder()
-                    .url("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions/${session.id}/output-file-set/files.zip")
-                    .header('Authorization', "Basic ${getBasicAuth(API_KEY)}")
-                    .get()
-                    .build()
-                    final artifact = client.newCall(request).execute()
-                    def something
-                    FileOutputStream artifactFile = new FileOutputStream("./artifacts/${session.id}.zip")
-                    byte[] buf = new byte[1024]
-                    while ( (something = artifact.body().source().read(buf)) != -1){
-                        artifactFile.write(buf, 0, something)
+                    def request = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions/${session.id}/output-file-set/files.zip")
+                    final artifact = request.openConnection()
+                    artifact.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
+                    println "Getting Artifacts for Device: ${session.device.displayName}"
+                    new File("./artifacts/${session.id}.zip").withOutputStream { out ->
+                        artifact.inputStream.with { inp ->
+                            out << inp
+                        }
                     }
-                    artifactFile.flush()
-                    if (artifact.isSuccessful()){
+                    if (artifact.responseCode == HttpURLConnection.HTTP_OK) {
                         logger.info("Artifacts downloaded")
                         println("Artifacts downloaded")
-                    }else{
+                    } else {
                         logger.error("Files for Session ${session.id} are not available")
                     }
                 }else {
@@ -169,6 +169,7 @@ class TestDroidTask extends DefaultTask {
             logger.error("No session data for test run ${testRunID}")
         }
     }
+
     def errorLogger(long testRunID){
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}")
         final testRun = url.openConnection()
@@ -181,6 +182,7 @@ class TestDroidTask extends DefaultTask {
             logger.error("No Test Run for the given id: ${testRunID}")
         }
     }
+
     def sessionErrorLogger(long testRunID){
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions")
         final sessions = url.openConnection()
@@ -189,14 +191,19 @@ class TestDroidTask extends DefaultTask {
             final sessionResults = slurper.parse(sessions.inputStream)
             sessionResults.data.each { session ->
                 println "Device: ${session.device.displayName} ID: ${session.id} SuccessRatio: ${session.successRatio}"
-                if (session.successRatio < 0.5){
+                if (session.successRatio < 0.5 && session.successRatio != null){
                     logger.error("Tests are failing on ${session.displayName}")
                     session.successRatio
-                }else{
+                }else if(session.successRatio == null){
+                    logger.error("Tests did not run on this device")
+                    session.successRatio = 0
+                    session.successRatio
+                }else {
                     logger.info("Tests are failing but that's okay")
                     session.successRatio
                 }
             }
+            sessionResults.successRatio
         }
     }
 }
