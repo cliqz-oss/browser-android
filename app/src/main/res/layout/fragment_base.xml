@@ -58,7 +58,9 @@
                     tools:textSelectHandle="@drawable/text_select_handle_middle_material"
                     tools:textSelectHandleLeft="@drawable/text_select_handle_left_material"
                     tools:textSelectHandleRight="@drawable/text_select_handle_right_material"
-                    android:textSize="15sp"/>
+                    android:textSize="15sp"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
 
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
