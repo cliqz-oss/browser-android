@@ -29,19 +29,18 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
         sBaseBrowserApp = this;
     }
 
-    /**
-     * All the flavour specific library initializations should be done here.
-     */
-    public abstract void init();
 
     @Override
     public void onCreate() {
         super.onCreate();
+        init();
+    }
+
+    void init() {
         Fresco.initialize(this);
         buildDepencyGraph();
         installSupportLibraries();
         sTestInProgress = testInProgres();
-        init();
     }
 
     /**
