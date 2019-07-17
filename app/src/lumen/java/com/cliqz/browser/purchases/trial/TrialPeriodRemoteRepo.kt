@@ -9,6 +9,7 @@ import com.cliqz.browser.CliqzConfig
 import com.cliqz.browser.app.BrowserApp
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.utils.HttpHandler
+import com.cliqz.browser.vpn.VpnCountries
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.Purchases
 import de.blinkt.openvpn.ConfigConverter
@@ -97,6 +98,10 @@ class TrialPeriodRemoteRepo(private val context: Context,
                 //No use of posting this message unless all profiles have been imported
                 if (totalProfiles == ProfileManager.getInstance(context).profiles.size) {
                     bus.post(Messages.OnAllProfilesImported())
+                    for (vpnProfile in ProfileManager.getInstance(context).profiles) {
+                        vpnProfile.profileNameRes = VpnCountries.getCountryName(vpnProfile.name)
+                        ProfileManager.getInstance(context).saveProfile(context, vpnProfile)
+                    }
                 }
             }
             configConverter.startImportTask(vpnConfigUri, countryCode)
