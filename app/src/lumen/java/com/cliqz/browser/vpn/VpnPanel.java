@@ -64,7 +64,6 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     public static final int VPN_LAUNCH_REQUEST_CODE = 70;
 
     private int mAnchorHeight;
-    private boolean mSaveInstanceStateCalled = false;
 
     private Handler mMainHandler;
     private boolean mShouldAnimate = false;
@@ -139,7 +138,6 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     public void onResume() {
         super.onResume();
         vpnHandler.onResume();
-        mSaveInstanceStateCalled = false;
         final Window window = getDialog().getWindow();
         final Activity activity = getActivity();
         final View contentView = activity != null ? activity.findViewById(android.R.id.content) : null;
@@ -333,7 +331,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         mVpnTimer.setVisibility(View.VISIBLE);
         mVpnTimer.setBase(SystemClock.elapsedRealtime() - (System.currentTimeMillis() - preferenceManager.getVpnStartTime()));
         mVpnTimer.start();
-        mVpnButtonDesc.setText("disconnect");
+        mVpnButtonDesc.setText(R.string.vpn_action_disconnect);
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_connect_button_bg));
         mWorldMap.setImageResource(R.drawable.vpn_map_on);
         vpnMsgsChangeDrawable(R.drawable.ic_check);
@@ -345,7 +343,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         mVpnTimer.setVisibility(View.GONE);
         mVpnButtonTitle.setVisibility(View.VISIBLE);
         mVpnButtonTitle.setText("vpn");
-        mVpnButtonDesc.setText("connect");
+        mVpnButtonDesc.setText(R.string.vpn_action_connect);
         mVpnConnectButton.setBackground(getResources().getDrawable(R.drawable.vpn_connect_button_bg));
         mWorldMap.setImageResource(R.drawable.vpn_map_off);
         vpnMsgsChangeDrawable(R.drawable.ic_cross);

@@ -77,7 +77,8 @@
             android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:text="Connect"/>
 
         <Chronometer
             android:id="@+id/vpn_timer"
