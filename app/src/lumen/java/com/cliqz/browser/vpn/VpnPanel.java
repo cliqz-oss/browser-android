@@ -66,7 +66,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     private int mAnchorHeight;
 
     private Handler mMainHandler;
-    private boolean mShouldAnimate = false;
+    private boolean mIsConnecting = false;
     private int checkedItem = 0;
     private VpnProfile selectedProfile;
 
@@ -242,8 +242,9 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
             selectedProfile = vpnProfiles.get(i);
             mSelectedCountry.setText(selectedProfile.profileNameRes);
             dialogInterface.dismiss();
-            vpnHandler.disconnectVpn();
-            vpnHandler.connectVpn(selectedProfile);
+            if (VpnStatus.isVPNConnected()) {
+                vpnHandler.connectVpn(selectedProfile);
+            }
         });
         mBuilder.show();
     }    
@@ -262,12 +263,12 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     @Override
     public void updateState(String state, String logmessage, int localizedResId, ConnectionStatus level) {
         if (isAdded()) {
-            if (level.equals(ConnectionStatus.LEVEL_START)) {
-                if (mMainHandler != null) {
+            if (level.equals(ConnectionStatus.LEVEL_CONNECTING_NO_SERVER_REPLY_YET)) {
+                if (mMainHandler != null && !mIsConnecting) {
                     mMainHandler.post(mConnectingRunnable);
                 }
             } else if (level.equals(ConnectionStatus.LEVEL_CONNECTED)) {
-                mShouldAnimate = false;
+                mIsConnecting = false;
                 if (mMainHandler != null) {
                     mMainHandler.post(mConnectedRunnable);
                 }
@@ -296,7 +297,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         final String[] dots = {".", "..", "...", "....",".....","......"};
         new Thread(() -> {
             int itr = 0;
-            while (mShouldAnimate) {
+            while (mIsConnecting) {
                 final int i = itr;
                 itr++;
                 mVpnButtonTitle.post(() -> mVpnButtonTitle.setText(dots[i%6]));
@@ -310,7 +311,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     }
 
     private void updateStateToConnecting() {
-        mShouldAnimate = true;
+        mIsConnecting = true;
         animateTv();
         mVpnTimer.stop();
         mVpnTimer.setVisibility(View.GONE);
@@ -326,7 +327,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     }
 
     private void updateStateToConnected() {
-        mShouldAnimate = false;
+        mIsConnecting = false;
         mVpnButtonTitle.setVisibility(View.GONE);
         mVpnTimer.setVisibility(View.VISIBLE);
         mVpnTimer.setBase(SystemClock.elapsedRealtime() - (System.currentTimeMillis() - preferenceManager.getVpnStartTime()));
@@ -338,7 +339,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     }
 
     private void updateStateToConnect() {
-        mShouldAnimate = false;
+        mIsConnecting = false;
         mVpnTimer.stop();
         mVpnTimer.setVisibility(View.GONE);
         mVpnButtonTitle.setVisibility(View.VISIBLE);
@@ -350,7 +351,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     }
 
     @Subscribe
-    public void onVpnPermissionGranted(Messages.OnVpnPermissionGranted onVpnPermissionGranted) {
+    void onVpnPermissionGranted(Messages.OnVpnPermissionGranted onVpnPermissionGranted) {
         vpnHandler.connectVpn(selectedProfile);
     }
 
