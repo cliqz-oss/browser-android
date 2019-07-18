@@ -291,9 +291,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
             telemetry.sendStartingSignals("cards", "cold");
         }
-        final String action = getIntent().getAction();
-        if (action != null && action.equals(VpnPanel.ACTION_DISCONNECT_VPN)) {
-            showVpnPanel();
+        if (getIntent() != null) {
+            final String action = getIntent().getAction();
+            if (action != null && action.equals(VpnPanel.ACTION_DISCONNECT_VPN)) {
+                showVpnPanel();
+            }
         }
     }
 
