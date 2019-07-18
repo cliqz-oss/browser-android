@@ -1,6 +1,6 @@
 package com.cliqz.browser.app;
 
-import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo;
+import com.cliqz.browser.purchases.trial.SubscriptionDataTask;
 
 import javax.inject.Singleton;
 
@@ -12,5 +12,5 @@ import dagger.Component;
 @Singleton
 @Component(modules = {AppModule.class})
 public interface AppComponent extends BaseAppComponent {
-    void inject(TrialPeriodRemoteRepo trialPeriodRemoteRepo);
+    void inject(SubscriptionDataTask subscriptionDataTask);
 }
