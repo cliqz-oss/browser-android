@@ -121,6 +121,7 @@
     <string name="vpn_country_name_uk">UK</string>
     <string name="vpn_country_name_us">USA</string>
     <string name="vpn_country_name_vn">Vietnam</string>
+    <string name="vpn_country_name_unknown">Country Unknown</string>
 
     <!-- Subscription -->
     <string name="button_buy_subscription">Subscribe</string>
