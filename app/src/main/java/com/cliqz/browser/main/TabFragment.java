@@ -1412,6 +1412,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         searchView.showFavorites();
     }
 
+    @Subscribe
+    void onTrialPeriodResponse(Messages.OnTrialPeriodResponse msg) {
+        updateCCIcon(false);
+    }
+
     private void updateUI() {
         try {
             final Activity activity = FragmentUtilsV4.getActivity(this);
