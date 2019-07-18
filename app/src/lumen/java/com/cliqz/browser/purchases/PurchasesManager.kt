@@ -6,7 +6,7 @@ import android.util.Log
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.trial.ServerData
 import com.cliqz.browser.purchases.trial.TrialPeriodLocalRepo
-import com.cliqz.browser.purchases.trial.TrialPeriodRemoteRepo
+import com.cliqz.browser.purchases.trial.SubscriptionDataTask
 import com.cliqz.browser.purchases.trial.TrialPeriodResponseListener
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.PurchaserInfo
@@ -76,7 +76,7 @@ class PurchasesManager(
         trialPeriodLocalRepo.loadPurchaseInfo(object : TrialPeriodResponseListener {
             override fun onTrialPeriodResponse(serverData: ServerData?) {
                 this@PurchasesManager.onTrialPeriodResponse(serverData)
-                TrialPeriodRemoteRepo(context, this@PurchasesManager).execute()
+                SubscriptionDataTask(context, this@PurchasesManager).execute()
             }
         })
     }
