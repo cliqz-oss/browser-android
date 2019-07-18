@@ -105,4 +105,8 @@
     <string name="purchase_message_complete">Kauf abgeschlossen!</string>
     <string name="vpn_action_disconnect">Trennen</string>
     <string name="vpn_action_connect">Verbinden</string>
+
+    <!-- Private Tab -->
+    <string name="action_incognito">Neuer privater Tab</string>
+    <string name="open_in_incognito_tab">In neuem privatem Tab öffnen</string>
 </resources>
