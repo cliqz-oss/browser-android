@@ -20,6 +20,10 @@ public class PurchasesManager {
         return false;
     }
 
+    public boolean isVpnEnabled() {
+        return false;
+    }
+
     public void checkPurchases() {}
 
     public String getSubscriptionTypeForTelemetry() {

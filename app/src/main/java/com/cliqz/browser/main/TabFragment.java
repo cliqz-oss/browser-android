@@ -1415,6 +1415,15 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onTrialPeriodResponse(Messages.OnTrialPeriodResponse msg) {
         updateCCIcon(false);
+        if (!purchasesManager.isVpnEnabled()) {
+            vpnHandler.bindService(() -> {
+                vpnHandler.disconnectVpn();
+                vpnHandler.unbindService();
+                if (mVpnPanelButton != null) {
+                    mVpnPanelButton.setImageResource(getFlavorDrawable("ic_vpn_off"));
+                }
+            });
+        }
     }
 
     private void updateUI() {

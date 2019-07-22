@@ -137,7 +137,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     @Override
     public void onResume() {
         super.onResume();
-        vpnHandler.onResume();
+        vpnHandler.bindService(null);
         final Window window = getDialog().getWindow();
         final Activity activity = getActivity();
         final View contentView = activity != null ? activity.findViewById(android.R.id.content) : null;
@@ -157,7 +157,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     @Override
     public void onPause() {
         super.onPause();
-        vpnHandler.onPause();
+        vpnHandler.unbindService();
         VpnStatus.removeStateListener(this);
     }
 

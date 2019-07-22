@@ -28,12 +28,16 @@ public class VpnHandler {
 
     private Activity mActivity;
     private IOpenVPNServiceInternal mService;
+    private OnServiceBindListener onServiceBindListener;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mService = IOpenVPNServiceInternal.Stub.asInterface(service);
+            if (onServiceBindListener != null) {
+                onServiceBindListener.onServiceBind();
+            }
         }
 
         @Override
@@ -42,6 +46,10 @@ public class VpnHandler {
         }
 
     };
+
+    public interface OnServiceBindListener {
+        public void onServiceBind();
+    }
 
     @Inject
     PurchasesManager purchasesManager;
@@ -54,13 +62,14 @@ public class VpnHandler {
         }
     }
 
-    void onResume() {
+    public void bindService(OnServiceBindListener onServiceBindListener) {
+        this.onServiceBindListener = onServiceBindListener;
         final Intent intent = new Intent(mActivity.getBaseContext(), OpenVPNService.class);
         intent.setAction(OpenVPNService.START_SERVICE);
         mActivity.getBaseContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    void onPause() {
+    public void unbindService() {
         mActivity.getBaseContext().unbindService(mConnection);
     }
 
@@ -76,7 +85,7 @@ public class VpnHandler {
     }
 
 
-    void disconnectVpn() {
+    public void disconnectVpn() {
         ProfileManager.setConntectedVpnProfileDisconnected(mActivity.getBaseContext());
         if (mService != null) {
             try {
