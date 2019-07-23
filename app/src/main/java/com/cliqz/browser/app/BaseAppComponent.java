@@ -127,6 +127,4 @@ public interface BaseAppComponent {
     void inject(GeoLocationModule geoLocationModule);
 
     void inject(SearchEnginesModule searchEnginesModule);
-
-    void inject(BrowserApp browserApp);
 }

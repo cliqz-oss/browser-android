@@ -45,6 +45,7 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
 import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.purchases.PurchaseFragment;
+import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.reactnative.ReactMessages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -152,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Inject
     Engine engine;
 
+    @Inject
+    PurchasesManager purchasesManager;
+
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
 
     @Override
@@ -163,7 +167,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         mMainActivityComponent = BrowserApp.createActivityComponent(this);
         mMainActivityComponent.inject(this);
-
+        if (BuildConfig.IS_LUMEN) {
+            purchasesManager.checkPurchases();
+        }
         bus.register(this);
         crashDetector.notifyOnCreate();
 

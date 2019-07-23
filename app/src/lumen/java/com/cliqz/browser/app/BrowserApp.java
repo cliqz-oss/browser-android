@@ -5,10 +5,7 @@ import android.content.Context;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.CliqzConfig;
-import com.cliqz.browser.purchases.PurchasesManager;
 import com.revenuecat.purchases.Purchases;
-
-import javax.inject.Inject;
 
 import de.blinkt.openvpn.core.StatusListener;
 import io.sentry.Sentry;
@@ -18,9 +15,6 @@ import io.sentry.android.AndroidSentryClientFactory;
  * @author Ravjit Uppal
  */
 public class BrowserApp extends BaseBrowserApp {
-
-    @Inject
-    PurchasesManager purchasesManager;
 
     @Override
     public void init() {
@@ -35,7 +29,6 @@ public class BrowserApp extends BaseBrowserApp {
         super.init();
         //Initialize flavour specific libraries
         setupCrashReporting();
-        getAppComponent().inject(this);
         setupSubscriptionSDK();
     }
 
@@ -51,7 +44,6 @@ public class BrowserApp extends BaseBrowserApp {
         if (!CliqzConfig.REVENUECAT_API_KEY.isEmpty()) {
             Purchases.setDebugLogsEnabled(BuildConfig.DEBUG);
             Purchases.configure(this, CliqzConfig.REVENUECAT_API_KEY);
-            purchasesManager.checkPurchases();
         }
     }
 
