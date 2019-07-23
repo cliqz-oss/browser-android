@@ -16,6 +16,10 @@ public class Insights {
         this.engine = engine;
     }
 
+    public void setEnabled(boolean enabled) throws EngineNotYetAvailable {
+        this.engine.setPref("modules.insights.enabled", enabled);
+    }
+
     public void getInsightsData(InsightsDataCallback callback, String period) {
         try {
             this.engine.getBridge().callAction("insights:getDashboardStats", result ->

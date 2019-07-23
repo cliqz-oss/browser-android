@@ -3,6 +3,7 @@ package com.cliqz.browser.controlcenter
 import acr.browser.lightning.preference.PreferenceManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +19,20 @@ import com.cliqz.jsengine.ReadableMapUtils
 import com.cliqz.nove.Bus
 import com.cliqz.nove.Subscribe
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableNativeMap
 import kotlinx.android.synthetic.lumen.bond_dashboard_fragment.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import javax.inject.Inject
 
 class DashboardFragment : Fragment() {
+
+    private val DATA_SAVED = "dataSaved"
+    private val ADS_BLOCKED = "adsBlocked"
+    private val TRACKERS_DETECTED = "trackersDetected"
+    private val PAGES_CHECKED = "pages"
 
     private var isDailyView = false
 
@@ -73,7 +84,11 @@ class DashboardFragment : Fragment() {
         val periodType = if (isDailyView) "day" else "week"
         insights.getInsightsData({
             view?.post {
-                updateViews(it.getMap("result"))
+                if (it.hasKey("result")) {
+                    updateViews(it.getMap("result"))
+                } else {
+                    updateViews(getSavedDashboardState())
+                }
             }
         }, periodType)
     }
@@ -85,10 +100,12 @@ class DashboardFragment : Fragment() {
     private fun updateViews(data: ReadableMap?) {
         if (data == null) return
 
-        val dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"))
-        val adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "adsBlocked"))
-        val trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"))
-        val pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "pages"))
+        saveDashboardState(data)
+
+        val dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, DATA_SAVED))
+        val adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, ADS_BLOCKED))
+        val trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, TRACKERS_DETECTED))
+        val pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, PAGES_CHECKED))
 
         ads_blocked.text = adsBlocked.value
         trackers_detected.text = trackersDetected.value
@@ -156,6 +173,36 @@ class DashboardFragment : Fragment() {
             bus.post(Messages.EnableAttrack())
             bus.post(Messages.OnDashboardStateChange())
             changeDashboardState(true)
+        }
+    }
+
+    private fun saveDashboardState(data: ReadableMap) {
+        val dataSaved = ReadableMapUtils.getSafeInt(data, "dataSaved")
+        val adsBlocked = ReadableMapUtils.getSafeInt(data, "adsBlocked")
+        val trackersDetected = ReadableMapUtils.getSafeInt(data, "trackersDetected")
+        val pagesVisited = ReadableMapUtils.getSafeInt(data, "pages")
+        val dashboardState = DashboardState(adsBlocked, trackersDetected, dataSaved, pagesVisited)
+        val bos = ByteArrayOutputStream()
+        ObjectOutputStream(bos).use {
+            it.writeObject(dashboardState)
+            val base64 = Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT)
+            preferenceManager.dashboardData = base64
+        }
+    }
+
+    private fun getSavedDashboardState() : ReadableMap {
+        if (preferenceManager.dashboardData == null) {
+            return WritableNativeMap()
+        }
+        val bis = ByteArrayInputStream(Base64.decode(preferenceManager.dashboardData, Base64.DEFAULT))
+        ObjectInputStream(bis).use {
+            val dashboardState = it.readObject() as DashboardState
+            val map = WritableNativeMap()
+            map.putInt(DATA_SAVED, dashboardState.dataSaved)
+            map.putInt(ADS_BLOCKED, dashboardState.adsBlocked)
+            map.putInt(TRACKERS_DETECTED, dashboardState.trackersDetected)
+            map.putInt(PAGES_CHECKED, dashboardState.pagesVisited)
+            return map
         }
     }
 

@@ -137,8 +137,8 @@ public class PreferenceManager {
         static final String PREF_IS_FRESH_INSTALL = "fresh_install";
         static final String PREF_TRIAL_PERIOD_OBJECT = "trial_period_object";
         static final String PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED = "trial_message_dismissed_time";
+        static final String DASHBOARD_DATA = "dashboard_data";
     }
-
     private final SharedPreferences mPrefs;
 
     private static final String PREFERENCES = "settings";
@@ -927,5 +927,13 @@ public class PreferenceManager {
 
     public void updateTimeOfTrialMessageDismissed() {
         putLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, System.currentTimeMillis());
+    }
+
+    public void setDashboardData(String dashboardData) {
+        putString(Name.DASHBOARD_DATA, dashboardData);
+    }
+
+    public String getDashboardData() {
+        return mPrefs.getString(Name.DASHBOARD_DATA, null);
     }
 }
