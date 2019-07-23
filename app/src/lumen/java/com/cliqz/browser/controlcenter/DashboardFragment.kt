@@ -85,23 +85,10 @@ class DashboardFragment : Fragment() {
     private fun updateViews(data: ReadableMap?) {
         if (data == null) return
 
-        val dataSaved: MeasurementWrapper
-        val adsBlocked: MeasurementWrapper
-        val trackersDetected: MeasurementWrapper
-        val pagesVisited: MeasurementWrapper
-
-        if (purchasesManager.isDashboardEnabled() &&
-                preferenceManager.adBlockEnabled && preferenceManager.isAttrackEnabled) {
-            dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"))
-            adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "adsBlocked"))
-            trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"))
-            pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "pages"))
-        } else {
-            dataSaved = ValuesFormatterUtil.formatBytesCount(0)
-            adsBlocked = ValuesFormatterUtil.formatBlockCount(0)
-            trackersDetected = ValuesFormatterUtil.formatBlockCount(0)
-            pagesVisited = ValuesFormatterUtil.formatBlockCount(0)
-        }
+        val dataSaved = ValuesFormatterUtil.formatBytesCount(ReadableMapUtils.getSafeInt(data, "dataSaved"))
+        val adsBlocked = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "adsBlocked"))
+        val trackersDetected = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "trackersDetected"))
+        val pagesVisited = ValuesFormatterUtil.formatBlockCount(ReadableMapUtils.getSafeInt(data, "pages"))
 
         ads_blocked.text = adsBlocked.value
         trackers_detected.text = trackersDetected.value
