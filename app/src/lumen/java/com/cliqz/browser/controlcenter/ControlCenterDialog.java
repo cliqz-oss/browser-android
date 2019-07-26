@@ -155,6 +155,7 @@ public class ControlCenterDialog extends DialogFragment {
             try {
                 adblocker.setEnabled(isChecked);
                 antiTracking.setEnabled(isChecked);
+                insights.setEnabled(isChecked);
                 preferenceManager.setAttrackEnabled(isChecked);
                 preferenceManager.setAdBlockEnabled(isChecked);
                 bus.post(new Messages.OnDashboardStateChange());

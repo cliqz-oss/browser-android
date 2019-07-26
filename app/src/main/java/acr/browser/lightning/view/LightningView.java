@@ -37,6 +37,7 @@ import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.jsengine.EngineNotYetAvailable;
+import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
 import java.lang.ref.WeakReference;
@@ -133,6 +134,9 @@ public class LightningView {
 
     @Inject
     Adblocker adblocker;
+
+    @Inject
+    Insights insights;
 
     @Inject
     HistoryDatabase historyDatabase;
@@ -282,6 +286,8 @@ public class LightningView {
         try {
             attrack.setEnabled(purchasesManager.isDashboardEnabled() && preferences.isAttrackEnabled());
             adblocker.setEnabled(purchasesManager.isDashboardEnabled() && preferences.getAdBlockEnabled());
+            insights.setEnabled(purchasesManager.isDashboardEnabled() && preferences.isAttrackEnabled());
+
         } catch (EngineNotYetAvailable e) {
             Log.w(TAG, "error updating jsengine state", e);
         }
@@ -629,6 +635,7 @@ public class LightningView {
     public void enableAttrack(){
         try {
             attrack.setEnabled(true);
+            insights.setEnabled(true);
         } catch (EngineNotYetAvailable engineNotYetAvailable) {
             engineNotYetAvailable.printStackTrace();
         }
