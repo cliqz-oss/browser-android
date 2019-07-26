@@ -2,6 +2,7 @@ package com.cliqz.browser.controlcenter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -26,6 +28,7 @@ import com.cliqz.browser.extensions.ViewExtensionsKt;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
+import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.jsengine.EngineNotYetAvailable;
@@ -88,6 +91,9 @@ public class ControlCenterDialog extends DialogFragment {
     @Inject
     PreferenceManager preferenceManager;
 
+    @Inject
+    Telemetry telemetry;
+
     public static ControlCenterDialog create(View source) {
         final ControlCenterDialog dialog = new ControlCenterDialog();
         final Bundle arguments = new Bundle();
@@ -110,6 +116,7 @@ public class ControlCenterDialog extends DialogFragment {
         if (arguments != null) {
             mAnchorHeight = arguments.getInt(KEY_ANCHOR_HEIGHT, 0);
         }
+        telemetry.sendDashboardShowSignal();
     }
 
 
@@ -146,6 +153,29 @@ public class ControlCenterDialog extends DialogFragment {
         controlCenterPager.setAdapter(mControlCenterPagerAdapter);
         controlCenterTabLayout.setupWithViewPager(controlCenterPager);
 
+        controlCenterPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Do nothing
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                String target;
+                if (position == 0) {
+                    target = "today";
+                } else {
+                    target = "past";
+                }
+                telemetry.sendDashboardClickSignal(target, "");
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Do nothing
+            }
+        });
+
         hideSubscribeButton(purchasesManager.isDashboardEnabled());
 
         ultimateProtectionSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -163,6 +193,7 @@ public class ControlCenterDialog extends DialogFragment {
                 Log.e("JsEngineError", "Cannot enable/disable tracking modules",
                         engineNotYetAvailable);
             }
+            telemetry.sendDashboardClickSignal("toggle", isChecked ? "on" : "off");
         });
 
         setStyle(STYLE_NO_TITLE, R.style.Theme_ControlCenter_Dialog);
@@ -242,5 +273,11 @@ public class ControlCenterDialog extends DialogFragment {
     @Subscribe
     void dismissControlCenter(Messages.DismissControlCenter event) {
         dismissAllowingStateLoss();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        telemetry.sendDashboardClickSignal("close", "");
     }
 }

@@ -20,6 +20,8 @@ import com.cliqz.browser.purchases.Products.PRODUCTS_LIST
 import com.cliqz.browser.purchases.productlist.OnBuyClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
+import com.cliqz.browser.telemetry.Telemetry
+import com.cliqz.browser.telemetry.TelemetryKeys
 import com.cliqz.nove.Bus
 import com.revenuecat.purchases.*
 import com.revenuecat.purchases.interfaces.ReceiveEntitlementsListener
@@ -41,6 +43,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     @Inject
     lateinit var preferenceManager: PreferenceManager
 
+    @Inject
+    lateinit var telemetry: Telemetry
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.Theme_Purchase_Dialog)
@@ -53,10 +58,14 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         BrowserApp.getActivityComponent(activity as MainActivity)?.inject(this)
-        close_btn.setOnClickListener { dismiss() }
+        close_btn.setOnClickListener {
+            telemetry.sendPaymentClickSignal("close")
+            dismiss()
+        }
         initializeViews()
         setLoading(true)
         getProductDetails()
+        telemetry.sendPaymentShowSignal()
     }
 
     private fun initializeViews() {
@@ -70,12 +79,16 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                         enableFeatures(activeSku)
                         Toast.makeText(context, getString(R.string.restore_subscription_success),
                                 Toast.LENGTH_LONG).show()
+                        telemetry.sendPaymentSuccessSignal(TelemetryKeys.RESTORE)
                     },
                     onError = {
                         Toast.makeText(context, R.string.restore_subscription_error_msg,
                                 Toast.LENGTH_LONG).show()
+                        telemetry.sendPaymentErrorSignal(TelemetryKeys.RESTORE,
+                                TelemetryKeys.PAYMENT_SCREEN_REGULAR, "")
                     }
             )
+            telemetry.sendPaymentClickSignal(TelemetryKeys.RESTORE)
         }
     }
 
@@ -140,15 +153,18 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
             // Please notice, it is pointless to add an animation to make the progress disappear,
             // the payment interface will appear in any case half a second after the animation ends
             checkExistingPurchases(
-                    onSuccess = {activeSku ->
+                    onSuccess = { activeSku ->
                         contentView?.removeView(progress)
                         showRestorePurchasesDialog(sku = activeSku)
+                        telemetry.sendPaymentErrorSignal(getTelemetryTarget(sku),
+                                TelemetryKeys.PAYMENT_SCREEN_REGULAR, "already_subscribed")
                     },
                     onError = {
                         contentView?.removeView(progress)
                         makePurchase(sku)
                     }
             )
+            telemetry.sendPaymentClickSignal(getTelemetryTarget(this.sku))
         }
     }
 
@@ -200,6 +216,9 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     if (!userCancelled) {
                         Log.e(TAG, "${error.underlyingErrorMessage}")
                         Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                        telemetry.sendPaymentErrorSignal(sku, TelemetryKeys.PAYMENT_SCREEN_REGULAR, "")
+                    } else {
+                        telemetry.sendPaymentCancelSignal()
                     }
                 },
                 onSuccess = { purchase, _ ->
@@ -207,6 +226,7 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
                     Toast.makeText(context,
                             getString(R.string.purchase_message_complete),
                             Toast.LENGTH_SHORT).show()
+                    telemetry.sendPaymentSuccessSignal(getTelemetryTarget(purchase.sku))
                 }
         )
     }
@@ -247,4 +267,13 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         Products.BASIC_PLUS_VPN -> ProductName.BASIC_VPN
         else -> IllegalArgumentException("Invalid product id $sku")
     }
+
+    private fun getTelemetryTarget(sku: String): String {
+        return "subscribe_ ${when (sku) {
+            Products.BASIC -> "basic"
+            Products.VPN -> "vpn"
+            else -> "basic_vpn"
+        }}"
+    }
+
 }

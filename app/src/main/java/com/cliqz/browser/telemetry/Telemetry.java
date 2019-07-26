@@ -972,7 +972,6 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-
     public void sendConnectHideSignal(long duration, String view) {
         JSONObject signal = new JSONObject();
         try {
@@ -1515,6 +1514,179 @@ public class Telemetry {
             logError(TelemetryKeys.PASSWORD_MANAGER);
         }
     }
+
+    //region Lumen Telemetry
+    public void sendVPNShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNClickSignal(String target, String state) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            if (!state.isEmpty()) {
+                signal.put(TelemetryKeys.STATE, state);
+            }
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNConnectSignal(String location) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CONNECT);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNErrorSignal(String location, int connectionTime) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.ERROR);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+
+    public void sendVPNDisconnectSignal(String location, int connectionTime) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.DISCONNECT);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendDashboardShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.DASHBOARD);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendDashboardClickSignal(String target, String state) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            if (!state.isEmpty()) {
+                signal.put(TelemetryKeys.STATE, state);
+            }
+            signal.put(TelemetryKeys.VERSION, 1);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendPaymentShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentClickSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentCancelSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CANCEL);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentErrorSignal(String target, String view, String topic) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.ERROR);
+            if (!topic.isEmpty()) {
+                signal.put(TelemetryKeys.TOPIC, topic);
+            }
+            if (!target.isEmpty()) {
+                signal.put(TelemetryKeys.TARGET, target);
+            }
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentSuccessSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SUCCESS);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+    //endregion
 
     //receiver listening to changes in battery levels
     private class BatteryInfoReceiver extends BroadcastReceiver {
