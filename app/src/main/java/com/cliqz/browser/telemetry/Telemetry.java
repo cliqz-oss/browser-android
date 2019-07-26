@@ -22,6 +22,7 @@ import android.util.Log;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.SendTabErrorTypes;
+import com.cliqz.browser.purchases.PurchasesManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,8 @@ public class Telemetry {
     private JSONArray mSignalCache = new JSONArray();
 
     private final PreferenceManager preferenceManager;
+    private final PurchasesManager purchasesManager;
+
     private final HistoryDatabase historyDatabase;
     private final Timings timings;
 
@@ -60,9 +63,11 @@ public class Telemetry {
     public boolean showingCards;
 
     public Telemetry(Context context, PreferenceManager preferenceManager,
+                     PurchasesManager purchasesManager,
                      HistoryDatabase historyDatabase, Timings timings) {
         this.context = context;
         this.preferenceManager = preferenceManager;
+        this.purchasesManager = purchasesManager;
         this.historyDatabase = historyDatabase;
         this.timings = timings;
         batteryLevel = -1;
@@ -286,6 +291,12 @@ public class Telemetry {
             prefsJson.put(TelemetryKeys.CONFIG_LOCATION, preferenceManager.getLastKnownLocation());
             prefsJson.put(TelemetryKeys.NOTIFICATION, preferenceManager.getNewsNotificationEnabled());
             prefsJson.put(TelemetryKeys.LOCATION_ACCESS_SYSTEM, isLocationGranted());
+            if (BuildConfig.IS_LUMEN) {
+                prefsJson.put(TelemetryKeys.PROTECTION_ENABLED, purchasesManager.isDashboardEnabled() &&
+                        preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
+                prefsJson.put(TelemetryKeys.SUBSCRIPTION_TYPE,
+                        purchasesManager.getSubscriptionTypeForTelemetry());
+            }
         } catch (JSONException e) {
             Log.e(TELEMETRY_TAG, "Can't read preferences");
         }

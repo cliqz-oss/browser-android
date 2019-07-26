@@ -93,4 +93,15 @@ class PurchasesManager(
         serverData != null && serverData!!.isInTrial
     }
 
+    fun getSubscriptionTypeForTelemetry() = when {
+        purchase.isASubscriber -> if (purchase.isDashboardEnabled && purchase.isVpnEnabled) {
+            "basic_vpn"
+        } else if (purchase.isDashboardEnabled) {
+            "basic"
+        } else {
+            "vpn"
+        }
+        serverData != null && serverData!!.isInTrial -> "trial"
+        else -> "free"
+    }
 }

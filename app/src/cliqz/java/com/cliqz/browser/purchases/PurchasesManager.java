@@ -21,4 +21,8 @@ public class PurchasesManager {
     }
 
     public void checkPurchases() {}
+
+    public String getSubscriptionTypeForTelemetry() {
+        return "";
+    }
 }
