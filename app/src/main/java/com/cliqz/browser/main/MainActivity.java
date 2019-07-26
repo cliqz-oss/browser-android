@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -51,6 +52,7 @@ import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.survey.NotificationPublisher;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
@@ -224,7 +226,15 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }else {
                 final Bundle bundle = intent.getExtras();
                 isIncognito = bundle != null && bundle.getBoolean(EXTRA_IS_PRIVATE);
-                url = Intent.ACTION_VIEW.equals(intent.getAction()) ? intent.getDataString() : null;
+                if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+                    url = intent.getDataString();
+                    if (intent.hasExtra(NotificationPublisher.NOTIFICATION_ID)) {
+                        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.cancel(intent.getIntExtra(NotificationPublisher.NOTIFICATION_ID, -1));
+                    }
+                } else {
+                    url = null;
+                }
                 query = Intent.ACTION_WEB_SEARCH.equals(intent.getAction()) ? intent.getStringExtra(SearchManager.QUERY) : null;
                 isNotificationClicked = bundle != null && bundle.getBoolean(Constants.NOTIFICATION_CLICKED);
             }
@@ -438,6 +448,12 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final String action = intent.getAction();
         if (Intent.ACTION_MAIN.equals(action)) {
             return;
+        }
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            if (intent.hasExtra(NotificationPublisher.NOTIFICATION_ID)) {
+                final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(intent.getIntExtra(NotificationPublisher.NOTIFICATION_ID, -1));
+            }
         }
         final TabsManager.Builder builder = handleIntent(intent);
         if (builder != null) {

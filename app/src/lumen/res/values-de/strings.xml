@@ -111,6 +111,14 @@
     <string name="action_incognito">Neuer privater Tab</string>
     <string name="open_in_incognito_tab">In neuem privatem Tab öffnen</string>
 
+    <!-- Surveys -->
+    <string name="survey_1_title">Schön, dass du Lumen Browser ausprobierst!</string>
+    <string name="survey_2_title">Hallo!</string>
+    <string name="survey_1_message">Wir würden sehr gerne deine Menung zum Lumen Browser erfahren!</string>
+    <string name="survey_2_message">Teile mit uns deine Erfahrungen mit dem Lumen Browser?</string>
+    <string name="take_survey">Teilnehmen</string>
+    <string name="take_survey_later">Später</string>
+
     <!-- Onboarding -->
     <string name="lumen_onboarding_text_1">Komplettschutz im Web</string>
     <string name="lumen_onboarding_text_2">Sicher unterwegs mit VPN</string>

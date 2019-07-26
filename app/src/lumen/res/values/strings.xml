@@ -150,6 +150,14 @@
     <string name="incognito_tab_description">You are browsing in Private Mode: websites you visit in this mode will not be saved in your history, and local data, including cookies, will not be stored.</string>
     <string name="auto_forget_tab">Automatic Private Tab</string>
 
+    <!-- Surveys -->
+    <string name="survey_1_title">Thanks for using Lumen Browser!</string>
+    <string name="survey_2_title">Hello!</string>
+    <string name="survey_1_message">We would love to hear your thoughts about it!</string>
+    <string name="survey_2_message">Share with us your experiences with Lumen browser?</string>
+    <string name="take_survey">Take Survey</string>
+    <string name="take_survey_later">Later</string>
+
     <!-- Onboarding -->
     <string name="lumen_onboarding_text_1">Ultimate Protection online</string>
     <string name="lumen_onboarding_text_2">Safe and sound on the go</string>

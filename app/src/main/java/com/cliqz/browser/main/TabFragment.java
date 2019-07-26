@@ -55,6 +55,7 @@ import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.Messages.ControlCenterStatus;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.purchases.PurchasesManager;
+import com.cliqz.browser.survey.SurveysManager;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
@@ -1415,6 +1416,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onTrialPeriodResponse(Messages.OnTrialPeriodResponse msg) {
         updateCCIcon(false);
+        if (purchasesManager.getServerData().isInTrial()) {
+            final SurveysManager surveysManager = new SurveysManager(getContext());
+            final int trialDaysLeft = purchasesManager.getServerData().getTrialDaysLeft();
+            surveysManager.setUpLumenSurvey2(trialDaysLeft);
+            if (trialDaysLeft == 7) {
+                surveysManager.setUpLumenSurvey1();
+            }
+        }
     }
 
     private void updateUI() {
