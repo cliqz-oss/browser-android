@@ -44,6 +44,8 @@ public class Telemetry {
     // adb logcat '*:S TELEMETRY_DEBUG'
     private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
 
+    private static final int LUMEN_TELEMETRY_SIGNAL_VERSION = 1;
+
     private static final int BATCH_SIZE = 50;
     private JSONArray mSignalCache = new JSONArray();
 
@@ -972,7 +974,6 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-
     public void sendConnectHideSignal(long duration, String view) {
         JSONObject signal = new JSONObject();
         try {
@@ -1515,6 +1516,78 @@ public class Telemetry {
             logError(TelemetryKeys.PASSWORD_MANAGER);
         }
     }
+
+    //region Lumen Telemetry
+    public void sendVPNShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNClickSignal(String target, String state) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            if (!state.isEmpty()) {
+                signal.put(TelemetryKeys.STATE, state);
+            }
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNConnectSignal(String location) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CONNECT);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendVPNErrorSignal(String location, int connectionTime) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.ERROR);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+
+    public void sendVPNDisconnectSignal(String location, int connectionTime) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.DISCONNECT);
+            signal.put(TelemetryKeys.LOCATION, location);
+            signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+    //endregion
 
     //receiver listening to changes in battery levels
     private class BatteryInfoReceiver extends BroadcastReceiver {
