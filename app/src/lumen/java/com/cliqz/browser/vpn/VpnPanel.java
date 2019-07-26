@@ -32,6 +32,7 @@ import com.cliqz.browser.extensions.DrawableExtensionsKt;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.purchases.PurchasesManager;
+import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
@@ -48,6 +49,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.blinkt.openvpn.VpnProfile;
 import de.blinkt.openvpn.core.ConnectionStatus;
+import de.blinkt.openvpn.core.LogItem;
 import de.blinkt.openvpn.core.OpenVPNService;
 import de.blinkt.openvpn.core.ProfileManager;
 import de.blinkt.openvpn.core.VpnStatus;
@@ -55,7 +57,7 @@ import de.blinkt.openvpn.core.VpnStatus;
 /**
  * @author Ravjit Uppal
  */
-public class VpnPanel extends DialogFragment implements VpnStatus.StateListener {
+public class VpnPanel extends DialogFragment implements VpnStatus.StateListener, VpnStatus.LogListener {
 
     private static String TAG = VpnPanel.class.getSimpleName();
 
@@ -109,6 +111,9 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
     @Inject
     VpnHandler vpnHandler;
 
+    @Inject
+    Telemetry telemetry;
+
     public static VpnPanel create(View source) {
         final VpnPanel dialog = new VpnPanel();
         final Bundle arguments = new Bundle();
@@ -132,6 +137,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         }
         bus.register(this);
         setSelectedProfile();
+        telemetry.sendVPNShowSignal();
     }
 
     @Override
@@ -152,6 +158,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
             updateStateToConnect();
         }
         VpnStatus.addStateListener(this);
+        VpnStatus.addLogListener(this);
     }
 
     @Override
@@ -206,12 +213,16 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
             if (VpnStatus.isVPNConnected() || VpnStatus.isVPNConnecting()) {
                 vpnHandler.disconnectVpn();
                 updateStateToConnect();
+                sendDisconnectTelemetrySignal();
+                telemetry.sendVPNClickSignal("toggle", "off");
             } else {
                 if (selectedProfile == null) {
                     Toast.makeText(getContext(), "Please try again later", Toast.LENGTH_LONG).show();
                     return;
                 }
                 vpnHandler.connectVpn(selectedProfile);
+                telemetry.sendVPNConnectSignal(selectedProfile.getName());
+                telemetry.sendVPNClickSignal("toggle", "on");
             }
         } else {
             unlockVpnDialog();
@@ -245,6 +256,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
             if (VpnStatus.isVPNConnected()) {
                 vpnHandler.connectVpn(selectedProfile);
             }
+            telemetry.sendVPNClickSignal("location", "");
         });
         mBuilder.show();
     }    
@@ -258,6 +270,14 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
                         (dialogInterface, which) -> bus.post(new Messages.GoToPurchase(0)))
                 .create()
                 .show();
+    }
+
+    @Override
+    public void newLog(LogItem logItem) {
+        if (logItem.getLogLevel() == VpnStatus.LogLevel.ERROR) {
+            final int connectionTime = (int) ((System.currentTimeMillis() - preferenceManager.getVpnStartTime()) / 1000);
+            telemetry.sendVPNErrorSignal(selectedProfile.getName(), connectionTime);
+        }
     }
 
     @Override
@@ -404,4 +424,10 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         }
         return country1.compareTo(country2);
     };
+
+    private void sendDisconnectTelemetrySignal() {
+        final int connectionTime = (int)
+                ((System.currentTimeMillis() - preferenceManager.getVpnStartTime()) / 1000);
+        telemetry.sendVPNDisconnectSignal(selectedProfile.getName(), connectionTime);
+    }
 }

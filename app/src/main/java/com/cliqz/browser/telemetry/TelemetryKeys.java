@@ -252,4 +252,10 @@ public final class TelemetryKeys {
     public static final String NEVER = "never";
     public static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
     public static final String SEND_USAGE_DATA = "send_usage_data";
+
+    public static final String VPN = "vpn";
+    public static final String LOCATION = "location";
+    public static final String ERROR = "error";
+    public static final String DISCONNECT = "disconnect";
+    public static final String CONNECTION_TIME = "connection_time";
 }

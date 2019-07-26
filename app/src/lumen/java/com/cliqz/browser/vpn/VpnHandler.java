@@ -75,7 +75,6 @@ public class VpnHandler {
         launchVPN.launchVPN();
     }
 
-
     void disconnectVpn() {
         ProfileManager.setConntectedVpnProfileDisconnected(mActivity.getBaseContext());
         if (mService != null) {
