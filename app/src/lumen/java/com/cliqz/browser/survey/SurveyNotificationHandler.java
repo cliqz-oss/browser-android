@@ -19,6 +19,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.cliqz.browser.survey.SurveysManager.NOTIFICATION;
+import static com.cliqz.browser.survey.SurveysManager.NOTIFICATION_ID;
+
 /**
  * @author Ravjit Uppal
  */
@@ -37,8 +40,8 @@ class SurveyNotificationHandler {
      */
     static void scheduleNotification(Context context, Notification notification, int hourOfDay, int delay, int requestCode) {
         final Intent notificationIntent = new Intent(context, NotificationPublisher.class);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, requestCode);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        notificationIntent.putExtra(NOTIFICATION_ID, requestCode);
+        notificationIntent.putExtra(NOTIFICATION, notification);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(),
                 notificationIntent, 0);
         final Date dat = new Date();//initializes to now

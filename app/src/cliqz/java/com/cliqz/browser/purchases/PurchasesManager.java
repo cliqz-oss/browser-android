@@ -1,10 +1,11 @@
 package com.cliqz.browser.purchases;
 
-import acr.browser.lightning.preference.PreferenceManager;
-
 import android.content.Context;
 
+import com.cliqz.browser.purchases.trial.ServerData;
 import com.cliqz.nove.Bus;
+
+import acr.browser.lightning.preference.PreferenceManager;
 
 /**
  * Stub class for Lumen flavor support
@@ -21,6 +22,10 @@ public class PurchasesManager {
     }
 
     public void checkPurchases() {}
+
+    public ServerData getServerData() {
+        return null;
+	}
 
     public String getSubscriptionTypeForTelemetry() {
         return "";

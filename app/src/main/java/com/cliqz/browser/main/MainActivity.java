@@ -52,7 +52,6 @@ import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.reactnative.ReactMessages;
-import com.cliqz.browser.survey.NotificationPublisher;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
@@ -89,6 +88,7 @@ import acr.browser.lightning.view.LightningView;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.cliqz.browser.survey.SurveysManager.NOTIFICATION_ID;
 
 /**
  * Flat navigation browser
@@ -228,9 +228,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 isIncognito = bundle != null && bundle.getBoolean(EXTRA_IS_PRIVATE);
                 if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                     url = intent.getDataString();
-                    if (intent.hasExtra(NotificationPublisher.NOTIFICATION_ID)) {
+                    if (intent.hasExtra(NOTIFICATION_ID)) {
                         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        notificationManager.cancel(intent.getIntExtra(NotificationPublisher.NOTIFICATION_ID, -1));
+                        notificationManager.cancel(intent.getIntExtra(NOTIFICATION_ID, -1));
                     }
                 } else {
                     url = null;
@@ -450,9 +450,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             return;
         }
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            if (intent.hasExtra(NotificationPublisher.NOTIFICATION_ID)) {
+            if (intent.hasExtra(NOTIFICATION_ID)) {
                 final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.cancel(intent.getIntExtra(NotificationPublisher.NOTIFICATION_ID, -1));
+                notificationManager.cancel(intent.getIntExtra(NOTIFICATION_ID, -1));
             }
         }
         final TabsManager.Builder builder = handleIntent(intent);

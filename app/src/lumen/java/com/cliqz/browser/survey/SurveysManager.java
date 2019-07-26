@@ -30,6 +30,9 @@ public class SurveysManager {
 
     public static final int REQUEST_CODE_SURVEY_1 = 1;
     public static final int REQUEST_CODE_SURVEY_2 = 2;
+    public static String NOTIFICATION_ID = "notification-id";
+    public static String NOTIFICATION = "notification";
+    public static String SHOW_LATER = "show-later";
 
     private Context mContext;
 
@@ -59,7 +62,7 @@ public class SurveysManager {
         //intent to open the survey link when user taps on the notification
         final Intent takeSurveyIntent = new Intent(mContext, MainActivity.class);
         takeSurveyIntent.setAction(Intent.ACTION_VIEW);
-        takeSurveyIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, REQUEST_CODE_SURVEY_1);
+        takeSurveyIntent.putExtra(NOTIFICATION_ID, REQUEST_CODE_SURVEY_1);
         takeSurveyIntent.setData(Uri.parse("https://www.surveymonkey.de/r/1Lumen"));
 
         final List<NotificationCompat.Action> actions = getSurveyNotificiationActions(
@@ -87,7 +90,7 @@ public class SurveysManager {
         //intent to open the survey link when user taps on the notification
         final Intent takeSurveyIntent = new Intent(mContext, MainActivity.class);
         takeSurveyIntent.setAction(Intent.ACTION_VIEW);
-        takeSurveyIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, REQUEST_CODE_SURVEY_2);
+        takeSurveyIntent.putExtra(NOTIFICATION_ID, REQUEST_CODE_SURVEY_2);
         takeSurveyIntent.setData(Uri.parse("https://www.surveymonkey.de/r/2Lumen"));
 
         final List<NotificationCompat.Action> actions = getSurveyNotificiationActions(
@@ -105,8 +108,8 @@ public class SurveysManager {
 
         //Action to show the notification again later
         final Intent takeSurveyLaterIntent = new Intent(mContext, NotificationPublisher.class);
-        takeSurveyLaterIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, requestCode);
-        takeSurveyLaterIntent.putExtra(NotificationPublisher.SHOW_LATER, true);
+        takeSurveyLaterIntent.putExtra(NOTIFICATION_ID, requestCode);
+        takeSurveyLaterIntent.putExtra(SHOW_LATER, true);
 
         final PendingIntent takeSurveyLaterPendingIntent = PendingIntent.getBroadcast(mContext,
                 (int) System.currentTimeMillis(), takeSurveyLaterIntent, 0);

@@ -6,14 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import static com.cliqz.browser.survey.SurveysManager.NOTIFICATION;
+import static com.cliqz.browser.survey.SurveysManager.NOTIFICATION_ID;
+import static com.cliqz.browser.survey.SurveysManager.SHOW_LATER;
+
 /**
  * @author Ravjit Uppal
  */
 public class NotificationPublisher extends BroadcastReceiver {
-
-    public static String NOTIFICATION_ID = "notification-id";
-    public static String NOTIFICATION = "notification";
-    public static String SHOW_LATER = "show-later";
 
     public void onReceive(Context context, Intent intent) {
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
