@@ -125,8 +125,8 @@ public class SearchBar extends FrameLayout {
             wm.getDefaultDisplay().getMetrics(metrics);
         }
         final int screenWidth = metrics.widthPixels;
-        final float titleBarWidth = screenWidth - 2 * resources.getDimension(R.dimen.toolbar_menu_item_w)
-                - 3 * resources.getDimension(R.dimen.toolbar_padding);
+        final float titleBarWidth = screenWidth - 3 * resources.getDimension(R.dimen.toolbar_menu_item_w)
+                - 2 * resources.getDimension(R.dimen.toolbar_padding);
         final float titleBarHeight = resources.getDimension(R.dimen.title_bar_h);
         final float searchEditTextHeight = resources.getDimension(R.dimen.search_edit_text_h);
         final float toolBarPadding = resources.getDimension(R.dimen.toolbar_padding);

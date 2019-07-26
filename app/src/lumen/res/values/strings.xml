@@ -97,6 +97,7 @@
     <string name="vpn_notification_content">You are connected to %s</string>
     <string name="vpn_action_connect">Connect</string>
     <string name="vpn_action_disconnect">Disconnect</string>
+    <string name="vpn_choose_location">Choose your virtual location:</string>
     
     <!-- VPN VpnCountries -->
     <string name="vpn_country_name_at">Austria</string>

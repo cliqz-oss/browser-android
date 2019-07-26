@@ -5,7 +5,7 @@
     android:id="@+id/toolbar_container"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    tools:layout_height="48dp"
+    tools:layout_height="46dp"
     android:orientation="horizontal"
     android:layout_gravity="center_vertical"
     android:background="@color/primary_color"
@@ -23,36 +23,35 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/vpn_panel_button"
-        android:layout_width="@dimen/toolbar_menu_icon_w"
-        android:layout_height="@dimen/toolbar_menu_icon_h"
-        android:scaleType="centerInside"
+        android:layout_width="@dimen/toolbar_menu_item_w"
+        android:layout_height="@dimen/toolbar_menu_item_h"
+        android:padding="@dimen/toolbar_menu_item_padding"
+        android:scaleType="fitCenter"
         android:layout_gravity="end|right|center_vertical"
         app:srcCompat="@drawable/ic_vpn_on"
-        android:background="@color/transparent"
-        android:layout_marginEnd="@dimen/toolbar_padding"
-        android:layout_marginRight="@dimen/toolbar_padding"/>
+        android:background="@color/transparent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/cc_icon"
-        android:layout_width="@dimen/toolbar_menu_icon_h"
-        android:layout_height="@dimen/toolbar_menu_icon_h"
+        android:layout_width="@dimen/toolbar_menu_item_w"
+        android:layout_height="@dimen/toolbar_menu_item_h"
+        android:padding="@dimen/toolbar_menu_item_padding"
         app:srcCompat="@drawable/ic_dashboard_on"
         android:background="@color/transparent"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitCenter"/>
 
     <FrameLayout
         android:id="@+id/overflow_menu"
-        android:layout_width="@dimen/toolbar_menu_item_w"
+        android:layout_width="40dp"
         android:layout_height="@dimen/toolbar_menu_item_h"
-        android:layout_marginEnd="@dimen/toolbar_padding"
-        android:layout_marginRight="@dimen/toolbar_padding"
         android:background="?attr/actionBarItemBackground">
 
         <ImageView
             android:id="@+id/overflow_menu_icon"
             android:layout_width="@dimen/toolbar_menu_icon_w"
             android:layout_height="@dimen/toolbar_menu_icon_h"
-            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="start|center"
             android:tint="?android:attr/textColorPrimary"
             app:srcCompat="@drawable/ic_menu_overflow"
             tools:tint="@android:color/white" />

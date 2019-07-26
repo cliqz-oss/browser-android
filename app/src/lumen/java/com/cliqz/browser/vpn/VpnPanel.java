@@ -236,7 +236,7 @@ public class VpnPanel extends DialogFragment implements VpnStatus.StateListener 
         for (int i = 0; i < vpnProfiles.size();  i++) {
             vpnCountryNames[i] = getString(vpnProfiles.get(i).profileNameRes);
         }
-        mBuilder.setTitle("Choose an item");
+        mBuilder.setTitle(R.string.vpn_choose_location);
         mBuilder.setSingleChoiceItems(vpnCountryNames, checkedItem, (dialogInterface, i) -> {
             checkedItem =  i;
             selectedProfile = vpnProfiles.get(i);
