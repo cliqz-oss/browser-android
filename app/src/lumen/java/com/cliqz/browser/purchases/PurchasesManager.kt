@@ -31,6 +31,14 @@ class PurchasesManager(
 
     var isLoading = true
 
+    private fun isAFullUser() = purchase.isASubscriber && purchase.isDashboardEnabled && purchase.isVpnEnabled
+
+    private fun isABasicUser() = purchase.isASubscriber && purchase.isDashboardEnabled
+
+    private fun isAVpnUser() = purchase.isASubscriber && purchase.isVpnEnabled
+
+    private fun isATrialUser() = serverData != null && serverData!!.isInTrial
+
     override fun onTrialPeriodResponse(serverData: ServerData?) {
         this.serverData = serverData
         isLoading = false
@@ -94,14 +102,10 @@ class PurchasesManager(
     }
 
     fun getSubscriptionTypeForTelemetry() = when {
-        purchase.isASubscriber -> if (purchase.isDashboardEnabled && purchase.isVpnEnabled) {
-            "basic_vpn"
-        } else if (purchase.isDashboardEnabled) {
-            "basic"
-        } else {
-            "vpn"
-        }
-        serverData != null && serverData!!.isInTrial -> "trial"
+        isAFullUser() -> "basic_vpn"
+        isABasicUser() -> "basic"
+        isAVpnUser() -> "vpn"
+        isATrialUser() -> "trial"
         else -> "free"
     }
 }
