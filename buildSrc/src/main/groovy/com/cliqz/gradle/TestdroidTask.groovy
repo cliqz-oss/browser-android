@@ -20,7 +20,6 @@ class TestDroidTask extends DefaultTask {
     String frameworkId = env['FRAMEWORK_ID']
     String deviceGroupId = env['DEVICE_GROUP_ID']
 
-
     final PROJECT_ID = projectId
     final API_KEY = apIKey
     final FRAMEWORK_ID = frameworkId
@@ -49,7 +48,7 @@ class TestDroidTask extends DefaultTask {
         // 4. Poll every minute (os so) to check the job finished
         String state = pollTestRunStatus(runID)
         int timeTaken = 0
-        while (state!= "FINISHED"){
+        while (state!= "FINISHED") {
             sleep(60000)
             timeTaken+=1
             state = pollTestRunStatus(runID)
@@ -59,16 +58,16 @@ class TestDroidTask extends DefaultTask {
         fetchTestRunArtifacts(runID)
         // 6. log error if any test failed, otherwise just return
         Float successRatio = errorLogger(runID)
-        if (successRatio >= 0.9999){
+        if (successRatio >= 0.9999) {
             logger.info("Test Run was successful")
             println("Test Run was successful")
-        }else if (successRatio < 1  && successRatio > 0.90){
+        } else if (successRatio < 1  && successRatio > 0.90) {
             logger.info("Need to get session success Ratios")
             Float sessionSuccessRatio = sessionErrorLogger(runID)
-            if (sessionSuccessRatio < 0.50 && sessionSuccessRatio > 0.000){
+            if (sessionSuccessRatio < 0.50 && sessionSuccessRatio > 0.000) {
                 logger.error("Need to check tests that are failing")
                 throw new Exception('Tests are failing')
-            }else {
+            } else {
                logger.info("Test run was not 100% successful but that's okay")
             }
         }
@@ -78,7 +77,7 @@ class TestDroidTask extends DefaultTask {
         "${apiKey}:".bytes.encodeBase64().toString()
     }
 
-    def uploadFile(String filepath){
+    def uploadFile(String filepath) {
         final file = new File(filepath)
         final mediaType = MediaType.parse('application/octet-stream')
         def requestBody = new MultipartBody.Builder()
@@ -96,7 +95,7 @@ class TestDroidTask extends DefaultTask {
         json.id
     }
 
-    def performTestRun(long appFileID, long testFileID){
+    def performTestRun(long appFileID, long testFileID) {
         final mediaType = MediaType.parse('application/json')
         final content = """
             {
@@ -122,7 +121,7 @@ class TestDroidTask extends DefaultTask {
         testRun.id
     }
 
-    def pollTestRunStatus(long testID){
+    def pollTestRunStatus(long testID) {
         final poll = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testID}")
         final check = poll.openConnection()
         check.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
@@ -134,18 +133,18 @@ class TestDroidTask extends DefaultTask {
         }
     }
 
-    def fetchTestRunArtifacts(long testRunID){
+    def fetchTestRunArtifacts(long testRunID) {
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions")
         final sessions = url.openConnection()
         sessions.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
         new File("./artifacts").eachFile {file ->
             if (file.name.contains(".zip")) file.delete()
         }
-        if (sessions.responseCode == HttpURLConnection.HTTP_OK){
+        if (sessions.responseCode == HttpURLConnection.HTTP_OK) {
             final sessionResults = slurper.parse(sessions.inputStream)
             sessionResults.data.each{ session ->
                 println "Device: ${session.device.displayName} ID: ${session.id} SuccessRatio: ${session.successRatio}"
-                if (session.successRatio < 1){
+                if (session.successRatio < 1) {
                     def request = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions/${session.id}/output-file-set/files.zip")
                     final artifact = request.openConnection()
                     artifact.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
@@ -161,16 +160,16 @@ class TestDroidTask extends DefaultTask {
                     } else {
                         logger.error("Files for Session ${session.id} are not available")
                     }
-                }else {
+                } else {
                     logger.info("Tests runs on ${session.device.displayName} were successful ")
                 }
             }
-        } else{
+        } else {
             logger.error("No session data for test run ${testRunID}")
         }
     }
 
-    def errorLogger(long testRunID){
+    def errorLogger(long testRunID) {
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}")
         final testRun = url.openConnection()
         testRun.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
@@ -183,7 +182,7 @@ class TestDroidTask extends DefaultTask {
         }
     }
 
-    def sessionErrorLogger(long testRunID){
+    def sessionErrorLogger(long testRunID) {
         final url = new URL("https://cloud.bitbar.com/api/me/projects/${PROJECT_ID}/runs/${testRunID}/device-sessions")
         final sessions = url.openConnection()
         sessions.setRequestProperty('Authorization', "Basic ${getBasicAuth(API_KEY)}")
@@ -191,14 +190,14 @@ class TestDroidTask extends DefaultTask {
             final sessionResults = slurper.parse(sessions.inputStream)
             sessionResults.data.each { session ->
                 println "Device: ${session.device.displayName} ID: ${session.id} SuccessRatio: ${session.successRatio}"
-                if (session.successRatio < 0.5 && session.successRatio != null){
+                if (session.successRatio < 0.5 && session.successRatio != null) {
                     logger.error("Tests are failing on ${session.displayName}")
                     session.successRatio
-                }else if(session.successRatio == null){
+                } else if (session.successRatio == null) {
                     logger.error("Tests did not run on this device")
                     session.successRatio = 0
                     session.successRatio
-                }else {
+                } else {
                     logger.info("Tests are failing but that's okay")
                     session.successRatio
                 }
