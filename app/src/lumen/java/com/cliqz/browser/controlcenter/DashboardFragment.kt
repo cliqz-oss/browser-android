@@ -14,6 +14,7 @@ import com.cliqz.browser.extensions.color
 import com.cliqz.browser.extensions.tintVectorDrawable
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.PurchasesManager
+import com.cliqz.browser.telemetry.Telemetry
 import com.cliqz.jsengine.Insights
 import com.cliqz.jsengine.ReadableMapUtils
 import com.cliqz.nove.Bus
@@ -48,6 +49,9 @@ class DashboardFragment : Fragment() {
     @Inject
     internal lateinit var preferenceManager: PreferenceManager
 
+    @Inject
+    internal lateinit var telemetry: Telemetry
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isDailyView = arguments?.getBoolean(ControlCenterPagerAdapter.IS_TODAY) ?: true
@@ -76,6 +80,7 @@ class DashboardFragment : Fragment() {
                     }
                     .setNegativeButton(R.string.cancel, null)
                     .show()
+            telemetry.sendDashboardClickSignal("reset", "")
         }
         updateUI()
     }

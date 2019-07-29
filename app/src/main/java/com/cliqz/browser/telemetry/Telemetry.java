@@ -1576,6 +1576,34 @@ public class Telemetry {
             logError(TelemetryKeys.VPN);
         }
     }
+
+    public void sendDashboardShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.DASHBOARD);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendDashboardClickSignal(String target, String state) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.TARGET, target);
+            if (!state.isEmpty()) {
+                signal.put(TelemetryKeys.STATE, state);
+            }
+            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.VPN);
+        }
+    }
     //endregion
 
     //receiver listening to changes in battery levels
