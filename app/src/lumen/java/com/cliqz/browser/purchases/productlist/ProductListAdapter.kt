@@ -74,7 +74,7 @@ class ProductListAdapter(private val context: Context?,
 
         fun bindData(productRowData: ProductRowData?) {
             productRowData?.apply {
-                itemView.title.text = title
+                itemView.title.text = title.removeSuffix(" (Lumen Browser)")
                 itemView.description.text = description
                 itemView.price.text = context?.getString(R.string.per_month_text, price)
                 val subscription = this@ProductListAdapter.subscription
