@@ -16,7 +16,7 @@
         app:tabTextColor="@color/white"
         app:tabIconTint="#1B9CFC"/>
 
-    <androidx.viewpager.widget.ViewPager
+    <com.cliqz.browser.widget.NonSwipeableViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
