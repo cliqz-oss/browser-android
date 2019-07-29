@@ -22,8 +22,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -375,6 +379,17 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
+        if (BuildConfig.IS_LUMEN && preferenceManager.shouldShowLumenOnboarding()) {
+            final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            final View onboardingView = inflater.inflate(R.layout.lumen_onboarding, null);
+            final FrameLayout rootView = findViewById(R.id.content_frame);
+            rootView.addView(onboardingView);
+            final Button closeOnboarding = onboardingView.findViewById(R.id.lumen_onboarding_close_button);
+            closeOnboarding.setOnClickListener(view -> {
+                preferenceManager.setShouldShowLumenOnboarding(false);
+                rootView.removeView(onboardingView);
+            });
+        }
         if (firstTabBuilder != null) {
             firstTabBuilder.show();
         }

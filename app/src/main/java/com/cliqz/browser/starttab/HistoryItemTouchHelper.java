@@ -52,8 +52,9 @@ public class HistoryItemTouchHelper extends ItemTouchHelper.SimpleCallback {
         }
         adapter.remove(position);
         // adapter.notifyItemRemoved(position);
-        //check if date view is to be removed
-        if ((adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE)
+        //check if date view is to be removed. It should be removed if it's the last item in the list
+        //or if the next item in the list is also a date view
+        if ((adapter.getItemCount() == position || adapter.getItemViewType(position) == HistoryAdapter.VIEW_TYPE_DATE)
                 && adapter.getItemViewType(position - 1 ) == HistoryAdapter.VIEW_TYPE_DATE) {
             adapter.remove(position-1);
             // adapter.notifyItemRemoved(position-1);

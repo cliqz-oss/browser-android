@@ -98,7 +98,7 @@
             tools:text="TAB3" />
     </com.google.android.material.tabs.TabLayout>
 
-    <com.cliqz.browser.overview.NonSwipeableViewPager
+    <com.cliqz.browser.widget.NonSwipeableViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
