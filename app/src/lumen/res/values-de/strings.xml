@@ -29,7 +29,7 @@
     <string name="bond_dashboard_clear_dialog_message">Dies wird alle Daten im Dashboard löschen und kann nicht rückgängig gemacht werden.</string>
     <string name="cancel">Abbrechen</string>
     <string name="button_ok">Zurücksetzen</string>
-    <string name="bond_dashboard_ultimate_protection">Komplettschutz:</string>
+    <string name="bond_dashboard_ultimate_protection">Komplettschutz</string>
     <string name="bond_dashboard_contols_pause">Pause</string>
     <string name="bond_dashboard_contols_vpn">VPN</string>
     <string name="bond_dashboard_contols_clear">Zurücksetzen</string>

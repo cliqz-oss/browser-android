@@ -7,7 +7,7 @@
     <string name="bond_dashboard_clear_dialog_message">This will delete all your dashboard data and cannot be undone.</string>
     <string name="cancel">Cancel</string>
     <string name="button_ok">Clear</string>
-    <string name="bond_dashboard_ultimate_protection">Ultimate Protection:</string>
+    <string name="bond_dashboard_ultimate_protection">Ultimate Protection</string>
     <string name="bond_dashboard_contols_pause">Pause</string>
     <string name="bond_dashboard_contols_vpn">VPN</string>
     <string name="bond_dashboard_contols_clear">Clear</string>
