@@ -253,6 +253,11 @@ public final class TelemetryKeys {
     public static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
     public static final String SEND_USAGE_DATA = "send_usage_data";
 
+    public static final String PAYMENT_SCREEN_REGULAR = "regular";
+    public static final String TOPIC = "topic";
+    public static final String SUCCESS = "success";
+    public static final String PAYMENT = "payment";
+    public static final String RESTORE = "restore";
     public static final String DASHBOARD = "dashboard";
     public static final String VPN = "vpn";
     public static final String LOCATION = "location";

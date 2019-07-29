@@ -43,8 +43,6 @@ public class Telemetry {
     // adb logcat '*:S TELEMETRY_DEBUG'
     private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
 
-    private static final int LUMEN_TELEMETRY_SIGNAL_VERSION = 1;
-
     private static final int BATCH_SIZE = 50;
     private JSONArray mSignalCache = new JSONArray();
 
@@ -1512,7 +1510,7 @@ public class Telemetry {
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1528,7 +1526,7 @@ public class Telemetry {
             if (!state.isEmpty()) {
                 signal.put(TelemetryKeys.STATE, state);
             }
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1541,7 +1539,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.VPN);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CONNECT);
             signal.put(TelemetryKeys.LOCATION, location);
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1555,7 +1553,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.ERROR);
             signal.put(TelemetryKeys.LOCATION, location);
             signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1570,7 +1568,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.DISCONNECT);
             signal.put(TelemetryKeys.LOCATION, location);
             signal.put(TelemetryKeys.CONNECTION_TIME, connectionTime);
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1582,7 +1580,7 @@ public class Telemetry {
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.DASHBOARD);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
@@ -1598,10 +1596,83 @@ public class Telemetry {
             if (!state.isEmpty()) {
                 signal.put(TelemetryKeys.STATE, state);
             }
-            signal.put(TelemetryKeys.VERSION, LUMEN_TELEMETRY_SIGNAL_VERSION);
+            signal.put(TelemetryKeys.VERSION, 1);
             saveSignal(signal, false);
         } catch (JSONException e) {
             logError(TelemetryKeys.VPN);
+        }
+    }
+
+    public void sendPaymentShowSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentClickSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentCancelSignal() {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CANCEL);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentErrorSignal(String target, String view, String topic) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, view);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.ERROR);
+            if (!topic.isEmpty()) {
+                signal.put(TelemetryKeys.TOPIC, topic);
+            }
+            if (!target.isEmpty()) {
+                signal.put(TelemetryKeys.TARGET, target);
+            }
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
+        }
+    }
+
+    public void sendPaymentSuccessSignal(String target) {
+        final JSONObject signal = new JSONObject();
+        try {
+            signal.put(TelemetryKeys.TYPE, TelemetryKeys.PAYMENT);
+            signal.put(TelemetryKeys.VIEW, TelemetryKeys.PAYMENT_SCREEN_REGULAR);
+            signal.put(TelemetryKeys.TARGET, target);
+            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SUCCESS);
+            signal.put(TelemetryKeys.VERSION, 2);
+            saveSignal(signal, false);
+        } catch (JSONException e) {
+            logError(TelemetryKeys.PAYMENT);
         }
     }
     //endregion
