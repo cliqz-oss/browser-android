@@ -6,4 +6,6 @@
     <!-- Settings activity specific stubs -->
     <item name="lumen_faq" type="id" />
     <item name="lumen_support" type="id" />
+    <item name="lumen_onboarding" type="layout" />
+    <item name="lumen_onboarding_close_button" type="id" />
 </resources>
