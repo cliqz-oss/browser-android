@@ -119,7 +119,8 @@
         android:paddingEnd="15dp"
         android:text="@string/learn_more_btn"
         android:textAllCaps="true"
-        android:textColor="#3073DB"
-        android:textSize="14sp" />
+        android:textColor="@color/lumen_color_blue_primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

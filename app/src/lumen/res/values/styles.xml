@@ -42,10 +42,16 @@
         <item name="android:textSize">@dimen/dashboard_item_content_size</item>
     </style>
     <style name="dashboard_switch_style" parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">#1B9CFC</item>
+        <item name="colorControlActivated">@color/lumen_color_blue_primary</item>
         <item name="colorSwitchThumbNormal">#7189B0</item>
     </style>
     <style name="Theme.Purchase.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AlertDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+    <style name="AlertDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/lumen_color_blue_primary</item>
     </style>
 </resources>

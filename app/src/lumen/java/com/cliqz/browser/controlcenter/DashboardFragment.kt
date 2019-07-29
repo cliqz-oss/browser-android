@@ -7,6 +7,7 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.cliqz.browser.R
 import com.cliqz.browser.app.BrowserApp
@@ -68,7 +69,7 @@ class DashboardFragment : Fragment() {
             if (!preferenceManager.isAttrackEnabled && !preferenceManager.adBlockEnabled) {
                 return@setOnClickListener
             }
-            android.app.AlertDialog.Builder(it.context)
+            AlertDialog.Builder(it.context, R.style.AlertDialogTheme)
                     .setTitle(R.string.bond_dashboard_clear_dialog_title)
                     .setMessage(R.string.bond_dashboard_clear_dialog_message)
                     .setPositiveButton(R.string.button_ok) { _, _ ->
