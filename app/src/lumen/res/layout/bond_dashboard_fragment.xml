@@ -1,212 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Copyright © Cliqz 2019-->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bond_dashboard_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_color"
-    android:orientation="vertical"
+    android:fillViewport="true"
     tools:ignore="ContentDescription">
 
-    <View
-        android:id="@+id/vertical_line"
-        android:layout_width="0.4dp"
-        android:layout_height="0dp"
-        android:background="@color/lumen_color_blue_primary_opaque"
-        app:layout_constraintBottom_toBottomOf="@+id/phishing_checked_text"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/trackers_detected_icon" />
-
-    <View
-        android:id="@+id/horizontal_line"
-        android:layout_width="0dp"
-        android:layout_height="0.4dp"
-        android:background="@color/lumen_color_blue_primary_opaque"
-        app:layout_constraintBottom_toBottomOf="@id/reset"
-        app:layout_constraintEnd_toEndOf="@id/trackers_detected_text"
-        app:layout_constraintStart_toStartOf="@id/ads_blocked_text"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45" />
-
-    <ImageView
-        android:id="@+id/ads_blocked_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/ads_blocked"
-        app:layout_constraintEnd_toEndOf="@+id/ads_blocked"
-        app:layout_constraintStart_toStartOf="@+id/ads_blocked"
-        app:srcCompat="@drawable/ic_adblock_on" />
-
-    <TextView
-        android:id="@+id/ads_blocked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/ads_blocked_text"
-        app:layout_constraintEnd_toEndOf="@+id/ads_blocked_text"
-        app:layout_constraintStart_toStartOf="@+id/ads_blocked_text"
-        tools:text="13" />
-
-    <TextView
-        android:id="@+id/ads_blocked_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:minLines="2"
-        android:text="@string/bond_dashboard_ads_blocked_title"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/horizontal_line"
-        app:layout_constraintEnd_toStartOf="@+id/vertical_line"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Datensammler blockiert" />
-
-    <ImageView
-        android:id="@+id/trackers_detected_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/trackers_detected"
-        app:layout_constraintEnd_toEndOf="@+id/trackers_detected"
-        app:layout_constraintStart_toStartOf="@+id/trackers_detected"
-        app:srcCompat="@drawable/ic_antitracking_on" />
-
-    <TextView
-        android:id="@+id/trackers_detected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/trackers_detected_text"
-        app:layout_constraintEnd_toEndOf="@+id/trackers_detected_text"
-        app:layout_constraintStart_toStartOf="@+id/trackers_detected_text"
-        tools:text="20" />
-
-    <TextView
-        android:id="@+id/trackers_detected_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:minLines="2"
-        android:text="@string/bond_dashboard_tracking_companies_title"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/horizontal_line"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vertical_line"
-        tools:text="@string/bond_dashboard_tracking_companies_title" />
-
-    <ImageView
-        android:id="@+id/data_saved_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="@+id/data_saved"
-        app:layout_constraintStart_toStartOf="@+id/data_saved"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_line"
-        app:srcCompat="@drawable/ic_kb_data_saved_on" />
-
-    <TextView
-        android:id="@+id/data_saved"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textColor="@android:color/white"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/data_saved_text"
-        app:layout_constraintStart_toStartOf="@+id/data_saved_text"
-        app:layout_constraintTop_toBottomOf="@+id/data_saved_icon"
-        tools:text="1,5" />
-
-    <TextView
-        android:id="@+id/data_saved_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="25dp"
-        android:gravity="center"
-        android:minLines="2"
-        android:text="@string/bond_dashboard_data_saved_title"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/phishing_checked_text"
-        app:layout_constraintEnd_toStartOf="@+id/vertical_line"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/data_saved" />
-
-
-    <ImageView
-        android:id="@+id/phishing_checked_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="@+id/phishing_checked"
-        app:layout_constraintStart_toStartOf="@+id/phishing_checked"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_line"
-        app:srcCompat="@drawable/ic_antiphishing_on" />
-
-    <TextView
-        android:id="@+id/phishing_checked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/phishing_checked_text"
-        app:layout_constraintStart_toStartOf="@+id/phishing_checked_text"
-        app:layout_constraintTop_toBottomOf="@+id/phishing_checked_icon"
-        tools:text="12" />
-
-    <TextView
-        android:id="@+id/phishing_checked_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="25dp"
-        android:gravity="center"
-        android:minLines="2"
-        android:text="@string/bond_dashboard_phishing_protection_title"
-        android:textColor="@android:color/white"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vertical_line"
-        app:layout_constraintTop_toBottomOf="@id/phishing_checked" />
-
-    <TextView
-        android:id="@+id/reset"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bond_dashboard_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="8dp"
-        android:background="@color/primary_color"
-        android:gravity="center"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:text="@string/reset_statistics"
-        android:textAllCaps="true"
-        android:textColor="@color/lumen_color_blue_primary"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vertical_line"
-        app:layout_constraintVertical_bias="1" />
+        android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/vertical_line"
+            android:layout_width="0.4dp"
+            android:layout_height="0dp"
+            android:background="@color/lumen_color_blue_primary_opaque"
+            app:layout_constraintBottom_toBottomOf="@+id/phishing_checked_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/trackers_detected_icon" />
+
+        <View
+            android:id="@+id/horizontal_line"
+            android:layout_width="0dp"
+            android:layout_height="0.4dp"
+            android:background="@color/lumen_color_blue_primary_opaque"
+            app:layout_constraintBottom_toBottomOf="@id/reset"
+            app:layout_constraintEnd_toEndOf="@id/trackers_detected_text"
+            app:layout_constraintStart_toStartOf="@id/ads_blocked_text"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.45" />
+
+        <ImageView
+            android:id="@+id/ads_blocked_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/ads_blocked"
+            app:layout_constraintEnd_toEndOf="@+id/ads_blocked"
+            app:layout_constraintStart_toStartOf="@+id/ads_blocked"
+            app:srcCompat="@drawable/ic_adblock_on" />
+
+        <TextView
+            android:id="@+id/ads_blocked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/ads_blocked_text"
+            app:layout_constraintEnd_toEndOf="@+id/ads_blocked_text"
+            app:layout_constraintStart_toStartOf="@+id/ads_blocked_text"
+            tools:text="13" />
+
+        <TextView
+            android:id="@+id/ads_blocked_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:minLines="2"
+            android:text="@string/bond_dashboard_ads_blocked_title"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/horizontal_line"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_line"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Datensammler blockiert" />
+
+        <ImageView
+            android:id="@+id/trackers_detected_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/trackers_detected"
+            app:layout_constraintEnd_toEndOf="@+id/trackers_detected"
+            app:layout_constraintStart_toStartOf="@+id/trackers_detected"
+            app:srcCompat="@drawable/ic_antitracking_on" />
+
+        <TextView
+            android:id="@+id/trackers_detected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/trackers_detected_text"
+            app:layout_constraintEnd_toEndOf="@+id/trackers_detected_text"
+            app:layout_constraintStart_toStartOf="@+id/trackers_detected_text"
+            tools:text="20" />
+
+        <TextView
+            android:id="@+id/trackers_detected_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:minLines="2"
+            android:text="@string/bond_dashboard_tracking_companies_title"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@+id/horizontal_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vertical_line"
+            tools:text="@string/bond_dashboard_tracking_companies_title" />
+
+        <ImageView
+            android:id="@+id/data_saved_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="@+id/data_saved"
+            app:layout_constraintStart_toStartOf="@+id/data_saved"
+            app:layout_constraintTop_toBottomOf="@id/horizontal_line"
+            app:srcCompat="@drawable/ic_kb_data_saved_on" />
+
+        <TextView
+            android:id="@+id/data_saved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/data_saved_text"
+            app:layout_constraintStart_toStartOf="@+id/data_saved_text"
+            app:layout_constraintTop_toBottomOf="@+id/data_saved_icon"
+            tools:text="1,5" />
+
+        <TextView
+            android:id="@+id/data_saved_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center"
+            android:minLines="2"
+            android:text="@string/bond_dashboard_data_saved_title"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/phishing_checked_text"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/data_saved" />
+
+
+        <ImageView
+            android:id="@+id/phishing_checked_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="@+id/phishing_checked"
+            app:layout_constraintStart_toStartOf="@+id/phishing_checked"
+            app:layout_constraintTop_toBottomOf="@id/horizontal_line"
+            app:srcCompat="@drawable/ic_antiphishing_on" />
+
+        <TextView
+            android:id="@+id/phishing_checked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/phishing_checked_text"
+            app:layout_constraintStart_toStartOf="@+id/phishing_checked_text"
+            app:layout_constraintTop_toBottomOf="@+id/phishing_checked_icon"
+            tools:text="12" />
+
+        <TextView
+            android:id="@+id/phishing_checked_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center"
+            android:minLines="2"
+            android:text="@string/bond_dashboard_phishing_protection_title"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vertical_line"
+            app:layout_constraintTop_toBottomOf="@id/phishing_checked" />
+
+        <TextView
+            android:id="@+id/reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:background="@color/primary_color"
+            android:gravity="center"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:text="@string/reset_statistics"
+            android:textAllCaps="true"
+            android:textColor="@color/lumen_color_blue_primary"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vertical_line"
+            app:layout_constraintVertical_bias="1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

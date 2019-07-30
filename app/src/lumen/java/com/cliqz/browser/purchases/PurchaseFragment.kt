@@ -18,7 +18,7 @@ import com.cliqz.browser.main.MainActivity
 import com.cliqz.browser.main.Messages
 import com.cliqz.browser.purchases.Products.PRODUCTS_LIST
 import com.cliqz.browser.purchases.Products.UPGRADE_MAP
-import com.cliqz.browser.purchases.productlist.OnBuyClickListener
+import com.cliqz.browser.purchases.productlist.OnPurchaseClickListener
 import com.cliqz.browser.purchases.productlist.ProductListAdapter
 import com.cliqz.browser.purchases.productlist.ProductRowData
 import com.cliqz.nove.Bus
@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 private val TAG = PurchaseFragment::class.java.simpleName
 
-class PurchaseFragment : DialogFragment(), OnBuyClickListener {
+class PurchaseFragment : DialogFragment(), OnPurchaseClickListener {
 
     private lateinit var mAdapter: ProductListAdapter
 
@@ -61,22 +61,10 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     }
 
     private fun initializeViews() {
-        mAdapter = ProductListAdapter(context, this)
-        product_list.adapter = mAdapter
-        product_list.layoutManager = LinearLayoutManager(context)
-
-        restore_purchase.setOnClickListener {
-            checkExistingPurchases(
-                    onSuccess = { activeSku ->
-                        enableFeatures(activeSku)
-                        Toast.makeText(context, getString(R.string.restore_subscription_success),
-                                Toast.LENGTH_LONG).show()
-                    },
-                    onError = {
-                        Toast.makeText(context, R.string.restore_subscription_error_msg,
-                                Toast.LENGTH_LONG).show()
-                    }
-            )
+        context?.let {
+            mAdapter = ProductListAdapter(purchasesManager, it, this)
+            product_list.adapter = mAdapter
+            product_list.layoutManager = LinearLayoutManager(context)
         }
     }
 
@@ -131,33 +119,41 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
     fun setLoading(flag: Boolean) {
         product_list.visibility = if (flag) View.GONE else View.VISIBLE
         loading.visibility = if (flag) View.VISIBLE else View.GONE
-        restore_purchase.visibility = if (flag || purchasesManager.purchase.isASubscriber) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
     }
 
     override fun onBuyClicked(position: Int) {
         mAdapter.getProduct(position).apply {
-            val contentView = view?.rootView?.findViewById<ViewGroup>(android.R.id.content)
-            val progress = LayoutInflater.from(context)
-                    .inflate(R.layout.fullscreen_progress, contentView, false)
-            contentView?.addView(progress)
-
+            val progress = addProgressView()
             // Please notice, it is pointless to add an animation to make the progress disappear,
             // the payment interface will appear in any case half a second after the animation ends
             checkExistingPurchases(
                     onSuccess = {activeSku ->
-                        contentView?.removeView(progress)
+                        removeProgressView(progress)
                         showRestorePurchasesDialog(sku = activeSku)
                     },
                     onError = {
-                        contentView?.removeView(progress)
+                        removeProgressView(progress)
                         makePurchase(sku)
                     }
             )
         }
+    }
+
+    override fun onRestoreClicked() {
+        val progress = addProgressView()
+        checkExistingPurchases(
+                onSuccess = { activeSku ->
+                    removeProgressView(progress)
+                    enableFeatures(activeSku)
+                    Toast.makeText(context, getString(R.string.restore_subscription_success),
+                            Toast.LENGTH_LONG).show()
+                },
+                onError = {
+                    removeProgressView(progress)
+                    Toast.makeText(context, R.string.restore_subscription_error_msg,
+                            Toast.LENGTH_LONG).show()
+                }
+        )
     }
 
     private fun checkExistingPurchases(onSuccess: (activeSku: String) -> Unit, onError: () -> Unit) {
@@ -255,4 +251,18 @@ class PurchaseFragment : DialogFragment(), OnBuyClickListener {
         Products.BASIC_PLUS_VPN -> ProductName.BASIC_VPN
         else -> IllegalArgumentException("Invalid product id $sku")
     }
+
+    private fun addProgressView(): View {
+        val contentView = view?.rootView?.findViewById<ViewGroup>(android.R.id.content)
+        val progress = LayoutInflater.from(context)
+                .inflate(R.layout.fullscreen_progress, contentView, false)
+        contentView?.addView(progress)
+        return progress
+    }
+
+    private fun removeProgressView(progress: View) {
+        val contentView = view?.rootView?.findViewById<ViewGroup>(android.R.id.content)
+        contentView?.removeView(progress)
+    }
+
 }

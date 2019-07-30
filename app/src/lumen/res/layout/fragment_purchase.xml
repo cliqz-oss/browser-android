@@ -41,32 +41,12 @@
         android:layout_gravity="center"
         android:layout_marginTop="28dp"
         android:padding="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/restore_purchase"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/close_btn"
         app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/subscription_product_row_default" />
-
-    <TextView
-        android:id="@+id/restore_purchase"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_color"
-        android:gravity="center"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:text="@string/restore_subscription"
-        android:textAllCaps="true"
-        android:textColor="@color/lumen_color_blue_primary"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/product_list"
-        app:layout_constraintVertical_bias="1"
-        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
