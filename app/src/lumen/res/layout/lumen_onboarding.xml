@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="50dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lumen_logo_onboarding" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textColor="@color/white"
+            android:text="@string/lumen_onboarding_text_1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textColor="@color/white"
+            android:text="@string/lumen_onboarding_text_2"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/lumen_onboarding_close_button"
+        android:layout_width="160dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center|bottom"
+        android:layout_margin="50dp"
+        android:background="@drawable/rounded_corner_solid_button"
+        android:text="@string/lumen_onboarding_button"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+
+</FrameLayout>

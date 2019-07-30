@@ -252,4 +252,10 @@ public final class TelemetryKeys {
     public static final String NEVER = "never";
     public static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
     public static final String SEND_USAGE_DATA = "send_usage_data";
+
+    // Lumen specific telemetry keys.
+
+    public static final String PROTECTION_ENABLED = "lumen.protection.isEnabled";
+    public static final String SUBSCRIPTION_TYPE = "lumen.subscription";
+
 }

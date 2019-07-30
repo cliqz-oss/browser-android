@@ -46,9 +46,9 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Telemetry providesTelemetry(PreferenceManager preferenceManager,
+    Telemetry providesTelemetry(PreferenceManager preferenceManager, PurchasesManager purchasesManager,
                      HistoryDatabase historyDatabase, Timings timings) {
-        return new Telemetry(app, preferenceManager, historyDatabase, timings);
+        return new Telemetry(app, preferenceManager, purchasesManager, historyDatabase, timings);
     }
 
     @Provides

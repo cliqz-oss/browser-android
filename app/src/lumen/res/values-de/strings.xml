@@ -110,4 +110,9 @@
     <!-- Private Tab -->
     <string name="action_incognito">Neuer privater Tab</string>
     <string name="open_in_incognito_tab">In neuem privatem Tab öffnen</string>
+
+    <!-- Onboarding -->
+    <string name="lumen_onboarding_text_1">Komplettschutz im Web</string>
+    <string name="lumen_onboarding_text_2">Sicher unterwegs mit VPN</string>
+    <string name="lumen_onboarding_button">LOS GEHT\’S</string>
 </resources>
