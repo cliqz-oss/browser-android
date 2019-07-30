@@ -35,7 +35,7 @@ internal object Products {
      * Maps a subscribed product to the ones to which the user can upgrade
      */
     val UPGRADE_MAP = mapOf(
-            BASIC to setOf(BASIC_PLUS_VPN),
+            BASIC to setOf(VPN, BASIC_PLUS_VPN),
             VPN to setOf(BASIC_PLUS_VPN),
             BASIC_PLUS_VPN to emptySet())
             .withDefault { setOf(BASIC, VPN, BASIC_PLUS_VPN) }
