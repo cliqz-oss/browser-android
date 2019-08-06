@@ -2,7 +2,7 @@
 @Library(['cliqz-shared-library@v1.2']) _
 properties([
     parameters([
-        choice(choices: ['lumen', 'cliqz'], defaultValue: 'lumen', description: 'Which Product ?', name: 'product')
+        choice(choices: ['cliqz', 'lumen'], description: 'Which Product?', name: 'product')
     ])
 ])
 node('master'){
