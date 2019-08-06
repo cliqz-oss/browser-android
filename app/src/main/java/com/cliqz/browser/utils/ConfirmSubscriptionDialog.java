@@ -4,9 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
@@ -14,12 +14,13 @@ import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 
+import timber.log.Timber;
+
 /**
  * @author Stefano Pacifici
  */
 public class ConfirmSubscriptionDialog implements DialogInterface.OnClickListener {
 
-    private final static String TAG = ConfirmSubscriptionDialog.class.getSimpleName();
     private final SubscriptionsManager subscriptionsManager;
     private final Telemetry telemetry;
     private final Bus bus;
@@ -100,7 +101,7 @@ public class ConfirmSubscriptionDialog implements DialogInterface.OnClickListene
                     .show();
         } catch (IllegalArgumentException e) {
             // Log the message and return null
-            Log.e(TAG, "Can't decode subscription type: ", e);
+            Timber.e(e, "Can't decode subscription type: ");
             return null;
         }
     }

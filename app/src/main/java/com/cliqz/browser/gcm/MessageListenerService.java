@@ -23,9 +23,10 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.AppComponent;
@@ -46,6 +47,7 @@ import javax.inject.Inject;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.UrlUtils;
+import timber.log.Timber;
 
 public class MessageListenerService extends GcmListenerService {
 
@@ -103,8 +105,6 @@ public class MessageListenerService extends GcmListenerService {
     @Inject
     SubscriptionsManager subscriptionsManager;
 
-    private static final String TAG = MessageListenerService.class.getSimpleName();
-
     private static final int MSG_ERROR_TYPE = -1;
 
     @Override
@@ -133,7 +133,7 @@ public class MessageListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         final int type = Integer.valueOf(data.getString("type", "-1"));
         if (type == MSG_ERROR_TYPE) {
-            Log.e(TAG, "Invalid message format " + data.toString());
+            Timber.e("Invalid message format " + data.toString());
             return;
         }
 
@@ -277,7 +277,7 @@ public class MessageListenerService extends GcmListenerService {
     }
 
     private void unknownMessageType(int mainType, int subType) {
-        Log.e(TAG, String.format("Unknown message with type %d and sub-type %d", mainType, subType));
+        Timber.e("Unknown message with type %d and sub-type %d", mainType, subType);
     }
 
     /**

@@ -7,11 +7,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
+import android.webkit.WebView;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-import android.util.Log;
-import android.webkit.WebView;
 
 import com.cliqz.browser.main.TabBundleKeys;
 
@@ -33,6 +33,7 @@ import java.util.concurrent.CountDownLatch;
 
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.view.TrampolineConstants;
+import timber.log.Timber;
 
 /**
  * Asynchronous web view state persister
@@ -41,7 +42,6 @@ import acr.browser.lightning.view.TrampolineConstants;
  */
 public class WebViewPersister {
 
-    private static final String TAG = WebViewPersister.class.getSimpleName();
     private static final int QUEUE_OPERATION_MESSAGE_CODE = 1;
     private static final int PERFORM_OPERATIONS_CODE = 2;
     private static final int WORK_FINISHED_CODE = 3;
@@ -74,7 +74,7 @@ public class WebViewPersister {
             msg.obj = new PersistTabOperation(identifier, url, title, webView);
             mHandler.sendMessage(msg);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Can't init the persistence handler", e);
+            Timber.e(e, "Can't init the persistence handler");
         }
     }
 
@@ -87,7 +87,7 @@ public class WebViewPersister {
             msg.obj = new DeleteTabOperation(identifier);
             mHandler.sendMessage(msg);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Can't init the persistence handler", e);
+            Timber.e(e, "Can't init the persistence handler");
         }
     }
 
@@ -100,7 +100,7 @@ public class WebViewPersister {
             msg.obj = new VisitTabOperation(identifier);
             mHandler.sendMessage(msg);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Can't init the persistence handler", e);
+            Timber.e(e, "Can't init the persistence handler");
         }
     }
 
@@ -123,7 +123,7 @@ public class WebViewPersister {
                 parcel.setDataPosition(0);
                 state = parcel.readBundle(getClass().getClassLoader());
             } catch (Throwable e) {
-                Log.e(TAG, "Can't read state from " + dataFile, e);
+                Timber.e(e, "Can't read state from %s", dataFile);
             } finally {
                 Utils.close(in);
                 parcel.recycle();
@@ -162,9 +162,9 @@ public class WebViewPersister {
                 bundle.putLong(TabBundleKeys.LAST_VISIT, metafile.lastModified());
                 metadata.add(bundle);
             } catch (Exception e) {
-                Log.e(TAG, "Invalid metadata from " + metafile + ". We'll remove it.", e);
+                Timber.e(e, "Invalid metadata from " + metafile + ". We'll remove it.");
                 if (!metafile.delete()) {
-                    Log.e(TAG, "Can't delete " + metafile);
+                    Timber.e("Can't delete %s", metafile);
                 }
             }
         }
@@ -400,7 +400,7 @@ public class WebViewPersister {
                 try {
                     operation.execute();
                 } catch (Exception e) {
-                    Log.e(TAG, e.getMessage(), e);
+                    Timber.e(e);
                 }
             }
             mHandler.sendEmptyMessage(WORK_FINISHED_CODE);

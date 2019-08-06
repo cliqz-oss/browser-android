@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.google.zxing.BinaryBitmap;
@@ -36,9 +35,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 final class DecodeHandler extends Handler {
 
-    private static final String TAG = DecodeHandler.class.getSimpleName();
     private static final Map<DecodeHintType, Object> HINTS = buildHints();
 
     private static Map<DecodeHintType, Object> buildHints() {
@@ -89,7 +89,7 @@ final class DecodeHandler extends Handler {
             try {
                 rawResult = qrCodeReader.decode(bitmap, HINTS);
             } catch (ReaderException re) {
-                Log.d(TAG, "Exception", re);
+                Timber.d(re, "Exception");
             } finally {
                 qrCodeReader.reset();
             }
@@ -99,7 +99,7 @@ final class DecodeHandler extends Handler {
         if (rawResult != null) {
             // Don't log the barcode contents for security.
             long end = System.currentTimeMillis();
-            Log.d(TAG, "Found barcode in " + (end - start) + " ms");
+            Timber.d("Found barcode in " + (end - start) + " ms");
             if (handler != null) {
                 Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
                 Bundle bundle = new Bundle();

@@ -7,14 +7,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.anthonycr.grant.PermissionsManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
@@ -23,7 +25,6 @@ import javax.inject.Singleton;
 @Singleton
 public class LocationCache implements LocationListener {
 
-    private static final String TAG = LocationCache.class.getSimpleName();
     private static final long FIFTEEN_MINUTES = 900_000L;
     private static final float FORTY_METERS = 40.0f;
 
@@ -59,7 +60,7 @@ public class LocationCache implements LocationListener {
                     mLastLocation = locationManager.getLastKnownLocation(mProvider);
                 }
             } catch (SecurityException e) {
-                Log.e(TAG, "Check permissions");
+                Timber.e("Check permissions");
             }
         }
     }

@@ -21,13 +21,12 @@ import java.net.URL;
 import java.util.Locale;
 
 import acr.browser.lightning.constant.Constants;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 class TelemetrySender implements Runnable {
-    private static final String TAG = TelemetrySender.class.getSimpleName();
-
 
     private final JSONArray cache;
     private final Context context;
@@ -74,7 +73,7 @@ class TelemetrySender implements Runnable {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (Exception e) {
-                Log.e(Constants.TAG, "Failed to post telemetry to server", e);
+                Timber.e(e, "Failed to post telemetry to server");
             } finally {
                 safeClose(reader);
             }
@@ -88,7 +87,7 @@ class TelemetrySender implements Runnable {
             os = new FileOutputStream(telemetryFile, false);
             os.write(fileContent.getBytes());
         } catch (IOException e) {
-            Log.e(TAG, "Error storing telemetry file");
+            Timber.e("Error storing telemetry file");
         } finally {
             safeClose(os);
         }

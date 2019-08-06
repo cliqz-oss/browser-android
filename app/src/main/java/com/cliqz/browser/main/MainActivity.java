@@ -20,7 +20,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -84,6 +83,7 @@ import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
 import acr.browser.lightning.view.LightningView;
+import timber.log.Timber;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             }
         } catch (IllegalArgumentException e) {
             // This happens on a lot of Samsung devices
-            Log.e(TAG, "Can't unregister broadcast receiver", e);
+            Timber.e(e, "Can't unregister broadcast receiver");
         } finally {
             mDownoloadCompletedBroadcastReceiver = null;
         }
@@ -715,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             message = getString(R.string.tab_send_success_msg, event.json.getString("name"));
         } catch (JSONException e) {
             message = getString(R.string.tab_send_success_msg, "UNKOWN");
-            Log.e(TAG,e.getMessage(),e);
+            Timber.e(e);
         }
         bus.post(new BrowserEvents.ShowSnackBarMessage(message));
         telemetry.sendSendTabSuccessSignal();
@@ -770,7 +770,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             final int versionNumber = Integer.parseInt(versionName.substring(0, 2));
             return versionNumber < BuildConfig.MINIMUM_WEBVIEW_VERSION;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Package Android System WebView is not found");
+            Timber.e("Package Android System WebView is not found");
             return false;
         }
     }
@@ -832,13 +832,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Subscribe
     void openTab(CliqzMessages.OpenTab event) {
         if (!event.isValid) {
-            Log.e(TAG, "Invalid OpenTab event");
+            Timber.e("Invalid OpenTab event");
             return;
         }
         final Uri uri = Uri.parse(event.url);
         // Is the uri still null?
         if (uri == null) {
-            Log.e(TAG, "Can't parse Url");
+            Timber.e("Can't parse Url");
             return;
         }
 

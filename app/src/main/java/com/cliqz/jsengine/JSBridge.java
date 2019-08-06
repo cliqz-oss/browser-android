@@ -2,7 +2,6 @@ package com.cliqz.jsengine;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
@@ -28,6 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
+
+import timber.log.Timber;
 
 /**
  * @author Sam Macbeth
@@ -173,7 +174,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
                 try {
                     result.wait(ACTION_TIMEOUT);
                 } catch (InterruptedException e) {
-                    Log.e("JSBridge", "Interrupted waiting for bridge response", e);
+                    Timber.e(e, "Interrupted waiting for bridge response");
                 }
             }
         }
@@ -227,7 +228,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
                 }
             });
         } else {
-            Log.w("JSBridge", "Unknown event received " + event);
+            Timber.w("Unknown event received %s", event);
         }
     }
 

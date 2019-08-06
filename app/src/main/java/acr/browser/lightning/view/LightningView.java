@@ -52,6 +52,7 @@ import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
 import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * @author Anthony C. Restaino
@@ -241,7 +242,7 @@ public class LightningView {
                 } catch (Exception e) {
                     // This shouldn't be necessary, but there are a number
                     // of KitKat devices that crash trying to set this
-                    Log.e(Constants.TAG, "Problem setting LayoutAlgorithm to TEXT_AUTOSIZING");
+                    Timber.e("Problem setting LayoutAlgorithm to TEXT_AUTOSIZING");
                 }
             }
         } else {
@@ -289,7 +290,7 @@ public class LightningView {
             insights.setEnabled(purchasesManager.isDashboardEnabled() && preferences.isAttrackEnabled());
 
         } catch (EngineNotYetAvailable e) {
-            Log.w(TAG, "error updating jsengine state", e);
+            Timber.w(e, "error updating jsengine state");
         }
 
     }
@@ -357,7 +358,7 @@ public class LightningView {
 
     public synchronized void onResume() {
         if (mWebView != null) {
-            Log.w(LightningView.class.getSimpleName(), "Resuming");
+            Timber.w("Resuming");
             initializePreferences(mWebView.getSettings());
             mWebView.onResume();
         }

@@ -3,17 +3,17 @@ package com.cliqz.browser.main;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.text.Spannable;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import android.text.Spannable;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.Utils;
+import timber.log.Timber;
 import uk.co.deanwild.materialshowcaseview.IShowcaseListener;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
@@ -185,7 +186,7 @@ public class OnBoardingHelper {
         try {
             Callable.class.cast(mOnBoarding.getTag()).call();
         } catch (Throwable e) {
-            Log.e(TAG, "This should never happen", e);
+            Timber.e(e, "This should never happen");
         }
         mOnBoarding = null;
         return true;

@@ -18,8 +18,9 @@ package com.cliqz.browser.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.cliqz.browser.CliqzConfig;
 import com.cliqz.browser.app.BrowserApp;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -67,7 +69,7 @@ public class RegistrationIntentService extends IntentService {
             final String token = instanceID.getToken(getString(senderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-            Log.i(TAG, "GCM Registration Token: " + token);
+            Timber.i("GCM Registration Token: %s", token);
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
@@ -81,7 +83,7 @@ public class RegistrationIntentService extends IntentService {
             preferenceManager.setGCMTokenSent(true);
             // [END register_for_gcm]
         } catch (Exception e) {
-            Log.d(TAG, "Failed to complete token refresh", e);
+            Timber.d(e, "Failed to complete token refresh");
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             preferenceManager.setGCMTokenSent(false);

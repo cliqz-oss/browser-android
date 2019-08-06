@@ -3,18 +3,17 @@ package com.cliqz.jsengine;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import com.cliqz.browser.BuildConfig;
 
 import java.util.concurrent.CountDownLatch;
 
+import timber.log.Timber;
+
 /**
  * @author Stefano Pacifici
  */
 class EngineQueuingThread extends Thread implements Handler.Callback {
-
-    private static final String TAG = EngineQueuingThread.class.getSimpleName();
 
     private static class ExtensionInfiniteLoop extends Exception {
         ExtensionInfiniteLoop(String msg) {
@@ -43,7 +42,7 @@ class EngineQueuingThread extends Thread implements Handler.Callback {
         } catch (InterruptedException ie) {
             throw new RuntimeException("EngineQueuingThread failed", ie);
         } catch (ExtensionInfiniteLoop eil) {
-            Log.e(TAG, "Extension was never ready");
+            Timber.e("Extension was never ready");
         }
     }
 

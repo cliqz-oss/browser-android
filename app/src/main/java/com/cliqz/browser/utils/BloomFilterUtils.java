@@ -9,11 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import timber.log.Timber;
+
 /**
  * Created by Ravjit on 27/09/16.
  */
 public class BloomFilterUtils {
-    private static final String TAG = BloomFilterUtils.class.getSimpleName();
     private BloomFilter bloomFilter;
 
     public BloomFilterUtils() {
@@ -30,9 +31,9 @@ public class BloomFilterUtils {
                     }
                     inputStream.close();
                 } catch (IOException e) {
-                    Log.e(TAG, "IOException while reading filter data", e);
+                    Timber.e(e, "IOException while reading filter data");
                 } catch (ClassNotFoundException e) {
-                    Log.e(TAG, "ClassNotFound Exception while reading filter data", e);
+                    Timber.e(e, "ClassNotFound Exception while reading filter data");
                 }
             }
         }).start();

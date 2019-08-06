@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
+
+import timber.log.Timber;
 
 public class PeerCommunicationService extends Service {
-
-    private static final String TAG = PeerCommunicationService.class.getSimpleName();
 
     private class PeerCommunicationServiceBinder extends Binder {
         PeerCommunicationService getService() {
@@ -28,7 +28,7 @@ public class PeerCommunicationService extends Service {
 
         synchronized void startPeer(PeerCommunicationService service) {
             if (thread != null) {
-                Log.w(TAG, "Can't start two peer thread");
+                Timber.w("Can't start two peer thread");
                 return;
             }
             thread = new PeerThread(service);
@@ -37,7 +37,7 @@ public class PeerCommunicationService extends Service {
 
         synchronized void stopPeer() {
             if (thread == null) {
-                Log.w(TAG, "No peer thread running");
+                Timber.w("No peer thread running");
                 return;
             }
 

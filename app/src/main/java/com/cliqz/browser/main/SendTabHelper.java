@@ -10,8 +10,8 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.connect.DevicesListEntry;
@@ -24,12 +24,12 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 /**
  * @author Stefano Pacifici
  */
 class SendTabHelper implements ServiceConnection {
-
-    private static final String TAG = SendTabHelper.class.getSimpleName();
 
     private static final long SERVICE_CONNECTION_TIMEOUT = 200L;
 
@@ -109,7 +109,7 @@ class SendTabHelper implements ServiceConnection {
             try {
                 devices.add(new DevicesListEntry(jsonDevices.getJSONObject(i)));
             } catch (JSONException e) {
-                Log.e(TAG, "Invalid device descriptor");
+                Timber.e("Invalid device descriptor");
             }
         }
         switch (devices.size()) {

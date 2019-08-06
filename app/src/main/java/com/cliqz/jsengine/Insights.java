@@ -1,9 +1,9 @@
 package com.cliqz.jsengine;
 
-import android.util.Log;
-
 import com.cliqz.browser.controlcenter.InsightsDataCallback;
 import com.facebook.react.bridge.NoSuchKeyException;
+
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
@@ -25,7 +25,7 @@ public class Insights {
             this.engine.getBridge().callAction("insights:getDashboardStats", result ->
                     callback.updateViews(result), period);
         } catch (EngineNotYetAvailable e) {
-            Log.e("JSEngine", "Insights getInsightsData error", e);
+            Timber.e(e, "Insights getInsightsData error");
         }
     }
 
@@ -33,7 +33,7 @@ public class Insights {
         try {
             this.engine.getBridge().callAction("insights:clearData");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException | NoSuchKeyException e) {
-            Log.e("JSEngine", "Insights clearData error", e);
+            Timber.e(e, "Insights clearData error");
         }
     }
 }
