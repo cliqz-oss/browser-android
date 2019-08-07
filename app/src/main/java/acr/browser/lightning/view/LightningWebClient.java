@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.main.Messages;
@@ -526,20 +525,11 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 return CODE_RETURN_FALSE;
             }
             if (intent != null) {
-                try {
-                    if (!BuildConfig.IS_LUMEN) {
-                        final URL realUrl = new URL(intent.getDataString());
-                        view.loadUrl(realUrl.toString());
-                    } else {
-                        if (intent.resolveActivity(context.getPackageManager()) != null) {
-                            context.startActivity(intent);
-                        } else {
-                            context.startActivity(new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=" + intent.getPackage())));
-                        }
-                    }
-                } catch (MalformedURLException e) {
-                    // Silently ignore this
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(intent);
+                } else {
+                    context.startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=" + intent.getPackage())));
                 }
                 return CODE_RETURN_TRUE;
             }
