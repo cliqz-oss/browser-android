@@ -54,18 +54,13 @@ public abstract class FragmentWithBus extends Fragment {
         if (component != null) {
             component.inject(this);
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        bus.unregister(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         registerToBus();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        bus.unregister(this);
     }
 
     protected void registerToBus() {
