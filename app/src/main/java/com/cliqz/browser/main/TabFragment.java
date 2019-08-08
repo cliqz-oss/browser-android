@@ -71,7 +71,6 @@ import com.cliqz.browser.widget.TabsCounter;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Subscribe;
-import com.cliqz.utils.ActivityUtils;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StreamUtils;
@@ -493,7 +492,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-                searchBar.setTitle(mLightningView.getTitle());
+                searchBar.setTitle(mLightningView.getUrl());
             }
         }
 
@@ -777,7 +776,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         searchBar.showTitleBar();
         searchBar.showProgressBar();
         final String url = webView.getUrl();
-        searchBar.setTitle(BuildConfig.IS_LUMEN ? url : webView.getTitle());
+        searchBar.setTitle(url);
         searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
@@ -1195,14 +1194,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         final String title = mLightningView.getTitle();
         state.setTitle(title);
-        if (BuildConfig.IS_NOT_LUMEN) {
-            searchBar.setTitle(title);
-            final Activity activity = getActivity();
-            if (activity != null) {
-                ActivityUtils.setTaskDescription(activity, title,
-                        R.color.primary_color_dark, R.mipmap.ic_launcher);
-            }
-        }
     }
 
     private void setSearchEngine() {
