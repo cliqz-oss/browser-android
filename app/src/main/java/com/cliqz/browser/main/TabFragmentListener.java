@@ -1,8 +1,10 @@
 package com.cliqz.browser.main;
 
-import androidx.core.view.ViewCompat;
+import android.content.res.Configuration;
 import android.text.Editable;
 import android.view.View;
+
+import androidx.core.view.ViewCompat;
 
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.search.SearchView;
@@ -51,7 +53,9 @@ class TabFragmentListener implements SearchBar.Listener {
             if (!ResumeTabDialog.isShown()) {
                 fragment.telemetry.sendQuickAccessBarSignal(TelemetryKeys.SHOW, null,
                         fragment.getTelemetryView());
-                if (fragment.quickAccessBar != null) {
+                if (fragment.quickAccessBar != null
+                        && fragment.getResources().getConfiguration().
+                        orientation == Configuration.ORIENTATION_PORTRAIT) {
                     fragment.quickAccessBar.show();
                 }
             }
