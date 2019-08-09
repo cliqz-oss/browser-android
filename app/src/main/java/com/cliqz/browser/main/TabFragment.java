@@ -932,8 +932,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             searchBar.setCursorPosition(query.length());
         }
         state.setMode(Mode.SEARCH);
+        state.setQuery(query);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
+        searchView.updateQuery(query, 0, query.length());
     }
 
     @SuppressLint("ObsoleteSdkInt")

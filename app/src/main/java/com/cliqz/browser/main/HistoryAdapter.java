@@ -176,16 +176,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             historyViewParent = view.findViewById(R.id.history_view_parent);
             historyViewParent.setOnClickListener( v -> {
                 final int position = getAdapterPosition();
-                switch (HistoryAdapter.this.getItemViewType(position)) {
-                    case VIEW_TYPE_HISTORY:
-                        bus.post(CliqzMessages.OpenLink.openFromHistory(historyList.get(position).getUrl()));
-                        break;
-                    case VIEW_TYPE_QUERY:
-                        bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
-                        break;
-                    default:
-                        break;
-                }
+                bus.post(CliqzMessages.OpenLink.openFromHistory(historyList.get(position).getUrl()));
             });
         }
 
@@ -215,12 +206,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             time = view.findViewById(R.id.query_time);
             selectedOverlay = view.findViewById(R.id.selectedOverLay);
             queryViewParent = view.findViewById(R.id.query_view_parent);
-//            queryViewParent.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    clickListener.onClick(v, getAdapterPosition());
-//                }
-//            });
+            queryViewParent.setOnClickListener(v -> {
+                final int position = getAdapterPosition();
+                bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
+
+            });
 //            queryViewParent.setOnLongClickListener(new View.OnLongClickListener() {
 //                @Override
 //                public boolean onLongClick(View v) {
