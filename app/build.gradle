@@ -177,9 +177,9 @@ dependencies {
     implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
     // event bus
-    implementation 'com.cliqz:nove:0.3.0'
-    annotationProcessor 'com.cliqz:nove-compiler:0.3.0'
-    
+    implementation 'com.cliqz:nove:0.4.0'
+    annotationProcessor 'com.cliqz:nove-compiler:0.4.0'
+
     // dependency injection
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.dagger:dagger:2.11'
