@@ -209,7 +209,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             queryViewParent.setOnClickListener(v -> {
                 final int position = getAdapterPosition();
                 bus.post(new Messages.OpenQuery(historyList.get(position).getUrl()));
-
             });
 //            queryViewParent.setOnLongClickListener(new View.OnLongClickListener() {
 //                @Override
