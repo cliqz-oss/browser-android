@@ -432,7 +432,9 @@ public class LightningView {
 
     @SuppressLint("NewApi")
     public synchronized void findInPage(String text) {
+        if (mWebView != null) {
             mWebView.findAllAsync(text);
+        }
     }
 
     @SuppressLint("ObsoleteSdkInt")

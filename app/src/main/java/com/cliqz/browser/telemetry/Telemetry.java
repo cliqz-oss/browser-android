@@ -225,6 +225,10 @@ public class Telemetry {
     private void sendEnvironmentSignal(boolean forceSend) {
         final Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://"));
         final ResolveInfo resolveInfo = context.getPackageManager().resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo == null) {
+            logError("No application available to handle this intent");
+            return;
+        }
         final boolean isDefault = resolveInfo.activityInfo.packageName.equals(BuildConfig.APPLICATION_ID);
         final long oneHour = 3600000;
         final long oneDay = 86400000;
