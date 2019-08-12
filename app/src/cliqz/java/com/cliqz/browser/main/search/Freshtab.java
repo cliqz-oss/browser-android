@@ -154,6 +154,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 view.setVisibility(VISIBLE);
             }
         }
+        preferenceManager.setNewsViewExpanded(isNewsExpanded);
         telemetry.sendMoreNewsSignal(isNewsExpanded);
         bus.post(new CliqzMessages.HideKeyboard());
     }
@@ -228,6 +229,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         topnewsListView.removeAllViews();
         final LayoutInflater inflater = LayoutInflater.from(getContext());
         int count = 0;
+        isNewsExpanded = preferenceManager.isNewsViewExpanded();
         for (final Topnews piece: topnews) {
             final View view = inflater.inflate(R.layout.news_layout, topnewsListView, false);
             final NewsViewHolder holder = new NewsViewHolder(view, count++, piece, telemetry, bus);

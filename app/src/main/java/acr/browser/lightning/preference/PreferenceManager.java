@@ -127,6 +127,7 @@ public class PreferenceManager {
         static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
         static final String SHOW_TOP_SITES = "show_top_sites";
         static final String SHOW_NEWS = "show_news";
+        static final String NEWS_EXPANDED = "news_expanded";
         static final String LIMIT_DATA_USAGE = "limit_data_usage";
         static final String IS_MYOFFRZ_ONBOARDING_ENABLED = "myoffrz_onboarding_enabled";
         static final String START_COUNT = "start_count";
@@ -896,6 +897,14 @@ public class PreferenceManager {
 
     public void setMyOffrzEnable(boolean value){
         putBoolean(Name.MY_OFFRZ_ENABLED,value);
+    }
+
+    public boolean isNewsViewExpanded() {
+        return mPrefs.getBoolean(Name.NEWS_EXPANDED, false);
+    }
+
+    public void setNewsViewExpanded(boolean value) {
+        putBoolean(Name.NEWS_EXPANDED, value);
     }
 
     public void setIsFreshInstall(boolean value) {
