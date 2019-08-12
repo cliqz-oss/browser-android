@@ -125,8 +125,9 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             component.inject(this);
         }
 
+        isNewsExpanded = preferenceManager.isNewsViewExpanded();
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                expandNewsIcon, null);
+                isNewsExpanded ? collapseNewsIcon : expandNewsIcon, null);
 
         removeTopsitesOverlay = new RemoveTopsitesOverlay(this);
 
@@ -229,7 +230,6 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         topnewsListView.removeAllViews();
         final LayoutInflater inflater = LayoutInflater.from(getContext());
         int count = 0;
-        isNewsExpanded = preferenceManager.isNewsViewExpanded();
         for (final Topnews piece: topnews) {
             final View view = inflater.inflate(R.layout.news_layout, topnewsListView, false);
             final NewsViewHolder holder = new NewsViewHolder(view, count++, piece, telemetry, bus);
