@@ -43,6 +43,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.abtesting.ABTestFetcher;
 import com.cliqz.browser.app.ActivityComponentProvider;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.extensions.ContextExtensionKt;
 import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
@@ -506,6 +507,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             }
+            ContextExtensionKt.deleteCacheDir(getApplicationContext());
         }
         if (preferenceManager.getClearCookiesExitEnabled()) {
             WebUtils.clearCookies(this);
