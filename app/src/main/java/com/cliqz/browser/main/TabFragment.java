@@ -541,6 +541,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         return inflater.inflate(R.layout.fragment_search_toolbar, container, false);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            quickAccessBar.hide();
+        }
+    }
+
     @Optional
     @OnClick(R.id.menu_overview)
     void historyClicked() {
@@ -932,8 +940,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             searchBar.setCursorPosition(query.length());
         }
         state.setMode(Mode.SEARCH);
+        state.setQuery(query);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
+        searchView.updateQuery(query, 0, query.length());
     }
 
     @SuppressLint("ObsoleteSdkInt")
