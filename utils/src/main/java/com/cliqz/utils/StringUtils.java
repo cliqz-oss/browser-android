@@ -1,11 +1,22 @@
 package com.cliqz.utils;
 
 import java.security.MessageDigest;
+import java.util.regex.Pattern;
+
+import io.mola.galimatias.GalimatiasParseException;
+import io.mola.galimatias.ParseIssue;
+import io.mola.galimatias.URL;
 
 /**
  * @author Stefano Pacifici
  */
+@SuppressWarnings("JavadocReference")
 public final class StringUtils {
+
+    private final static Pattern URL_WITH_USERNAME_AND_PASSWORD_WITHOUT_SCHEME =
+            Pattern.compile("([^/:@]*):([^/:@]*)@[^/]+.*");
+    private final static Pattern URL_WITH_HOST_AND_PORT =
+            Pattern.compile("[^/:]+:\\d+(/.*)?");
 
     private StringUtils() {}
 
@@ -100,6 +111,78 @@ public final class StringUtils {
             return webAddress.toString();
         } catch (WebAddress.ParseException e) {
             return null;
+        }
+    }
+
+    /**
+     * Given a string, this function tries to guess a valid url from it. This function was inspired
+     * by {@link android.webkit.URLUtil#guessUrl(String)}.
+     *
+     * @param inUrl the string we want the url to be guessed from
+     * @return a non null guessed url
+     */
+    public static String guessUrl(String inUrl) {
+        String retVal = inUrl != null ? inUrl : "";
+        URL webAddress;
+        // if (TRACE) Log.v(LOGTAG, "guessURL before queueRequest: " + retVal);
+
+        if (retVal.length() == 0) return retVal;
+        if (retVal.startsWith("about:")) return retVal;
+        // Do not try to interpret data scheme URLs
+        if (retVal.startsWith("data:")) return retVal;
+        // Do not try to interpret file scheme URLs
+        if (retVal.startsWith("file:")) return retVal;
+        // Do not try to interpret javascript scheme URLs
+        if (retVal.startsWith("javascript:")) return retVal;
+        // Do not try to interpret chrome scheme URLs
+        if (retVal.startsWith("chrome:")) return retVal;
+        // Do not try to interpret moz-extension scheme URLs
+        if (retVal.startsWith("moz-extension:")) return retVal;
+        // Do not try to interpret mailto scheme URLs
+        if (retVal.startsWith("mailto")) return retVal;
+        // Do not try to interpret view-source scheme URLs
+        if (retVal.startsWith("view-source:")) return retVal;
+        // Do not try to interpret resource scheme URLs
+        if (retVal.startsWith("resource:")) return retVal;
+
+        // Do not interpret localhost
+        if ("localhost".equalsIgnoreCase(retVal)) return retVal;
+
+        // Strip all periods and spaces from the tail
+        while (retVal.endsWith(".") || retVal.endsWith(" ")) {
+            retVal = retVal.substring(0, retVal.length() - 1);
+        }
+
+        try {
+            webAddress = parseURL(retVal);
+            // Check host
+            if (webAddress.host() == null) {
+                if (URL_WITH_USERNAME_AND_PASSWORD_WITHOUT_SCHEME.matcher(retVal).matches()) {
+                    webAddress = parseURL("http://" + retVal);
+                }
+                if (URL_WITH_HOST_AND_PORT.matcher(retVal).matches()) {
+                    return retVal; // I.E.: magrathea:8080
+                }
+            }
+            final String hostStr = webAddress.host().toString();
+            if (!"localhost".equalsIgnoreCase(hostStr) && !hostStr.contains(".")) {
+                webAddress = webAddress.withHost("www." + hostStr + ".com");
+            }
+        } catch (GalimatiasParseException e) {
+           return retVal;
+        }
+
+        return webAddress.toString();
+    }
+
+    private static URL parseURL(String inUrl) throws GalimatiasParseException {
+        try {
+            return URL.parse(inUrl);
+        } catch (GalimatiasParseException e) {
+            if (e.getParseIssue() == ParseIssue.MISSING_SCHEME) {
+                return parseURL("http://" + inUrl);
+            }
+            throw e;
         }
     }
 

@@ -1,9 +1,10 @@
 package com.cliqz.browser.webview;
 
-import androidx.annotation.NonNull;
 import android.view.animation.Animation;
-import android.webkit.URLUtil;
 
+import androidx.annotation.NonNull;
+
+import com.cliqz.utils.StringUtils;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -66,7 +67,7 @@ public class CliqzMessages {
         public final Animation animation;
 
         private OpenLink(String url, boolean reset, boolean fromHistory, Animation animation) {
-            this.url = URLUtil.guessUrl(url);
+            this.url = StringUtils.guessUrl(url);
             this.reset = reset;
             this.fromHistory = fromHistory;
             this.animation = animation;
@@ -99,11 +100,9 @@ public class CliqzMessages {
             if (data.hasKey("url")) {
                 isValid = true;
                 url = data.getString("url");
-                if (data.hasKey("title")) {
-                    title = data.getString("title");
-                } else {
-                    title = "";
-                }
+                final String nullableTitle =
+                        data.hasKey("title") ? data.getString("title") : null;
+                title = nullableTitle != null ? nullableTitle : "";
                 isIncognito = data.hasKey("isPrivate") && data.getBoolean("isPrivate");
             } else {
                 isValid = false;
