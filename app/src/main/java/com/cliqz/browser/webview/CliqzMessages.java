@@ -3,8 +3,6 @@ package com.cliqz.browser.webview;
 import android.support.annotation.NonNull;
 import android.view.animation.Animation;
 
-import androidx.annotation.NonNull;
-
 import com.cliqz.utils.StringUtils;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;

@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.HashMap;
@@ -30,8 +31,8 @@ import javax.annotation.Nullable;
 
 /**
  * @author Sam Macbeth
- * @author Moaz Rashad
  */
+@ReactModule(name = "JSBridge")
 public class JSBridge extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext context;
@@ -52,7 +53,7 @@ public class JSBridge extends ReactContextBaseJavaModule {
     private final Map<String, List<WaitingAction>> awaitingRegistration =
             new HashMap<>();
 
-    private static final long ACTION_TIMEOUT = 200;
+    private static final long ACTION_TIMEOUT = 1000;
 
     private final Handler handler;
     private final Bus bus;

@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.regex.Pattern;
 /**
  * @author Sam Macbeth
  */
+@ReactModule(name = "WebRequest")
 public class WebRequest extends ReactContextBaseJavaModule {
 
     private final static String TAG = WebRequest.class.getSimpleName();
@@ -88,7 +90,40 @@ public class WebRequest extends ReactContextBaseJavaModule {
 
     private boolean isTabActive(final int tabId) {
         Pair<Uri, WeakReference<WebView>> tuple = tabs.get(tabId);
-        return tuple != null && tuple.second.get() != null;
+        final boolean active = tuple != null && tuple.second.get() != null;
+
+        if (!active) {
+            // send core:tab_close event to notify extension that tab is gone
+            final WritableMap tab = Arguments.createMap();
+            tab.putInt("tabId", tabId);
+            engine.publishEvent("core:tab_close", tab);
+        }
+        return active;
+    }
+
+    private JSBridge ensureBridge() {
+        try {
+            return engine.getBridge();
+        } catch (EngineNotYetAvailable e) {
+            Log.w("webrequest", "jsengine not yet loaded, waiting", e);
+            try {
+                Thread.sleep(250);
+            } finally {
+                return ensureBridge();
+            }
+        }
+    }
+
+    private ReadableMap triggerWebRequest(final WritableMap requestInfo) throws EmptyResponseException {
+        try {
+            return ensureBridge().callAction("webRequest", requestInfo);
+        } catch (ActionNotAvailable e) {
+            try {
+                Thread.sleep(200);
+            } finally {
+                return triggerWebRequest(requestInfo);
+            }
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -158,6 +193,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putString("originUrl", originUrl);
         requestInfo.putString("sourceUrl", originUrl);
         requestInfo.putString("frameUrl", originUrl);
+        requestInfo.putString("tabUrl", originUrl);
         requestInfo.putInt("type", contentPolicyType);
 
         final WritableMap requestHeaders = Arguments.createMap();
@@ -167,7 +203,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         requestInfo.putMap("requestHeaders", requestHeaders);
 
         try {
-            final ReadableMap response = engine.getBridge().callAction("webRequest", requestInfo);
+            final ReadableMap response = triggerWebRequest(requestInfo);
             final ReadableMap blockResponse = response.getMap("result");
             final String source = blockResponse.hasKey("source") ? blockResponse.getString("source") : "";
             // counter for tab
@@ -195,12 +231,8 @@ public class WebRequest extends ReactContextBaseJavaModule {
                 Log.d(TAG, "Modify request from: " + requestUrl.toString());
                 return modifyRequest(source, request, newUrl, modifiedHeaders);
             }
-        } catch (ActionNotAvailable e) {
-            Log.w("webrequest", "jsengine not ready yet", e);
         } catch (EmptyResponseException e) {
             Log.w("webrequest", "jsengine timed out", e);
-        } catch (EngineNotYetAvailable e) {
-            Log.w("webrequest", "jsengine not yet loaded", e);
         } catch (NoSuchKeyException e) {
             Log.e("webrequest", "error in jsengine response", e);
         }
