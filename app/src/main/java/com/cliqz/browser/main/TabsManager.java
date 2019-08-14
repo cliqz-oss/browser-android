@@ -349,6 +349,10 @@ public class TabsManager {
         persister.clearTabsData();
     }
 
+    boolean canRestoreTabs() {
+        return !persister.loadTabsMetaData().isEmpty();
+    }
+
     boolean restoreTabs() {
         final List<Bundle> storedTabs = persister.loadTabsMetaData();
         long lastVisited = 0;

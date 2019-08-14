@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         crashDetector.notifyOnCreate();
 
         boolean isRestored;
-        if (crashDetector.hasCrashed()) {
+        if (crashDetector.hasCrashed() && tabsManager.canRestoreTabs()) {
             ResumeTabDialog.show(this);
             crashDetector.resetCrash();
             isRestored = false;
