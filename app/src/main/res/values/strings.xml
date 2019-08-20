@@ -331,4 +331,5 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="context_menu_open_forget_tab">Open in Forget Tab</string>
     <string name="context_menu_remove_topsite">Remove</string>
     <string name="set_default_browser_msg">Select Cliqz Browser from the list and tap \"Always\"</string>
+    <string name="made_in_germany">Made in Germany</string>
 </resources>

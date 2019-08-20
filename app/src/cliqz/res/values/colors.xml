@@ -82,4 +82,6 @@
 
     <color name="tabs_overview_background_color">@color/normal_tab_primary_color</color>
     <color name="tabs_overview_floating_button_color">@color/primary_color</color>
+    <color name="made_in_germany_color">#80808080</color>
+    <color name="made_in_germany_color_no_background">#AAAAAA</color>
 </resources>
