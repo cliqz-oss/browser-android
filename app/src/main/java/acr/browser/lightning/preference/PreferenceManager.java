@@ -939,11 +939,11 @@ public class PreferenceManager {
         putLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, System.currentTimeMillis());
     }
 
-    public boolean shouldShowLumenOnboarding() {
+    public boolean shouldShowOnboardingv2() {
         return mPrefs.getBoolean(Name.SHOULD_SHOW_LUMEN_ONBOARDING, true);
     }
 
-    public void setShouldShowLumenOnboarding(boolean val) {
+    public void setShouldShowOnboardingv2(boolean val) {
         putBoolean(Name.SHOULD_SHOW_LUMEN_ONBOARDING, val);
     }
 

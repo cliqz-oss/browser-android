@@ -13,4 +13,6 @@
 
     <!-- Stub ids for the overflow menu -->
     <item name="action_share" type="id" />
+
+    <item name="cliqz_onboarding" type="layout" />
 </resources>
