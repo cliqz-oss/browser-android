@@ -324,4 +324,10 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="lumen_logo_description" translatable="false">Lumen Logo</string>
     <string name="faq">FAQ</string>
     <string name="support">Support</string>
+
+    <string name="btn_undo_topsite_removal">Undo</string>
+    <string name="snackbar_topsite_removed">Topsite removed</string>
+    <string name="context_menu_open_new_tab">Open in New Tab</string>
+    <string name="context_menu_open_forget_tab">Open in Forget Tab</string>
+    <string name="context_menu_remove_topsite">Remove</string>
 </resources>

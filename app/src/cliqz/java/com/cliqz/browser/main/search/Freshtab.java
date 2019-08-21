@@ -66,8 +66,6 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     @BindView(R.id.container)
     ScrollView contanier;
 
-    RemoveTopsitesOverlay removeTopsitesOverlay;
-
     @Inject
     TopsitesAdapter topsitesAdapter;
 
@@ -128,15 +126,12 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 expandNewsIcon, null);
 
-        removeTopsitesOverlay = new RemoveTopsitesOverlay(this);
-
         topsitesGridView.setAdapter(topsitesAdapter);
 
         final TopsitesEventsListener topsitesEventsListener =
                 new TopsitesEventsListener(this);
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
-        topsitesGridView.setOnTouchListener(topsitesEventsListener);
         updateFreshTab();
     }
 

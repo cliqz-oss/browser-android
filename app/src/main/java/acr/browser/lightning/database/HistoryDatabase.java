@@ -671,6 +671,25 @@ public class HistoryDatabase extends SQLiteOpenHelper {
             db.endTransaction();
         }
     }
+
+    /**
+     * Removes the given domain from the list of BlockedTopSites i.e. the domain can now appear
+     * again in the 'top sites' grid.
+     *
+     * @param domain the entry to remove from the table.
+     */
+    public void removeDomainFromBlockedTopSites(@NonNull String domain) {
+        final SQLiteDatabase db = dbHandler.getDatabase();
+        db.beginTransaction();
+        try {
+            final String whereClause = BlockedTopSitesTable.DOMAIN + "=?";
+            db.delete(BlockedTopSitesTable.TABLE_NAME, whereClause, new String[] { domain });
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public synchronized void removeBlockedTopSites(){
         final SQLiteDatabase db = dbHandler.getDatabase();
         db.beginTransaction();
