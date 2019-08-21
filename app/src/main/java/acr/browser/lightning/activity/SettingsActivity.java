@@ -131,6 +131,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                     "mailto", getString(R.string.lumen_support_mail), null));
             startActivity(emailIntent);
+        } else if (info.id == R.id.desktop_pairing) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.CONNECT, TelemetryKeys.MAIN);
+            final Intent desktopPairingIntent = new Intent(this, SyncActivity.class);
+            startActivity(desktopPairingIntent);
         } else {
             super.onListItemClick(l, v, position, id);
         }
