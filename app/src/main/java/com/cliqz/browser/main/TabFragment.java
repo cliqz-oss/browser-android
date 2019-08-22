@@ -74,6 +74,7 @@ import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StreamUtils;
+import com.cliqz.utils.StringUtils;
 import com.cliqz.utils.ViewUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -676,7 +677,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             if (content != null && !content.isEmpty()) {
                 final Object event;
                 if (Patterns.WEB_URL.matcher(content).matches()) {
-                    final String guessedUrl = URLUtil.guessUrl(content);
+                    final String guessedUrl = StringUtils.guessUrl(content);
                     if (searchBar.isAutoCompleted()) {
                         telemetry.sendResultEnterSignal(false, true,
                                 searchBar.getQuery().length(), guessedUrl.length());
