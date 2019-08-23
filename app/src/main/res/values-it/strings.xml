@@ -282,7 +282,7 @@ Procedere comunque?</string>
     <string name="cookies">Cookie</string>
     <string name="cache">Cache</string>
     <string name="action_set">Imposta</string>
-    <string name="clear_private_data">Cancella dati personali in chiusura</string>
+    <string name="clear_private_data_on_exit">Cancella dati personali in chiusura</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">News</string>

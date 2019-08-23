@@ -255,7 +255,7 @@
     <string name="cookies">Ciasteczka</string>
     <string name="cache">Pamięć podręczna</string>
     <string name="action_set">Ustanów</string>
-    <string name="clear_private_data">Czyść prywatne dane przy wyjściu</string>
+    <string name="clear_private_data_on_exit">Czyść prywatne dane przy wyjściu</string>
     <string name="find_hint">Znajdź</string>
     <string name="settings_category_download">Opcje pobierania</string>
     <string name="limit_data_usage">Ogranicz użycie danych sieci komórkowych</string>

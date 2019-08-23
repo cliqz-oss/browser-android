@@ -287,7 +287,7 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="cookies">Cookies</string>
     <string name="cache">Caché</string>
     <string name="action_set">Aceptar</string>
-    <string name="clear_private_data">Eliminar datos personales al cerrar al app</string>
+    <string name="clear_private_data_on_exit">Eliminar datos personales al cerrar al app</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">Noticias</string>

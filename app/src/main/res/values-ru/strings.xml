@@ -253,7 +253,7 @@
     <string name="cookies">Файлы cookie</string>
     <string name="cache">Кэш</string>
     <string name="action_set">Установить</string>
-    <string name="clear_private_data">Очищать личные данные при выходе</string>
+    <string name="clear_private_data_on_exit">Очищать личные данные при выходе</string>
     <string name="find_hint">Поиск</string>
     <string name="settings_category_download">Опции загрузки</string>
     <string name="limit_data_usage">Ограничить передачу данных по мобильной сети</string>

@@ -24,16 +24,16 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_clear_data">
         <Preference
-            android:key="clear_history"
-            android:title="@string/clear_history" />
-        <Preference
             android:key="clear_favorites"
             android:title="@string/clear_favorites" />
+        <Preference
+            android:key="clear_private_data"
+            android:title="@string/clear_private_data" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="clear_private_data_exit"
             android:summary="@string/clear_data_summary"
-            android:title="@string/clear_private_data" />
+            android:title="@string/clear_private_data_on_exit" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_user_data_choices">
         <CheckBoxPreference

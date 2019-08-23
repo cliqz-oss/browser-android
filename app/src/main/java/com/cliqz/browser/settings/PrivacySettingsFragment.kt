@@ -3,6 +3,7 @@
  */
 package com.cliqz.browser.settings
 
+import acr.browser.lightning.utils.WebUtils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
@@ -16,6 +17,7 @@ import android.preference.PreferenceCategory
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import com.cliqz.browser.R
+import com.cliqz.browser.main.Messages
 import com.cliqz.browser.telemetry.TelemetryKeys
 import com.cliqz.browser.utils.HistoryCleaner
 import java.util.*
@@ -72,7 +74,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                                         clearCookiesExitEnabled || clearHistoryExitEnabled)
         }
 
-        findPreference(SETTINGS_CLEARHISTORY)?.onPreferenceClickListener = this
+        findPreference(SETTINGS_CLEAR_PRIVTE_DATA)?.onPreferenceClickListener = this
         findPreference(SETTINGS_RESTORETOPSITES)?.onPreferenceClickListener = this
         findPreference(SETTINGS_CLEARFAVORITES)?.onPreferenceClickListener = this
 
@@ -84,9 +86,9 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
 
     override fun onPreferenceClick(preference: Preference): Boolean {
         when (preference.key) {
-            SETTINGS_CLEARHISTORY -> {
+            SETTINGS_CLEAR_PRIVTE_DATA -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_HISTORY, TelemetryKeys.PRIVACY)
-                clearHistoryDialog()
+                clearDataDialog()
                 return true
             }
             SETTINGS_CLEARFAVORITES -> {
@@ -193,7 +195,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                 .setNegativeButton(resources.getString(R.string.action_cancel)) { dialog, _ -> dialog.dismiss() }.show()
     }
 
-    private fun clearDataDialog() {
+    private fun clearDataOnExitDialog() {
         @SuppressLint("UseSparseArrays")
         val valueSet = HashMap<Int, Boolean>()
         mPreferenceManager.apply {
@@ -216,6 +218,31 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                     .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
                     .show()
         }
+    }
+
+    private fun clearDataDialog() {
+        val valueSet = HashMap<Int, Boolean>()
+        valueSet[0] = false
+        valueSet[1] = false
+        valueSet[2] = false
+        valueSet[3] = false
+        valueSet[4] = false
+        val entries = arrayOf(mActivity!!.getString(R.string.open_tabs), mActivity!!.getString(R.string.history), mActivity!!.getString(R.string.cookies), mActivity!!.getString(R.string.cache), mActivity!!.getString(R.string.clear_passwords))
+        val dialogListener = DialogInterface.OnMultiChoiceClickListener { _, which, isChecked -> valueSet[which] = isChecked }
+        val builder = AlertDialog.Builder(mActivity!!)
+        builder.setMultiChoiceItems(entries, null, dialogListener)
+                .setPositiveButton(R.string.action_clear) { _, _ ->
+                    if (valueSet[0]!!) bus.post(Messages.CloseOpenTabs())
+                    if (valueSet[1]!!) mHistoryDatabase.clearHistory(false)
+                    if (valueSet[2]!!) WebUtils.clearCookies(activity)
+                    if (valueSet[3]!!) WebUtils.clearCache(activity)
+                    if (valueSet[4]!!) {
+                        passwordDatabase.clearPasswords()
+                        passwordDatabase.clearBlackList()
+                    }
+                }
+                .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
+                .show()
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
@@ -246,7 +273,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
             SETTINGS_CLEAR_DATA_ON_EXIT -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_CACHE, TelemetryKeys.PRIVACY,
                         !(newValue as Boolean))
-                clearDataDialog()
+                clearDataOnExitDialog()
                 return false
             }
             SETTINGS_AUTO_FORGET -> {
@@ -275,7 +302,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
         private const val SETTINGS_APP_SETTINGS = "settings"
         private const val SETTINGS_ENABLECOOKIES = "allow_cookies"
         private const val SETTINGS_SAVEPASSWORD = "password"
-        private const val SETTINGS_CLEARHISTORY = "clear_history"
+        private const val SETTINGS_CLEAR_PRIVTE_DATA = "clear_private_data"
         private const val SETTINGS_CLEARFAVORITES = "clear_favorites"
         private const val SETTINGS_CLEAR_DATA_ON_EXIT = "clear_private_data_exit"
         private const val SETTINGS_RESTORETOPSITES = "restore_top_sites"

@@ -256,7 +256,7 @@ Continuer tout de même ?</string>
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Attribuer</string>
-    <string name="clear_private_data">Supprimer les données personnelles à la fermeture</string>
+    <string name="clear_private_data_on_exit">Supprimer les données personnelles à la fermeture</string>
     <string name="find_hint">Chercher</string>
     <string name="settings_category_download">Options de téléchargements</string>
     <string name="limit_data_usage">Limiter l\'utilisation de la connexion mobile</string>

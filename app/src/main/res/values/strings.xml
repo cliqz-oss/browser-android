@@ -262,7 +262,9 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Set</string>
-    <string name="clear_private_data">Clear private data on exit</string>
+    <string name="action_clear">Clear</string>
+    <string name="clear_private_data">Clear private data</string>
+    <string name="clear_private_data_on_exit">Clear private data on exit</string>
     <string name="find_hint">Find</string>
     <string name="settings_category_download">Download Options</string>
     <string name="limit_data_usage">Limit mobile data usage</string>
