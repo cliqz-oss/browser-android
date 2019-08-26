@@ -1396,8 +1396,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
         telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
-        if (mLightningView.canGoBack()) {
+        if (!mLightningView.getUrl().equals("")) {
             bringWebViewToFront(null);
+        } else {
+            searchQuery("");
         }
     }
 
