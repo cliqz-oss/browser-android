@@ -19,8 +19,6 @@
   "devDependencies": {
     "@babel/core": "7.4.5",
     "@babel/runtime": "7.4.5",
-    "babel-jest": "24.8.0",
-    "jest": "24.8.0",
     "jsc-android": "^236355.1.1",
     "metro-react-native-babel-preset": "0.54.1",
     "react-test-renderer": "16.8.3"
@@ -28,7 +26,7 @@
   "homepage": "https://github.com/cliqz-oss/android-browser#readme",
   "dependencies": {
     "@cliqz/indexeddbshim": "^4.1.2",
-    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.364754b.tgz",
+    "browser-core": "https://s3.amazonaws.com/cdncliqz/update/edge/cliqz-android/v3.36/1.36.0.d2e6209.tgz",
     "buffer": "5.0.7",
     "core-js": "2.5.3",
     "https-browserify": "1.0.0",
