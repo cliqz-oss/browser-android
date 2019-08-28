@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -71,10 +70,10 @@ import com.cliqz.browser.widget.TabsCounter;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Subscribe;
-import com.cliqz.utils.ActivityUtils;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StreamUtils;
+import com.cliqz.utils.StringUtils;
 import com.cliqz.utils.ViewUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -493,7 +492,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-                searchBar.setTitle(mLightningView.getTitle());
+                searchBar.setTitle(mLightningView.getUrl());
             }
         }
 
@@ -539,6 +538,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Override
     protected View onCreateCustomToolbarView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_search_toolbar, container, false);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            quickAccessBar.hide();
+        }
     }
 
     @Optional
@@ -669,7 +676,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             if (content != null && !content.isEmpty()) {
                 final Object event;
                 if (Patterns.WEB_URL.matcher(content).matches()) {
-                    final String guessedUrl = URLUtil.guessUrl(content);
+                    final String guessedUrl = StringUtils.guessUrl(content);
                     if (searchBar.isAutoCompleted()) {
                         telemetry.sendResultEnterSignal(false, true,
                                 searchBar.getQuery().length(), guessedUrl.length());
@@ -777,7 +784,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         searchBar.showTitleBar();
         searchBar.showProgressBar();
         final String url = webView.getUrl();
-        searchBar.setTitle(BuildConfig.IS_LUMEN ? url : webView.getTitle());
+        searchBar.setTitle(url);
         searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
@@ -932,8 +939,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             searchBar.setCursorPosition(query.length());
         }
         state.setMode(Mode.SEARCH);
+        state.setQuery(query);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
+        searchView.updateQuery(query, 0, query.length());
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -1195,14 +1204,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         final String title = mLightningView.getTitle();
         state.setTitle(title);
-        if (BuildConfig.IS_NOT_LUMEN) {
-            searchBar.setTitle(title);
-            final Activity activity = getActivity();
-            if (activity != null) {
-                ActivityUtils.setTaskDescription(activity, title,
-                        R.color.primary_color_dark, R.mipmap.ic_launcher);
-            }
-        }
     }
 
     private void setSearchEngine() {
@@ -1396,7 +1397,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
         telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
-        if (!mLightningView.getUrl().equals("")) {
+        if (!mLightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
         } else {
             searchQuery("");

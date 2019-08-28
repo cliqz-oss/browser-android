@@ -8,6 +8,7 @@ import com.cliqz.browser.R;
  * @author Stefano Pacifici
  */
 public enum SearchEngines {
+    cliqz("Cliqz", R.string.cliqz_url, "unused"),
     google("Google", R.string.google_url, "file:///android_asset/google.png"),
     // ask("Ask", Constants.ASK_SEARCH, "file:///android_asset/ask.png"),
     bing("Bing", R.string.bing_url, "file:///android_asset/bing.png"),
