@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Stub ids for missing UI elements in Lumen -->
-    <item name="yt_download_icon" type="id" />
     <item name="menu_overview" type="id" />
     <item name="open_tabs_count" type="id" />
 

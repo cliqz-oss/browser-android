@@ -31,7 +31,6 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
 
     public void onReceive(Context ctxt, final Intent intent) {
         final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
-        final boolean isYouTubeVideo = mainActivity.removeDownloadId(downloadId);
         final DownloadManager downloadManager = (DownloadManager)
                 mainActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         final DownloadManager.Query query = new DownloadManager.Query();
@@ -42,9 +41,6 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
         final int mediaTypeIndex = cursor.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE);
         if (cursor.moveToFirst()) {
             if (cursor.getInt(statusIndex) == DownloadManager.STATUS_SUCCESSFUL) {
-                if (isYouTubeVideo) {
-                    mainActivity.telemetry.sendVideoDownloadedSignal(true);
-                }
                 final String uri = cursor.getString(localUriIndex);
                 final String mediaType = cursor.getString(mediaTypeIndex);
                 final Intent openFileIntent = createFileIntent(uri, mediaType);
@@ -58,9 +54,6 @@ class DownoloadCompletedBroadcastReceiver extends BroadcastReceiver {
                             mainActivity.getString(R.string.download_successful));
                 }
             } else if (cursor.getInt(statusIndex) == DownloadManager.STATUS_FAILED) {
-                if (isYouTubeVideo) {
-                    mainActivity.telemetry.sendVideoDownloadedSignal(false);
-                }
                 Utils.showSnackbar(mainActivity, mainActivity.getString(R.string.download_failed));
             }
         }

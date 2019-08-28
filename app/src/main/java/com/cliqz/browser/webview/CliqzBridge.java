@@ -295,14 +295,6 @@ public class CliqzBridge extends Bridge {
             }
         }),
 
-        notifyYoutubeVideoUrls(new EnhancedAction<CliqzBridge>() {
-            @Override
-            protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
-                final JSONArray json = (data instanceof JSONArray) ? (JSONArray) data: new JSONArray();
-                bridge.bus.post(new Messages.SetVideoUrls(json));
-            }
-        }),
-
         pushJavascriptResult(new EnhancedAction<CliqzBridge>() {
             @Override
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {

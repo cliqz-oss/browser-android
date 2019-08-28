@@ -75,13 +75,12 @@ import static acr.browser.lightning.download.DownloadHandler.addNecessarySlashes
 public final class Utils {
 
     public static void downloadFile(final Activity activity, final String url,
-                                    final String userAgent, final String contentDisposition, final boolean isYouTubeVideo) {
+                                    final String userAgent, final String contentDisposition) {
         PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
             @Override
             public void onGranted() {
                 String fileName = URLUtil.guessFileName(url, null, null);
-                DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null,
-                        isYouTubeVideo);
+                DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null);
                 Utils.showSnackbar(activity, activity.getString(R.string.download_started));
                 Timber.i("Downloading%s", fileName);
             }

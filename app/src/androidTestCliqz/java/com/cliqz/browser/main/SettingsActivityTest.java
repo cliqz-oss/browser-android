@@ -208,7 +208,6 @@ public class SettingsActivityTest {
         onView(withText("Show MyOffrz")).check(matches(isDisplayed()));
         onView(withText("News notifications")).check(matches(isDisplayed()));
         onView(withText("Reset all subscriptions")).check(matches(isDisplayed()));
-        onView(withText("Limit mobile data usage")).check(matches(isDisplayed()));
     }
 
     @Test

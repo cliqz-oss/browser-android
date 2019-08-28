@@ -157,8 +157,6 @@
     <string name="resume_tab_dialog_title">Восстановить открытые вкладки</string>
     <string name="action_resume">Восстановить</string>
     <string name="action_close_all_tabs">Закрыть все вкладки</string>
-    <string name="showcase_youtube_title">Video Downloader</string>
-    <string name="showcase_youtube_message">Скачать YouTube видео на ваш смартфон.</string>
     <string name="please_wait">Пожалуйста, подождите…</string>
     <string name="send_tab_device_picker_title">Выбрать соединение:</string>
     <string name="send_tab_generic_error_title">Данная вкладка не может быть передана</string>
@@ -255,9 +253,6 @@
     <string name="action_set">Установить</string>
     <string name="clear_private_data">Очищать личные данные при выходе</string>
     <string name="find_hint">Поиск</string>
-    <string name="settings_category_download">Опции загрузки</string>
-    <string name="limit_data_usage">Ограничить передачу данных по мобильной сети</string>
-    <string name="limit_data_usage_summary">Загружать видео только по Wi-Fi</string>
     <string name="no_wi_fi_title">Нет подключения к Wi-Fi</string>
     <string name="no_wi_fi_message">Wi-Fi не подключен. Чтобы загружать видео используя также мобильную передачу данных, выберите Настройки &gt; Общие &gt; Опции загрузки.</string>
     <string name="dismiss">ПРОПУСТИТЬ</string>

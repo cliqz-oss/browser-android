@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private CustomViewHandler mCustomViewHandler;
     protected String currentMode;
     private boolean mIsColdStart = true;
-    private final HashSet<Long> downloadIds = new HashSet<>();
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
 
@@ -661,11 +660,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
-    @Subscribe
-    public void saveDownloadId(Messages.SaveId event) {
-        downloadIds.add(event.downloadId);
-    }
-
     @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void closeTab(BrowserEvents.CloseTab event) {
@@ -813,10 +807,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return historyDatabase;
     }
 
-    boolean removeDownloadId(long downloadId) {
-        return downloadIds.remove(downloadId);
-    }
-
     @Subscribe
     void openTab(CliqzMessages.OpenTab event) {
         if (!event.isValid) {
@@ -854,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             return;
         }
         final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI && preferenceManager.shouldLimitDataUsage()) {
+        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI) {
             NoWiFiDialog.show(this, bus);
             return;
         }

@@ -44,10 +44,6 @@ public class UrlUtils {
     // Google search
     public final static String QUERY_PLACE_HOLDER = "%s";
 
-    // Regular expression to recognize youtube video page
-    private static final Pattern YOUTUBE_VIDEO_URL_PATTERN =
-            Pattern.compile("https?://(m\\.|www\\.)?youtube.+/watch\\?v=.*");
-
     private final static Set<String> HOST_PREFIXES = new HashSet<>(Arrays.asList(new String[] {
             "www", "m", "mobile", "amp"
     }));
@@ -131,12 +127,4 @@ public class UrlUtils {
         return builder.toString();
     }
 
-    public static boolean isYoutubeVideo(@Nullable String url) {
-        if (url == null) {
-            return false;
-        }
-
-        final Matcher matcher = YOUTUBE_VIDEO_URL_PATTERN.matcher(url);
-        return matcher.matches();
-    }
 }

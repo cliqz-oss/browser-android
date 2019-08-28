@@ -28,17 +28,14 @@ class FetchUrlMimeType extends Thread {
 
     private final String mUserAgent;
 
-    private final boolean mIsYouTubeVideo;
-
     private final Activity mActivity;
 
     public FetchUrlMimeType(Activity activity, String uri,
-                            String cookies, String userAgent, boolean isYouTubeVideo) {
+                            String cookies, String userAgent) {
         mActivity = activity;
         mUri = uri;
         mCookies = cookies;
         mUserAgent = userAgent;
-        mIsYouTubeVideo = isYouTubeVideo;
     }
 
     @Override
@@ -100,7 +97,7 @@ class FetchUrlMimeType extends Thread {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                DownloadHandler.onDownloadStart(mActivity, mUri, mUserAgent, disposition, type, mIsYouTubeVideo);
+                DownloadHandler.onDownloadStart(mActivity, mUri, mUserAgent, disposition, type);
             }
         });
     }

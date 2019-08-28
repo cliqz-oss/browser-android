@@ -47,13 +47,7 @@
             android:key="subscriptions"
             android:title="@string/reset_subscriptions" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/settings_category_download" >
-        <CheckBoxPreference
-            android:key="cb_limit_data_usage"
-            android:title="@string/limit_data_usage"
-            android:summary="@string/limit_data_usage_summary"/>
-        <Preference
-            android:key="onboarding"
-            android:title="@string/show_onboarding_hints" />
-    </PreferenceCategory>
+    <Preference
+        android:key="onboarding"
+        android:title="@string/show_onboarding_hints" />
 </PreferenceScreen>
