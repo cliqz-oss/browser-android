@@ -206,8 +206,8 @@ dependencies {
     implementation "com.facebook.react:react-native:${reactNativeVersion}"
 
     // AWS SNS SDK
-    implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
-    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
+    implementation 'com.amazonaws:aws-android-sdk-sns:2.15.0'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.15.0'
 
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
