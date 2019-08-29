@@ -525,11 +525,15 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 return CODE_RETURN_FALSE;
             }
             if (intent != null) {
-                if (intent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(intent);
-                } else {
-                    context.startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=" + intent.getPackage())));
+                final Intent[] toBeResolved = new Intent[] {
+                        intent,
+                        new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + intent.getPackage()))
+                };
+                for (Intent i: toBeResolved) {
+                    if (i.resolveActivity(context.getPackageManager()) != null) {
+                        context.startActivity(i);
+                        break;
+                    }
                 }
                 return CODE_RETURN_TRUE;
             }
