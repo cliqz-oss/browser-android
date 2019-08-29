@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -1398,8 +1397,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
         telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
-        if (mLightningView.canGoBack()) {
+        if (!mLightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
+        } else {
+            searchQuery("");
         }
     }
 
