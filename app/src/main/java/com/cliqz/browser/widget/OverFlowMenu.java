@@ -5,10 +5,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -102,6 +107,7 @@ public class OverFlowMenu extends FrameLayout {
         QUIT(EntryType.REGULAR, R.id.quit_menu_button, R.string.exit),
         CODE_SCANNER(EntryType.REGULAR, R.id.code_scanner, R.string.code_scanner),
         SEND_TAB_TO_DESKTOP(EntryType.REGULAR, R.id.send_tab_menu_button, R.string.send_tab_to_desktop),
+        SET_DEFAULT_BROWSER(EntryType.REGULAR, R.id.set_default_browser, R.string.set_default_browser),
         DESKTOP_PAIRING(EntryType.REGULAR, R.id.desktop_pairing, R.string.desktop_pairing);
 
         final EntryType type;
@@ -124,6 +130,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.GO_TO_FAVORITES,
             Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
+            Entries.SET_DEFAULT_BROWSER,
             Entries.CODE_SCANNER,
             Entries.SETTINGS,
             Entries.REQUEST_DESKTOP_SITE,
@@ -139,6 +146,7 @@ public class OverFlowMenu extends FrameLayout {
             Entries.SEARCH_IN_PAGE,
             Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
+            Entries.SET_DEFAULT_BROWSER,
             Entries.CODE_SCANNER,
             Entries.SETTINGS,
             Entries.REQUEST_DESKTOP_SITE,
@@ -336,6 +344,9 @@ public class OverFlowMenu extends FrameLayout {
         }
         if (!BuildConfig.DEBUG) {
             entries.remove(Entries.REACT_DEBUG);
+        }
+        if (checkIfDefaultBrowserSetIsCliqz(getContext())) {
+            entries.remove(Entries.SET_DEFAULT_BROWSER);
         }
         mEntries = entries.toArray(new Entries[0]);
     }
@@ -608,6 +619,21 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.SEND_TAB, isIncognitoMode(), "web");
                     bus.post(new Messages.SentTabToDesktop());
                     break;
+                case SET_DEFAULT_BROWSER:
+                    final String url = "https://cliqz.com/magazine";
+                    final Intent openBrowserIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(url));
+                    if (checkIfDefaultBrowserSetForDevice(getContext(), openBrowserIntent)) {
+                        final Intent defaultAppsIntent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
+                        activity.startActivity(defaultAppsIntent);
+                    } else {
+                        final Toast setDefaultBrowserToast = Toast.makeText(getContext(),
+                                R.string.set_default_browser_msg, Toast.LENGTH_LONG);
+                        setDefaultBrowserToast.setGravity(Gravity.TOP, 0, 300);
+                        setDefaultBrowserToast.show();
+                        activity.startActivity(openBrowserIntent);
+                    }
+                    break;
                 case CODE_SCANNER:
                     if (PermissionsManager.hasPermission(activity, Manifest.permission.CAMERA)) {
                         startCodeScanner();
@@ -679,6 +705,28 @@ public class OverFlowMenu extends FrameLayout {
             toggleFavorite.setChecked(isFavorite);
             mIsFavorite = isFavorite;
         }
+    }
+
+    private boolean checkIfDefaultBrowserSetIsCliqz(Context context) {
+        final String url = "https://cliqz.com/magazine";
+        final Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(url));
+        final PackageManager packageManager = context.getPackageManager();
+        final ResolveInfo defaultResolveInfo = packageManager.resolveActivity(intent, 0);
+        return BuildConfig.APPLICATION_ID.equals(defaultResolveInfo.activityInfo.packageName);
+    }
+
+    private boolean checkIfDefaultBrowserSetForDevice(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        final ResolveInfo defaultResolveInfo = packageManager.resolveActivity(intent, 0);
+        List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(intent, 0);
+        for (ResolveInfo resolveInfo : resolveInfoList) {
+            if (resolveInfo.activityInfo.packageName.equals(defaultResolveInfo.activityInfo.packageName)
+                && resolveInfo.activityInfo.name.equals(defaultResolveInfo.activityInfo.name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
