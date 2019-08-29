@@ -1,10 +1,10 @@
 package com.cliqz.browser.utils;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import acr.browser.lightning.utils.Utils;
+import timber.log.Timber;
 
 /**
  * Manage subscriptions (duh!). This will store the subscriptions list every time the user adds
@@ -42,8 +43,6 @@ import acr.browser.lightning.utils.Utils;
  * @author Stefano Pacifici
  */
 public class SubscriptionsManager {
-
-    private final static String TAG = SubscriptionsManager.class.getSimpleName();
 
     private final static String SUBSCRIPTIONS_FILE_NAME = "subscriptions.txt";
 
@@ -122,7 +121,7 @@ public class SubscriptionsManager {
                     valuesSet.add(value);
                 }
             } catch (Exception e) {
-                Log.i(TAG, "Can't load " + subscriptionsFile.getName());
+                Timber.i("Can't load %s", subscriptionsFile.getName());
             } finally {
                 Utils.close(reader);
                 latch.countDown();
@@ -213,7 +212,7 @@ public class SubscriptionsManager {
                 result.putMap(typeName, map);
             }
         } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted");
+            Timber.e("Interrupted");
         }
         return result;
     }
@@ -236,7 +235,7 @@ public class SubscriptionsManager {
             subscriptions.clear();
             saveSubscriptions();
         } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted");
+            Timber.e("Interrupted");
         }
     }
 }

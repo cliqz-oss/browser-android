@@ -8,13 +8,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 /**
  *@author Stefano Pacifici
  */
@@ -42,7 +44,6 @@ public class AppBackgroundManager {
         COLOR,
         IMAGE
     }
-    private static final String TAG = AppBackgroundManager.class.getSimpleName();
 
     private static final String BACKGROUND_IMAGE_URL_FORMAT = BuildConfig.DEBUG ?
             "https://cdn.cliqz.com/mobile/background/android/staging/%s_%d.jpg" :
@@ -73,7 +74,7 @@ public class AppBackgroundManager {
         final int r = screenSize % SIZE_DELTA;
         backgroundSize = (q * SIZE_DELTA) + (r > 0 ? SIZE_DELTA : 0);
         if (backgroundSize < MIN_BACKGROUND_SIZE || backgroundSize > MAX_BACKGROUND_SIZE) {
-            Log.e(TAG, "No valid image size found: " + backgroundSize);
+            Timber.e( "No valid image size found: %s", backgroundSize);
             backgroundImageUri = null;
         } else {
             backgroundImageUri = String.format(Locale.US,
@@ -202,8 +203,7 @@ public class AppBackgroundManager {
             final boolean hasValidDimensions = width != 0 && height != 0;
             if (layoutHasChanged && hasValidDimensions) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, String.format(Locale.US, "Layout changed - %d %d %d %d",
-                            left, top, right, bottom));
+                    Timber.d("Layout changed - %d %d %d %d", left, top, right, bottom);
                 }
                 view.postDelayed(new Runnable() {
                     @Override
@@ -250,7 +250,7 @@ public class AppBackgroundManager {
                 final BitmapDrawable background = new BitmapDrawable(resources, bitmap);
                 cache.put(bitmapRect.flattenToString(), background);
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "New bitmap generated for " + bitmapRect.flattenToString());
+                    Timber.d("New bitmap generated for %s", bitmapRect.flattenToString());
                 }
                 view.postDelayed(new Runnable() {
                     @Override
@@ -259,9 +259,9 @@ public class AppBackgroundManager {
                     }
                 }, LAYOUT_SAFE_DELAY);
             } catch (OutOfMemoryError e) {
-                Log.e(TAG, "Not enough memory to decode the bitmap");
+                Timber.e("Not enough memory to decode the bitmap");
             } catch (IllegalArgumentException|IOException e) {
-                Log.e(TAG, "Error decoding background", e);
+                Timber.e(e, "Error decoding background");
             } finally {
                 ref.close();
             }

@@ -35,6 +35,8 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * Custom EditText widget with autocompletion
  *
@@ -46,7 +48,6 @@ public class AutocompleteEditText extends AppCompatEditText {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    private static final String TAG = AutocompleteEditText.class.getSimpleName();
     private final Drawable clearIcon;
     private final Drawable backIcon;
 
@@ -329,7 +330,7 @@ public class AutocompleteEditText extends AppCompatEditText {
                     setTextKeepState(completion);
                     setSelection(selectionBegin, selectionEnd);
                 } catch (IndexOutOfBoundsException e) {
-                    Log.i(TAG, "Can't select part of the url bar", e);
+                    Timber.i(e, "Can't select part of the url bar");
                 }
             }
             mIsAutocompleting = false;

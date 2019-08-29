@@ -3,10 +3,10 @@ package com.cliqz.browser.peercomm;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
+import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -35,10 +36,8 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
  */
 public class PeerCommBridge extends Bridge {
 
-    private static final String TAG = PeerCommBridge.class.getSimpleName();
-
     private enum Action implements IAction {
-        
+
         /**
          * Call the function <i>callback</i> with a single string that contais the device ARN.<br>
          * <strong>In case the device has no ARN, the <i>callback</i> will not be called.</strong>
@@ -81,20 +80,20 @@ public class PeerCommBridge extends Bridge {
                         title = firstTab.optString("title", url);
                         isIncognito = firstTab.optBoolean("isPrivate", false);
                     } catch (ClassCastException e) {
-                        Log.e(TAG, "Invalid openTab data " + data.toString());
+                        Timber.e("Invalid openTab data %s", data.toString());
                         return;
                     } catch (NullPointerException e) {
-                        Log.e(TAG, "opedTab data is null");
+                        Timber.e("opedTab data is null");
                         return;
                     }
                     catch (JSONException e) {
-                        Log.e(TAG, "Invalid openTab json " + tabs.toString());
+                        Timber.e("Invalid openTab json %s", tabs.toString());
                         return;
                     }
                 }
                 // Is the uri still null?
                 if (uri == null) {
-                    Log.e(TAG, "Can't parse Url");
+                    Timber.e("Can't parse Url");
                     return;
                 }
 
@@ -179,7 +178,7 @@ public class PeerCommBridge extends Bridge {
                 try {
                     bridge.bus.post(new SyncEvents.PairingData(JSONObject.class.cast(data)));
                 } catch (ClassCastException e) {
-                    Log.e(TAG, "Wrong data type, a JSONObject was expected", e);
+                    Timber.e(e, "Wrong data type, a JSONObject was expected");
                 }
             }
         }),
@@ -199,7 +198,7 @@ public class PeerCommBridge extends Bridge {
                     int errorCode = error.optInt("error", -1);
                     bridge.bus.post(new SyncEvents.PairingError(errorCode));
                 } catch (ClassCastException e) {
-                    Log.e(TAG, "Wrong data type, a JSONObject was expected", e);
+                    Timber.e(e, "Wrong data type, a JSONObject was expected");
                 }
             }
         }),
@@ -220,7 +219,7 @@ public class PeerCommBridge extends Bridge {
                     final String name = result.getString("name");
                     bridge.bus.post(new SyncEvents.SendTabSuccess(peerID, name));
                 } catch (Throwable e) {
-                    Log.e(TAG, "Wrong message format", e);
+                    Timber.e(e, "Wrong message format");
                 }
             }
         }),
@@ -234,7 +233,7 @@ public class PeerCommBridge extends Bridge {
                     final String name = result.getString("name");
                     bridge.bus.post(new SyncEvents.SendTabError(peerID, name));
                 } catch (Throwable e) {
-                    Log.e(TAG, "Wrong message format", e);
+                    Timber.e(e, "Wrong message format");
                 }
             }
         }),
@@ -291,7 +290,7 @@ public class PeerCommBridge extends Bridge {
         try {
             return Action.valueOf(name);
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Can't convert the given name to Action: " + name, e);
+            Timber.e(e, "Can't convert the given name to Action: %s", name);
             return Action.none;
         }
     }

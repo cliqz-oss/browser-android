@@ -25,16 +25,15 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.webkit.URLUtil;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
-import android.webkit.URLUtil;
+import androidx.core.content.FileProvider;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
@@ -42,6 +41,7 @@ import com.cliqz.browser.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,13 +67,12 @@ import java.util.Iterator;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.download.DownloadHandler;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 import static acr.browser.lightning.download.DownloadHandler.DEFAULT_DOWNLOAD_PATH;
 import static acr.browser.lightning.download.DownloadHandler.addNecessarySlashes;
 
 public final class Utils {
-
-    private static final String TAG = Utils.class.getSimpleName();
 
     public static void downloadFile(final Activity activity, final String url,
                                     final String userAgent, final String contentDisposition, final boolean isYouTubeVideo) {
@@ -84,7 +83,7 @@ public final class Utils {
                 DownloadHandler.onDownloadStart(activity, url, userAgent, contentDisposition, null,
                         isYouTubeVideo);
                 Utils.showSnackbar(activity, activity.getString(R.string.download_started));
-                Log.i(Constants.TAG, "Downloading" + fileName);
+                Timber.i("Downloading%s", fileName);
             }
 
             @Override
@@ -409,10 +408,10 @@ public final class Utils {
         }
 
         if (c != null) {
-            Log.d("Browser", "System Browser Available");
+            Timber.d("System Browser Available");
             browserFlag = true;
         } else {
-            Log.e("Browser", "System Browser Unavailable");
+            Timber.e("System Browser Unavailable");
             browserFlag = false;
         }
         if (c != null) {
@@ -505,9 +504,9 @@ public final class Utils {
                     }
                     connection.disconnect();
                 } catch (IOException e) {
-                    Log.e(TAG, "IOEXception");
+                    Timber.e("IOEXception");
                 } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing the response");
+                    Timber.e("Error parsing the response");
                 }
             }
         }).start();
@@ -523,7 +522,7 @@ public final class Utils {
             }
             reader.close();
         } catch (IOException e) {
-            Log.e(TAG, "Can't read from connection", e);
+            Timber.e(e, "Can't read from connection");
         }
         return builder.toString();
     }
@@ -613,7 +612,7 @@ public final class Utils {
                     0);
             return packageInfo.firstInstallTime == packageInfo.lastUpdateTime;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG,e.getMessage(),e);
+            Timber.e(e);
             return true;
         }
     }

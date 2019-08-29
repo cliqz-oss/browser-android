@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import android.util.Log;
 import android.webkit.WebView;
+
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
@@ -22,13 +22,12 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.LoginDetailItem;
 import acr.browser.lightning.database.PasswordDatabase;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
  */
 public class PasswordManager implements SavePasswordDialog.PasswordDialogListener {
-
-    private static final String TAG = PasswordManager.class.getSimpleName();
 
     @Inject
     PasswordDatabase passwordDatabase;
@@ -82,7 +81,7 @@ public class PasswordManager implements SavePasswordDialog.PasswordDialogListene
             inputStream.close();
 
         } catch (IOException e) {
-            Log.e(TAG, "error reading the js code", e);
+            Timber.e(e, "error reading the js code");
         }
     }
 

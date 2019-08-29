@@ -1,9 +1,9 @@
 package com.cliqz.jsengine;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
+
+import timber.log.Timber;
 
 /**
  * Created by sammacbeth on 08/05/2017.
@@ -26,7 +26,7 @@ public class AntiTracking {
             ReadableMap response = this.engine.getBridge().callAction("antitracking:getTrackerListForTab", tabId);
             return response.getMap("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException | NoSuchKeyException e) {
-            Log.e("JSEngine", "getTabBlockingInfo error", e);
+            Timber.e(e, "getTabBlockingInfo error");
         }
         return null;
     }
@@ -35,7 +35,7 @@ public class AntiTracking {
         try {
             this.engine.getBridge().callAction("aggregatedBlockingStats", callback, tabId);
         } catch (EngineNotYetAvailable e) {
-            Log.e("JSEngine", "getTabThirdPartyInfo error", e);
+            Timber.e(e, "getTabThirdPartyInfo error");
         }
     }
 
@@ -44,7 +44,7 @@ public class AntiTracking {
             ReadableMap response = this.engine.getBridge().callAction("antitracking:isWhitelisted", url);
             return response.hasKey("result") && response.getBoolean("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException e) {
-            Log.e("JSEngine", "isWhitelist error", e);
+            Timber.e(e, "isWhitelist error");
         }
         return false;
     }

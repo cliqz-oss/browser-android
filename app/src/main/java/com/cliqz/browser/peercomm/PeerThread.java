@@ -1,15 +1,14 @@
 package com.cliqz.browser.peercomm;
 
 import android.os.Handler;
-import android.util.Log;
+
+import timber.log.Timber;
 
 
 /**
  * @author  Stefano Pacifici
  */
 class PeerThread extends Thread {
-
-    private static final String TAG = PeerThread.class.getSimpleName();
 
     private PeerWebView mPeerWebView;
     private final Handler handler;
@@ -31,7 +30,7 @@ class PeerThread extends Thread {
                 wait();
             }
         } catch (InterruptedException e) {
-            Log.i(TAG, "PeerThread stopped");
+            Timber.i("PeerThread stopped");
         }
     }
 

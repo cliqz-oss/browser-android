@@ -7,11 +7,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -20,12 +20,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import timber.log.Timber;
+
 /**
  * A class to help you manage your permissions simply.
  */
 public final class PermissionsManager {
 
-    private static final String TAG = PermissionsManager.class.getSimpleName();
     private static final String[] EMPTY_PERMISSIONS = new String[0];
     private static final PermissionsManager INSTANCE = new PermissionsManager();
 
@@ -126,16 +127,16 @@ public final class PermissionsManager {
             public void run() {
                 PackageInfo packageInfo = null;
                 try {
-                    Log.d(TAG, activity.getPackageName());
+                    Timber.d(activity.getPackageName());
                     packageInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_PERMISSIONS);
                 } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, "A problem occurred when retrieving permissions", e);
+                    Timber.e(e, "A problem occurred when retrieving permissions");
                 }
                 if (packageInfo != null) {
                     String[] permissions = packageInfo.requestedPermissions;
                     if (permissions != null) {
                         for (String perm : permissions) {
-                            Log.d(TAG, "Requesting permission if necessary: " + perm);
+                            Timber.d("Requesting permission if necessary: %s", perm);
                         }
                     } else {
                         permissions = EMPTY_PERMISSIONS;

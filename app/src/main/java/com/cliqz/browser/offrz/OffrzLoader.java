@@ -1,9 +1,9 @@
 package com.cliqz.browser.offrz;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.loader.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.cliqz.utils.FileUtils;
 import com.cliqz.utils.StreamUtils;
@@ -19,6 +19,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import timber.log.Timber;
+
 /**
  * Load and cache the offrz json
  *
@@ -29,7 +31,6 @@ public class OffrzLoader extends AsyncTaskLoader<JSONObject> {
 
     public static final long SIX_HOURS_IN_S = 21600L;
     private static final String MYOFFRZ_CACHE_FILE = "MyOffrzCache.json";
-    private static final String TAG = OffrzLoader.class.getSimpleName();
     public static final String VALIDITY_KEY = "validity";
     private static final String MYOFFRZ_URL = "https://offers-api.cliqz.com/api/v1" +
             "/loadsubtriggers?parent_id=mobile-root&t_eng_ver=1";
@@ -66,10 +67,10 @@ public class OffrzLoader extends AsyncTaskLoader<JSONObject> {
         } catch (JSONException e) {
             // Delete the file if it is not valid
             if (!cachedOffrzFile.delete()) {
-                Log.w(TAG, "Can't delete cached offrz file");
+                Timber.w("Can't delete cached offrz file");
             }
         } catch (IOException e) {
-            Log.e(TAG, "Can't open offrz cache");
+            Timber.e("Can't open offrz cache");
         }
         return null;
     }
@@ -101,23 +102,23 @@ public class OffrzLoader extends AsyncTaskLoader<JSONObject> {
             }
             // Add download date
         } catch (MalformedURLException e) {
-            Log.e(TAG, "Malformed hardcoded url" + getEndpoint());
+            Timber.e("Malformed hardcoded url%s", getEndpoint());
             return null;
         } catch (IOException e) {
-            Log.e(TAG, "Can't open connection to " + getEndpoint(), e);
+            Timber.e(e,"Can't open connection to %s", getEndpoint());
             return null;
         } catch (JSONException e) {
-            Log.e(TAG, "Can't parse json response");
+            Timber.e("Can't parse json response");
             return null;
         } catch (Exception e) {
             // This blog prevents generic crashes
-            Log.e(TAG, "Generic failure", e);
+            Timber.e(e,"Generic failure");
             return null;
         }
         try {
             FileUtils.writeTextToFile(cachedOffrzFile, firstOffrz.toString());
         } catch (IOException e) {
-            Log.e(TAG, "Can't cache data to " + MYOFFRZ_CACHE_FILE);
+            Timber.e("Can't cache data to %s", MYOFFRZ_CACHE_FILE);
         }
         return firstOffrz;
     }

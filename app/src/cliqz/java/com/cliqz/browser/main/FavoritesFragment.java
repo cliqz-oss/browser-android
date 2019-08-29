@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import acr.browser.lightning.database.HistoryDatabase;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
@@ -183,7 +184,7 @@ public class FavoritesFragment extends FragmentWithBus {
                         favoriteItem.optString(HistoryDatabase.HistoryKeys.TITLE)));
             }
         } catch (JSONException e) {
-            Log.e(TAG, "error parsing favorites json", e);
+            Timber.e(e, "error parsing favorites json");
         }
     }
 

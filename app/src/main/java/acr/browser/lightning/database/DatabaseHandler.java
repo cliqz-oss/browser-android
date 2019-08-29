@@ -3,13 +3,13 @@ package acr.browser.lightning.database;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 class DatabaseHandler {
-    private static final String TAG = DatabaseHandler.class.getSimpleName();
 
     private final SQLiteOpenHelper helper;
     private SQLiteDatabase mDatabase = null;
@@ -25,7 +25,7 @@ class DatabaseHandler {
             the problem.
             */
             mDatabase = null;
-            Log.e(TAG, "Can't open the DB", e);
+            Timber.e(e, "Can't open the DB");
         }
     }
 

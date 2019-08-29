@@ -2,7 +2,6 @@ package acr.browser.lightning.view;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.util.Log;
 
 import com.cliqz.browser.app.BrowserApp;
 
@@ -12,6 +11,7 @@ import java.io.IOException;
 
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.Utils;
+import timber.log.Timber;
 
 /**
  * @author Anthony C. Restaino
@@ -29,7 +29,7 @@ class IconCacheTask implements Runnable{
     @Override
     public void run() {
         String hash = String.valueOf(uri.getHost().hashCode());
-        Log.d(Constants.TAG, "Caching iconView for " + uri.getHost());
+        Timber.d("Caching iconView for %s", uri.getHost());
         FileOutputStream fos = null;
         try {
             File image = new File(BrowserApp.getAppContext().getCacheDir(), hash + ".png");

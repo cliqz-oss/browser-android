@@ -1,12 +1,13 @@
 package com.cliqz.jsengine;
 
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+
+import timber.log.Timber;
 
 
 /**
@@ -52,7 +53,7 @@ public class Adblocker {
             ReadableMap response = this.engine.getBridge().callAction("adblocker:isWhitelisted", url);
             return response.hasKey("result") && response.getBoolean("result");
         } catch (EngineNotYetAvailable | ActionNotAvailable | EmptyResponseException e) {
-            Log.e("JSEngine", "isBlacklisted error", e);
+            Timber.e(e,"isBlacklisted error");
         }
         return false;
     }

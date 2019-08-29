@@ -1,7 +1,6 @@
 package com.cliqz.browser.antiphishing;
 
 import androidx.annotation.VisibleForTesting;
-import android.util.Log;
 
 import com.cliqz.utils.StringUtils;
 
@@ -12,6 +11,7 @@ import java.net.URL;
 import java.util.Locale;
 
 import acr.browser.lightning.utils.UrlUtils;
+import timber.log.Timber;
 
 /**
  * Anti-phishing module. Should be used as a singleton.
@@ -20,7 +20,6 @@ import acr.browser.lightning.utils.UrlUtils;
  */
 public class AntiPhishing {
 
-    private static final String TAG = AntiPhishing.class.getSimpleName();
     private static final String DEFAULT_ENDPOINT = "https://antiphishing.cliqz.com/api/bwlist";
 
     public interface AntiPhishingCallback {
@@ -56,7 +55,7 @@ public class AntiPhishing {
         if (callback == null) { return; }
         final String host = UrlUtils.getDomain(url);
         if (host.isEmpty()) {
-            Log.w(TAG, "processUrl called whit empty or null string");
+            Timber.w( "processUrl called whit empty or null string");
             callback.onUrlProcessed("", false);
         }
         try {
@@ -73,7 +72,7 @@ public class AntiPhishing {
                     callback.onUrlProcessed(url, false);
             }
         } catch (StringUtils.MD5Exception e) {
-            Log.e(TAG, e.getMessage(), e.getCause());
+            Timber.e(e);
             callback.onUrlProcessed(url, false);
         }
     }

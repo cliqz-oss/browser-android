@@ -17,15 +17,14 @@
 package com.cliqz.browser.qrscanner.camera.open;
 
 import android.hardware.Camera;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * Abstraction over the {@link Camera} API that helps open them and return their metadata.
  */
 @SuppressWarnings("deprecation") // camera APIs
 public final class OpenCameraInterface {
-
-    private static final String TAG = OpenCameraInterface.class.getName();
 
     private OpenCameraInterface() {
     }
@@ -47,7 +46,7 @@ public final class OpenCameraInterface {
 
         int numCameras = Camera.getNumberOfCameras();
         if (numCameras == 0) {
-            Log.w(TAG, "No cameras!");
+            Timber.w("No cameras!");
             return null;
         }
 
@@ -75,14 +74,14 @@ public final class OpenCameraInterface {
 
         Camera camera;
         if (index < numCameras) {
-            Log.i(TAG, "Opening camera #" + index);
+            Timber.i("Opening camera #%s", index);
             camera = Camera.open(index);
         } else {
             if (explicitRequest) {
-                Log.w(TAG, "Requested camera does not exist: " + cameraId);
+                Timber.w("Requested camera does not exist: %s", cameraId);
                 camera = null;
             } else {
-                Log.i(TAG, "No camera facing " + CameraFacing.BACK + "; returning camera #0");
+                Timber.i("No camera facing " + CameraFacing.BACK + "; returning camera #0");
                 camera = Camera.open(0);
                 selectedCameraInfo = new Camera.CameraInfo();
                 Camera.getCameraInfo(0, selectedCameraInfo);

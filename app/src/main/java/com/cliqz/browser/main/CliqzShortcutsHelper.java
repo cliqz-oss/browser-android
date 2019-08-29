@@ -8,7 +8,6 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.webview.Topsite;
@@ -17,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import acr.browser.lightning.database.HistoryDatabase;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
@@ -64,7 +64,7 @@ class CliqzShortcutsHelper {
                     .build();
             shortcutManager.addDynamicShortcuts(Collections.singletonList(topSitesShortcut1));
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Can't add a shortcut", e);
+            Timber.e(e, "Can't add a shortcut");
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.cliqz.browser.main;
 
 import android.media.MediaPlayer;
-import androidx.core.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -12,6 +10,10 @@ import android.webkit.WebChromeClient.CustomViewCallback;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
+import androidx.core.content.ContextCompat;
+
+import timber.log.Timber;
+
 /**
  * Based on code from Lightning Browser. This class must be used only from {@link MainActivity}.
  *
@@ -20,7 +22,6 @@ import android.widget.VideoView;
  */
 class CustomViewHandler {
 
-    private static final String TAG = CustomViewHandler.class.getSimpleName();
     private static final LayoutParams COVER_SCREEN_PARAMS = new LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
@@ -46,7 +47,7 @@ class CustomViewHandler {
                 try {
                     callback.onCustomViewHidden();
                 } catch (Exception e) {
-                    Log.e(TAG, "Error hiding custom view", e);
+                    Timber.e(e, "Error hiding custom view");
                 }
             }
             return;
@@ -54,7 +55,7 @@ class CustomViewHandler {
         try {
             customView.setKeepScreenOn(true);
         } catch (SecurityException e) {
-            Log.e(TAG, "WebView is not allowed to keep the screen on");
+            Timber.e("WebView is not allowed to keep the screen on");
         }
 
         // setRequestedOrientation(requestedOrientation);
@@ -75,17 +76,17 @@ class CustomViewHandler {
                 try {
                     callback.onCustomViewHidden();
                 } catch (Exception e) {
-                    Log.e(TAG, "Error hiding custom view", e);
+                    Timber.e(e, "Error hiding custom view");
                 }
             }
             return;
         }
-        Log.d(TAG, "onHideCustomView");
+        Timber.d("onHideCustomView");
         // currentTab.setVisibility(View.VISIBLE);
         try {
             customView.setKeepScreenOn(false);
         } catch (SecurityException e) {
-            Log.e(TAG, "WebView is not allowed to keep the screen on", e);
+            Timber.e(e, "WebView is not allowed to keep the screen on");
         }
         setFullscreen(false);
         if (mFullscreenContainer != null) {
@@ -98,7 +99,7 @@ class CustomViewHandler {
 
         mFullscreenContainer = null;
         if (mVideoView != null) {
-            Log.d(TAG, "VideoView is being stopped");
+            Timber.d("VideoView is being stopped");
             mVideoView.stopPlayback();
             mVideoView.setOnErrorListener(null);
             mVideoView.setOnCompletionListener(null);
@@ -107,7 +108,7 @@ class CustomViewHandler {
             try {
                 callback.onCustomViewHidden();
             } catch (Exception e) {
-                Log.e(TAG, "Error hiding custom view", e);
+                Timber.e(e, "Error hiding custom view");
             }
         }
     }
@@ -131,7 +132,7 @@ class CustomViewHandler {
                 }
             });
         } catch (ClassCastException e) {
-            Log.i(TAG, "Can't find any VideoView");
+            Timber.i("Can't find any VideoView");
         }
     }
 

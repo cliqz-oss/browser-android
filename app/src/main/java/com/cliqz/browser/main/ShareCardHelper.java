@@ -1,13 +1,11 @@
 package com.cliqz.browser.main;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -17,20 +15,17 @@ import android.widget.Toast;
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
-import com.cliqz.utils.StringUtils;
 import com.cliqz.utils.ViewUtils;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
  */
 class ShareCardHelper {
 
-    private static final String TAG = ShareCardHelper.class.getSimpleName();
     private int cardWidth;
     private int cardHeight;
     private String cardHtmlContent;
@@ -50,7 +45,7 @@ class ShareCardHelper {
 
     private void shareCard() {
         if (cardHeight == -1 || cardWidth == -1 || cardHtmlContent.equals("")) {
-            Log.e(TAG, "Invalid parameters provided for sharing the card");
+            Timber.e("Invalid parameters provided for sharing the card");
         } else {
             PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
                 @Override
@@ -101,7 +96,7 @@ class ShareCardHelper {
             intent.setType("image/png");
             activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.share_link)));
         } catch (InterruptedException e) {
-            Log.e(TAG, "Error while taking screenshot", e);
+            Timber.e(e, "Error while taking screenshot");
         }
     }
 

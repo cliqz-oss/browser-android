@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.webkit.WebResourceRequest;
@@ -37,6 +36,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 /**
  * @author Sam Macbeth
@@ -105,7 +106,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
         try {
             return engine.getBridge();
         } catch (EngineNotYetAvailable e) {
-            Log.w("webrequest", "jsengine not yet loaded, waiting", e);
+            Timber.w(e, "jsengine not yet loaded, waiting");
             try {
                 Thread.sleep(250);
             } finally {
@@ -150,7 +151,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
 
         // check for supported schemes
         if (!SUPPORTED_SCHEMES.contains(requestUrl.getScheme())) {
-            Log.d(TAG, "Skipped unrecognised url scheme: " + requestUrl.getScheme());
+            Timber.d("Skipped unrecognised url scheme: %s", requestUrl.getScheme());
             return null;
         }
 
@@ -211,7 +212,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
                 tabHasChanged.put(tabId, true);
             }
             if (blockResponse.hasKey("cancel") && blockResponse.getBoolean("cancel")) {
-                Log.d(TAG, "Block request: " + requestUrl.toString());
+                Timber.d("Block request: %s", requestUrl.toString());
                 return blockRequest(source);
             } else if (blockResponse.hasKey("redirectUrl") || blockResponse.hasKey("requestHeaders")) {
                 String newUrl;
@@ -228,13 +229,13 @@ public class WebRequest extends ReactContextBaseJavaModule {
                         modifiedHeaders.put(header.getString("name"), header.getString("value"));
                     }
                 }
-                Log.d(TAG, "Modify request from: " + requestUrl.toString());
+                Timber.d("Modify request from: %s", requestUrl.toString());
                 return modifyRequest(source, request, newUrl, modifiedHeaders);
             }
         } catch (EmptyResponseException e) {
-            Log.w("webrequest", "jsengine timed out", e);
+            Timber.w(e, "jsengine timed out");
         } catch (NoSuchKeyException e) {
-            Log.e("webrequest", "error in jsengine response", e);
+            Timber.e(e, "error in jsengine response");
         }
 
         return null;
@@ -283,7 +284,7 @@ public class WebRequest extends ReactContextBaseJavaModule {
             connection.setRequestMethod(request.getMethod());
 
 
-            Log.d(TAG, "Redirect to: " + newUrlString);
+            Timber.d("Redirect to: %s", newUrlString);
             connection.connect();
             final WebResourceResponse response = new WebResourceResponse(connection.getContentType(), connection.getContentEncoding(), connection.getInputStream());
             final String reasonPhrase = decisionSource.length() > 0 ? decisionSource : connection.getResponseMessage();
@@ -298,10 +299,10 @@ public class WebRequest extends ReactContextBaseJavaModule {
             response.setResponseHeaders(responseHeaders);
             return response;
         } catch (MalformedURLException e) {
-            Log.e(TAG, "Bad redirect url: " + e.getMessage());
+            Timber.e("Bad redirect url: %s", e.getMessage());
             return blockRequest(decisionSource);
         } catch (IllegalArgumentException | IOException e) {
-            Log.e(TAG, "Could not redirect: " + e.getMessage());
+            Timber.e("Could not redirect: %s", e.getMessage());
             return blockRequest(decisionSource);
         }
     }
