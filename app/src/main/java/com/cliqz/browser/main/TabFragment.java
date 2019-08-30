@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -103,11 +102,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.Optional;
+import timber.log.Timber;
 
 public class TabFragment extends BaseFragment implements LightningView.LightingViewListener {
 
     @SuppressWarnings("unused")
-    private static final String TAG = TabFragment.class.getSimpleName();
 
     public static final String KEY_URL = "cliqz_url_key";
     public static final String KEY_QUERY = "query";
@@ -634,7 +633,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 YTDownloadDialog.show((MainActivity) getActivity(), videoUrls, telemetry);
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -731,7 +730,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 }
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -798,7 +797,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             overflowMenuIcon.setColorFilter(ContextCompat.getColor(context, R.color.white),
                     PorterDuff.Mode.SRC_IN);
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -846,7 +845,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 final WebView webView = mLightningView.getWebView();
                 webView.evaluateJavascript(script, readabilityCallBack);
             } catch (IOException e) {
-                Log.e(TAG, "Problem reading the file readability.js", e);
+                Timber.e(e, "Problem reading the file readability.js");
             }
         }
         updateCCIcon(true);
@@ -872,9 +871,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                             "text/html", "UTF-8", "");
                 }
             } catch (JSONException e) {
-                Log.i(TAG,"error reading the json object", e);
+                Timber.i(e,"error reading the json object");
             } catch (UnsupportedEncodingException e) {
-                Log.e(TAG,"error decoding the response from readability.js", e);
+                Timber.e(e,"error decoding the response from readability.js");
             }
         }
     };
@@ -1085,7 +1084,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 clipboard.setPrimaryClip(clip);
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -1099,7 +1098,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 context.startActivity(callIntent);
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -1321,7 +1320,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 preferenceManager.setFirstSubscription(false);
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
     }
 
@@ -1335,7 +1334,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
             subscriptionsManager.removeSubscription(event.type, event.subtype, event.id);
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context", e);
+            Timber.e(e, "Null context");
         }
         event.resolve();
     }
@@ -1358,7 +1357,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null context");
+            Timber.e("Null context");
         }
         hideYTIcon();
     }
@@ -1398,8 +1397,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
         telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
-        if (mLightningView.canGoBack()) {
+        if (!mLightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
+        } else {
+            searchQuery("");
         }
     }
 
@@ -1457,7 +1458,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 tintManager.setTintColor(statusBarColor);
             }
         } catch (NoInstanceException e) {
-            Log.e(TAG, "Null activity", e);
+            Timber.e(e, "Null activity");
         }
     }
 

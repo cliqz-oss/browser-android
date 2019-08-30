@@ -1,7 +1,6 @@
 package com.cliqz.browser.peercomm;
 
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.Closeable;
 import java.io.File;
@@ -11,12 +10,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 /**
  * @author Stefano Pacifici
  */
 class ChunkedFile {
-
-    private static final String TAG = ChunkedFile.class.getSimpleName();
 
     // The number of the previous read chunk
     private int mReadChunk = -1;
@@ -84,7 +83,7 @@ class ChunkedFile {
             try {
                 is.close();
             } catch (IOException e) {
-                Log.d(TAG, "Can't close file", e);
+                Timber.d(e, "Can't close file");
             }
         }
     }

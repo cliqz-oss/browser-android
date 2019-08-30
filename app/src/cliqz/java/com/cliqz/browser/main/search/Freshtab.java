@@ -123,8 +123,9 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             component.inject(this);
         }
 
+        isNewsExpanded = preferenceManager.isNewsViewExpanded();
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                expandNewsIcon, null);
+                isNewsExpanded ? collapseNewsIcon : expandNewsIcon, null);
 
         topsitesGridView.setAdapter(topsitesAdapter);
 
@@ -149,6 +150,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 view.setVisibility(VISIBLE);
             }
         }
+        preferenceManager.setNewsViewExpanded(isNewsExpanded);
         telemetry.sendMoreNewsSignal(isNewsExpanded);
         bus.post(new CliqzMessages.HideKeyboard());
     }

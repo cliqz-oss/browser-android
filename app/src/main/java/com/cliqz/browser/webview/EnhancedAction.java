@@ -1,6 +1,6 @@
 package com.cliqz.browser.webview;
 
-import android.util.Log;
+import timber.log.Timber;
 
 /**
  * Abstract class that performs a cast to a specific {@link Bridge} subclass before calling the
@@ -11,15 +11,13 @@ import android.util.Log;
  */
 public abstract class EnhancedAction<T extends Bridge> implements Bridge.IAction {
 
-    private static final String TAG = EnhancedAction.class.getSimpleName();
-
     @Override
     public void execute(Bridge bridge, Object data, String callback) {
         try {
             final T specificBridge = ((T) bridge);
             enhancedExecute(specificBridge, data, callback);
         } catch (ClassCastException e) {
-            Log.e(TAG, "Can't cast the given bridge", e);
+            Timber.e(e, "Can't cast the given bridge");
         }
     }
 

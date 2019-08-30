@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -69,6 +68,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Optional;
+import timber.log.Timber;
 
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
@@ -84,8 +84,6 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
  */
 @SuppressLint("ViewConstructor")
 public class OverFlowMenu extends FrameLayout {
-
-    private static final String TAG = OverFlowMenu.class.getSimpleName();
 
     private enum EntryType {
         ACTIONS,
@@ -570,7 +568,7 @@ public class OverFlowMenu extends FrameLayout {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final Entries tag = (Entries)view.getTag();
-            Log.e(TAG, "Entry id: " + tag.id);
+            Timber.e("Entry id: %s", tag.id);
             switch (tag) {
                 case SETTINGS:
                     telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, isIncognitoMode(),

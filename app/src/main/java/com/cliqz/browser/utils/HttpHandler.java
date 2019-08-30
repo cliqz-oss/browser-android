@@ -2,7 +2,6 @@ package com.cliqz.browser.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.cliqz.utils.StreamUtils;
 
@@ -17,6 +16,8 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * @author Khaled Tantawy
  * @author Stefano Pacifici
@@ -25,7 +26,6 @@ public class HttpHandler {
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-    private static final String TAG = HttpHandler.class.getSimpleName();
     private static final String HTTP_METHOD_GET = "GET";
     private static final int HTTP_CONNECT_TIMEOUT = 10000; // ms
     private static final int HTTP_READ_TIMEOUT = HTTP_CONNECT_TIMEOUT;
@@ -55,16 +55,16 @@ public class HttpHandler {
             final String response = readResponse(connection);
             return response != null ? new JSONObject(response) : null;
         } catch (OpenConnectionException e) {
-            Log.i(TAG, "Can't connect to " + url.toString(), e.getCause());
+            Timber.i(e, "Can't connect to %s", url.toString());
             return null;
         } catch (ProtocolException e) {
-            Log.i(TAG, "Invalid request method " + method, e);
+            Timber.i(e, "Invalid request method %s", method);
             return null;
         } catch (SendContentException e) {
-            Log.i(TAG, "Can't send content to the server", e.getCause());
+            Timber.i(e, "Can't send content to the server");
             return null;
         } catch (JSONException e) {
-            Log.i(TAG, "Response is not a valid json", e);
+            Timber.i(e, "Response is not a valid json");
             return null;
         } finally {
             if (connection != null) {
@@ -79,11 +79,11 @@ public class HttpHandler {
         try {
             responseCode = connection.getResponseCode();
         } catch (IOException e) {
-            Log.i(TAG, "Invalid server response", e);
+            Timber.i(e, "Invalid server response");
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            Log.i(TAG, "Invalid server response code " + responseCode);
+            Timber.i("Invalid server response code %s", responseCode);
             return null;
         }
 
@@ -93,7 +93,7 @@ public class HttpHandler {
             response = StreamUtils.readTextStream(stream);
             stream.close();
         } catch (IOException e) {
-            Log.i(TAG, "Error reading server response", e);
+            Timber.i(e, "Error reading server response");
             return null;
         }
         return response;

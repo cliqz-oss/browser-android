@@ -1,15 +1,14 @@
 package com.cliqz.browser.antiphishing;
 
 import androidx.annotation.NonNull;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  * @date 2016/07/11
  */
 final class AntiPhishingUtils {
-
-    private static final String TAG = AntiPhishingUtils.class.getSimpleName();
 
     public static final int MD5_LENGTH = 32;
     public static final int HALF_MD5_LENGHT = MD5_LENGTH / 2;
@@ -26,7 +25,7 @@ final class AntiPhishingUtils {
     static boolean checkMD5(String md5) {
         // Weak check on md5 string, we do not check if it is a valid hex string
         if (md5 == null || md5.length() != MD5_LENGTH) {
-            Log.e(TAG, "Invalid md5 length");
+            Timber.e("Invalid md5 length");
             return false;
         }
         return true;

@@ -1,7 +1,6 @@
 package com.cliqz.browser.reactnative;
 
 import androidx.annotation.NonNull;
-import android.util.Log;
 
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;
@@ -15,6 +14,8 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * @author Khaled Tantawy
  */
@@ -22,7 +23,6 @@ import javax.inject.Inject;
 public class TelemetryModule extends ReactContextBaseJavaModule {
 
     private static final String name = "Telemetry";
-    private static final String TAG = TelemetryModule.class.getSimpleName();
 
     @Inject
     Telemetry telemetry;
@@ -46,7 +46,7 @@ public class TelemetryModule extends ReactContextBaseJavaModule {
         try {
             telemetry.saveExtSignal(new JSONObject(data));
         } catch (JSONException e) {
-            Log.e(TAG, "Unable to parse telemetry message", e);
+            Timber.e(e, "Unable to parse telemetry message");
         }
     }
 }

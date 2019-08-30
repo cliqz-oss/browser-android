@@ -3,13 +3,15 @@ package com.cliqz.browser.main.search;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.jsengine.JSBridge;
 import com.facebook.react.bridge.ReadableMap;
+
+import timber.log.Timber;
 
 /**
  * @author Khaled Tantawy
@@ -74,7 +76,7 @@ public class FreshtabGetLogoCallback implements JSBridge.Callback, Runnable {
         } catch (IllegalArgumentException e) {
             // It typically happens when we try to download something after the Activity is
             // destroyed, but this is not a problem to us
-            Log.w(TAG, e.getMessage());
+            Timber.w(e);
         }
     }
 

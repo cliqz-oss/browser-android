@@ -21,14 +21,15 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
-import com.google.zxing.PlanarYUVLuminanceSource;
 import com.cliqz.browser.qrscanner.camera.open.OpenCamera;
 import com.cliqz.browser.qrscanner.camera.open.OpenCameraInterface;
+import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
+
+import timber.log.Timber;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -39,8 +40,6 @@ import java.io.IOException;
  */
 @SuppressWarnings("deprecation") // camera APIs
 public final class CameraManager {
-
-    private static final String TAG = CameraManager.class.getSimpleName();
 
     private static final int MIN_FRAME_WIDTH = 240;
     private static final int MIN_FRAME_HEIGHT = 240;
@@ -103,8 +102,8 @@ public final class CameraManager {
             configManager.setDesiredCameraParameters(theCamera, false);
         } catch (RuntimeException re) {
             // Driver failed
-            Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
-            Log.i(TAG, "Resetting to saved camera params: " + parametersFlattened);
+            Timber.w("Camera rejected parameters. Setting only minimal safe-mode parameters");
+            Timber.i("Resetting to saved camera params: %s", parametersFlattened);
             // Reset:
             if (parametersFlattened != null) {
                 parameters = cameraObject.getParameters();
@@ -114,7 +113,7 @@ public final class CameraManager {
                     configManager.setDesiredCameraParameters(theCamera, true);
                 } catch (RuntimeException re2) {
                     // Well, darn. Give up
-                    Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
+                    Timber.w("Camera rejected even safe-mode parameters! No configuration");
                 }
             }
         }
@@ -230,7 +229,7 @@ public final class CameraManager {
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 2;
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-            Log.d(TAG, "Calculated framing rect: " + framingRect);
+            Timber.d("Calculated framing rect: %s", framingRect);
         }
         return framingRect;
     }
@@ -308,7 +307,7 @@ public final class CameraManager {
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 2;
             framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
-            Log.d(TAG, "Calculated manual framing rect: " + framingRect);
+            Timber.d("Calculated manual framing rect: %s", framingRect);
             framingRectInPreview = null;
         } else {
             requestedFramingRectWidth = width;

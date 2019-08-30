@@ -24,13 +24,12 @@ import org.json.JSONObject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 public class CliqzBridge extends Bridge {
-
-    private static final String TAG = CliqzBridge.class.getSimpleName();
 
     private final ExtensionCallerThread callerThread;
 
@@ -76,7 +75,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final String query = (data instanceof String) ? (String) data: null;
                 if (callback == null || callback.isEmpty() || query == null) {
-                    Log.e(TAG, "Can't perform searchHistory without a query and/or a callback");
+                    Timber.e("Can't perform searchHistory without a query and/or a callback");
                     return; // Nothing to do without callback or data
                 }
 
@@ -101,7 +100,7 @@ public class CliqzBridge extends Bridge {
             @Override
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 if (callback == null || callback.isEmpty()) {
-                    Log.e(TAG, "Can't perform getFavorites without a callback");
+                    Timber.e("Can't perform getFavorites without a callback");
                     return;
                 }
                 final JSONArray items = bridge.historyDatabase.getFavorites();
@@ -114,7 +113,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final JSONObject jsonObject = (data instanceof JSONObject) ? (JSONObject) data : new JSONObject();
                 if (!jsonObject.has("favorites")) {
-                    Log.e(TAG, "Can't set favorites. Request is empty");
+                    Timber.e("Can't set favorites. Request is empty");
                 }
                 final JSONArray favoritesList = jsonObject.optJSONArray("favorites");
                 final boolean isFavorite = jsonObject.optBoolean("value", false);
@@ -140,7 +139,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final JSONObject jsonObject = (data instanceof JSONObject) ? (JSONObject) data : new JSONObject();
                 if (callback == null || callback.isEmpty()) {
-                    Log.e(TAG, "Can't perform getHistoryItems without a callback");
+                    Timber.e("Can't perform getHistoryItems without a callback");
                     return;
                 }
 
@@ -215,7 +214,7 @@ public class CliqzBridge extends Bridge {
                 final String dataPar = params != null ? params.optString("data") : null;
                 final String typePar = params != null ? params.optString("type") : null;
                 if (dataPar == null || typePar == null) {
-                    Log.e(TAG, "Can't parse the action");
+                    Timber.e("Can't parse the action");
                     return;
                 }
 
@@ -246,7 +245,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final String url = (data instanceof String) ? (String) data : null;
                 if (url == null) {
-                    Log.w(TAG, "No url for autocompletion");
+                    Timber.w("No url for autocompletion");
                     return;
                 }
                 bridge.bus.post(new CliqzMessages.Autocomplete(url));
@@ -259,7 +258,7 @@ public class CliqzBridge extends Bridge {
                 final JSONObject json = (data instanceof JSONObject) ? (JSONObject) data : null;
                 final String query = json != null ? json.optString("q", null): null;
                 if (query == null) {
-                    Log.w(TAG, "No url to notify");
+                    Timber.w("No url to notify");
                     return;
                 }
                 bridge.bus.post(new CliqzMessages.NotifyQuery(query));
@@ -289,7 +288,7 @@ public class CliqzBridge extends Bridge {
             protected void enhancedExecute(CliqzBridge bridge, Object data, String callback) {
                 final JSONObject cardDetails = (data instanceof JSONObject) ? (JSONObject) data : null;
                 if (cardDetails == null) {
-                    Log.w(TAG, "Expect either url or -1");
+                    Timber.w("Expect either url or -1");
                     return;
                 }
                 bridge.bus.post(new Messages.ShareCard(cardDetails));
@@ -314,7 +313,7 @@ public class CliqzBridge extends Bridge {
                         final Object resultData = result.opt("data");
                         bridge.callJavascriptResultHandler(ref, resultData);
                     } catch (JSONException e) {
-                        Log.e(TAG, "Can't find any callback reference", e);
+                        Timber.e(e,"Can't find any callback reference");
                     }
                 }
             }
@@ -401,7 +400,7 @@ public class CliqzBridge extends Bridge {
                     result.put("query", query);
                 }
             } catch (JSONException e) {
-                Log.e(TAG, "Error: ", e);
+                Timber.e(e, "Error: ");
             }
             return result;
         }
@@ -445,7 +444,7 @@ public class CliqzBridge extends Bridge {
         try {
             return Action.valueOf(name);
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Can't convert the given name to Action: " + name, e);
+            Timber.e(e, "Can't convert the given name to Action: %s", name);
             return Action.none;
         }
     }

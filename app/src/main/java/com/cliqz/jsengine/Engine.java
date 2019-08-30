@@ -1,7 +1,6 @@
 package com.cliqz.jsengine;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.bebnev.RNUserAgentPackage;
 import com.cliqz.browser.BuildConfig;
@@ -21,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cl.json.RNSharePackage;
+import timber.log.Timber;
 
 /**
  * @author Sam Macbeth
@@ -69,7 +69,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
             try {
                 getBridge().callAction(functionName, callback, args);
             } catch (EngineNotYetAvailable engineNotYetAvailable) {
-                Log.e(TAG, "Engine not available", engineNotYetAvailable);
+                Timber.e(engineNotYetAvailable, "Engine not available");
             }
         });
     }
@@ -79,7 +79,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
             try {
                 getBridge().publishEvent(eventName, args);
             } catch (EngineNotYetAvailable engineNotYetAvailable) {
-                Log.e(TAG, "Engine not available", engineNotYetAvailable);
+                Timber.e(engineNotYetAvailable, "Engine not available");
             }
         });
     }

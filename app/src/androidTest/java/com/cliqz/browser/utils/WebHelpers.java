@@ -1,14 +1,16 @@
 package com.cliqz.browser.utils;
 
+import android.view.View;
+
 import androidx.test.espresso.web.assertion.WebAssertion;
 import androidx.test.espresso.web.sugar.Web;
 import androidx.test.espresso.web.sugar.Web.WebInteraction;
-import android.util.Log;
-import android.view.View;
 
 import org.hamcrest.Matcher;
 
 import java.util.concurrent.TimeUnit;
+
+import timber.log.Timber;
 
 /**
  * This class helps to perform an assertion on a webView while waiting for the web view to be loaded
@@ -16,8 +18,6 @@ import java.util.concurrent.TimeUnit;
  * @author Stefano Pacifici
  */
 public class WebHelpers {
-
-    private final static String TAG = WebHelpers.class.getSimpleName();
 
     private WebHelpers() {
         // No Instances
@@ -45,11 +45,11 @@ public class WebHelpers {
             final long timeout = System.currentTimeMillis() + mTimeout;
             while (true) {
                 try {
-                    Log.d(TAG, "Performing " + assertion.toString());
+                    Timber.d("Performing " + assertion.toString());
                     interaction = webInteraction.check(assertion);
                     break;
                 } catch (Throwable t) {
-                    Log.d(TAG, "Throwable caught", t);
+                    Timber.d(t, "Throwable caught");
                     final long now = System.currentTimeMillis();
                     if (now >= timeout) {
                         throw t;

@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents.ShowSnackBarMessage;
 import acr.browser.lightning.constant.Constants;
+import timber.log.Timber;
 
 public class LightningDownloadListener implements DownloadListener {
 
@@ -83,7 +84,7 @@ public class LightningDownloadListener implements DownloadListener {
                             dialogClickListener)
                     .setNegativeButton(mActivity.getResources().getString(R.string.action_cancel),
                             dialogClickListener).show();
-            Log.i(Constants.TAG, "Downloading" + fileName);
+            Timber.i("Downloading%s", fileName);
         }
 
         @Override

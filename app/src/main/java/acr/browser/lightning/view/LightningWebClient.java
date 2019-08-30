@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Message;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
@@ -57,6 +56,7 @@ import java.util.regex.Pattern;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.UrlUtils;
+import timber.log.Timber;
 
 /**
  * @author Anthony C. Restaino
@@ -345,7 +345,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                                 String user = name.getText().toString();
                                 String pass = password.getText().toString();
                                 handler.proceed(user.trim(), pass.trim());
-                                Log.d(Constants.TAG, "Request Login");
+                                Timber.d("Request Login");
                             }
                         })
                 .setNegativeButton(context.getString(R.string.action_cancel),

@@ -15,9 +15,10 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.OnBoardingHelper;
@@ -34,6 +35,7 @@ import java.util.concurrent.Executors;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
 * @author Ravjit Uppal
@@ -42,7 +44,6 @@ public class Telemetry {
 
     // This tag is only used to quick filter the telemetry stuff on the console using this command:
     // adb logcat '*:S TELEMETRY_DEBUG'
-    private final static String TELEMETRY_TAG = "TELEMETRY_DEBUG";
 
     private static final int BATCH_SIZE = 50;
     private JSONArray mSignalCache = new JSONArray();
@@ -274,7 +275,7 @@ public class Telemetry {
         try {
             signal.put(TelemetryKeys.HISTORY_DAYS, days);
         } catch (JSONException e) {
-            Log.e(TELEMETRY_TAG, "Can't send telemetry");
+            Timber.e("Can't send telemetry");
         }
         saveSignal(signal, false);
     }
@@ -302,7 +303,7 @@ public class Telemetry {
                         purchasesManager.getSubscriptionTypeForTelemetry());
             }
         } catch (JSONException e) {
-            Log.e(TELEMETRY_TAG, "Can't read preferences");
+            Timber.e("Can't read preferences");
         }
         return prefsJson;
     }
@@ -1213,7 +1214,7 @@ public class Telemetry {
     }
 
     private void logError(String type) {
-        Log.e(TELEMETRY_TAG, "Error sending telemetry for " + type);
+        Timber.e("Error sending telemetry for %s", type);
     }
     /**
      * Reset counter for the internet navigation signal.
@@ -1245,7 +1246,7 @@ public class Telemetry {
             } catch (JSONException e) {
                 // NOP
             }
-            Log.v(TELEMETRY_TAG, signal.toString());
+            Timber.v(signal.toString());
         }
         final boolean shouldSend = (forcePush || mSignalCache.length() > BATCH_SIZE);
         if (shouldSend) {
@@ -1264,7 +1265,7 @@ public class Telemetry {
             final JSONObject msg = new JSONObject();
             try {
                 msg.put("csize", mSignalCache.length());
-                Log.v(TELEMETRY_TAG, msg.toString());
+                Timber.v(msg.toString());
             } catch (JSONException e) {
                 // NOP
             }
@@ -1292,7 +1293,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TIME_STAMP, getUnixTimeStamp());
             signal.put(TelemetryKeys.TELEMETRY_SEQUENCE, telemetrySequence);
         } catch (JSONException e) {
-            Log.e(TELEMETRY_TAG, "Error");
+            Timber.e("Error adding identifiers");
         }
         preferenceManager.setTelemetrySequence(telemetrySequence);
     }

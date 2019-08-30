@@ -1,8 +1,8 @@
 package com.cliqz.browser.main.search;
 
 import android.os.AsyncTask;
+
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.cliqz.browser.utils.HttpHandler;
 import com.cliqz.browser.utils.LocationCache;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
@@ -122,7 +123,7 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
         try {
             return new URL(sb.toString());
         } catch (MalformedURLException e) {
-            Log.e(TAG, "Error fetching request" + NEWS_URL);
+            Timber.e("Error fetching request%s", NEWS_URL);
             return null;
         }
     }

@@ -9,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
-import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -18,6 +16,8 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
@@ -31,6 +31,7 @@ import java.util.Locale;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
 import acr.browser.lightning.utils.UrlUtils;
+import timber.log.Timber;
 
 /**
  * @author Anthony C. Restaino
@@ -38,7 +39,6 @@ import acr.browser.lightning.utils.UrlUtils;
  */
 class LightningChromeClient extends WebChromeClient {
 
-    private static final String TAG = LightningChromeClient.class.getSimpleName();
     private static final String LOG_FORMAT = "%s:%d - %s";
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
 
@@ -241,19 +241,19 @@ class LightningChromeClient extends WebChromeClient {
                     consoleMessage.lineNumber(), consoleMessage.message());
             switch (consoleMessage.messageLevel()) {
                 case DEBUG:
-                    Log.d(TAG, message);
+                    Timber.d(message);
                     break;
                 case ERROR:
-                    Log.e(TAG, message);
+                    Timber.e(message);
                     break;
                 case WARNING:
-                    Log.w(TAG, message);
+                    Timber.w(message);
                     break;
                 case LOG:
-                    Log.i(TAG, message);
+                    Timber.i(message);
                     break;
                 default:
-                    Log.v(TAG, message);
+                    Timber.v(message);
                     break;
             }
         }

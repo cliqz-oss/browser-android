@@ -4,18 +4,18 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 public abstract class Bridge {
-
-    private static final String TAG = Bridge.class.getSimpleName();
 
     private final Handler handler;
 
@@ -45,7 +45,7 @@ public abstract class Bridge {
 
     public final void postMessage(String message) {
         if (!checkCapabilities()) {
-            Log.w(TAG, "Not enough capabilities to execute");
+            Timber.w("Not enough capabilities to execute");
             return;
         }
         try {
@@ -61,7 +61,7 @@ public abstract class Bridge {
                 }
             });
         } catch (JSONException e) {
-            Log.w(TAG, "Can't parse message");
+            Timber.w("Can't parse message");
         }
     }
 
