@@ -1,5 +1,6 @@
 package com.cliqz.browser.main;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -14,6 +15,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.WebViewPersister;
+import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
 
 import java.util.ArrayList;
@@ -349,12 +351,7 @@ public class TabsManager {
         persister.clearTabsData();
     }
 
-    boolean canRestoreTabs() {
-        return !persister.loadTabsMetaData().isEmpty();
-    }
-
-    boolean restoreTabs() {
-        final List<Bundle> storedTabs = persister.loadTabsMetaData();
+    boolean restoreTabs(List<Bundle> storedTabs) {
         long lastVisited = 0;
         for (final Bundle bundle: storedTabs) {
             lastVisited = Math.max(lastVisited, bundle.getLong(TabBundleKeys.LAST_VISIT, 0L));
@@ -386,6 +383,28 @@ public class TabsManager {
             counter++;
         }
         return counter > 0;
+    }
+
+    public static class RestoreTabsTask extends AsyncTask<Void, Void, List<Bundle>> {
+
+        private final WebViewPersister mPersister;
+
+        private final Bus mBus;
+
+        RestoreTabsTask(WebViewPersister persister, Bus bus) {
+            this.mPersister = persister;
+            this.mBus = bus;
+        }
+
+        @Override
+        protected List<Bundle> doInBackground(Void... voids) {
+            return mPersister.loadTabsMetaData();
+        }
+
+        @Override
+        protected void onPostExecute(List<Bundle> storedTabs) {
+            mBus.post(new CliqzMessages.RestoreTabs(storedTabs));
+        }
     }
 }
 

@@ -122,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private PurchaseFragment purchaseFragment;
 
+    private boolean isIncognito = false;
+    private String url = null;
+    private String query = null;
+    private boolean isRestored = false;
+
     @Inject
     CrashDetector crashDetector;
 
@@ -178,22 +183,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         bus.register(this);
         crashDetector.notifyOnCreate();
 
-        boolean isRestored;
-        if (crashDetector.hasCrashed() && tabsManager.canRestoreTabs()) {
-            ResumeTabDialog.show(this);
-            crashDetector.resetCrash();
-            isRestored = false;
-        } else {
-            isRestored = tabsManager.restoreTabs();
-        }
+        TabsManager.RestoreTabsTask restoreTabsTask = new TabsManager.RestoreTabsTask(tabsManager.persister, bus);
+        restoreTabsTask.execute();
+
         new ABTestFetcher().fetchTestList();
         mOverViewFragment = new OverviewFragment();
         // Ignore intent if we are being recreated
         final Intent intent = savedInstanceState == null ? getIntent() : null;
-        final String url;
-        final String query;
         final boolean isNotificationClicked;
-        final boolean isIncognito;
         if (intent != null) {
             if (intent.getDataString() != null && intent.getDataString().equals("cliqz://NEWS_SHORTCUT_INTENT")) {
                 isNotificationClicked = false;
@@ -237,17 +234,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
         if (isNotificationClicked) {
             sendNotificationClickedTelemetry(intent);
-        }
-        if (!isRestored || url != null || query != null) {
-            firstTabBuilder = tabsManager.buildTab();
-            firstTabBuilder.setForgetMode(isIncognito);
-            if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
-                setIntent(null);
-                firstTabBuilder.setUrl(url);
-            } else if (query != null) {
-                setIntent(null);
-                firstTabBuilder.setQuery(query);
-            }
         }
 
         setupContentView();
@@ -938,6 +924,29 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final int result = ContextCompat
                 .checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
         return result == PERMISSION_GRANTED;
+    }
+
+    @Subscribe
+    public void restoreTabs(CliqzMessages.RestoreTabs restoreTabs) {
+        if (crashDetector.hasCrashed() && !restoreTabs.storedTabs.isEmpty()) {
+            ResumeTabDialog.show(this, restoreTabs.storedTabs);
+            crashDetector.resetCrash();
+            isRestored = false;
+        } else {
+            isRestored = tabsManager.restoreTabs(restoreTabs.storedTabs);
+        }
+        if (!isRestored || url != null || query != null) {
+            firstTabBuilder = tabsManager.buildTab();
+            firstTabBuilder.setForgetMode(isIncognito);
+            if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
+                setIntent(null);
+                firstTabBuilder.setUrl(url);
+            } else if (query != null) {
+                setIntent(null);
+                firstTabBuilder.setQuery(query);
+            }
+            firstTabBuilder.show();
+        }
     }
 
     @SuppressWarnings("UnusedParameters")
