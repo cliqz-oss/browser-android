@@ -36,4 +36,21 @@
         android:textColor="@color/toolbar_icon_color_incognito"
         tools:layout_marginTop="15dp" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/made_in_germany_watermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:letterSpacing="0.30"
+        android:text="@string/made_in_germany"
+        android:textAllCaps="true"
+        android:textColor="#80808080"
+        android:textSize="14sp" />
+
 </LinearLayout>

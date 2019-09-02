@@ -66,6 +66,9 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     @BindView(R.id.container)
     ScrollView contanier;
 
+    @BindView(R.id.made_in_germany_watermark)
+    TextView madeInGermanyTextView;
+
     @Inject
     TopsitesAdapter topsitesAdapter;
 
@@ -184,9 +187,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         if (preferenceManager.isBackgroundImageEnabled()) {
             appBackgroundManager.setViewBackground(this,
                     ContextCompat.getColor(context, R.color.primary_color));
+            madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
+                    R.color.made_in_germany_color));
         } else {
             appBackgroundManager.setViewBackgroundColor(this,
                     ContextCompat.getColor(context, R.color.fresh_tab_background));
+            madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
+                    R.color.made_in_germany_color_no_background));
         }
     }
 
