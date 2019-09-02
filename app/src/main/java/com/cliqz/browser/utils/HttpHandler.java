@@ -1,12 +1,14 @@
 package com.cliqz.browser.utils;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.cliqz.utils.StreamUtils;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +33,7 @@ public class HttpHandler {
     private static final int HTTP_READ_TIMEOUT = HTTP_CONNECT_TIMEOUT;
 
     @Nullable
-    public static JSONObject sendRequest(   @NonNull String method,
+    public static Object sendRequest(   @NonNull String method,
                                             @NonNull URL url,
                                             @Nullable String contentType,
                                             @Nullable Map<String, String> customHeaders,
@@ -53,7 +55,7 @@ public class HttpHandler {
                 sendContent(connection, content);
             }
             final String response = readResponse(connection);
-            return response != null ? new JSONObject(response) : null;
+            return response != null ? new JSONTokener(response).nextValue() : null;
         } catch (OpenConnectionException e) {
             Timber.i(e, "Can't connect to %s", url.toString());
             return null;

@@ -10,7 +10,9 @@ import com.cliqz.browser.main.Countries;
 import com.cliqz.browser.main.CrashDetector;
 import com.cliqz.browser.offrz.OffrzConfig;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -39,6 +41,8 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
+        static final String SHOWN_MESSAGE_COUNT = "shown_message_count";
+        static final String SHOWN_MESSAGE_IDS = "message_ids";
         static final String VPN_START_TIME = "vpn_start_time";
         static final String ADOBE_FLASH_SUPPORT = "enableflash";
         static final String BLOCK_ADS = "AdBlock";
@@ -499,6 +503,10 @@ public class PreferenceManager {
         mPrefs.edit().putLong(name, value).apply();
     }
 
+    private void putSet(String name, Set<String> values) {
+        mPrefs.edit().putStringSet(name, values).apply();
+    }
+
     public void setSendUsageData(boolean value) {
         mPrefs.edit().putBoolean(Name.SEND_USAGE_DATA, value).apply();
     }
@@ -936,5 +944,21 @@ public class PreferenceManager {
 
     public String getDashboardData() {
         return mPrefs.getString(Name.DASHBOARD_DATA, null);
+    }
+
+    public Set<String> getShownMessageIds() {
+        return mPrefs.getStringSet(Name.SHOWN_MESSAGE_IDS, new HashSet<>());
+    }
+
+    public void setShownMessageIds(Set<String> ids) {
+        putSet(Name.SHOWN_MESSAGE_IDS, ids);
+    }
+
+    public int getMessageShowCount() {
+        return mPrefs.getInt(Name.SHOWN_MESSAGE_COUNT, 0);
+    }
+
+    public void setMessageShownCount(int count) {
+        putInt(Name.SHOWN_MESSAGE_COUNT, count);
     }
 }

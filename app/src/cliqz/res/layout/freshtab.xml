@@ -1,88 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:fillViewport="true"
-    android:background="@drawable/tab_fragment_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:id="@+id/container">
+
+    <ScrollView
+        android:fillViewport="true"
+        android:background="@drawable/tab_fragment_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/topsites_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/freshtab_no_topsites"
-            android:textSize="12sp" />
-
-        <GridView
-            android:id="@+id/topsites_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:gravity="center"
-            android:numColumns="4" />
-
+        android:layout_height="match_parent">
         <LinearLayout
-            android:id="@+id/news_widget"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginRight="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:elevation="3dp"
-            android:orientation="vertical"
-            android:background="@null">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/news_label"
+                android:id="@+id/topsites_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/news_label"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:background="@color/fresh_tab_news_background_color"
-                tools:drawableRight="@drawable/ic_action_expand"
-                android:gravity="center_vertical"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingStart="10dp"
-                android:paddingRight="10dp"
-                android:paddingEnd="10dp"/>
+                android:gravity="center"
+                android:text="@string/freshtab_no_topsites"
+                android:textSize="12sp" />
+
+            <GridView
+                android:id="@+id/topsites_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:gravity="center"
+                android:numColumns="4" />
 
             <LinearLayout
+                android:id="@+id/news_widget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:elevation="3dp"
                 android:orientation="vertical"
-                android:id="@+id/topnews_list"
-                android:background="@null"/>
+                android:background="@null">
+
+                <TextView
+                    android:id="@+id/news_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/news_label"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:background="@color/fresh_tab_news_background_color"
+                    tools:drawableRight="@drawable/ic_action_expand"
+                    android:gravity="center_vertical"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/topnews_list"
+                    android:background="@null"/>
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/made_in_germany_watermark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:letterSpacing="0.30"
+                android:text="@string/made_in_germany"
+                android:textAllCaps="true"
+                android:textColor="#80808080"
+                android:textSize="14sp" />
+
         </LinearLayout>
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/made_in_germany_watermark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:letterSpacing="0.30"
-            android:text="@string/made_in_germany"
-            android:textAllCaps="true"
-            android:textColor="#80808080"
-            android:textSize="14sp" />
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</FrameLayout>
