@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.google.android.material.appbar.AppBarLayout;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import com.cliqz.browser.widget.AutocompleteEditText;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import static android.R.attr.statusBarColor;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 /**
  * @author Stefano Pacifici
@@ -33,7 +36,7 @@ public abstract class BaseFragment extends FragmentWithBus {
 
     private static final int KEYBOARD_ANIMATION_DELAY = 200;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    protected ViewGroup mContentContainer;
+    protected CoordinatorLayout mContentContainer;
     protected Toolbar mToolbar;
     protected AppBarLayout mStatusBar;
     protected AutocompleteEditText searchEditText;
@@ -66,13 +69,16 @@ public abstract class BaseFragment extends FragmentWithBus {
         }
 
         final View view = localInflater.inflate(R.layout.fragment_base, container, false);
-        mStatusBar = (AppBarLayout) view.findViewById(R.id.statusbar);
-        mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        mContentContainer = (ViewGroup) view.findViewById(R.id.content_container);
-        searchEditText = (AutocompleteEditText) view.findViewById(R.id.search_edit_text);
+        mStatusBar = view.findViewById(R.id.statusbar);
+        mToolbar = view.findViewById(R.id.toolbar);
+        mContentContainer =  view.findViewById(R.id.coordinator);
+        searchEditText = view.findViewById(R.id.search_edit_text);
         final View content = onCreateContentView(localInflater, mContentContainer, savedInstanceState);
         if (content != null) {
-            mContentContainer.addView(content, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            final CoordinatorLayout.LayoutParams params =
+                    new CoordinatorLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+            params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+            mContentContainer.addView(content, params);
         }
         mCustomToolbarView = onCreateCustomToolbarView(localInflater, mToolbar, savedInstanceState);
         if (mCustomToolbarView != null) {

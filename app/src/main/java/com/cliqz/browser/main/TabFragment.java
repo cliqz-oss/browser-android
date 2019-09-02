@@ -161,8 +161,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Inject
     TabsManager tabsManager;
 
-    @BindView(R.id.progress_view)
-    AnimatedProgressBar progressBar;
+    // @BindView(R.id.progress_view)
+    // AnimatedProgressBar progressBar;
 
     ControlCenterHelper mControlCenterHelper;
 
@@ -200,8 +200,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @BindView(R.id.reader_mode_button)
     ImageButton readerModeButton;
 
-    @BindView(R.id.reader_mode_webview)
-    WebView readerModeWebview;
+    // @BindView(R.id.reader_mode_webview)
+    // WebView readerModeWebview;
 
     @Nullable
     @BindView(R.id.vpn_panel_button)
@@ -325,7 +325,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
         ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
-        searchBar.setProgressBar(progressBar);
+        // TODO: RESTORE THIS
+        // searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();
         final FlavoredActivityComponent component = activity != null ?
                 BrowserApp.getActivityComponent(activity) : null;
@@ -347,7 +348,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         //openTabsCounter.setBa
         if (activity != null && (searchView == null || mLightningView == null)) {
             // Must use activity due to Crosswalk webview
-            searchView = activity.searchView;
+            searchView = activity.getSearchView();
             final String id = mId != null ? mId : RelativelySafeUniqueId.createNewUniqueId();
             mLightningView = new LightningView(getActivity(), mIsIncognito, id);
             mLightningView.setListener(this);
@@ -362,21 +363,22 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             fetchYoutubeVideo(null);
         }
         searchView.setCurrentTabState(state);
-        ViewUtils.safelyAddView(localContainer, searchView);
+        // ViewUtils.safelyAddView(localContainer, searchView);
         searchBar.setTrackerCount(mTrackerCount);
         if (quickAccessBar != null) {
             quickAccessBar.setSearchTextView(searchEditText);
             quickAccessBar.hide();
         }
         //way to handle links in the readermode article
-        readerModeWebview.setWebViewClient(new WebViewClient() {
+        // TODO RESTORE THIS
+        /* readerModeWebview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 toggleReaderMode();
                 mLightningView.loadUrl(url);
                 return true;
             }
-        });
+        }); */
         onPageFinished(null);
     }
 
@@ -484,7 +486,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 } else {
                     searchBar.setTitle(searchBar.getQuery());
                     searchBar.showTitleBar();
-                    progressBar.setVisibility(View.GONE);
+                    // TODO RESTORE THIS
+                    // progressBar.setVisibility(View.INVISIBLE);
                 }
             } else {
                 mLightningView.getWebView().bringToFront();
@@ -505,7 +508,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         queryManager.setForgetMode(mIsIncognito);
         mIsReaderModeOn = false;
         readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
-        updateCCIcon(progressBar.getProgress() == 100);
+        // TODO RESTORE THIS
+        // updateCCIcon(progressBar.getProgress() == 100);
         updateVpnIcon();
         if (mShouldShowVpnPanel) {
             getView().post(() -> {
@@ -639,6 +643,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @OnClick(R.id.reader_mode_button)
     void toggleReaderMode() {
+        /* TODO RESTORE THIS
         if (!mIsReaderModeOn) {
             mIsReaderModeOn = true;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_on);
@@ -649,7 +654,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
             readerModeWebview.setVisibility(View.GONE);
-        }
+        } */
     }
 
     @Optional
@@ -854,6 +859,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private ValueCallback<String> readabilityCallBack = new ValueCallback<String>() {
         @Override
         public void onReceiveValue(String s) {
+            /* TODO RESTORE THIS
             if (s == null) {
                 return;
             }
@@ -875,6 +881,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             } catch (UnsupportedEncodingException e) {
                 Timber.e(e,"error decoding the response from readability.js");
             }
+            */
         }
     };
 
@@ -961,9 +968,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private void onBackPressedV16() {
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
-            if (readerModeWebview.getVisibility() == View.VISIBLE) {
+            // TODO RESTORE THIS
+            /* if (readerModeWebview.getVisibility() == View.VISIBLE) {
                 toggleReaderMode();
-            } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
+            } else */ if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
                 telemetry.backPressed = true;
                 telemetry.showingCards = false;
                 mLightningView.goBack();
@@ -1166,7 +1174,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void resetTrackerCount(Messages.ResetTrackerCount event) {
         mTrackerCount = 0;
         searchBar.setTrackerCount(mTrackerCount);
-        readerModeWebview.setVisibility(View.GONE);
+        // TODO RESTORE THIS
+        // readerModeWebview.setVisibility(View.GONE);
         readerModeButton.setVisibility(View.GONE);
     }
 
@@ -1352,7 +1361,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, isBackgroundEnabled);
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            readerModeWebview.setVisibility(View.GONE);
+            // TODO RESTORE THIS
+            // readerModeWebview.setVisibility(View.GONE);
             readerModeButton.setVisibility(View.GONE);
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);

@@ -2,6 +2,8 @@ package com.cliqz.browser.main;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -51,8 +53,10 @@ public class MainActivityModule {
 
     @PerActivity
     @Provides
-    SearchView providesSearchView(Engine engine) {
-        return new SearchView(activity, engine);
+    SearchView providesSearchView() {
+        final SearchView searchView = activity.getSearchView();
+        assert searchView != null;
+        return searchView;
     }
 
     @PerActivity

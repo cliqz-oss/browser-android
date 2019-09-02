@@ -155,9 +155,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     GCMRegistrationBroadcastReceiver gcmReceiver;
 
     @Inject
-    SearchView searchView;
-
-    @Inject
     OnBoardingHelper onBoardingHelper;
 
     @Inject
@@ -167,6 +164,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     PurchasesManager purchasesManager;
 
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
+
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,6 +295,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @Nullable
+    SearchView getSearchView() {
+        return mSearchView;
+    }
+
     private void showVpnPanel() {
         tabsManager.buildTab().setOpenVpnPanel().show();
     }
@@ -366,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
+        mSearchView = findViewById(R.id.search_view);
         if (BuildConfig.IS_LUMEN && preferenceManager.shouldShowLumenOnboarding()) {
             final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
             final View onboardingView = inflater.inflate(R.layout.lumen_onboarding, null);

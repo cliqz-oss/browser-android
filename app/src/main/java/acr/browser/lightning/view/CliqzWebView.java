@@ -3,8 +3,11 @@ package acr.browser.lightning.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
+
+import androidx.annotation.Nullable;
 import androidx.core.view.MotionEventCompat;
 import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChild2;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.ViewCompat;
 import android.view.MotionEvent;
@@ -28,13 +31,13 @@ import javax.inject.Inject;
  * @author Moaz Rashad
  */
 @SuppressLint("ViewConstructor")
-public class CliqzWebView extends WebView implements NestedScrollingChild {
+public class CliqzWebView extends WebView implements NestedScrollingChild2 {
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
     @Inject
     Bus bus;
     private int mLastY;
-    private NestedScrollingChildHelper mChildHelper;
+    private final NestedScrollingChildHelper mChildHelper;
     private boolean firstScroll = true;
     private int mNestedOffsetY;
 
@@ -94,14 +97,14 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
     //Below code has been taken and modified from the GitHub repo takahirom/webview-in-coordinatorlayout
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        boolean returnValue;
+        boolean returnValue = false;
         //In case of GoogleMaps or other similar content ScrollX and ScrollY is always zero
         //So we have to stop nested scrolling on those pages
-        if (getScrollY() == 0 && getScrollX() == 0) {
-            stopNestedScroll();
-        } else {
-            startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
-        }
+//        if (getScrollY() == 0 && getScrollX() == 0) {
+//            stopNestedScroll();
+//        } else {
+//            startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
+//        }
         MotionEvent event = MotionEvent.obtain(ev);
         final int action = MotionEventCompat.getActionMasked(event);
         if (action == MotionEvent.ACTION_DOWN) {
@@ -138,8 +141,11 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
                     mLastY = eventY;
                 }
                 // start NestedScroll
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
-            default:
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                firstScroll = true;
                 returnValue = super.onTouchEvent(event);
                 // end NestedScroll
                 stopNestedScroll();
@@ -193,5 +199,30 @@ public class CliqzWebView extends WebView implements NestedScrollingChild {
     @Override
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes, int type) {
+        return mChildHelper.startNestedScroll(axes, type);
+    }
+
+    @Override
+    public void stopNestedScroll(int type) {
+        mChildHelper.stopNestedScroll(type);
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent(int type) {
+        return hasNestedScrollingParent(type);
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow, int type) {
+        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed, @Nullable int[] offsetInWindow, int type) {
+        return dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
 }

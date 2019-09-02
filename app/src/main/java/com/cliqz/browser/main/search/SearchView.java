@@ -3,10 +3,14 @@ package com.cliqz.browser.main.search;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -37,7 +41,6 @@ import acr.browser.lightning.preference.PreferenceManager;
 /**
  * @author Khaled Tantawy
  */
-@SuppressLint("ViewConstructor")
 public class SearchView extends FrameLayout {
 
     private final Incognito incognito;
@@ -64,18 +67,28 @@ public class SearchView extends FrameLayout {
     @Inject
     QueryManager queryManager;
 
+    @Inject
+    Engine engine;
+
     private final Context context;
-    private final Engine engine;
     private CliqzBrowserState state;
 
-    public SearchView(AppCompatActivity context, Engine engine) {
-        super(context);
+    public SearchView(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public SearchView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public SearchView(@NonNull Context context, @Nullable AttributeSet attrs,
+                       @AttrRes int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
         this.context = context;
-        this.engine = engine;
         mReactView = engine.reactRootView;
         startTabContainer = new StartTabContainer(this.context);
         incognito = BuildConfig.IS_NOT_LUMEN ? new Incognito(this.context) : null;
