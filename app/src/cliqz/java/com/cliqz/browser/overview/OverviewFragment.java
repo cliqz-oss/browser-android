@@ -1,5 +1,6 @@
 package com.cliqz.browser.overview;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -17,9 +18,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.main.TabFragment;
+import com.cliqz.browser.main.TabFragment2;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Subscribe;
@@ -37,6 +39,7 @@ public class OverviewFragment extends CommonOverviewFragment {
     public View contextualToolBar;
     private int mCurrentPageIndex = -1;
 
+    @SuppressLint("ObsoleteSdkInt")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,16 +54,15 @@ public class OverviewFragment extends CommonOverviewFragment {
         final TypedArray typedArray = activity.getTheme()
                 .obtainStyledAttributes(themeResId, new int[]{R.attr.colorPrimaryDark});
         final int resourceId = typedArray.getResourceId(0, R.color.normal_tab_primary_color);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow()
-                    .setStatusBarColor(ContextCompat.getColor(activity, resourceId));
-            typedArray.recycle();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(activity);
-            tintManager.setStatusBarTintEnabled(true);
-            tintManager.setNavigationBarTintEnabled(true);
-            tintManager.setTintColor(resourceId);
-        }
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            throw new AssertionError("DO NOT DOWNGRADE DO API < 21");
+        activity.getWindow()
+                .setStatusBarColor(ContextCompat.getColor(activity, resourceId));
+        typedArray.recycle();
+        SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+        tintManager.setTintColor(resourceId);
 
         mPageAdapter = new OverviewPagerAdapter(getChildFragmentManager());
         mViewPager = view.findViewById(R.id.viewpager);
@@ -89,7 +91,6 @@ public class OverviewFragment extends CommonOverviewFragment {
         }
     }
 
-    @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void onBackPressed(Messages.BackPressed event) {
         sendCurrentPageHideSignal();
@@ -99,7 +100,7 @@ public class OverviewFragment extends CommonOverviewFragment {
     @Subscribe
     public void openLink(CliqzMessages.OpenLink event) {
         tabsManager.showTab(tabsManager.getCurrentTabPosition());
-        final TabFragment tab = tabsManager.getCurrentTab();
+        final TabFragment2 tab = tabsManager.getCurrentTab();
         if (tab != null) {
             if (tab.isResumed()) {
                 tab.openLink(event.url, false, true, null);
@@ -112,7 +113,7 @@ public class OverviewFragment extends CommonOverviewFragment {
     @Subscribe
     public void openQuery(Messages.OpenQuery event) {
         tabsManager.showTab(tabsManager.getCurrentTabPosition());
-        final TabFragment tab = tabsManager.getCurrentTab();
+        final TabFragment2 tab = tabsManager.getCurrentTab();
         if (tab != null) {
             tab.searchQuery(event.query);
         }

@@ -529,7 +529,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Subscribe
     public void createWindow(BrowserEvents.CreateWindow event) {
         final int tabPosition = tabsManager.findTabFor(event.view);
-        final TabFragment fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
+        final TabFragment2 fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
         final TabsManager.Builder builder = tabsManager.buildTab();
         if (fromTab != null) {
             builder.setOriginTab(fromTab).setForgetMode(fromTab.state.isIncognito());
@@ -554,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void sendTabToDesctop(Messages.SentTabToDesktop event) {
-        final TabFragment tabFragment = tabsManager.getCurrentTab();
+        final TabFragment2 tabFragment = tabsManager.getCurrentTab();
         final LightningView lightningView = tabFragment != null ? tabFragment.mLightningView : null;
         if (lightningView == null) {
             return;
@@ -727,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     // returns screen that is visible
     private String getCurrentVisibleFragmentName() {
         final String name;
-        final TabFragment currentTab = tabsManager.getCurrentTab();
+        final TabFragment2 currentTab = tabsManager.getCurrentTab();
         if (mOverViewFragment != null && mOverViewFragment.isVisible()) {
             name = "past";
         } else if (currentTab != null) {

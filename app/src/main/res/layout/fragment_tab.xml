@@ -8,13 +8,32 @@
     android:orientation="vertical"
     app:elevation="10dp">
 
-    <!--FrameLayout
-        android:id="@+id/content_container"
+    <FrameLayout
+        android:id="@+id/local_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:visibility="gone" / -->
+        android:elevation="2dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- include layout="@layout/onboarding_helper" />
+
+        <WebView
+            android:id="@+id/reader_mode_webview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="56dp"
+            android:background="@color/white" />
+
+        <acr.browser.lightning.view.AnimatedProgressBar
+            android:id="@+id/progress_view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="top"
+            custom:bidirectionalAnimate="false"
+            custom:backgroundColor="@color/progress_bar_bg"
+            custom:progressColor="@color/progress_bar_color" / -->
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/in_page_search_bar"

@@ -108,6 +108,12 @@ public class LightningView {
         return urlSSLError;
     }
 
+    public void onPause() {
+        if (mWebView != null) {
+            mWebView.onPause();
+        }
+    }
+
     public interface LightingViewListener {
 
         void increaseAntiTrackingCounter();

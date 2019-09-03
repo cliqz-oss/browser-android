@@ -20,7 +20,7 @@ interface MainActivityComponent {
 
     void inject(LightningView lightningView);
 
-    void inject(TabFragment tabFragment);
+    void inject(TabFragment2 tabFragment);
 
     void inject(FragmentWithBus fragmentWithBus);
 

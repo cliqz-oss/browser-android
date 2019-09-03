@@ -18,13 +18,13 @@ import acr.browser.lightning.view.TrampolineConstants;
  * @author Stefano Pacifici
  */
 class TabFragmentListener implements SearchBar.Listener {
-    private final TabFragment fragment;
+    private final TabFragment2 fragment;
 
-    public static TabFragmentListener create(TabFragment fragment) {
+    public static TabFragmentListener create(TabFragment2 fragment) {
         return new TabFragmentListener(fragment);
     }
 
-    private TabFragmentListener(TabFragment fragment) {
+    private TabFragmentListener(TabFragment2 fragment) {
         this.fragment = fragment;
         fragment.searchBar.setListener(this);
     }

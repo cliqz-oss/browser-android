@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -32,12 +31,9 @@ import acr.browser.lightning.view.TrampolineConstants;
  */
 public class TabsManager {
 
-    @SuppressWarnings("WeakerAccess")
     public class Builder {
         private boolean mWasCreated = false;
         private boolean mForgetMode = false;
-        @SuppressWarnings("unused")
-        private TabFragment mFromTab = null;
         private String mUrl = null;
         private String mQuery = null;
         private Message mMessage = null;
@@ -53,8 +49,8 @@ public class TabsManager {
             return this;
         }
 
-        public Builder setOriginTab(TabFragment from) {
-            mFromTab = from;
+        @SuppressWarnings({"unused", "WeakerAccess"})
+        public Builder setOriginTab(TabFragment2 from) {
             return this;
         }
 
@@ -88,6 +84,7 @@ public class TabsManager {
             return this;
         }
 
+        @SuppressWarnings("WeakerAccess")
         public Builder setOpenVpnPanel() {
             this.mOpenVpnPanel = true;
             return this;
@@ -99,28 +96,28 @@ public class TabsManager {
             }
             mWasCreated = true;
 
-            final TabFragment newTab = new TabFragment();
+            final TabFragment2 newTab = new TabFragment2();
             final Bundle arguments = new Bundle();
             arguments.putBoolean(MainActivity.EXTRA_IS_PRIVATE, mForgetMode);
-            arguments.putBoolean(TabFragment.KEY_OPEN_VPN_PANEL, mOpenVpnPanel);
+            arguments.putBoolean(TabFragment2.KEY_OPEN_VPN_PANEL, mOpenVpnPanel);
             if (mUrl != null) {
-                arguments.putString(TabFragment.KEY_URL, mUrl);
+                arguments.putString(TabFragment2.KEY_URL, mUrl);
             }
             if (mQuery != null) {
-                arguments.putString(TabFragment.KEY_QUERY, mQuery);
+                arguments.putString(TabFragment2.KEY_QUERY, mQuery);
             }
             if (mMessage != null) {
-                arguments.putParcelable(TabFragment.KEY_NEW_TAB_MESSAGE, mMessage);
+                arguments.putParcelable(TabFragment2.KEY_NEW_TAB_MESSAGE, mMessage);
             }
 
             if (mId == null) {
                 mId = RelativelySafeUniqueId.createNewUniqueId();
             }
-            arguments.putString(TabFragment.KEY_TAB_ID, mId);
-            arguments.putBoolean(TabFragment.KEY_FORCE_RESTORE, mRestore);
+            arguments.putString(TabFragment2.KEY_TAB_ID, mId);
+            arguments.putBoolean(TabFragment2.KEY_FORCE_RESTORE, mRestore);
 
             if (mTitle != null) {
-                arguments.putString(TabFragment.KEY_TITLE, mTitle);
+                arguments.putString(TabFragment2.KEY_TITLE, mTitle);
             }
             newTab.setArguments(arguments);
             final int position = mFragmentsList.size();
@@ -138,7 +135,7 @@ public class TabsManager {
         }
     }
 
-    private final List<TabFragment> mFragmentsList = new ArrayList<>();
+    private final List<TabFragment2> mFragmentsList = new ArrayList<>();
     private final FragmentManager mFragmentManager;
     private int currentVisibleTab = -1;
 
@@ -174,7 +171,7 @@ public class TabsManager {
      * @return The instance of currently visible Tab
      */
     @Nullable
-    public TabFragment getCurrentTab() {
+    public TabFragment2 getCurrentTab() {
         if (getCurrentTabPosition() == -1) {
             return null;
         } else {
@@ -185,7 +182,7 @@ public class TabsManager {
     /**
      * @return Returns the tabfragment at the required position
      */
-    public TabFragment getTab(int position) {
+    public TabFragment2 getTab(int position) {
         return mFragmentsList.get(position);
     }
 
@@ -205,11 +202,11 @@ public class TabsManager {
      * @param animation Animation for the enter transition
      */
     public void showTab(int position, int animation) {
-        final TabFragment currentTab = getCurrentTab();
+        final TabFragment2 currentTab = getCurrentTab();
         if (currentTab != null) {
             currentTab.state.setSelected(false);
         }
-        final TabFragment tab = mFragmentsList.get(position);
+        final TabFragment2 tab = mFragmentsList.get(position);
         tab.state.setSelected(true);
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M && animation != 0) {
@@ -261,7 +258,7 @@ public class TabsManager {
      */
     int findTabFor(LightningView view) {
         for (int i = 0; i < mFragmentsList.size(); i++) {
-            final TabFragment tab = mFragmentsList.get(i);
+            final TabFragment2 tab = mFragmentsList.get(i);
             if (tab != null && tab.mLightningView == view) {
                 return i;
             }
@@ -279,7 +276,7 @@ public class TabsManager {
             return;
         }
 
-        TabFragment reference = mFragmentsList.get(position);
+        TabFragment2 reference = mFragmentsList.get(position);
         if (reference == null) {
             return;
         }
@@ -301,7 +298,7 @@ public class TabsManager {
      * Handles closing all tabs from the 3-dots menu
      */
     public void deleteAllTabs() {
-        for (TabFragment fragment : mFragmentsList) {
+        for (TabFragment2 fragment : mFragmentsList) {
             if (fragment.mLightningView != null) {
                 fragment.mLightningView.stopLoading();
                 fragment.mLightningView.onDestroy();
@@ -318,14 +315,12 @@ public class TabsManager {
         if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
             return;
         }
-        for (TabFragment tabFragment : mFragmentsList) {
+        for (TabFragment2 tabFragment : mFragmentsList) {
             if (tabFragment.mLightningView == null) {
                 continue;
             }
-            final WebView webView = tabFragment.mLightningView.getWebView();
-            if (webView != null) {
-                webView.onPause();
-            }
+
+            tabFragment.mLightningView.onPause();
         }
     }
 
@@ -333,14 +328,11 @@ public class TabsManager {
         if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
             return;
         }
-        for (TabFragment tabFragment : mFragmentsList) {
+        for (TabFragment2 tabFragment : mFragmentsList) {
             if (tabFragment.mLightningView == null) {
                 continue;
             }
-            final WebView webView = tabFragment.mLightningView.getWebView();
-            if (webView != null) {
-                webView.onResume();
-            }
+            tabFragment.mLightningView.onResume();
         }
     }
 

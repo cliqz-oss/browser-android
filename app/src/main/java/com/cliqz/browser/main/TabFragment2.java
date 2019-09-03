@@ -17,12 +17,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -31,7 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -44,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.BuildConfig;
@@ -64,6 +64,7 @@ import com.cliqz.browser.vpn.VpnHandler;
 import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
+import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
 import com.cliqz.browser.widget.TabsCounter;
@@ -79,14 +80,10 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.net.URLDecoder;
 
 import javax.inject.Inject;
 
@@ -94,7 +91,6 @@ import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
-import acr.browser.lightning.view.AnimatedProgressBar;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
 import butterknife.BindView;
@@ -104,7 +100,9 @@ import butterknife.OnEditorAction;
 import butterknife.Optional;
 import timber.log.Timber;
 
-public class TabFragment extends BaseFragment implements LightningView.LightingViewListener {
+import static android.R.attr.statusBarColor;
+
+public class TabFragment2 extends FragmentWithBus implements LightningView.LightingViewListener {
 
     @SuppressWarnings("unused")
 
@@ -145,6 +143,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private boolean mIsReaderModeOn = false;
 
     private VpnPanel mVpnPanel;
+
+    private static final int KEYBOARD_ANIMATION_DELAY = 200;
+    protected CoordinatorLayout mContentContainer;
+    protected Toolbar mToolbar;
+    protected AppBarLayout mStatusBar;
+    protected AutocompleteEditText searchEditText;
+    private View mCustomToolbarView;
 
     @BindView(R.id.local_container)
     FrameLayout localContainer;
@@ -239,10 +244,55 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         return mId;
     }
 
-    public TabFragment() {
+    public TabFragment2() {
         super();
         // This must be not null
         mId = RelativelySafeUniqueId.createNewUniqueId();
+    }
+
+    @Nullable
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final int themeResId = getFragmentTheme();
+
+        final Resources.Theme theme = getActivity().getTheme();
+        final TypedValue value = new TypedValue();
+        theme.resolveAttribute(R.attr.colorPrimaryDark, value, true);
+        @ColorInt final int color = value.data;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(color);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(getActivity());
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setNavigationBarTintEnabled(true);
+            tintManager.setTintColor(statusBarColor);
+        }
+
+        final LayoutInflater localInflater;
+        if (themeResId != 0) {
+            final Context themedContext = new ContextThemeWrapper(getContext(), themeResId);
+            localInflater = inflater.cloneInContext(themedContext);
+        } else {
+            localInflater = inflater;
+        }
+
+        final View view = localInflater.inflate(R.layout.fragment_tab, container, false);
+        mStatusBar = view.findViewById(R.id.statusbar);
+        mToolbar = view.findViewById(R.id.toolbar);
+        mContentContainer =  view.findViewById(R.id.coordinator);
+        searchEditText = view.findViewById(R.id.search_edit_text);
+        mCustomToolbarView = localInflater.inflate(R.layout.fragment_search_toolbar, mToolbar, true);
+        mToolbar.inflateMenu(R.menu.fragment_search_menu);
+        return view;
+    }
+
+    void delayedPostOnBus(final Object event) {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bus.post(event);
+            }
+        }, KEYBOARD_ANIMATION_DELAY);
     }
 
     @Override
@@ -261,7 +311,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
             state.setTitle(title != null ? title : url);
-            state.setMode(CliqzBrowserState.Mode.WEBPAGE);
+            state.setMode(Mode.WEBPAGE);
             state.setIncognito(incognito);
         }
         super.setArguments(args);
@@ -308,11 +358,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         } else {
             return TelemetryKeys.CARDS;
         }
-    }
-
-    @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
     @SuppressLint("SetTextI18n")
@@ -421,7 +466,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mDelayedUrl = null;
         }
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
@@ -519,29 +564,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
-    @Override
-    protected int getMenuResource() {
-        return R.menu.fragment_search_menu;
-    }
-
-    @Override
-    protected boolean onMenuItemClick(MenuItem item) {
-        return false;
-    }
-
-    @Override
-    protected int getFragmentTheme() {
+    private int getFragmentTheme() {
         if (mIsIncognito) {
             return R.style.Theme_LightTheme_Incognito;
         } else {
             return R.style.Theme_Cliqz_Overview;
         }
-    }
-
-    @Nullable
-    @Override
-    protected View onCreateCustomToolbarView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_search_toolbar, container, false);
     }
 
     @Override
@@ -1225,6 +1253,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
+    private void showToolbar() {
+        mStatusBar.setExpanded(true, true);
+    }
+
     @Subscribe
     public void switchToForgetMode(Messages.SwitchToForget event) {
         Toast.makeText(getContext(), getString(R.string.switched_to_forget), Toast.LENGTH_SHORT).show();
@@ -1473,15 +1505,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     protected void disableUrlBarScrolling() {
-        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-        params.setScrollFlags(0);
-        mContentContainer.requestLayout();
+        // TODO Restore this
+//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+//        params.setScrollFlags(0);
+//        mContentContainer.requestLayout();
     }
 
     protected void enableUrlBarScrolling() {
-        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
-        mContentContainer.requestLayout();
+        // Todo Restore this
+//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+//        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+//        mContentContainer.requestLayout();
     }
 
     private void showYTIcon() {
