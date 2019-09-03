@@ -83,7 +83,6 @@ import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
-import acr.browser.lightning.view.LightningView;
 import timber.log.Timber;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -553,15 +552,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    public void sendTabToDesctop(Messages.SentTabToDesktop event) {
+    public void sendTabToDesktop(Messages.SentTabToDesktop event) {
         final TabFragment2 tabFragment = tabsManager.getCurrentTab();
-        final LightningView lightningView = tabFragment != null ? tabFragment.mLightningView : null;
-        if (lightningView == null) {
+        if (tabFragment == null) {
             return;
         }
-        final String url = lightningView.getUrl();
-        final String title = lightningView.getTitle();
-        final boolean isIncognito = lightningView.isIncognitoTab();
+        final String url = tabFragment.getUrl();
+        final String title = tabFragment.getTitle();
+        final boolean isIncognito = tabFragment.isIncognito();
         if (url.isEmpty()) {
             return;
         }

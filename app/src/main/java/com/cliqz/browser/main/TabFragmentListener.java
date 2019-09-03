@@ -45,7 +45,7 @@ class TabFragmentListener implements SearchBar.Listener {
                 fragment.searchBar.showProgressBar();
                 fragment.searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
             }
-            ViewCompat.setElevation(fragment.mStatusBar, Utils.dpToPx(0));
+            ViewCompat.setElevation(fragment.statusBar, Utils.dpToPx(0));
         } else {
             fragment.bus.post(new Messages.AdjustPan());
             fragment.timings.setUrlBarFocusedTime();
@@ -64,7 +64,7 @@ class TabFragmentListener implements SearchBar.Listener {
             fragment.resetFindInPage();
             fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(),
                     fragment.getTelemetryView());
-            ViewCompat.setElevation(fragment.mStatusBar, Utils.dpToPx(5));
+            ViewCompat.setElevation(fragment.statusBar, Utils.dpToPx(5));
         }
     }
 
@@ -89,7 +89,7 @@ class TabFragmentListener implements SearchBar.Listener {
         final SearchView searchView = fragment.searchView;
         final boolean shouldSend = (((start + count) != before) ||
                 !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
-        if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.mLightningView.getUrl()))) {
+        if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.getUrl()))) {
             fragment.lastQuery = q;
             searchView.updateQuery(q, start, count);
         }
@@ -114,7 +114,7 @@ class TabFragmentListener implements SearchBar.Listener {
             return;
         }
         fragment.state.setMode(Mode.SEARCH);
-        final String url = fragment.mLightningView.getUrl();
+        final String url = fragment.getUrl();
         if (url.toLowerCase().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME+"=")) {
             searchBar.setSearchText("");
         } else {
@@ -122,7 +122,7 @@ class TabFragmentListener implements SearchBar.Listener {
         }
         searchBar.selectAllText();
         fragment.searchView.updateQuery("", 0, -1);
-        fragment.mShowWebPageAgain = true;
+        fragment.setShowWebPageAgain(true);
         fragment.hideYTIcon();
     }
 

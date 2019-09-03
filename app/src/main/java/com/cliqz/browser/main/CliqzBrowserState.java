@@ -2,6 +2,9 @@ package com.cliqz.browser.main;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 /**
@@ -24,12 +27,13 @@ public class CliqzBrowserState implements Serializable {
     private Bitmap favicon = null;
     private boolean selected = false;
 
+    @NonNull
     public String getQuery() {
         return query;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
+    public void setQuery(@Nullable String query) {
+        this.query = query != null ? query : "";
     }
 
     public String getTitle() {

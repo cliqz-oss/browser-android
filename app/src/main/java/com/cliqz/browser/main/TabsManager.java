@@ -259,7 +259,7 @@ public class TabsManager {
     int findTabFor(LightningView view) {
         for (int i = 0; i < mFragmentsList.size(); i++) {
             final TabFragment2 tab = mFragmentsList.get(i);
-            if (tab != null && tab.mLightningView == view) {
+            if (tab != null && tab.getLightningView() == view) {
                 return i;
             }
         }
@@ -276,16 +276,13 @@ public class TabsManager {
             return;
         }
 
-        TabFragment2 reference = mFragmentsList.get(position);
+        final TabFragment2 reference = mFragmentsList.get(position);
         if (reference == null) {
             return;
         }
         mFragmentsList.remove(position);
         persister.remove(reference.getTabId());
-        if (reference.mLightningView != null) {
-            reference.mLightningView.stopLoading();
-            reference.mLightningView.onDestroy();
-        }
+        reference.onDeleteTab();
         if (mFragmentsList.size() == 0) {
             currentVisibleTab = 0;
             buildTab().show();
@@ -299,10 +296,7 @@ public class TabsManager {
      */
     public void deleteAllTabs() {
         for (TabFragment2 fragment : mFragmentsList) {
-            if (fragment.mLightningView != null) {
-                fragment.mLightningView.stopLoading();
-                fragment.mLightningView.onDestroy();
-            }
+            fragment.onDeleteTab();
             persister.remove(fragment.getTabId());
         }
 
@@ -312,27 +306,14 @@ public class TabsManager {
     }
 
     void pauseAllTabs() {
-        if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
-            return;
-        }
         for (TabFragment2 tabFragment : mFragmentsList) {
-            if (tabFragment.mLightningView == null) {
-                continue;
-            }
-
-            tabFragment.mLightningView.onPause();
+            tabFragment.onPauseTab();
         }
     }
 
     void resumeAllTabs() {
-        if (mFragmentsList.size() == 0 || mFragmentsList.get(0).mLightningView == null) {
-            return;
-        }
         for (TabFragment2 tabFragment : mFragmentsList) {
-            if (tabFragment.mLightningView == null) {
-                continue;
-            }
-            tabFragment.mLightningView.onResume();
+            tabFragment.onResumeTab();
         }
     }
 
