@@ -22,11 +22,11 @@
     <color name="icon_light_theme">#FFFFFFFF</color>
     <color name="icon_dark_theme">#FF000000</color>
 
-    <color name="incognito_tab_primary_color">#4A4A4A</color>
+    <color name="incognito_tab_primary_color">#363640</color>
     <color name="normal_tab_primary_color">#e8e8e8</color>
     <color name="history_primary_color">#F87140</color>
 
-    <color name="incognito_tab_primary_color_dark">#333333</color>
+    <color name="incognito_tab_primary_color_dark">#2A2A33</color>
     <color name="normal_tab_primary_color_dark">#0E579C</color>
     <color name="history_primary_color_dark">#E76030</color>
 
@@ -83,5 +83,5 @@
     <color name="tabs_overview_background_color">@color/normal_tab_primary_color</color>
     <color name="tabs_overview_floating_button_color">@color/primary_color</color>
     <color name="made_in_germany_color">#80808080</color>
-    <color name="made_in_germany_color_no_background">#AAAAAA</color>
+    <color name="made_in_germany_color_no_background">#66FFFFFF</color>
 </resources>

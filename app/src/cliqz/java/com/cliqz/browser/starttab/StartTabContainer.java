@@ -30,8 +30,8 @@ public class StartTabContainer extends FrameLayout {
         addView(mFreshtab);
     }
 
-    public void updateFreshTab() {
-        mFreshtab.updateFreshTab();
+    public void updateFreshTab(boolean isIncognito) {
+        mFreshtab.updateFreshTab(isIncognito);
     }
 
     public void gotToFavorites() {

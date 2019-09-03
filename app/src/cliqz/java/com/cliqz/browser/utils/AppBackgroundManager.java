@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
@@ -87,6 +88,13 @@ public class AppBackgroundManager {
         view.setTag(R.id.background_manager_mode_key, Mode.COLOR);
         removeLayoutChangedListener(view);
         view.setBackgroundColor(color);
+    }
+
+    @UiThread
+    public void setViewBackgroundResource(@NonNull View view, @DrawableRes int id) {
+        view.setTag(R.id.background_manager_mode_key, Mode.COLOR);
+        removeLayoutChangedListener(view);
+        view.setBackgroundResource(id);
     }
 
     @UiThread

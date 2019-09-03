@@ -109,7 +109,7 @@ public class SearchView extends FrameLayout {
         if (query.equals("")) {
             setIncognito(state.isIncognito());
             mReactView.setVisibility(View.GONE);
-            startTabContainer.updateFreshTab();
+            startTabContainer.updateFreshTab(state.isIncognito());
         } else {
             startTabContainer.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
@@ -201,7 +201,7 @@ public class SearchView extends FrameLayout {
     }
 
     public void updateFreshTab() {
-        startTabContainer.updateFreshTab();
+        startTabContainer.updateFreshTab(state.isIncognito());
     }
 
     public void handleUrlbarFocusChange(boolean hasFocus) {

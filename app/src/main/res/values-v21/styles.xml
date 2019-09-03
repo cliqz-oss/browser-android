@@ -20,7 +20,7 @@
         <item name="dividerColor">@color/divider_light</item>
         <item name="selectedBackground">@drawable/list_bg_light</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@color/secondary_color</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
         <item name="android:windowTranslucentStatus">false</item>
         <!-- READ THIS:
             windowTranslucentStatus will set a semitransparent color to the status bar
@@ -34,7 +34,7 @@
         <item name="colorPrimary">@color/incognito_tab_primary_color</item>
         <item name="colorPrimaryDark">@color/incognito_tab_primary_color_dark</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:statusBarColor">@color/primary_color</item>
+        <item name="android:statusBarColor">@color/incognito_tab_primary_color</item>
     </style>
 
     <style name="Theme.SettingsTheme" parent="Theme.AppCompat.Light">
