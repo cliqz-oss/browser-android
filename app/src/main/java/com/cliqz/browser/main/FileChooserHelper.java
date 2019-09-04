@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.utils.Utils;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
@@ -120,7 +120,7 @@ class FileChooserHelper {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
                 intent = takePictureIntent;
             } catch (Exception e) {
-                Log.e(TAG, "Can't capture pictures", e);
+                Timber.e(e, "Can't capture pictures");
                 intent = null;
             }
         } else {

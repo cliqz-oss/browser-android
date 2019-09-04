@@ -2,16 +2,23 @@ package com.cliqz.browser.app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.cliqz.browser.main.MainActivity;
+import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.browser.CliqzConfig;
+import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityModule;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
+
+import timber.log.Timber;
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
 
 /**
  * @author Ravjit Uppal
@@ -37,10 +44,16 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
     }
 
     void init() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new ReleaseTree());
+        }
         Fresco.initialize(this);
         buildDepencyGraph();
         installSupportLibraries();
         sTestInProgress = testInProgres();
+        setupCrashReporting();
     }
 
     /**
@@ -68,6 +81,13 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
     }
 
     public static boolean isTestInProgress() { return sTestInProgress; }
+
+    private void setupCrashReporting() {
+        //noinspection ConstantConditions
+        if (!CliqzConfig.SENTRY_TOKEN.isEmpty()) {
+            Sentry.init(CliqzConfig.SENTRY_TOKEN, new AndroidSentryClientFactory(this));
+        }
+    }
 
     private void buildDepencyGraph() {
         final AppModule appModule = createAppModule();

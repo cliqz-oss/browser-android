@@ -156,8 +156,8 @@ dependencies {
     implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
     // event bus
-    implementation 'com.cliqz:nove:0.3.0'
-    kapt 'com.cliqz:nove-compiler:0.3.0'
+    implementation 'com.cliqz:nove:0.4.0'
+    kapt 'com.cliqz:nove-compiler:0.4.0'
 
     // dependency injection
     implementation 'androidx.multidex:multidex:2.0.0'
@@ -206,8 +206,8 @@ dependencies {
     implementation "com.facebook.react:react-native:${reactNativeVersion}"
 
     // AWS SNS SDK
-    implementation 'com.amazonaws:aws-android-sdk-sns:2.13.2'
-    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.2'
+    implementation 'com.amazonaws:aws-android-sdk-sns:2.15.0'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.15.0'
 
     // Barcode scanner
     implementation 'com.google.zxing:core:3.3.0'
@@ -239,6 +239,10 @@ dependencies {
 
     // Sentry
     implementation 'io.sentry:sentry-android:1.7.21'
+
+    // Timber for logging
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
     // Forcing version
     androidTestImplementation 'androidx.annotation:annotation:1.0.0'
     androidTestImplementation 'androidx.test:runner:1.1.0'

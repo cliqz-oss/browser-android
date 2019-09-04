@@ -1,8 +1,6 @@
 package com.cliqz.browser.main;
 
 import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +8,22 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.cliqz.browser.utils.DownloadHelper;
+import androidx.appcompat.app.AlertDialog;
+
 import com.cliqz.browser.telemetry.Telemetry;
+import com.cliqz.browser.utils.DownloadHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import timber.log.Timber;
 
 
 /**
  * @author Stefano Pacifici
  */
 class YTDownloadDialog {
-    private static final String TAG = YTDownloadDialog.class.getSimpleName();
 
     private final MainActivity activity;
     private final JSONArray urls;
@@ -48,7 +49,7 @@ class YTDownloadDialog {
                     filtered.put(url);
                 }
             } catch (JSONException e) {
-                Log.i(TAG, "Can't get video url in position " + i);
+                Timber.i("Can't get video url in position %s", i);
             }
         }
         if (filtered.length() == 0) {
@@ -78,7 +79,7 @@ class YTDownloadDialog {
             try {
                 return urls.get(position);
             } catch (JSONException e) {
-                Log.w(TAG, "Returning the default JSONObject", e);
+                Timber.w(e, "Returning the default JSONObject");
                 return new JSONObject();
             }
         }
@@ -112,7 +113,7 @@ class YTDownloadDialog {
                 url = obj.getString("url");
                 name = obj.getString("name");
             } catch (JSONException e) {
-                Log.e(TAG, "Can't get the url at position " + which, e);
+                Timber.e(e, "Can't get the url at position %s", which);
                 return;
             }
             final String[] nameParts = name.split("\\s");

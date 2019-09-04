@@ -11,9 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.webview.Topsite;
@@ -26,9 +26,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class HistoryDatabase extends SQLiteOpenHelper {
+import timber.log.Timber;
 
-    private static final String TAG = HistoryDatabase.class.getSimpleName();
+public class HistoryDatabase extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
@@ -246,7 +246,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
             return historyID;
         } catch (Exception e) {
             // We do not want to crash if we can't update history
-            Log.e(TAG, "Error updating history", e);
+            Timber.e(e, "Error updating history");
         } finally {
             db.endTransaction();
         }
@@ -282,7 +282,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
             }
             return domain;
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Illegal url: " + url, e);
+            Timber.e(e, "Illegal url: %s", url);
         }
         return null;
     }
@@ -671,6 +671,25 @@ public class HistoryDatabase extends SQLiteOpenHelper {
             db.endTransaction();
         }
     }
+
+    /**
+     * Removes the given domain from the list of BlockedTopSites i.e. the domain can now appear
+     * again in the 'top sites' grid.
+     *
+     * @param domain the entry to remove from the table.
+     */
+    public void removeDomainFromBlockedTopSites(@NonNull String domain) {
+        final SQLiteDatabase db = dbHandler.getDatabase();
+        db.beginTransaction();
+        try {
+            final String whereClause = BlockedTopSitesTable.DOMAIN + "=?";
+            db.delete(BlockedTopSitesTable.TABLE_NAME, whereClause, new String[] { domain });
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public synchronized void removeBlockedTopSites(){
         final SQLiteDatabase db = dbHandler.getDatabase();
         db.beginTransaction();

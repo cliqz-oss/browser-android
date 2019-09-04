@@ -45,6 +45,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * This fragments is derived from
@@ -58,8 +59,6 @@ import butterknife.ButterKnife;
  * @author Stefano Pacifici
  */
 public class CaptureFragment extends Fragment implements SurfaceHolder.Callback {
-
-    private static final String TAG = CaptureFragment.class.getSimpleName();
 
     private CameraManager cameraManager;
     private CaptureFragmentHandler handler;
@@ -165,7 +164,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (holder == null) {
-            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
+            Timber.e("*** WARNING *** surfaceCreated() gave us a null surface!");
         }
         if (!hasSurface) {
             hasSurface = true;
@@ -200,7 +199,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
             throw new IllegalStateException("No SurfaceHolder provided");
         }
         if (cameraManager.isOpen()) {
-            Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
+            Timber.w("initCamera() while already open -- late SurfaceView callback?");
             return;
         }
         try {
@@ -210,12 +209,12 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback 
                 handler = new CaptureFragmentHandler(this, cameraManager);
             }
         } catch (IOException ioe) {
-            Log.w(TAG, ioe);
+            Timber.w(ioe);
             displayFrameworkBugMessageAndExit();
         } catch (RuntimeException e) {
             // Barcode Scanner has seen crashes in the wild of this variety:
             // java.?lang.?RuntimeException: Fail to connect to camera service
-            Log.w(TAG, "Unexpected error initializing camera", e);
+            Timber.w(e, "Unexpected error initializing camera");
             displayFrameworkBugMessageAndExit();
         }
     }

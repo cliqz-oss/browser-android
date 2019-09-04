@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 class PeerCommunicationStarter extends Thread implements ServiceConnection {
-
-    private static final String TAG = PeerCommunicationStarter.class.getSimpleName();
 
     private static final long TIMEOUT = 5000; // millis
     private final Context context;
@@ -39,7 +38,7 @@ class PeerCommunicationStarter extends Thread implements ServiceConnection {
             final long now = System.currentTimeMillis();
             return (now - startTime < TIMEOUT);
         } catch (InterruptedException e) {
-            Log.e(TAG, "Timeout binding the PeerCommunicationService");
+            Timber.e("Timeout binding the PeerCommunicationService");
             return false;
         }
     }

@@ -2,7 +2,6 @@ package com.cliqz.browser.reactnative;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;
@@ -14,13 +13,14 @@ import com.facebook.react.bridge.ReactMethod;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 /**
  * @author Moaz Rashad
  */
 
 public class AutoCompletion extends ReactContextBaseJavaModule implements Runnable {
     private static final String name = "AutoCompletion";
-    private static final String TAG = AutoCompletion.class.getSimpleName();
     private final Handler handler;
     @Inject
     Bus bus;
@@ -46,7 +46,7 @@ public class AutoCompletion extends ReactContextBaseJavaModule implements Runnab
     public void autoComplete(String data) {
         mUrl = (data instanceof String) ? (String) data : null;
         if (mUrl == null) {
-            Log.w(TAG, "No url for autocompletion");
+            Timber.w("No url for autocompletion");
             return;
         }
         handler.post(this);

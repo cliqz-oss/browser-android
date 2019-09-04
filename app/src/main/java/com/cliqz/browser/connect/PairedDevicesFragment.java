@@ -7,18 +7,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Spannable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.text.Spannable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
@@ -45,13 +45,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  */
 public class PairedDevicesFragment extends Fragment implements ServiceConnection {
 
-    private static final String TAG = PairedDevicesFragment.class.getSimpleName();
 
     @Inject
     Bus bus;
@@ -181,7 +181,7 @@ public class PairedDevicesFragment extends Fragment implements ServiceConnection
                     connectedDeviceCount++;
                 }
             } catch (JSONException e) {
-                Log.i(TAG, "Invalid json array entry", e);
+                Timber.i("Invalid json array entry");
             }
         }
         telemetry.sendConnectShowSignal(totalDeviceCount, connectedDeviceCount);

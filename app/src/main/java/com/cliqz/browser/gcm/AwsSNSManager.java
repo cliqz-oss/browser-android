@@ -1,8 +1,8 @@
 package com.cliqz.browser.gcm;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
-import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;
@@ -24,14 +24,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
  * @date 2016/03/01
  */
 public class AwsSNSManager {
-
-    private final static String TAG = AwsSNSManager.class.getSimpleName();
 
     private final AmazonSNSClient client;
     private final PreferenceManager preferenceManager;
@@ -56,7 +55,7 @@ public class AwsSNSManager {
                 client = new AmazonSNSClient(credentialsProvider);
             } catch (Throwable t) {
                 client = null;
-                Log.w(TAG, "Error initializing AmazonSNSClient", t);
+                Timber.w(t, "Error initializing AmazonSNSClient");
             }
         }
         this.client = client;
@@ -79,7 +78,7 @@ public class AwsSNSManager {
             createNeeded = false;
         }
 
-        Log.i(TAG, "Retrieving platform endpoint data...");
+        Timber.i("Retrieving platform endpoint data...");
         // Look up the platform endpoint and make sure the data in it is current, even if
         // it was just created.
         try {
@@ -102,12 +101,12 @@ public class AwsSNSManager {
             createEndpoint(token);
         }
 
-        Log.i(TAG, "updateNeeded = " + updateNeeded);
+        Timber.i("updateNeeded = %s", updateNeeded);
 
         if (updateNeeded) {
             // The platform endpoint is out of sync with the current data;
             // update the token and enable it.
-            Log.i(TAG, "Updating platform endpoint " + endpointArn);
+            Timber.i("Updating platform endpoint %s", endpointArn);
             Map<String, String> attribs = new HashMap<>();
             attribs.put("Token", token);
             attribs.put("Enabled", "true");
@@ -126,7 +125,7 @@ public class AwsSNSManager {
     private String createEndpoint(final String token) {
         String endpointArn = null;
         try {
-            Log.i(TAG, "Creating platform endpoint with token " + token);
+            Timber.i("Creating platform endpoint with token %s", token);
             CreatePlatformEndpointRequest cpeReq =
                     new CreatePlatformEndpointRequest()
                             .withPlatformApplicationArn(CliqzConfig.AMAZON_APPLICATION_ARN)
@@ -136,7 +135,7 @@ public class AwsSNSManager {
             endpointArn = cpeRes.getEndpointArn();
         } catch (InvalidParameterException ipe) {
             String message = ipe.getMessage();
-            Log.i(TAG, "Exception message: " + message);
+            Timber.i("Exception message: %s", message);
             Pattern p = Pattern
                     .compile(".*Endpoint (arn:aws:sns[^ ]+) already exists " +
                             "with the same token.*");
@@ -185,9 +184,9 @@ public class AwsSNSManager {
         final SubscribeRequest request = new SubscribeRequest(topicArn, "application", endpointArn);
         try {
             final SubscribeResult result = client.subscribe(request);
-            Log.i(TAG, "Subscribed: " + result.getSubscriptionArn());
+            Timber.i("Subscribed: %s", result.getSubscriptionArn());
         } catch (Throwable e) {
-            Log.e(TAG, "Can't subscribe to " + topicArn, e);
+            Timber.e(e, "Can't subscribe to %s", topicArn);
         }
     }
 }

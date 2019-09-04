@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * This class receives the install referrer when the app is installed.
@@ -67,7 +68,7 @@ public class InstallReferrerReceiver extends BroadcastReceiver {
                 preferenceManager.setAdvertID(parameters.get(KEY_ADVERT_ID));
             }
         } catch (Throwable e) {
-            Log.e(TAG, "Error decoding referrer", e);
+            Timber.e(e, "Error decoding referrer");
             preferenceManager.setDistributionException(true);
         } finally {
             telemetry.sendLifeCycleSignal(TelemetryKeys.INSTALL);

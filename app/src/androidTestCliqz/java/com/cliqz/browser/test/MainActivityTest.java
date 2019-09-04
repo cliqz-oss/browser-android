@@ -30,6 +30,7 @@ import java.io.File;
 
 import acr.browser.lightning.view.CliqzWebView;
 
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
@@ -290,4 +291,5 @@ public class MainActivityTest {
         onView(withId(R.id.incognito_title)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_desc)).check(matches(isDisplayed()));
     }
+
 }

@@ -66,7 +66,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     @BindView(R.id.container)
     ScrollView contanier;
 
-    RemoveTopsitesOverlay removeTopsitesOverlay;
+    @BindView(R.id.made_in_germany_watermark)
+    TextView madeInGermanyTextView;
 
     @Inject
     TopsitesAdapter topsitesAdapter;
@@ -125,10 +126,9 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             component.inject(this);
         }
 
+        isNewsExpanded = preferenceManager.isNewsViewExpanded();
         newsLabel.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                expandNewsIcon, null);
-
-        removeTopsitesOverlay = new RemoveTopsitesOverlay(this);
+                isNewsExpanded ? collapseNewsIcon : expandNewsIcon, null);
 
         topsitesGridView.setAdapter(topsitesAdapter);
 
@@ -136,7 +136,6 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 new TopsitesEventsListener(this);
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
-        topsitesGridView.setOnTouchListener(topsitesEventsListener);
         updateFreshTab();
     }
 
@@ -154,6 +153,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 view.setVisibility(VISIBLE);
             }
         }
+        preferenceManager.setNewsViewExpanded(isNewsExpanded);
         telemetry.sendMoreNewsSignal(isNewsExpanded);
         bus.post(new CliqzMessages.HideKeyboard());
     }
@@ -187,9 +187,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         if (preferenceManager.isBackgroundImageEnabled()) {
             appBackgroundManager.setViewBackground(this,
                     ContextCompat.getColor(context, R.color.primary_color));
+            madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
+                    R.color.made_in_germany_color));
         } else {
             appBackgroundManager.setViewBackgroundColor(this,
                     ContextCompat.getColor(context, R.color.fresh_tab_background));
+            madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
+                    R.color.made_in_germany_color_no_background));
         }
     }
 

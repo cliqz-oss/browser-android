@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import acr.browser.lightning.bus.BrowserEvents;
+import timber.log.Timber;
 
 /**
  * Handle download requests
@@ -156,7 +157,7 @@ public class DownloadHandler {
         } catch (Exception e) {
             // This only happens for very bad urls, we want to catch the
             // exception here
-            Log.e(TAG, "Exception while trying to parse url '" + url + '\'', e);
+            Timber.e(e, "Exception while trying to parse url '" + url + '\'');
             eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_download));
             return;
         }

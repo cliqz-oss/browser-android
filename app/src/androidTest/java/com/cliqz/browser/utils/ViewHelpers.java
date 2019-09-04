@@ -1,5 +1,7 @@
 package com.cliqz.browser.utils;
 
+import android.view.View;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
@@ -8,12 +10,12 @@ import androidx.test.espresso.action.CoordinatesProvider;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Tap;
-import android.util.Log;
-import android.view.View;
 
 import com.cliqz.browser.R;
 
 import org.hamcrest.Matcher;
+
+import timber.log.Timber;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -21,8 +23,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  * @author Ravjit
  */
 public class ViewHelpers {
-
-    private final static String TAG = WebHelpers.class.getSimpleName();
 
     private ViewHelpers() {
         // No Instances
@@ -68,11 +68,11 @@ public class ViewHelpers {
             for (ViewAction viewAction : viewActions) {
                 while (true) {
                     try {
-                        Log.d(TAG, "Performing " + viewAction.toString());
+                        Timber.d("Performing " + viewAction.toString());
                         interaction = viewInteraction.perform(viewAction);
                         break;
                     } catch (Throwable t) {
-                        Log.d(TAG, "Throwable caught", t);
+                        Timber.d(t, "Throwable caught");
                         final long now = System.currentTimeMillis();
                         if (now >= timeout) {
                             throw t;
@@ -90,11 +90,11 @@ public class ViewHelpers {
             final long timeout = System.currentTimeMillis() + 10000;
             while (true) {
                 try {
-                    Log.d(TAG, "Performing " + assertion.toString());
+                    Timber.d("Performing " + assertion.toString());
                     interaction = viewInteraction.check(assertion);
                     break;
                 } catch (Throwable t) {
-                    Log.d(TAG, "Throwable caught", t);
+                    Timber.d(t, "Throwable caught");
                     final long now = System.currentTimeMillis();
                     if (now >= timeout) {
                         throw t;

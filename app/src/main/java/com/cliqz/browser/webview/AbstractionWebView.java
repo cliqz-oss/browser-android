@@ -3,7 +3,6 @@ package com.cliqz.browser.webview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -15,13 +14,13 @@ import android.webkit.WebViewClient;
 
 import com.cliqz.browser.BuildConfig;
 
+import timber.log.Timber;
+
 /**
  * @author Stefano Pacifici
  * @date 2016/01/27
  */
 public class AbstractionWebView extends WebView {
-
-    private static final String TAG = AbstractionWebView.class.getSimpleName();
 
     public AbstractionWebView(Context context) {
         super(context);
@@ -73,7 +72,7 @@ public class AbstractionWebView extends WebView {
             }
 
             public boolean onConsoleMessage(ConsoleMessage cm) {
-                Log.d(TAG, cm.message() + " -- From line "
+                Timber.d(cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 return true;

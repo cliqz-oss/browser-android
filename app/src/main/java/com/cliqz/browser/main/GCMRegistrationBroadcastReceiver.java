@@ -5,8 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.annotations.PerActivity;
@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.preference.PreferenceManager;
+import timber.log.Timber;
 
 /**
  * @author Stefano Pacifici
@@ -22,8 +23,6 @@ import acr.browser.lightning.preference.PreferenceManager;
  */
 @PerActivity
 class GCMRegistrationBroadcastReceiver extends BroadcastReceiver{
-
-    private final static String TAG = GCMRegistrationBroadcastReceiver.class.getSimpleName();
 
     private final Activity activity;
     private final PreferenceManager preferenceManager;
@@ -38,10 +37,10 @@ class GCMRegistrationBroadcastReceiver extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         final boolean sentToken = preferenceManager.isGCMTokenSent();
         if (sentToken) {
-            Log.i(TAG, activity.getString(R.string.device_registered));
+            Timber.i(activity.getString(R.string.device_registered));
         } else {
             // @Ravjit should we take some action here? What do you think?
-            Log.e(TAG, activity.getString(R.string.error_registering));
+            Timber.e(activity.getString(R.string.error_registering));
         }
     }
 

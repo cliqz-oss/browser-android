@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import androidx.appcompat.content.res.AppCompatResources;
 import android.widget.ImageView;
-import android.util.Log;
+
+import androidx.appcompat.content.res.AppCompatResources;
+
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
 import javax.annotation.Nullable;
+
+import timber.log.Timber;
 
 /**
  * @author Khaled Tantawy
@@ -18,7 +22,6 @@ import javax.annotation.Nullable;
 public class ReactNativeDrawableManager extends SimpleViewManager<ImageView> {
 
     private static final String REACT_CLASS = "NativeDrawable";
-    private static final String TAG = ReactNativeDrawableManager.class.getSimpleName();
 
     @Override
     public String getName() {
@@ -44,7 +47,7 @@ public class ReactNativeDrawableManager extends SimpleViewManager<ImageView> {
             final Drawable drawable = AppCompatResources.getDrawable(imageContext, id);
             view.setImageDrawable(drawable);
         } else {
-            Log.e(TAG, "Vector drawable " + src  + " doesn't exist");
+            Timber.e("Vector drawable " + src  + " doesn't exist");
         }
         view.setScaleType(ImageView.ScaleType.FIT_XY);
     }
