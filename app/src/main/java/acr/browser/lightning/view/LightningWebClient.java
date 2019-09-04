@@ -240,10 +240,6 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 lightningView.persister.persist(lightningView.getId(), title, url, view);
             }
         }
-        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT &&
-                lightningView.getInvertePage()) {
-            view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
-        }
 
         if (!lightningView.isIncognitoTab() && lightningView.preferences.getSavePasswordsEnabled()) {
             //Inject javascript to check for id and pass fields in the page

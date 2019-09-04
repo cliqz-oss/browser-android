@@ -30,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -79,10 +80,14 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -202,7 +207,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @BindView(R.id.cc_icon)
     AppCompatImageView ccIcon;
 
-    // @BindView(R.id.reader_mode_webview) WebView readerModeWebview;
+    @BindView(R.id.reader_mode_webview)
+    WebView readerModeWebview;
+
     @Nullable
     @BindView(R.id.vpn_panel_button)
     AppCompatImageView mVpnPanelButton;
@@ -327,15 +334,14 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             quickAccessBar.hide();
         }
         //way to handle links in the readermode article
-        // TODO RESTORE THIS
-        /* readerModeWebview.setWebViewClient(new WebViewClient() {
+        readerModeWebview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 toggleReaderMode();
                 mLightningView.loadUrl(url);
                 return true;
             }
-        }); */
+        });
         onPageFinished(null);
     }
 
@@ -657,18 +663,18 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @OnClick(R.id.reader_mode_button)
     void toggleReaderMode() {
-        /* TODO RESTORE THIS
         if (!mIsReaderModeOn) {
             mIsReaderModeOn = true;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_on);
             readerModeWebview.setVisibility(View.VISIBLE);
-            readerModeWebview.bringToFront();
             readerModeWebview.scrollTo(0,0);
+            webViewContainer.setVisibility(View.GONE);
         } else {
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
             readerModeWebview.setVisibility(View.GONE);
-        } */
+            webViewContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     @Optional
@@ -872,7 +878,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     }
 
     private ValueCallback<String> readabilityCallBack = s -> {
-        /* TODO RESTORE THIS
         if (s == null) {
             return;
         }
@@ -894,7 +899,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         } catch (UnsupportedEncodingException e) {
             Timber.e(e,"error decoding the response from readability.js");
         }
-        */
     };
 
     //This function adds the title to the page content and resizes the images to fit the screen
@@ -980,11 +984,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     private void onBackPressedV16() {
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
-            // TODO RESTORE THIS
-            /* if (readerModeWebview.getVisibility() == View.VISIBLE) {
+            if (readerModeWebview.getVisibility() == View.VISIBLE) {
                 toggleReaderMode();
-            } else */
-            if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
+            } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
                 telemetry.backPressed = true;
                 telemetry.showingCards = false;
                 mLightningView.goBack();
@@ -1187,8 +1189,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     public void resetTrackerCount(Messages.ResetTrackerCount event) {
         mTrackerCount = 0;
         searchBar.setTrackerCount(mTrackerCount);
-        // TODO RESTORE THIS
-        // readerModeWebview.setVisibility(View.GONE);
+        readerModeWebview.setVisibility(View.GONE);
         readerModeButton.setVisibility(View.GONE);
     }
 
@@ -1378,8 +1379,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             updateToolbarContainer(context, isBackgroundEnabled);
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            // TODO RESTORE THIS
-            // readerModeWebview.setVisibility(View.GONE);
+            readerModeWebview.setVisibility(View.GONE);
             readerModeButton.setVisibility(View.GONE);
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);

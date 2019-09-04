@@ -17,14 +17,7 @@
 
         <!-- DO NOT PUT ANY VIEW IN THIS CONTAINER, IT IS RESERVED TO THE MAIN WEBVIEW -->
 
-        <!-- include layout="@layout/onboarding_helper" />
-
-        <WebView
-            android:id="@+id/reader_mode_webview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="56dp"
-            android:background="@color/white" /-->
+        <!-- include layout="@layout/onboarding_helper" / -->
 
     </FrameLayout>
 
@@ -146,5 +139,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/actionBarSize" />
+
+    <WebView
+        android:id="@+id/reader_mode_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/actionBarSize"
+        android:visibility="gone"
+        android:background="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

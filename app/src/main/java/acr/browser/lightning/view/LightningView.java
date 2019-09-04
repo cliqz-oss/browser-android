@@ -5,14 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -73,7 +70,6 @@ public class LightningView {
     private boolean mIsIncognitoTab;
     final Activity activity;
     private final Paint mPaint = new Paint();
-    private boolean mInvertPage = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
     private final String id;
     private boolean mIsAutoForgetTab;
@@ -86,12 +82,6 @@ public class LightningView {
      */
     boolean isHistoryItemCreationEnabled = true;
 
-    private static final float[] mNegativeColorArray = {
-            -1.0f, 0, 0, 0, 255, // red
-            0, -1.0f, 0, 0, 255, // green
-            0, 0, -1.0f, 0, 255, // blue
-            0, 0, 0, 1.0f, 0 // alpha
-    };
     final WebViewHandler webViewHandler = new WebViewHandler(this);
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
@@ -194,7 +184,6 @@ public class LightningView {
         // Removed as version 1.0.2r2, restore if needed
         // settings.setDefaultTextEncodingName(preferences.getTextEncoding());
         settings.setDefaultTextEncodingName("UTF-8");
-        setColorMode(preferences.getRenderingMode());
 
         if (preferences.getDoNotTrackEnabled()) {
             mRequestHeaders.put(HEADER_DNT, "1");
@@ -377,58 +366,6 @@ public class LightningView {
         }
     }
 
-    private void setHardwareRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, mPaint);
-    }
-
-    private void setNormalRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
-    }
-
-    private void setColorMode(int mode) {
-        mInvertPage = false;
-        switch (mode) {
-            case 0:
-                mPaint.setColorFilter(null);
-                // setSoftwareRendering(); // Some devices get segfaults
-                // in the WebView with Hardware Acceleration enabled,
-                // the only fix is to disable hardware rendering
-                setNormalRendering();
-                mInvertPage = false;
-                break;
-            case 1:
-                ColorMatrixColorFilter filterInvert = new ColorMatrixColorFilter(
-                        mNegativeColorArray);
-                mPaint.setColorFilter(filterInvert);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-            case 2:
-                ColorMatrix cm = new ColorMatrix();
-                cm.setSaturation(0);
-                ColorMatrixColorFilter filterGray = new ColorMatrixColorFilter(cm);
-                mPaint.setColorFilter(filterGray);
-                setHardwareRendering();
-                break;
-            case 3:
-                ColorMatrix matrix = new ColorMatrix();
-                matrix.set(mNegativeColorArray);
-                ColorMatrix matrixGray = new ColorMatrix();
-                matrixGray.setSaturation(0);
-                ColorMatrix concat = new ColorMatrix();
-                concat.setConcat(matrix, matrixGray);
-                ColorMatrixColorFilter filterInvertGray = new ColorMatrixColorFilter(concat);
-                mPaint.setColorFilter(filterInvertGray);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-
-        }
-
-    }
-
     public synchronized void resumeTimers() {
         if (mWebView != null) {
             mWebView.onResume();
@@ -511,15 +448,6 @@ public class LightningView {
         if (mWebView != null) {
             mWebView.findNext(false);
         }
-    }
-
-    /**
-     * Used by {@link LightningWebClient}
-     *
-     * @return true if the page is in inverted mode, false otherwise
-     */
-    boolean getInvertePage() {
-        return mInvertPage;
     }
 
     /**
