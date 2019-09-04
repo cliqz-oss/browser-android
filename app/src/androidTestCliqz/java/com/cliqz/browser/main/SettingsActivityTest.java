@@ -10,8 +10,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.test.CustomFailureHandler;
 import com.cliqz.browser.test.DeviceShellHelper;
 import com.cliqz.browser.utils.ViewHelpers;
@@ -221,7 +219,7 @@ public class SettingsActivityTest {
         onView(withText("Save your passwords")).check(matches(isDisplayed()));
         onView(withText("Restore most visited websites")).check(matches(isDisplayed()));
         onView(withResourceName("prefs")).perform(swipeUp());
-        onView(withText("Clear history")).check(matches(isDisplayed()));
+        onView(withText("Clear private data")).check(matches(isDisplayed()));
         onView(withText("Clear favorites")).check(matches(isDisplayed()));
         onView(withText("Clear private data on exit")).check(matches(isDisplayed()));
         onView(withText("Send usage data")).check(matches(isDisplayed()));
