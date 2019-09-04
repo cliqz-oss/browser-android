@@ -31,7 +31,7 @@ class TabFragmentListener implements SearchBar.Listener {
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        final SearchView searchView = fragment.searchView;
+        final SearchView searchView = fragment.searchView2;
         if (searchView != null) {
             searchView.handleUrlbarFocusChange(hasFocus);
         }
@@ -49,7 +49,7 @@ class TabFragmentListener implements SearchBar.Listener {
         } else {
             fragment.bus.post(new Messages.AdjustPan());
             fragment.timings.setUrlBarFocusedTime();
-            fragment.searchView.bringToFront();
+            fragment.bringSearchToFront();
             if (!ResumeTabDialog.isShown()) {
                 fragment.telemetry.sendQuickAccessBarSignal(TelemetryKeys.SHOW, null,
                         fragment.getTelemetryView());
@@ -86,7 +86,7 @@ class TabFragmentListener implements SearchBar.Listener {
         // fragment.showSearch(null);
 
         final String q = s.toString();
-        final SearchView searchView = fragment.searchView;
+        final SearchView searchView = fragment.searchView2;
         final boolean shouldSend = (((start + count) != before) ||
                 !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
         if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.getUrl()))) {
@@ -121,7 +121,7 @@ class TabFragmentListener implements SearchBar.Listener {
             searchBar.setSearchText(url);
         }
         searchBar.selectAllText();
-        fragment.searchView.updateQuery("", 0, -1);
+        fragment.searchView2.updateQuery("", 0, -1);
         fragment.setShowWebPageAgain(true);
         fragment.hideYTIcon();
     }

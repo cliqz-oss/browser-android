@@ -145,6 +145,6 @@
         android:id="@+id/search_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:layout_marginTop="@dimen/actionBarSize" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

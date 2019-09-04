@@ -107,16 +107,13 @@ public class SearchView extends FrameLayout {
         addView(startTabContainer);
     }
 
-    @Override
-    public void bringToFront() {
-        super.bringToFront();
+    public void refresh() {
         final String query = state.getQuery();
         if (query.equals("")) {
             setIncognito(state.isIncognito());
             mReactView.setVisibility(View.GONE);
             startTabContainer.updateFreshTab();
         } else {
-            mReactView.bringToFront();
             startTabContainer.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
             final Context context = getContext();
@@ -203,7 +200,7 @@ public class SearchView extends FrameLayout {
         map.putString("query", query);
         engine.publishEvent("urlbar:input", map);
         performSearch(query);
-        bringToFront();
+        refresh();
     }
 
     public boolean isFreshTabVisible() {

@@ -42,7 +42,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.BuildConfig;
@@ -209,7 +208,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     AppCompatImageView mVpnPanelButton;
 
     @Inject
-    SearchView searchView;
+    SearchView searchView2;
 
     @Inject
     SubscriptionsManager subscriptionsManager;
@@ -320,8 +319,8 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                 UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
             fetchYoutubeVideo(null);
         }
-        searchView.setCurrentTabState(state);
-        ViewUtils.safelyAddView(searchViewContainer, searchView);
+        searchView2.setCurrentTabState(state);
+        ViewUtils.safelyAddView(searchViewContainer, searchView2);
         searchBar.setTrackerCount(mTrackerCount);
         if (quickAccessBar != null) {
             quickAccessBar.setSearchTextView(searchEditText);
@@ -402,7 +401,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     String getTelemetryView() {
         if (state.getMode() == Mode.WEBPAGE) {
             return TelemetryKeys.WEB;
-        } else if (searchView.isFreshTabVisible()) {
+        } else if (searchView2.isFreshTabVisible()) {
             return TelemetryKeys.HOME;
         } else {
             return TelemetryKeys.CARDS;
@@ -453,9 +452,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Override
     public void onResume() {
         super.onResume();
-        if (searchView != null) {
-            searchView.onResume();
-            searchView.setVisibility(View.VISIBLE);
+        if (searchView2 != null) {
+            searchView2.onResume();
+            searchView2.setVisibility(View.VISIBLE);
         }
         final WebView webView;
         if (mLightningView != null) {
@@ -474,9 +473,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         if (state.getMode() == Mode.WEBPAGE) {
             bringWebViewToFront(null);
         } else {
-            searchView.bringToFront();
+            bringSearchToFront();
             //update topsites and news whenever app resumes or comes back from settings
-            searchView.updateFreshTab();
+            searchView2.updateFreshTab();
         }
 
         // The code below shouldn't be executed if app is reset
@@ -517,7 +516,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             } else {
-                mLightningView.getWebView().bringToFront();
                 enableUrlBarScrolling();
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
@@ -543,6 +541,12 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                 mShouldShowVpnPanel = false;
             });
         }
+    }
+
+    void bringSearchToFront() {
+        webViewContainer.setVisibility(View.GONE);
+        searchViewContainer.setVisibility(View.VISIBLE);
+        searchView2.refresh();
     }
 
     private int getFragmentTheme() {
@@ -586,7 +590,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             mOverFlowMenu.setFavorite(historyDatabase.isFavorite(url));
             mOverFlowMenu.setTitle(mLightningView.getTitle());
             mOverFlowMenu.setState(state);
-            mOverFlowMenu.setIsFreshTabVisible(searchView.isFreshTabVisible());
+            mOverFlowMenu.setIsFreshTabVisible(searchView2.isFreshTabVisible());
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
             hideKeyboard(null);
@@ -793,6 +797,8 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     }
 
     private void bringWebViewToFront(Animation animation) {
+        webViewContainer.setVisibility(View.VISIBLE);
+        searchViewContainer.setVisibility(View.INVISIBLE);
         final WebView webView = mLightningView.getWebView();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
@@ -801,7 +807,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         webView.setAnimation(animation);
-        webView.bringToFront();
         enableUrlBarScrolling();
         state.setMode(Mode.WEBPAGE);
         try {
@@ -945,7 +950,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         // Sanitize the query
         query = query != null ? query : "";
         searchBar.showSearchEditText();
-        searchView.bringToFront();
+        bringSearchToFront();
         disableUrlBarScrolling();
         inPageSearchBar.setVisibility(View.GONE);
         mLightningView.findInPage("");
@@ -956,7 +961,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         state.setQuery(query);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
-        searchView.updateQuery(query, 0, query.length());
+        searchView2.updateQuery(query, 0, query.length());
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -1140,7 +1145,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         videoUrls = null;
         // To fetch the videos url we have to run the ytdownloader.getUrls script that is bundled
         // with the extension
-        searchView.fetchYouTubeUrls(mLightningView.getUrl());
+        searchView2.fetchYouTubeUrls(mLightningView.getUrl());
     }
 
     @Subscribe
@@ -1245,7 +1250,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         mLightningView.setIsIncognitoTab(true);
         mLightningView.setIsAutoForgetTab(true);
         updateUI();
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
         queryManager.setForgetMode(true);
     }
 
@@ -1256,7 +1261,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         mLightningView.setIsIncognitoTab(false);
         mLightningView.setIsAutoForgetTab(false);
         updateUI();
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
     }
 
     @Subscribe
@@ -1362,7 +1367,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @Subscribe
     public void notifySubscrioption(Messages.NotifySubscription event) {
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
     }
 
     @Subscribe
@@ -1388,7 +1393,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     public void onOrientationChanged(Configuration newConfig) {
         final String view;
         if (state.getMode() == Mode.SEARCH) {
-            if (searchView.isFreshTabVisible()) {
+            if (searchView2.isFreshTabVisible()) {
                 view = TelemetryKeys.HOME;
             } else {
                 view = TelemetryKeys.CARDS;
@@ -1418,7 +1423,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
-        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
+        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView2.isFreshTabVisible());
         if (!mLightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
         } else {
@@ -1434,7 +1439,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
         state.setMode(Mode.SEARCH);
         searchBar.showSearchEditText();
-        searchView.showFavorites();
+        searchView2.showFavorites();
     }
 
     @Subscribe
