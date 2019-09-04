@@ -7,7 +7,7 @@
     android:layout_height="?attr/actionBarSize"
     tools:layout_height="48dp"
     android:orientation="horizontal"
-    android:layout_gravity="center_vertical"
+    android:layout_gravity="center_vertical|start"
     android:background="@color/primary_color"
     android:gravity="center_vertical">
 

@@ -9,11 +9,13 @@
     app:elevation="10dp">
 
     <FrameLayout
-        android:id="@+id/local_container"
+        android:id="@+id/webview_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="2dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- DO NOT PUT ANY VIEW IN THIS CONTAINER, IT IS RESERVED TO THE MAIN WEBVIEW -->
 
         <!-- include layout="@layout/onboarding_helper" />
 
@@ -22,16 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="56dp"
-            android:background="@color/white" />
-
-        <acr.browser.lightning.view.AnimatedProgressBar
-            android:id="@+id/progress_view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_gravity="top"
-            custom:bidirectionalAnimate="false"
-            custom:backgroundColor="@color/progress_bar_bg"
-            custom:progressColor="@color/progress_bar_color" / -->
+            android:background="@color/white" /-->
 
     </FrameLayout>
 
@@ -66,7 +59,7 @@
             app:srcCompat="@drawable/ic_clear_black" />
     </LinearLayout>
 
-    <!--add views which are fixed to the bottom of the screen here-->
+    <!-- add views which are fixed to the bottom of the screen here -->
 
     <View
         android:id="@+id/bottom_anchor_view"
@@ -90,7 +83,7 @@
         android:background="@color/primary_color"
         app:elevation="10dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <FrameLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -129,9 +122,30 @@
                 tools:textSelectHandle="@drawable/text_select_handle_middle_material"
                 tools:textSelectHandleLeft="@drawable/text_select_handle_left_material"
                 tools:textSelectHandleRight="@drawable/text_select_handle_right_material"
-                tools:visibility="visible" />
+                tools:visibility="invisible" />
 
-        </androidx.appcompat.widget.Toolbar>
+            <acr.browser.lightning.view.AnimatedProgressBar
+                android:id="@+id/progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="bottom"
+                app:bidirectionalAnimate="false"
+                app:backgroundColor="@color/progress_bar_bg"
+                app:progressColor="@color/progress_bar_color" />
+
+            <include
+                layout="@layout/fragment_search_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/search_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
