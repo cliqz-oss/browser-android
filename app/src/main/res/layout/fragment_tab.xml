@@ -95,6 +95,11 @@
             app:contentInsetStart="0dp"
             app:layout_scrollFlags="scroll|snap">
 
+            <include
+                layout="@layout/fragment_search_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <com.cliqz.browser.widget.AutocompleteEditText
                 android:id="@+id/search_edit_text"
                 android:layout_width="match_parent"
@@ -132,12 +137,6 @@
                 app:bidirectionalAnimate="false"
                 app:backgroundColor="@color/progress_bar_bg"
                 app:progressColor="@color/progress_bar_color" />
-
-            <include
-                layout="@layout/fragment_search_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
         </FrameLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
