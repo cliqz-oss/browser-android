@@ -10,8 +10,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.test.CustomFailureHandler;
 import com.cliqz.browser.test.DeviceShellHelper;
 import com.cliqz.browser.utils.ViewHelpers;
@@ -289,6 +287,7 @@ public class SettingsActivityTest {
 
     @Test
     public void viewSupportSettings() {
+        onView(withText("Imprint")).perform(swipeUp());
         ViewHelpers.onView(withText("FAQs & Support")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)
