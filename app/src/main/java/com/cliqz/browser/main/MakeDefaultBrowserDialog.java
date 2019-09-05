@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.provider.Settings;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.extensions.IntentExtensionKt;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 
 /**
@@ -38,8 +39,7 @@ class MakeDefaultBrowserDialog implements DialogInterface.OnClickListener, Dialo
     public void onClick(DialogInterface dialogInterface, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
-                mainActivity.startActivity(intent);
+                IntentExtensionKt.launchDefaultAppsSettings(mainActivity);
                 mainActivity.telemetry.sendDefaultBrowserSignal(TelemetryKeys.CONFIRM);
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
