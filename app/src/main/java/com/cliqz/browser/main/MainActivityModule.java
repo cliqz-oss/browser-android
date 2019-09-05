@@ -2,15 +2,12 @@ package com.cliqz.browser.main;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.vpn.VpnHandler;
-import com.cliqz.jsengine.Engine;
 
 import acr.browser.lightning.preference.PreferenceManager;
 import dagger.Module;
@@ -63,12 +60,6 @@ public class MainActivityModule {
     @Provides
     CrashDetector provideCrashDetector(PreferenceManager preferenceManager) {
         return new CrashDetector(preferenceManager);
-    }
-
-    @PerActivity
-    @Provides
-    MainActivityHandler providesMainActivityHandler() {
-        return new MainActivityHandler(activity);
     }
 
     @PerActivity

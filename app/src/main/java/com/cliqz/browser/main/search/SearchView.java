@@ -1,7 +1,6 @@
 package com.cliqz.browser.main.search;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.anthonycr.grant.PermissionsManager;
@@ -21,7 +19,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.JSYTDownloadCallback;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.starttab.StartTabContainer;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -56,7 +54,7 @@ public class SearchView extends FrameLayout {
     SubscriptionsManager subscriptionsManager;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Inject
     Bus bus;

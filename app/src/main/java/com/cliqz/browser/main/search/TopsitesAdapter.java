@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.webview.Topsite;
 import com.cliqz.jsengine.Engine;
 
@@ -47,7 +47,7 @@ public class TopsitesAdapter extends BaseAdapter {
     // private final Context context;
 
     @Inject
-    TopsitesAdapter(HistoryDatabase database, Engine engine, MainActivityHandler handler,
+    TopsitesAdapter(HistoryDatabase database, Engine engine, MainThreadHandler handler,
                     PreferenceManager preferenceManager) {
         this.historyDatabase = database;
         this.engine = engine;
