@@ -1,8 +1,9 @@
 package com.cliqz.browser.webview;
 
-import android.view.animation.Animation;
-
 import androidx.annotation.NonNull;
+
+import android.os.Bundle;
+import android.view.animation.Animation;
 
 import com.cliqz.utils.StringUtils;
 import com.facebook.react.bridge.Promise;
@@ -10,6 +11,8 @@ import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -233,4 +236,13 @@ public class CliqzMessages {
     }
 
     public static class OnPageFinished {}
+
+    public static class RestoreTabs {
+        public final List<Bundle> storedTabs;
+
+        public RestoreTabs(List<Bundle> storedTabs) {
+            this.storedTabs = storedTabs;
+        }
+
+    }
 }
