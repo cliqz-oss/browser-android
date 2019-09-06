@@ -352,6 +352,21 @@ public class LightningView extends FrameLayout {
         }
     }
 
+    /**
+     * If reader content is available, display the reader mode. It creates the reader webview
+     * if needed.
+     */
+    public void readerMode() {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    /**
+     * Display the web page
+     */
+    public void webMode() {
+        throw new RuntimeException("Not yet implemented");
+    }
+
     public void setUrlSSLError(boolean urlSSLError) {
         this.urlSSLError = urlSSLError;
     }
