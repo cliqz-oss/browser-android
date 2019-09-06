@@ -1,31 +1,36 @@
 package acr.browser.lightning.view;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
-
-import androidx.annotation.Nullable;
-import androidx.core.view.MotionEventCompat;
-import androidx.core.view.NestedScrollingChild;
-import androidx.core.view.NestedScrollingChild2;
-import androidx.core.view.NestedScrollingChildHelper;
-import androidx.core.view.ViewCompat;
+import android.os.Handler;
+import android.os.Message;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+
+import androidx.annotation.Nullable;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.NestedScrollingChild2;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.ViewCompat;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.dialog.LightningDialogBuilder;
+
 /**
- * General workaround container for old phones
+ * A WebView that support nested scrolling
  *
  * @author Stefano Pacifici
  * @author Moaz Rashad
@@ -34,8 +39,15 @@ import javax.inject.Inject;
 public class CliqzWebView extends WebView implements NestedScrollingChild2 {
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
+    private final GestureDetector gestureDetector;
+    private final WebViewHandler webViewHandler = new WebViewHandler(this);
+
     @Inject
     Bus bus;
+
+    @Inject
+    LightningDialogBuilder dialogBuilder;
+
     private int mLastY;
     private final NestedScrollingChildHelper mChildHelper;
     private boolean firstScroll = true;
@@ -44,13 +56,14 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
     // Android 8.0 (Oreo) bug, we have to restore the client for each loadUrl request with a delay
     private static final long LOAD_URL_DELAY_SECONDS = 250L;
 
-    public CliqzWebView(Activity activity) {
-        super(activity);
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
+    public CliqzWebView(Context context) {
+        super(context);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
         mChildHelper = new NestedScrollingChildHelper(this);
+        gestureDetector = new GestureDetector(context, new CustomGestureListener());
         setNestedScrollingEnabled(true);
     }
 
@@ -84,27 +97,14 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
         }, LOAD_URL_DELAY_SECONDS);
     }
 
-    protected final void executeJS(final String js) {
-        if (js != null && !js.isEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                this.evaluateJavascript(js, null);
-            } else {
-                this.loadUrl("javascript:" + js);
-            }
-        }
-    }
-
     //Below code has been taken and modified from the GitHub repo takahirom/webview-in-coordinatorlayout
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        if (gestureDetector.onTouchEvent(ev)) {
+            return true;
+        }
+
         boolean returnValue = false;
-        //In case of GoogleMaps or other similar content ScrollX and ScrollY is always zero
-        //So we have to stop nested scrolling on those pages
-//        if (getScrollY() == 0 && getScrollX() == 0) {
-//            stopNestedScroll();
-//        } else {
-//            startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
-//        }
         MotionEvent event = MotionEvent.obtain(ev);
         final int action = MotionEventCompat.getActionMasked(event);
         if (action == MotionEvent.ACTION_DOWN) {
@@ -213,7 +213,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
     @Override
     public boolean hasNestedScrollingParent(int type) {
-        return hasNestedScrollingParent(type);
+        return mChildHelper.hasNestedScrollingParent(type);
     }
 
     @Override
@@ -223,6 +223,98 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
     @Override
     public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed, @Nullable int[] offsetInWindow, int type) {
-        return dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
+        return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
+
+    /**
+     * handles a long click on the page, parameter String urlView
+     * is the urlView that should have been obtained from the WebView touch node
+     * thingy, if it is null, this method tries to deal with it and find a workaround
+     */
+    private void longClickPage(final String url) {
+        final WebView.HitTestResult result = getHitTestResult();
+        final String userAgent = getSettings().getUserAgentString();
+        if (url != null) {
+            if (result != null) {
+                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                    final String imageUrl = result.getExtra();
+                    dialogBuilder.showLongPressImageDialog(url, imageUrl, userAgent);
+                } else {
+                    dialogBuilder.showLongPressLinkDialog(url, userAgent);
+                }
+            } else {
+                dialogBuilder.showLongPressLinkDialog(url, userAgent);
+            }
+        } else if (result != null && result.getExtra() != null) {
+            final String newUrl = result.getExtra();
+            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+                dialogBuilder.showLongPressImageDialog(null, newUrl, userAgent);
+            } else {
+                dialogBuilder.showLongPressLinkDialog(newUrl, userAgent);
+            }
+        }
+    }
+
+    private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        /**
+         * Without this, onLongPress is not called when user is zooming using
+         * two fingers, but is when using only one.
+         * <p/>
+         * The required behaviour is to not trigger this when the user is
+         * zooming, it shouldn't matter how much fingers the user's using.
+         */
+        private boolean mCanTriggerLongPress = true;
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            if (mCanTriggerLongPress) {
+                Message msg = webViewHandler.obtainMessage();
+                if (msg != null) {
+                    msg.setTarget(webViewHandler);
+                    requestFocusNodeHref(msg);
+                }
+            }
+        }
+
+        /**
+         * Is called when the user is swiping after the doubletap, which in our
+         * case means that he is zooming.
+         */
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            mCanTriggerLongPress = false;
+            return false;
+        }
+
+        /**
+         * Is called when something is starting being pressed, always before
+         * onLongPress.
+         */
+        @Override
+        public void onShowPress(MotionEvent e) {
+            mCanTriggerLongPress = true;
+        }
+    }
+
+    private static class WebViewHandler extends Handler {
+
+
+        private WeakReference<CliqzWebView> mReference;
+
+        WebViewHandler(CliqzWebView view) {
+            mReference = new WeakReference<>(view);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            final String url = msg.getData().getString("url");
+            CliqzWebView view = mReference.get();
+            if (view != null) {
+                view.longClickPage(url);
+            }
+        }
+    }
+
 }

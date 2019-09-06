@@ -5,30 +5,34 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
+import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
+import com.cliqz.browser.utils.LazyString;
 import com.cliqz.browser.utils.PasswordManager;
+import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
@@ -37,7 +41,6 @@ import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +59,7 @@ import timber.log.Timber;
  * @author Stefano Pacifici
  * @author Ravjit Uppal
  */
-public class LightningView {
+public class LightningView extends FrameLayout {
 
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
@@ -68,10 +71,8 @@ public class LightningView {
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
-    final Activity activity;
-    private final Paint mPaint = new Paint();
     private static final int API = android.os.Build.VERSION.SDK_INT;
-    private final String id;
+    // private String mId;
     private boolean mIsAutoForgetTab;
     private boolean urlSSLError = false;
     /**
@@ -82,26 +83,16 @@ public class LightningView {
      */
     boolean isHistoryItemCreationEnabled = true;
 
-    final WebViewHandler webViewHandler = new WebViewHandler(this);
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
     //Id of the current page in the history database
     long historyId = -1;
 
     LightingViewListener lightingViewListenerListener;
+    private final LazyString readabilityScript;
 
-    public void setUrlSSLError(boolean urlSSLError) {
-        this.urlSSLError = urlSSLError;
-    }
-
-    public boolean isUrlSSLError() {
-        return urlSSLError;
-    }
-
-    public void onPause() {
-        if (mWebView != null) {
-            mWebView.onPause();
-        }
+    void setReaderModeHTML(String html) {
+        // mReaderModeView.loadData(html, "text/html", "UTF-8");
     }
 
     public interface LightingViewListener {
@@ -110,6 +101,9 @@ public class LightningView {
 
         void onFavIconLoaded(Bitmap favicon);
     }
+
+    @Inject
+    Activity activity;
 
     @Inject
     Bus eventBus;
@@ -153,18 +147,29 @@ public class LightningView {
     @Inject
     WebViewPersister persister;
 
-    @SuppressLint("NewApi")
-    public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
+    @Inject
+    TabsManager tabsManager;
+
+    public LightningView(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public LightningView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public LightningView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
+        readabilityScript = LazyString.fromRawResource(context.getResources(), R.raw.readability);
         if (component != null) {
             component.inject(this);
         }
-        this.activity = activity;
-        id = uniqueId;
-        mIsIncognitoTab = isIncognito;
-        Boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
-        mTitle = new LightningViewTitle(activity, useDarkTheme);
-        LightningViewTouchHandler.attachTouchListener(this);
+        // mId = RelativelySafeUniqueId.createNewUniqueId();
+        mIsIncognitoTab = false;
+        mTitle = new LightningViewTitle(context, false);
+        createWebView();
+        addView(mWebView);
     }
 
     /**
@@ -347,8 +352,50 @@ public class LightningView {
         }
     }
 
-    boolean isShown() {
-        return mWebView != null && mWebView.isShown();
+    public void setUrlSSLError(boolean urlSSLError) {
+        this.urlSSLError = urlSSLError;
+    }
+
+    public boolean isUrlSSLError() {
+        return urlSSLError;
+    }
+
+    public void onPause() {
+        if (mWebView != null) {
+            mWebView.onPause();
+        }
+    }
+
+    void injectReadabilityScript() {
+        if (mWebView != null) {
+            mWebView.evaluateJavascript(readabilityScript.getString(),
+                    new ReadabilityCallback(this));
+        }
+    }
+
+    public void setTransportWebView(@NonNull WebView.WebViewTransport transport) {
+        if (mWebView != null) {
+            transport.setWebView(mWebView);
+        }
+    }
+
+    public int webViewHashCode() {
+        return mWebView != null ? mWebView.hashCode() : 0;
+    }
+
+    public void setWebViewAnimation(Animation animation) {
+        if (mWebView != null) {
+            mWebView.setAnimation(animation);
+        }
+    }
+
+    @Nullable
+    public String getUserAgentString() {
+        if (mWebView == null) {
+            return null;
+        } else {
+            return mWebView.getSettings().getUserAgentString();
+        }
     }
 
     public synchronized void onResume() {
@@ -358,7 +405,6 @@ public class LightningView {
             mWebView.onResume();
         }
     }
-
 
     public synchronized void stopLoading() {
         if (mWebView != null) {
@@ -450,37 +496,6 @@ public class LightningView {
         }
     }
 
-    /**
-     * handles a long click on the page, parameter String urlView
-     * is the urlView that should have been obtained from the WebView touch node
-     * thingy, if it is null, this method tries to deal with it and find a workaround
-     */
-    private void longClickPage(final String url) {
-        if (mWebView == null) {
-            return;
-        }
-        final WebView.HitTestResult result = mWebView.getHitTestResult();
-        if (url != null) {
-            if (result != null) {
-                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    final String imageUrl = result.getExtra();
-                    dialogBuilder.showLongPressImageDialog(url, imageUrl, getUserAgent());
-                } else {
-                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-                }
-            } else {
-                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-            }
-        } else if (result != null && result.getExtra() != null) {
-            final String newUrl = result.getExtra();
-            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(null, newUrl, getUserAgent());
-            } else {
-                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
-            }
-        }
-    }
-
     public boolean canGoBack() {
         return mWebView != null && mWebView.canGoBack();
     }
@@ -489,33 +504,33 @@ public class LightningView {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    @NonNull
-    public synchronized WebView getWebView() {
-        if (mWebView == null) {
-            mWebView = new CliqzWebView(activity);
-            mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-            mWebView.setFocusableInTouchMode(true);
-            mWebView.setFocusable(true);
-            mWebView.setDrawingCacheEnabled(false);
-            mWebView.setWillNotCacheDrawing(true);
+    private void createWebView() {
+        final Context context = getContext();
+        mWebView = new CliqzWebView(context);
+        mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        mWebView.setFocusableInTouchMode(true);
+        mWebView.setFocusable(true);
+        mWebView.setDrawingCacheEnabled(false);
+        mWebView.setWillNotCacheDrawing(true);
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                //noinspection deprecation
-                mWebView.setAnimationCacheEnabled(false);
-                //noinspection deprecation
-                mWebView.setAlwaysDrawnWithCacheEnabled(false);
-            }
-            mWebView.setBackgroundColor(Color.WHITE);
-
-            mWebView.setSaveEnabled(true);
-            mWebView.setNetworkAvailable(true);
-            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-            mWebView.setWebViewClient(new LightningWebClient(activity, this));
-            mWebView.setDownloadListener(new LightningDownloadListener(activity));
-            initializeSettings(mWebView.getSettings(), activity);
-            persister.restore(id, mWebView);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            //noinspection deprecation
+            mWebView.setAnimationCacheEnabled(false);
+            //noinspection deprecation
+            mWebView.setAlwaysDrawnWithCacheEnabled(false);
         }
-        return mWebView;
+        mWebView.setBackgroundColor(Color.WHITE);
+
+        mWebView.setSaveEnabled(true);
+        mWebView.setNetworkAvailable(true);
+        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+        mWebView.setWebViewClient(new LightningWebClient(context, this));
+        mWebView.setDownloadListener(new LightningDownloadListener(context));
+        initializeSettings(mWebView.getSettings(), context);
+    }
+
+    public void restoreTab(@NonNull String tabId) {
+        persister.restore(tabId, mWebView);
     }
 
     public Bitmap getFavicon() {
@@ -539,10 +554,6 @@ public class LightningView {
         } else {
             return "";
         }
-    }
-
-    public String getId() {
-        return id;
     }
 
     public boolean isIncognitoTab() {
@@ -613,26 +624,6 @@ public class LightningView {
             userAgent = defaultUserAgent;
         }
         return userAgent;
-    }
-
-    // Weaker access suppressed, this class can not be private because of the obtainMessage(...)
-    // call in the LightningViewTouchHandler
-    static class WebViewHandler extends Handler {
-
-        private WeakReference<LightningView> mReference;
-        WebViewHandler(LightningView view) {
-            mReference = new WeakReference<>(view);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            final String url = msg.getData().getString("url");
-            LightningView view = mReference.get();
-            if (view != null) {
-                view.longClickPage(url);
-            }
-        }
     }
 
     void addItemToHistory(@Nullable final String title, @NonNull final String url) {

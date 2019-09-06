@@ -9,10 +9,12 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.cliqz.browser.BuildConfig;
+import com.cliqz.browser.R;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.CliqzConfig;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityModule;
+import com.cliqz.browser.utils.LazyString;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
 

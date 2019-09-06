@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
@@ -21,14 +21,9 @@ import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 
 /**
- * TODO Rename this class it doesn't build dialogs only for bookmarks
- * <p>
  * Created by Stefano Pacifici on 02/09/15, based on Anthony C. Restaino's code.
  */
 public class LightningDialogBuilder {
-
-//    @Inject
-//    BookmarkManager bookmarkManager;
 
     @Inject
     HistoryDatabase mHistoryDatabase;
@@ -43,8 +38,7 @@ public class LightningDialogBuilder {
     Activity activity;
 
     @Inject
-    public LightningDialogBuilder() {
-        //BrowserApp.getAppComponent().inject(this);
+    LightningDialogBuilder() {
     }
 
     // TODO There should be a way in which we do not need an activity reference to dowload a file
@@ -72,37 +66,34 @@ public class LightningDialogBuilder {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
         dialogBuilder.setTitle(linkUrl == null ? imageUrl : linkUrl)
                 .setItems(linkUrl == null || linkUrl.equals(imageUrl) ? imageOptions : linkAndImageOptions,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int which) {
-                                switch (which) {
-                                    case 0:
-                                        final ClipboardManager clipboardManager = (ClipboardManager)
-                                                activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                                        final ClipData clipData = ClipData.newPlainText("url",
-                                                linkUrl == null ? imageUrl : linkUrl);
-                                        clipboardManager.setPrimaryClip(clipData);
-                                        break;
-                                    case 1:
-                                        if (imageUrl.startsWith("data:image/jpeg;base64,")) {
-                                            Utils.writeBase64ToStorage(activity, imageUrl);
-                                        } else {
-                                            Utils.downloadFile(activity, imageUrl, userAgent, "attachment", false);
-                                        }
-                                        break;
-                                    case 2:
-                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, false));
-                                        break;
-                                    case 3:
-                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, true));
-                                        break;
-                                    case 4:
-                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, false));
-                                        break;
-                                    case 5:
-                                        eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, true));
-                                        break;
-                                }
+                        (dialogInterface, which) -> {
+                            switch (which) {
+                                case 0:
+                                    final ClipboardManager clipboardManager = (ClipboardManager)
+                                            activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                                    final ClipData clipData = ClipData.newPlainText("url",
+                                            linkUrl == null ? imageUrl : linkUrl);
+                                    clipboardManager.setPrimaryClip(clipData);
+                                    break;
+                                case 1:
+                                    if (imageUrl.startsWith("data:image/jpeg;base64,")) {
+                                        Utils.writeBase64ToStorage(activity, imageUrl);
+                                    } else {
+                                        Utils.downloadFile(activity, imageUrl, userAgent, "attachment", false);
+                                    }
+                                    break;
+                                case 2:
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, false));
+                                    break;
+                                case 3:
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, true));
+                                    break;
+                                case 4:
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, false));
+                                    break;
+                                case 5:
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, true));
+                                    break;
                             }
                         });
         dialogBuilder.show();
@@ -110,7 +101,6 @@ public class LightningDialogBuilder {
 
     public void showLongPressLinkDialog(final String url, final String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.LINK);
-        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
         final CharSequence[] mOptions = new CharSequence[]{
                 activity.getString(R.string.action_copy),
                 activity.getString(R.string.open_in_new_tab),
@@ -119,30 +109,27 @@ public class LightningDialogBuilder {
         };
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
         dialogBuilder.setTitle(url)
-                .setItems(mOptions, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                telemetry.sendLinkDialogSignal(TelemetryKeys.COPY);
-                                final ClipboardManager clipboardManager = (ClipboardManager)
-                                        activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                                final ClipData clipData = ClipData.newPlainText("url", url);
-                                clipboardManager.setPrimaryClip(clipData);
-                                break;
-                            case 1:
-                                telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_TAB);
-                                eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, false));
-                                break;
-                            case 2:
-                                telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_FORGET_TAB);
-                                eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, true));
-                                break;
-                            case 3:
-                                telemetry.sendLinkDialogSignal(TelemetryKeys.SAVE);
-                                Utils.downloadFile(activity, url, userAgent, "attachment", false);
-                                break;
-                        }
+                .setItems(mOptions, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            telemetry.sendLinkDialogSignal(TelemetryKeys.COPY);
+                            final ClipboardManager clipboardManager = (ClipboardManager)
+                                    activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                            final ClipData clipData = ClipData.newPlainText("url", url);
+                            clipboardManager.setPrimaryClip(clipData);
+                            break;
+                        case 1:
+                            telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_TAB);
+                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, false));
+                            break;
+                        case 2:
+                            telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_FORGET_TAB);
+                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, true));
+                            break;
+                        case 3:
+                            telemetry.sendLinkDialogSignal(TelemetryKeys.SAVE);
+                            Utils.downloadFile(activity, url, userAgent, "attachment", false);
+                            break;
                     }
                 });
         dialogBuilder.show();

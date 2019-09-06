@@ -104,8 +104,6 @@ public interface BaseAppComponent {
 
     void inject(SearchModule searchModule);
 
-    void inject(LightningDownloadListener lightningDownloadListener);
-
     void inject(MessageListenerService messageListenerService);
 
     void inject(CodeScannerActivity codeScannerActivity);

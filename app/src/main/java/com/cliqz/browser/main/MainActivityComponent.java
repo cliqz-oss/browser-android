@@ -12,6 +12,7 @@ import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.deckview.TabsDeckView;
 import com.cliqz.nove.Bus;
 
+import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 
@@ -49,4 +50,6 @@ interface MainActivityComponent {
     void inject(Incognito incognito);
 
     void inject(ControlCenterHelper controlCenterHelper);
+
+    void inject(LightningDownloadListener lightningDownloadListener);
 }

@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,7 +13,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.telemetry.Telemetry;
-import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Bus;
@@ -110,10 +110,9 @@ public class TabsManager {
                 arguments.putParcelable(TabFragment2.KEY_NEW_TAB_MESSAGE, mMessage);
             }
 
-            if (mId == null) {
-                mId = RelativelySafeUniqueId.createNewUniqueId();
+            if (mId != null) {
+                arguments.putString(TabFragment2.KEY_TAB_ID, mId);
             }
-            arguments.putString(TabFragment2.KEY_TAB_ID, mId);
             arguments.putBoolean(TabFragment2.KEY_FORCE_RESTORE, mRestore);
 
             if (mTitle != null) {
@@ -184,6 +183,25 @@ public class TabsManager {
      */
     public TabFragment2 getTab(int position) {
         return mFragmentsList.get(position);
+    }
+
+    /**
+     * @param position the tab position
+     * @return the tab id
+     */
+    @NonNull
+    public String getTabId(int position) {
+        return mFragmentsList.get(position).getTabId();
+    }
+
+    /**
+     * @param lightningView the lightning view associated with the tab
+     * @return the tab id, or null if the tab was removed before this call
+     */
+    @Nullable
+    public String getTabId(@NonNull LightningView lightningView) {
+        final int position = findTabFor(lightningView);
+        return position >= 0 ? getTabId(position) : null;
     }
 
     /**
