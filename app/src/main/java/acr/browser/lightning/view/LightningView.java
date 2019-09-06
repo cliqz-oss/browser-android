@@ -32,7 +32,6 @@ import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.LazyString;
 import com.cliqz.browser.utils.PasswordManager;
-import com.cliqz.browser.utils.RelativelySafeUniqueId;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
 import com.cliqz.jsengine.AntiTracking;
@@ -60,6 +59,13 @@ import timber.log.Timber;
  * @author Ravjit Uppal
  */
 public class LightningView extends FrameLayout {
+
+    public interface LightingViewListener {
+
+        void increaseAntiTrackingCounter();
+
+        void onFavIconLoaded(Bitmap favicon);
+    }
 
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
@@ -90,16 +96,10 @@ public class LightningView extends FrameLayout {
 
     LightingViewListener lightingViewListenerListener;
     private final LazyString readabilityScript;
+    private String mReaderModeContent;
 
-    void setReaderModeHTML(String html) {
-        // mReaderModeView.loadData(html, "text/html", "UTF-8");
-    }
-
-    public interface LightingViewListener {
-
-        void increaseAntiTrackingCounter();
-
-        void onFavIconLoaded(Bitmap favicon);
+    void setReaderModeHTML(@NonNull String html) {
+        mReaderModeContent = html;
     }
 
     @Inject
