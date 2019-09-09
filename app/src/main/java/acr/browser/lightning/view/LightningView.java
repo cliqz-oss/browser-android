@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -40,6 +41,8 @@ import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,6 +63,8 @@ import timber.log.Timber;
  */
 public class LightningView extends FrameLayout {
 
+    private WeakReference<WebView> mReaderModeWebViewRef = new WeakReference<>(null);
+
     public interface LightingViewListener {
 
         void increaseAntiTrackingCounter();
@@ -70,7 +75,6 @@ public class LightningView extends FrameLayout {
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
     private static final String HEADER_DNT = "DNT";
-    private static final String TAG = LightningView.class.getSimpleName();
     private static final Pattern USER_AGENT_PATTERN =
             Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
 
@@ -186,8 +190,6 @@ public class LightningView extends FrameLayout {
             settings = mWebView.getSettings();
         }
 
-        // Removed as version 1.0.2r2, restore if needed
-        // settings.setDefaultTextEncodingName(preferences.getTextEncoding());
         settings.setDefaultTextEncodingName("UTF-8");
 
         if (preferences.getDoNotTrackEnabled()) {
@@ -357,14 +359,33 @@ public class LightningView extends FrameLayout {
      * if needed.
      */
     public void readerMode() {
-        throw new RuntimeException("Not yet implemented");
+        if (mReaderModeContent == null || mReaderModeContent.isEmpty()) {
+            return;
+        }
+        try {
+            // Just use the string instead of the Charset object in case we want to support API < 19
+            @SuppressWarnings("CharsetObjectCanBeUsed")
+            final String contentBase64 = Base64.encodeToString(
+                    mReaderModeContent.getBytes("UTF-8"), Base64.NO_WRAP);
+            WebView readerWebView = mReaderModeWebViewRef.get();
+            if (readerWebView == null) {
+                readerWebView = new CliqzWebView(getContext());
+                mReaderModeWebViewRef = new WeakReference<>(readerWebView);
+            }
+            removeView(mWebView);
+            addView(readerWebView);
+            readerWebView.loadData(contentBase64, "text/html; charset=utf-8", "base64");
+        } catch (UnsupportedEncodingException e) {
+            Timber.e(e, "Invalid encoding: UTF-8");
+        }
     }
 
     /**
      * Display the web page
      */
     public void webMode() {
-        throw new RuntimeException("Not yet implemented");
+        removeAllViews();
+        addView(mWebView);
     }
 
     public void setUrlSSLError(boolean urlSSLError) {
@@ -484,14 +505,6 @@ public class LightningView extends FrameLayout {
         }
     }
 
-    private String getUserAgent() {
-        if (mWebView != null) {
-            return mWebView.getSettings().getUserAgentString();
-        } else {
-            return "";
-        }
-    }
-
     public synchronized void goForward() {
         if (mWebView != null) {
             isHistoryItemCreationEnabled = false;
@@ -529,9 +542,7 @@ public class LightningView extends FrameLayout {
         mWebView.setWillNotCacheDrawing(true);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            //noinspection deprecation
             mWebView.setAnimationCacheEnabled(false);
-            //noinspection deprecation
             mWebView.setAlwaysDrawnWithCacheEnabled(false);
         }
         mWebView.setBackgroundColor(Color.WHITE);
