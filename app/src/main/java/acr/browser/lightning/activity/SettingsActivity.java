@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.extensions.IntentExtensionKt;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -123,8 +124,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             openUrl(getString(R.string.report_site_url));
         } else if (info.id == R.id.default_browser && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.MAKE_DEFAULT, TelemetryKeys.MAIN);
-            final Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
-            startActivity(intent);
+            IntentExtensionKt.launchDefaultAppsSettings(this);
         } else if (info.id == R.id.lumen_faq) {
             openUrl(getString(R.string.lumen_faq_url));
         } else if (info.id == R.id.lumen_support) {

@@ -1,9 +1,13 @@
 package com.cliqz.browser.main;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.Bundle;
 
 import com.cliqz.browser.R;
+
+import java.util.List;
 
 /**
  * @author Stefano Pacifici
@@ -12,15 +16,17 @@ class ResumeTabDialog implements Dialog.OnClickListener, DialogInterface.OnCance
 
     private static boolean M_IS_SHOWN = false;
     private MainActivity mMainActivity;
+    private List<Bundle> mStoredTabs;
 
     static boolean isShown() {
         return M_IS_SHOWN;
     }
 
-    public static void show(MainActivity activity) {
+    public static void show(MainActivity activity, List<Bundle> storedTabs) {
         final ResumeTabDialog resumeTabDialog = new ResumeTabDialog();
         M_IS_SHOWN = true;
         resumeTabDialog.mMainActivity = activity;
+        resumeTabDialog.mStoredTabs = storedTabs;
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.resume_tab_dialog_title)
                 .setMessage(R.string.resume_tab_dialog_msg)
@@ -35,7 +41,7 @@ class ResumeTabDialog implements Dialog.OnClickListener, DialogInterface.OnCance
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case Dialog.BUTTON_POSITIVE:
-                mMainActivity.tabsManager.restoreTabs();
+                mMainActivity.tabsManager.restoreTabs(mStoredTabs);
                 mMainActivity.tabsManager.resumeAllTabs();
                 break;
             case Dialog.BUTTON_NEGATIVE:
