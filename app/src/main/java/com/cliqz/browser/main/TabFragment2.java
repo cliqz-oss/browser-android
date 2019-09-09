@@ -269,17 +269,17 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         }
 
         final View view = localInflater.inflate(R.layout.fragment_tab, container, false);
-        ButterKnife.bind(this, view);
+        if (BuildConfig.IS_NOT_LUMEN) {
+            final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
+            stub.inflate();
+        }
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (BuildConfig.IS_NOT_LUMEN) {
-            final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
-            stub.inflate();
-        }
+        ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();

@@ -332,6 +332,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
             return;
         }
         mShown = true;
+        bringToFront();
         cancelCurrentAnimation();
         startAppearAnimation(false);
     }
