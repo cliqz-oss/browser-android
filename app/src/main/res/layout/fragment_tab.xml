@@ -12,7 +12,6 @@
         android:id="@+id/webview_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="2dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- DO NOT PUT ANY VIEW IN THIS CONTAINER, IT IS RESERVED TO THE MAIN WEBVIEW -->
