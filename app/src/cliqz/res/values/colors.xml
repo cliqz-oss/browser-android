@@ -27,6 +27,7 @@
     <color name="history_primary_color">#F87140</color>
 
     <color name="incognito_tab_primary_color_dark">#2A2A33</color>
+    <color name="incognito_tab_overview_background_color">#31313A</color>
     <color name="normal_tab_primary_color_dark">#0E579C</color>
     <color name="history_primary_color_dark">#E76030</color>
 

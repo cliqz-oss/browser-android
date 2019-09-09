@@ -625,10 +625,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final FragmentTransaction transaction = fm.beginTransaction();
         //workaround for getting the mode in hitroy fragment
         //noinspection ConstantConditions
-        currentMode = tabsManager.getCurrentTab().getTelemetryView();
-        transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
+        final TabFragment2 currentTab = tabsManager.getCurrentTab();
+        if (currentTab != null) {
+            currentMode = tabsManager.getCurrentTab().getTelemetryView();
+            transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+        }
     }
 
     @SuppressWarnings("UnusedParameters")

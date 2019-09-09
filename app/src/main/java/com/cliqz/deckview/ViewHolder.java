@@ -18,7 +18,7 @@ import com.cliqz.widget.CliqzTextView;
  */
 class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     final CliqzTextView titleTv;
-    final TextView urlTv;
+    final CliqzTextView urlTv;
     final View backgroundView;
     final CliqzFrameLayout rootView;
     final CliqzImageView favIconIV;
@@ -66,6 +66,7 @@ class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
             rootView.setIncognito(value);
             closeButton.setIncognito(value);
             titleTv.setIncognito(value);
+            urlTv.setIncognito(value);
             favIconIV.setIncognito(value);
         }
     }

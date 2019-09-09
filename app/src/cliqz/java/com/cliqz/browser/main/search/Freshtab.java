@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -209,9 +211,13 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
                     R.color.made_in_germany_color_no_background));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                final int navigationBarColor = mIsIncognito ? R.color.incognito_tab_primary_color_dark : R.color.fresh_tab_blue_start_color;
-                ((MainActivity) context).getWindow().setNavigationBarColor(
-                        ContextCompat.getColor(context, navigationBarColor));
+                final int appBackgroundResource = mIsIncognito ? R.drawable.private_tab_background
+                        : R.drawable.fresh_tab_blue_background;
+                final Window window = ((MainActivity) context).getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setNavigationBarColor(
+                        ContextCompat.getColor(context, android.R.color.transparent));
+                window.setBackgroundDrawableResource(appBackgroundResource);
             }
         }
     }
