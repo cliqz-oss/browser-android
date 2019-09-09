@@ -17,6 +17,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -370,6 +371,14 @@ public class LightningView extends FrameLayout {
             WebView readerWebView = mReaderModeWebViewRef.get();
             if (readerWebView == null) {
                 readerWebView = new CliqzWebView(getContext());
+                readerWebView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        webMode();
+                        loadUrl(url);
+                        return true;
+                    }
+                });
                 mReaderModeWebViewRef = new WeakReference<>(readerWebView);
             }
             removeView(mWebView);

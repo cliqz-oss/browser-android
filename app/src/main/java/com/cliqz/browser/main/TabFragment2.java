@@ -316,15 +316,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             quickAccessBar.setSearchTextView(searchEditText);
             quickAccessBar.hide();
         }
-        //way to handle links in the readermode article
-//        readerModeWebview.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                toggleReaderMode();
-//                lightningView.loadUrl(url);
-//                return true;
-//            }
-//        });
         onPageFinished(null);
     }
 
