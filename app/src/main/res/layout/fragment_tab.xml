@@ -16,10 +16,15 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!-- DO NOT PUT ANY VIEW IN THIS CONTAINER, IT IS RESERVED TO THE MAIN WEBVIEW -->
-
-        <!-- include layout="@layout/onboarding_helper" / -->
-
     </acr.browser.lightning.view.LightningView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="top"
+        android:layout_marginEnd="100dp"
+        android:visibility="invisible"
+        android:id="@+id/onboarding_view_marker" />
 
     <LinearLayout
         android:id="@+id/in_page_search_bar"
