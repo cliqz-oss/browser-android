@@ -330,7 +330,10 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         newTabMessage = args.getParcelable(KEY_NEW_TAB_MESSAGE);
         // Remove asap the message from the bundle
         args.remove(KEY_NEW_TAB_MESSAGE);
-        mId = args.getString(KEY_TAB_ID);
+        final String argsId = args.getString(KEY_TAB_ID);
+        if  (argsId != null) {
+            mId = argsId;
+        }
 
         final String url = args.getString(KEY_URL);
         final String title = args.getString(KEY_TITLE);
