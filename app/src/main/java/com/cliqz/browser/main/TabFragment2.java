@@ -425,7 +425,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             searchView2.onResume();
             searchView2.setVisibility(View.VISIBLE);
         }
-        // final WebView webView;
         if (lightningView != null) {
             lightningView.onResume();
             lightningView.resumeTimers();
@@ -463,14 +462,13 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             state.setMode(Mode.SEARCH);
             bus.post(new Messages.ShowSearch(mExternalQuery));
         } else {
-            final String lightningUrl = lightningView.getUrl();
             final String query = state.getQuery();
-            final boolean mustShowSearch = lightningUrl.isEmpty() && !query.isEmpty();
+            final String url = state.getUrl();
+            final boolean mustShowSearch = url.isEmpty() && !query.isEmpty();
             if (mustShowSearch) {
                 state.setMode(Mode.SEARCH);
             }
             if (state.getMode() == Mode.SEARCH) {
-                //showToolBar(null);
                 if (!query.isEmpty()) {
                     delayedPostOnBus(new Messages.ShowSearch(query));
                 } else {
@@ -483,7 +481,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-                searchBar.setTitle(lightningView.getUrl());
+                searchBar.setTitle(url);
             }
         }
 

@@ -44,11 +44,12 @@ public class CliqzBrowserState implements Serializable {
         this.title = title;
     }
 
+    @NonNull
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(@NonNull String url) {
         this.url = url;
     }
 
