@@ -253,7 +253,7 @@
     <string name="cookies">Ciasteczka</string>
     <string name="cache">Pamięć podręczna</string>
     <string name="action_set">Ustanów</string>
-    <string name="clear_private_data">Czyść prywatne dane przy wyjściu</string>
+    <string name="clear_private_data_on_exit">Czyść prywatne dane przy wyjściu</string>
     <string name="find_hint">Znajdź</string>
     <string name="no_wi_fi_title">Brak połączenia Wi-Fi</string>
     <string name="no_wi_fi_message">Brak połączenia Wi-Fi. W celu pobierania wideo również z sieci komórkowych, sprawdź Ustawienia &gt; Główne &gt; Opcje pobierania</string>

@@ -218,7 +218,7 @@ public class SettingsActivityTest {
         onView(withText("Save your passwords")).check(matches(isDisplayed()));
         onView(withText("Restore most visited websites")).check(matches(isDisplayed()));
         onView(withResourceName("prefs")).perform(swipeUp());
-        onView(withText("Clear history")).check(matches(isDisplayed()));
+        onView(withText("Clear private data")).check(matches(isDisplayed()));
         onView(withText("Clear favorites")).check(matches(isDisplayed()));
         onView(withText("Clear private data on exit")).check(matches(isDisplayed()));
         onView(withText("Send usage data")).check(matches(isDisplayed()));

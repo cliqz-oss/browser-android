@@ -7,6 +7,7 @@ import android.preference.PreferenceFragment;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.SubscriptionsManager;
+import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
@@ -34,6 +35,9 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
 
     @Inject
     SubscriptionsManager subscriptionsManager;
+
+    @Inject
+    Bus bus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -966,4 +966,9 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private boolean isPurchaseFragmentVisible() {
         return purchaseFragment != null && purchaseFragment.isVisible();
     }
+
+    @Subscribe
+    public void closeOpenTabs(Messages.CloseOpenTabs event) {
+        tabsManager.deleteAllTabs();
+    }
 }

@@ -263,4 +263,7 @@ public final class Messages {
 
     public static class OnAllProfilesImported {
     }
+
+    public static class CloseOpenTabs {
+    }
 }

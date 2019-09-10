@@ -251,7 +251,7 @@
     <string name="cookies">Файлы cookie</string>
     <string name="cache">Кэш</string>
     <string name="action_set">Установить</string>
-    <string name="clear_private_data">Очищать личные данные при выходе</string>
+    <string name="clear_private_data_on_exit">Очищать личные данные при выходе</string>
     <string name="find_hint">Поиск</string>
     <string name="no_wi_fi_title">Нет подключения к Wi-Fi</string>
     <string name="no_wi_fi_message">Wi-Fi не подключен. Чтобы загружать видео используя также мобильную передачу данных, выберите Настройки &gt; Общие &gt; Опции загрузки.</string>

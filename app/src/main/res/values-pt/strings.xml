@@ -257,7 +257,7 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Ajustes</string>
-    <string name="clear_private_data">Exclua dados pessoais ao fechar o aplicativo</string>
+    <string name="clear_private_data_on_exit">Exclua dados pessoais ao fechar o aplicativo</string>
     <string name="find_hint">Pesquisar</string>
     <string name="no_wi_fi_title">Você não está conectado a um Wi-Fi</string>
     <string name="no_wi_fi_message">Você não está conectado a uma rede Wi-Fi e o download de vídeos com a rede móvel está desabilitado.Para ativá-lo, vá para Configurações&gt; Geral&gt; Opções de download</string>

@@ -260,7 +260,9 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Set</string>
-    <string name="clear_private_data">Clear private data on exit</string>
+    <string name="action_clear">Clear</string>
+    <string name="clear_private_data">Clear private data</string>
+    <string name="clear_private_data_on_exit">Clear private data on exit</string>
     <string name="find_hint">Find</string>
     <string name="no_wi_fi_title">No Wi-Fi Connection</string>
     <string name="no_wi_fi_message">You are not connected to Wi-Fi. To download videos also via mobile data, go to Settings &gt; General &gt; Download Options</string>

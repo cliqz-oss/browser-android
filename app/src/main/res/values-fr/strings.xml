@@ -254,7 +254,7 @@ Continuer tout de même ?</string>
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Attribuer</string>
-    <string name="clear_private_data">Supprimer les données personnelles à la fermeture</string>
+    <string name="clear_private_data_on_exit">Supprimer les données personnelles à la fermeture</string>
     <string name="find_hint">Chercher</string>
     <string name="no_wi_fi_title">Aucune connexion Wifi</string>
     <string name="no_wi_fi_message">Vous n\'êtes pas connecté au Wifi. Pour télécharger des vidéos via votre connexion mobile, allez dans Préférences &gt; Général &gt; Options de téléchargements</string>
