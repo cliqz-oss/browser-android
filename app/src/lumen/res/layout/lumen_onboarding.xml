@@ -33,7 +33,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/lumen_onboarding_close_button"
+        android:id="@+id/onboarding_close_button"
         android:layout_width="160dp"
         android:layout_height="35dp"
         android:layout_gravity="center|bottom"

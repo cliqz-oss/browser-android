@@ -366,19 +366,31 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
-        if (BuildConfig.IS_LUMEN && preferenceManager.shouldShowLumenOnboarding()) {
+        if (isFirstInstall() && preferenceManager.shouldShowOnboardingv2()) {
             final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            final View onboardingView = inflater.inflate(R.layout.lumen_onboarding, null);
+            final View onboardingView = inflater.inflate(
+                    BuildConfig.IS_LUMEN ? R.layout.lumen_onboarding : R.layout.cliqz_onboarding, null);
             final FrameLayout rootView = findViewById(R.id.content_frame);
             rootView.addView(onboardingView);
-            final Button closeOnboarding = onboardingView.findViewById(R.id.lumen_onboarding_close_button);
+            final Button closeOnboarding = onboardingView.findViewById(R.id.onboarding_close_button);
             closeOnboarding.setOnClickListener(view -> {
-                preferenceManager.setShouldShowLumenOnboarding(false);
+                preferenceManager.setShouldShowOnboardingv2(false);
                 rootView.removeView(onboardingView);
             });
         }
         if (firstTabBuilder != null) {
             firstTabBuilder.show();
+        }
+    }
+
+    public boolean isFirstInstall() {
+        try {
+            final long firstInstallTime = getPackageManager().getPackageInfo(getPackageName(), 0).firstInstallTime;
+            final long lastUpdateTime = getPackageManager().getPackageInfo(getPackageName(), 0).lastUpdateTime;
+            return firstInstallTime == lastUpdateTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e, "error getting package name");
+            return true;
         }
     }
 
