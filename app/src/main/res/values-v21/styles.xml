@@ -54,5 +54,4 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@color/primary_color</item>
     </style>
-
 </resources>

@@ -11,8 +11,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +26,6 @@ import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -76,7 +73,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -122,7 +118,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     private Message newTabMessage = null;
     private String mExternalQuery = null;
     public final CliqzBrowserState state = new CliqzBrowserState();
-    protected boolean isHomePageShown = false;
+    boolean isHomePageShown = false;
     private int mTrackerCount = 0;
     String lastQuery = "";
     private String mId;
