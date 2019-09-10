@@ -299,7 +299,6 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
     private static class WebViewHandler extends Handler {
 
-
         private WeakReference<CliqzWebView> mReference;
 
         WebViewHandler(CliqzWebView view) {

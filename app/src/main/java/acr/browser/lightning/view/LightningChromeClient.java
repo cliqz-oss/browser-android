@@ -3,8 +3,6 @@ package acr.browser.lightning.view;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -131,19 +129,9 @@ class LightningChromeClient extends WebChromeClient {
                 builder.setMessage(org + activity.getString(R.string.message_location))
                         .setCancelable(true)
                         .setPositiveButton(activity.getString(R.string.action_allow),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        callback.invoke(origin, true, remember);
-                                    }
-                                })
+                                (dialog, id) -> callback.invoke(origin, true, remember))
                         .setNegativeButton(activity.getString(R.string.action_dont_allow),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        callback.invoke(origin, false, remember);
-                                    }
-                                });
+                                (dialog, id) -> callback.invoke(origin, false, remember));
                 AlertDialog alert = builder.create();
                 alert.show();
             }

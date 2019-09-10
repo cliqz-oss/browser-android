@@ -54,12 +54,13 @@ public class OverviewFragment extends CommonOverviewFragment {
         final TypedArray typedArray = activity.getTheme()
                 .obtainStyledAttributes(themeResId, new int[]{R.attr.colorPrimaryDark});
         final int resourceId = typedArray.getResourceId(0, R.color.normal_tab_primary_color);
-        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             throw new AssertionError("DO NOT DOWNGRADE DO API < 21");
+        }
         activity.getWindow()
                 .setStatusBarColor(ContextCompat.getColor(activity, resourceId));
         typedArray.recycle();
-        SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+        final SystemBarTintManager tintManager = new SystemBarTintManager(activity);
         tintManager.setStatusBarTintEnabled(true);
         tintManager.setNavigationBarTintEnabled(true);
         tintManager.setTintColor(resourceId);

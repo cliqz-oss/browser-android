@@ -2,13 +2,10 @@ package acr.browser.lightning.view;
 
 import android.webkit.ValueCallback;
 
-import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.webview.CliqzMessages;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import timber.log.Timber;
@@ -38,10 +35,8 @@ class ReadabilityCallback implements ValueCallback<String> {
                         getFormattedHtml(readerModeTitle, readerModeText));
                 lightningView.eventBus.post(new CliqzMessages.OnReadableVersionAvailable());
             }
-        } catch (JSONException e) {
-            Timber.i(e,"error reading the json object");
-        } catch (UnsupportedEncodingException e) {
-            Timber.e(e,"error decoding the response from readability.js");
+        } catch (Exception e) {
+            Timber.e(e,"Error decoding the response from readability.js");
         }
     }
 
