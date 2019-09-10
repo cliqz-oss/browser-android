@@ -33,5 +33,6 @@
     <string name="incognito_tab_title">Vergessen Tab</string>
     <string name="incognito_tab_description">Du surfst im Vergessen-Modus: Webseiten, die du in diesem Modus besuchst, werden nicht in deinem Verlauf auftauchen. Auch werden lokale Daten, Cookies mit eingeschlossen, nicht gespeichert.</string>
     <string name="auto_forget_tab">Automatisches Vergessen-Tab</string>
+    <string name="cliqz_onboarding_welcome_text">Schön, dass du Cliqz zum privaten Surfen nutzt</string>
 </resources>
 
