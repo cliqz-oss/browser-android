@@ -16,7 +16,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.HistoryAdapter;
 import com.cliqz.browser.main.HistoryModel;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 
@@ -43,7 +43,7 @@ public class HistoryView extends FrameLayout implements Updatable {
     Engine engine;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Inject
     Bus bus;
