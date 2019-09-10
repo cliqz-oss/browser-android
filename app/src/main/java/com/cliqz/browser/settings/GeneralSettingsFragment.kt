@@ -130,11 +130,11 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
             }
         }
         val preSelEngineIdx = selectedEngineIndex
-        picker.setSingleChoiceItems(engineNames, preSelEngineIdx) { dialog, which ->
+        picker.setSingleChoiceItems(engineNames, preSelEngineIdx) { _, which ->
             mTelemetry.sendSettingsMenuSignal(engines[which].engineName, TelemetryKeys.SELECT_SE)
             selectedEngineIndex = which
         }
-        picker.setNeutralButton(resources.getString(R.string.action_ok)) { _, i ->
+        picker.setNeutralButton(resources.getString(R.string.action_ok)) { _, _ ->
             if (preSelEngineIdx != selectedEngineIndex) {
                 mPreferenceManager.searchChoice = engines[selectedEngineIndex]
                 setSearchEngineSummary(engines[selectedEngineIndex])
@@ -211,7 +211,7 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
                 n = i
             }
         }
-        picker.setSingleChoiceItems(countryNames, n) { dialog, which ->
+        picker.setSingleChoiceItems(countryNames, n) { _, which ->
             mPreferenceManager.countryChoice = countries[which]
             if (countries[which].countryCode == Countries.germany.countryCode) {
                 (preferenceScreen.getPreference(0) as PreferenceGroup)

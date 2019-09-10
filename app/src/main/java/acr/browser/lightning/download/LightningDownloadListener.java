@@ -5,9 +5,10 @@ package acr.browser.lightning.download;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import androidx.appcompat.app.AlertDialog;
-import android.util.Log;
+
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 
@@ -20,7 +21,6 @@ import com.cliqz.nove.Bus;
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents.ShowSnackBarMessage;
-import acr.browser.lightning.constant.Constants;
 import timber.log.Timber;
 
 public class LightningDownloadListener implements DownloadListener {
@@ -28,17 +28,17 @@ public class LightningDownloadListener implements DownloadListener {
     @Inject
     Bus bus;
 
-    private final Activity mActivity;
+    @Inject
+    Activity activity;
 
-    public LightningDownloadListener(Activity context) {
-        mActivity = context;
-        BrowserApp.getAppComponent().inject(this);
+    public LightningDownloadListener(Context context) {
+        BrowserApp.getActivityComponent(context).inject(this);
     }
 
     @Override
     public void onDownloadStart(final String url, final String userAgent,
                                 final String contentDisposition, final String mimetype, long contentLength) {
-        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(mActivity,
+        PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity,
                 new Result(url, userAgent, contentDisposition, mimetype),
                 Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
@@ -65,9 +65,9 @@ public class LightningDownloadListener implements DownloadListener {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
-                            bus.post(new ShowSnackBarMessage(mActivity
+                            bus.post(new ShowSnackBarMessage(activity
                                     .getString(R.string.download_started)));
-                            DownloadHandler.onDownloadStart(mActivity, url, userAgent,
+                            DownloadHandler.onDownloadStart(activity, url, userAgent,
                                     contentDisposition, mimetype);
                             break;
 
@@ -77,12 +77,12 @@ public class LightningDownloadListener implements DownloadListener {
                 }
             };
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(mActivity); // dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity); // dialog
             builder.setTitle(fileName)
-                    .setMessage(mActivity.getResources().getString(R.string.dialog_download))
-                    .setPositiveButton(mActivity.getResources().getString(R.string.action_download),
+                    .setMessage(activity.getResources().getString(R.string.dialog_download))
+                    .setPositiveButton(activity.getResources().getString(R.string.action_download),
                             dialogClickListener)
-                    .setNegativeButton(mActivity.getResources().getString(R.string.action_cancel),
+                    .setNegativeButton(activity.getResources().getString(R.string.action_cancel),
                             dialogClickListener).show();
             Timber.i("Downloading%s", fileName);
         }

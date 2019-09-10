@@ -41,7 +41,7 @@ public abstract class FragmentWithBus extends Fragment {
     Engine engine;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     public FragmentWithBus() {
         super();

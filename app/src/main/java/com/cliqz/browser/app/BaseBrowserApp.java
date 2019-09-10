@@ -9,16 +9,16 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.cliqz.browser.BuildConfig;
-import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.CliqzConfig;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityModule;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
 
-import timber.log.Timber;
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal

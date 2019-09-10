@@ -7,8 +7,9 @@
     <dimen name="app_minimumsize_w">632.0dp</dimen>
     <dimen name="app_minimumsize_h">598.0dp</dimen>
     <dimen name="search_edit_text_h">46.0dp</dimen>
-    <dimen name="toolbar_menu_item_h">46.0dp</dimen>
-    <dimen name="toolbar_menu_item_w">46.0dp</dimen>
+    <dimen name="actionBarSize">48dp</dimen>
+    <dimen name="toolbar_menu_item_h">@dimen/actionBarSize</dimen>
+    <dimen name="toolbar_menu_item_w">@dimen/actionBarSize</dimen>
     <dimen name="toolbar_menu_item_padding">11.0dp</dimen>
     <dimen name="toolbar_menu_icon_h">24.0dp</dimen>
     <dimen name="toolbar_menu_icon_w">24.0dp</dimen>

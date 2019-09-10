@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.gcm.AwsSNSManager;
+import com.cliqz.browser.main.BackgroundThreadHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.peercomm.ChunkedFileManager;
 import com.cliqz.browser.purchases.PurchasesManager;
@@ -118,8 +120,10 @@ public class AppModule {
 
     @Provides
     @Singleton
-    WebViewPersister provideWebViewPersister(Context context) {
-        return new WebViewPersister(context);
+    WebViewPersister provideWebViewPersister(Context context,
+                                             MainThreadHandler mainThreadHandler,
+                                             BackgroundThreadHandler backgroundThreadHandler) {
+        return new WebViewPersister(context, mainThreadHandler, backgroundThreadHandler);
     }
 
     @Provides
@@ -138,5 +142,17 @@ public class AppModule {
     @Singleton
     QueryManager provideQueryManager(HistoryDatabase historyDatabase) {
         return new QueryManager(historyDatabase);
+    }
+
+    @Provides
+    @Singleton
+    MainThreadHandler provideMainThreadHandler() {
+        return new MainThreadHandler(app);
+    }
+
+    @Provides
+    @Singleton
+    BackgroundThreadHandler provideBackgroundThreadHandler() {
+        return new BackgroundThreadHandler();
     }
 }

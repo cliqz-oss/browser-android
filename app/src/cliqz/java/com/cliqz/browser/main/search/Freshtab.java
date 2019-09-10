@@ -23,7 +23,7 @@ import android.widget.TextView;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -88,7 +88,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     HistoryDatabase historyDatabase;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Inject
     AppBackgroundManager appBackgroundManager;

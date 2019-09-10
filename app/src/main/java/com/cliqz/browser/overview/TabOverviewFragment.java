@@ -2,6 +2,8 @@ package com.cliqz.browser.overview;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.cliqz.browser.main.MainThreadHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,7 +14,6 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -53,7 +54,7 @@ public class TabOverviewFragment extends Fragment implements TabsDeckView.TabsDe
     Engine engine;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Nullable
     @Override

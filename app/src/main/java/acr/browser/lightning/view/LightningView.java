@@ -5,32 +5,34 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
+import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
+import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
+import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
+import com.cliqz.browser.utils.LazyString;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.utils.WebViewPersister;
 import com.cliqz.jsengine.Adblocker;
@@ -40,6 +42,7 @@ import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -59,23 +62,28 @@ import timber.log.Timber;
  * @author Stefano Pacifici
  * @author Ravjit Uppal
  */
-public class LightningView {
+public class LightningView extends FrameLayout {
+
+    private WeakReference<WebView> mReaderModeWebViewRef = new WeakReference<>(null);
+
+    public interface LightingViewListener {
+
+        void increaseAntiTrackingCounter();
+
+        void onFavIconLoaded(Bitmap favicon);
+    }
 
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
     private static final String HEADER_DNT = "DNT";
-    private static final String TAG = LightningView.class.getSimpleName();
     private static final Pattern USER_AGENT_PATTERN =
             Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
-    final Activity activity;
-    private final Paint mPaint = new Paint();
-    private boolean mInvertPage = false;
     private static final int API = android.os.Build.VERSION.SDK_INT;
-    private final String id;
+    // private String mId;
     private boolean mIsAutoForgetTab;
     private boolean urlSSLError = false;
     /**
@@ -86,34 +94,21 @@ public class LightningView {
      */
     boolean isHistoryItemCreationEnabled = true;
 
-    private static final float[] mNegativeColorArray = {
-            -1.0f, 0, 0, 0, 255, // red
-            0, -1.0f, 0, 0, 255, // green
-            0, 0, -1.0f, 0, 255, // blue
-            0, 0, 0, 1.0f, 0 // alpha
-    };
-    final WebViewHandler webViewHandler = new WebViewHandler(this);
     private final Map<String, String> mRequestHeaders = new ArrayMap<>();
 
     //Id of the current page in the history database
     long historyId = -1;
 
     LightingViewListener lightingViewListenerListener;
+    private final LazyString readabilityScript;
+    private String mReaderModeContent;
 
-    public void setUrlSSLError(boolean urlSSLError) {
-        this.urlSSLError = urlSSLError;
+    void setReaderModeHTML(@NonNull String html) {
+        mReaderModeContent = html;
     }
 
-    public boolean isUrlSSLError() {
-        return urlSSLError;
-    }
-
-    public interface LightingViewListener {
-
-        void increaseAntiTrackingCounter();
-
-        void onFavIconLoaded(Bitmap favicon);
-    }
+    @Inject
+    Activity activity;
 
     @Inject
     Bus eventBus;
@@ -157,18 +152,29 @@ public class LightningView {
     @Inject
     WebViewPersister persister;
 
-    @SuppressLint("NewApi")
-    public LightningView(final Activity activity, boolean isIncognito, String uniqueId) {
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
+    @Inject
+    TabsManager tabsManager;
+
+    public LightningView(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public LightningView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public LightningView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
+        readabilityScript = LazyString.fromRawResource(context.getResources(), R.raw.readability);
         if (component != null) {
             component.inject(this);
         }
-        this.activity = activity;
-        id = uniqueId;
-        mIsIncognitoTab = isIncognito;
-        Boolean useDarkTheme = preferences.getUseTheme() != 0 || isIncognito;
-        mTitle = new LightningViewTitle(activity, useDarkTheme);
-        LightningViewTouchHandler.attachTouchListener(this);
+        // mId = RelativelySafeUniqueId.createNewUniqueId();
+        mIsIncognitoTab = false;
+        mTitle = new LightningViewTitle(context, false);
+        createWebView();
+        addView(mWebView);
     }
 
     /**
@@ -185,10 +191,7 @@ public class LightningView {
             settings = mWebView.getSettings();
         }
 
-        // Removed as version 1.0.2r2, restore if needed
-        // settings.setDefaultTextEncodingName(preferences.getTextEncoding());
         settings.setDefaultTextEncodingName("UTF-8");
-        setColorMode(preferences.getRenderingMode());
 
         if (preferences.getDoNotTrackEnabled()) {
             mRequestHeaders.put(HEADER_DNT, "1");
@@ -352,8 +355,92 @@ public class LightningView {
         }
     }
 
-    boolean isShown() {
-        return mWebView != null && mWebView.isShown();
+    /**
+     * If reader content is available, display the reader mode. It creates the reader webview
+     * if needed.
+     */
+    public void readerMode() {
+        if (mReaderModeContent == null || mReaderModeContent.isEmpty()) {
+            return;
+        }
+        try {
+            // Just use the string instead of the Charset object in case we want to support API < 19
+            @SuppressWarnings("CharsetObjectCanBeUsed")
+            final String contentBase64 = Base64.encodeToString(
+                    mReaderModeContent.getBytes("UTF-8"), Base64.NO_WRAP);
+            WebView readerWebView = mReaderModeWebViewRef.get();
+            if (readerWebView == null) {
+                readerWebView = new CliqzWebView(getContext());
+                readerWebView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        webMode();
+                        loadUrl(url);
+                        return true;
+                    }
+                });
+                mReaderModeWebViewRef = new WeakReference<>(readerWebView);
+            }
+            removeView(mWebView);
+            addView(readerWebView);
+            readerWebView.loadData(contentBase64, "text/html; charset=utf-8", "base64");
+        } catch (UnsupportedEncodingException e) {
+            Timber.e(e, "Invalid encoding: UTF-8");
+        }
+    }
+
+    /**
+     * Display the web page
+     */
+    public void webMode() {
+        removeAllViews();
+        addView(mWebView);
+    }
+
+    public void setUrlSSLError(boolean urlSSLError) {
+        this.urlSSLError = urlSSLError;
+    }
+
+    public boolean isUrlSSLError() {
+        return urlSSLError;
+    }
+
+    public void onPause() {
+        if (mWebView != null) {
+            mWebView.onPause();
+        }
+    }
+
+    void injectReadabilityScript() {
+        if (mWebView != null) {
+            mWebView.evaluateJavascript(readabilityScript.getString(),
+                    new ReadabilityCallback(this));
+        }
+    }
+
+    public void setTransportWebView(@NonNull WebView.WebViewTransport transport) {
+        if (mWebView != null) {
+            transport.setWebView(mWebView);
+        }
+    }
+
+    public int webViewHashCode() {
+        return mWebView != null ? mWebView.hashCode() : 0;
+    }
+
+    public void setWebViewAnimation(Animation animation) {
+        if (mWebView != null) {
+            mWebView.setAnimation(animation);
+        }
+    }
+
+    @Nullable
+    public String getUserAgentString() {
+        if (mWebView == null) {
+            return null;
+        } else {
+            return mWebView.getSettings().getUserAgentString();
+        }
     }
 
     public synchronized void onResume() {
@@ -364,63 +451,10 @@ public class LightningView {
         }
     }
 
-
     public synchronized void stopLoading() {
         if (mWebView != null) {
             mWebView.stopLoading();
         }
-    }
-
-    private void setHardwareRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_HARDWARE, mPaint);
-    }
-
-    private void setNormalRendering() {
-        mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
-    }
-
-    private void setColorMode(int mode) {
-        mInvertPage = false;
-        switch (mode) {
-            case 0:
-                mPaint.setColorFilter(null);
-                // setSoftwareRendering(); // Some devices get segfaults
-                // in the WebView with Hardware Acceleration enabled,
-                // the only fix is to disable hardware rendering
-                setNormalRendering();
-                mInvertPage = false;
-                break;
-            case 1:
-                ColorMatrixColorFilter filterInvert = new ColorMatrixColorFilter(
-                        mNegativeColorArray);
-                mPaint.setColorFilter(filterInvert);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-            case 2:
-                ColorMatrix cm = new ColorMatrix();
-                cm.setSaturation(0);
-                ColorMatrixColorFilter filterGray = new ColorMatrixColorFilter(cm);
-                mPaint.setColorFilter(filterGray);
-                setHardwareRendering();
-                break;
-            case 3:
-                ColorMatrix matrix = new ColorMatrix();
-                matrix.set(mNegativeColorArray);
-                ColorMatrix matrixGray = new ColorMatrix();
-                matrixGray.setSaturation(0);
-                ColorMatrix concat = new ColorMatrix();
-                concat.setConcat(matrix, matrixGray);
-                ColorMatrixColorFilter filterInvertGray = new ColorMatrixColorFilter(concat);
-                mPaint.setColorFilter(filterInvertGray);
-                setHardwareRendering();
-
-                mInvertPage = true;
-                break;
-
-        }
-
     }
 
     public synchronized void resumeTimers() {
@@ -480,14 +514,6 @@ public class LightningView {
         }
     }
 
-    private String getUserAgent() {
-        if (mWebView != null) {
-            return mWebView.getSettings().getUserAgentString();
-        } else {
-            return "";
-        }
-    }
-
     public synchronized void goForward() {
         if (mWebView != null) {
             isHistoryItemCreationEnabled = false;
@@ -507,46 +533,6 @@ public class LightningView {
         }
     }
 
-    /**
-     * Used by {@link LightningWebClient}
-     *
-     * @return true if the page is in inverted mode, false otherwise
-     */
-    boolean getInvertePage() {
-        return mInvertPage;
-    }
-
-    /**
-     * handles a long click on the page, parameter String urlView
-     * is the urlView that should have been obtained from the WebView touch node
-     * thingy, if it is null, this method tries to deal with it and find a workaround
-     */
-    private void longClickPage(final String url) {
-        if (mWebView == null) {
-            return;
-        }
-        final WebView.HitTestResult result = mWebView.getHitTestResult();
-        if (url != null) {
-            if (result != null) {
-                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    final String imageUrl = result.getExtra();
-                    dialogBuilder.showLongPressImageDialog(url, imageUrl, getUserAgent());
-                } else {
-                    dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-                }
-            } else {
-                dialogBuilder.showLongPressLinkDialog(url, getUserAgent());
-            }
-        } else if (result != null && result.getExtra() != null) {
-            final String newUrl = result.getExtra();
-            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(null, newUrl, getUserAgent());
-            } else {
-                dialogBuilder.showLongPressLinkDialog(newUrl, getUserAgent());
-            }
-        }
-    }
-
     public boolean canGoBack() {
         return mWebView != null && mWebView.canGoBack();
     }
@@ -555,33 +541,31 @@ public class LightningView {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    @NonNull
-    public synchronized WebView getWebView() {
-        if (mWebView == null) {
-            mWebView = new CliqzWebView(activity);
-            mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-            mWebView.setFocusableInTouchMode(true);
-            mWebView.setFocusable(true);
-            mWebView.setDrawingCacheEnabled(false);
-            mWebView.setWillNotCacheDrawing(true);
+    private void createWebView() {
+        final Context context = getContext();
+        mWebView = new CliqzWebView(context);
+        mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        mWebView.setFocusableInTouchMode(true);
+        mWebView.setFocusable(true);
+        mWebView.setDrawingCacheEnabled(false);
+        mWebView.setWillNotCacheDrawing(true);
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                //noinspection deprecation
-                mWebView.setAnimationCacheEnabled(false);
-                //noinspection deprecation
-                mWebView.setAlwaysDrawnWithCacheEnabled(false);
-            }
-            mWebView.setBackgroundColor(Color.WHITE);
-
-            mWebView.setSaveEnabled(true);
-            mWebView.setNetworkAvailable(true);
-            mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-            mWebView.setWebViewClient(new LightningWebClient(activity, this));
-            mWebView.setDownloadListener(new LightningDownloadListener(activity));
-            initializeSettings(mWebView.getSettings(), activity);
-            persister.restore(id, mWebView);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            mWebView.setAnimationCacheEnabled(false);
+            mWebView.setAlwaysDrawnWithCacheEnabled(false);
         }
-        return mWebView;
+        mWebView.setBackgroundColor(Color.WHITE);
+
+        mWebView.setSaveEnabled(true);
+        mWebView.setNetworkAvailable(true);
+        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+        mWebView.setWebViewClient(new LightningWebClient(context, this));
+        mWebView.setDownloadListener(new LightningDownloadListener(context));
+        initializeSettings(mWebView.getSettings(), context);
+    }
+
+    public void restoreTab(@NonNull String tabId) {
+        persister.restore(tabId, mWebView);
     }
 
     public Bitmap getFavicon() {
@@ -605,10 +589,6 @@ public class LightningView {
         } else {
             return "";
         }
-    }
-
-    public String getId() {
-        return id;
     }
 
     public boolean isIncognitoTab() {
@@ -679,26 +659,6 @@ public class LightningView {
             userAgent = defaultUserAgent;
         }
         return userAgent;
-    }
-
-    // Weaker access suppressed, this class can not be private because of the obtainMessage(...)
-    // call in the LightningViewTouchHandler
-    static class WebViewHandler extends Handler {
-
-        private WeakReference<LightningView> mReference;
-        WebViewHandler(LightningView view) {
-            mReference = new WeakReference<>(view);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            final String url = msg.getData().getString("url");
-            LightningView view = mReference.get();
-            if (view != null) {
-                view.longClickPage(url);
-            }
-        }
     }
 
     void addItemToHistory(@Nullable final String title, @NonNull final String url) {

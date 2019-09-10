@@ -1,7 +1,6 @@
 package com.cliqz.browser.starttab;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -16,7 +15,7 @@ import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FavoriteModel;
 import com.cliqz.browser.main.FavoritesAdapter;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
@@ -33,13 +32,13 @@ import javax.inject.Inject;
 import acr.browser.lightning.database.HistoryDatabase;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
  */
 public class FavoritesView extends FrameLayout implements Updatable {
 
-    private static final String TAG = FavoritesView.class.getSimpleName();
     private FavoritesAdapter adapter;
     private final ArrayList<FavoriteModel> favoritesList = new ArrayList<>();
 
@@ -50,7 +49,7 @@ public class FavoritesView extends FrameLayout implements Updatable {
     Engine engine;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Inject
     Bus bus;
@@ -102,7 +101,7 @@ public class FavoritesView extends FrameLayout implements Updatable {
                         favoriteItem.optString(HistoryDatabase.HistoryKeys.TITLE)));
             }
         } catch (JSONException e) {
-            Log.e(TAG, "error parsing favorites json", e);
+            Timber.e(e, "error parsing favorites json");
         }
     }
 
