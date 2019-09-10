@@ -50,8 +50,7 @@ public class OnBoardingHelper {
     private enum Names {
         SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION(TAG + ".should_show_anti_tracking_description"),
         SHOULD_SHOW_SEARCH_DESCRIPTION(TAG + ".should_show_search_description"),
-        SHOULD_SHOW_ONBOARDING(TAG + ".should_show_onboarding"),
-        SHOULD_SHOW_YOUTUBE_DESCRIPTION(TAG + ".should_show_youtube_description");
+        SHOULD_SHOW_ONBOARDING(TAG + ".should_show_onboarding");
 
         final String preferenceName;
 
@@ -85,12 +84,6 @@ public class OnBoardingHelper {
                 R.id.onboarding_view_marker);
     }
 
-    boolean conditionallyShowYouTubeDescription() {
-        return showShowcase(Names.SHOULD_SHOW_YOUTUBE_DESCRIPTION.preferenceName,
-                R.string.showcase_youtube_title, R.string.showcase_youtube_message,
-                R.id.yt_download_icon);
-    }
-
     @SuppressWarnings("SimplifiableIfStatement")
     private boolean showShowcase(@NonNull String preference, @StringRes int title,
                                  @StringRes int message, @IdRes int anchor) {
@@ -100,11 +93,6 @@ public class OnBoardingHelper {
             shouldShow = preferences.getShouldShowAntiTrackingDescription();
         } else if (preference.equals(Names.SHOULD_SHOW_SEARCH_DESCRIPTION.preferenceName)) {
             shouldShow = preferences.getShouldShowSearchDescription();
-        } else if (preference.equals(Names.SHOULD_SHOW_YOUTUBE_DESCRIPTION.preferenceName)) {
-            //show youtube onboarding only when the other two have been shown
-            shouldShow = preferences.getShouldShowYouTubeDescription()
-                    && !preferences.getShouldShowSearchDescription()
-                    && !preferences.getShouldShowAntiTrackingDescription();
         } else {
             shouldShow = false;
         }
@@ -123,8 +111,6 @@ public class OnBoardingHelper {
         } else if (preference.equals(Names.SHOULD_SHOW_SEARCH_DESCRIPTION.preferenceName)) {
             mainActivity.telemetry.sendCardsShowCaseSignal();
             preferences.setShouldShowSearchDescription(false);
-        } else if (preference.equals(Names.SHOULD_SHOW_YOUTUBE_DESCRIPTION.preferenceName)) {
-            preferences.setShouldShowYouTubeDescription(false);
         }
 
         currentView = preference;

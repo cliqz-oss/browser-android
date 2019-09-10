@@ -123,7 +123,6 @@ class TabFragmentListener implements SearchBar.Listener {
         searchBar.selectAllText();
         fragment.searchView2.updateQuery("", 0, -1);
         fragment.setShowWebPageAgain(true);
-        fragment.hideYTIcon();
     }
 
     @Override

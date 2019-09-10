@@ -193,8 +193,6 @@ Procedere comunque?</string>
     <string name="resume_tab_dialog_msg">Vuoi ripristinare i tab precedentemente aperti?</string>
     <string name="action_resume">Ripristina</string>
     <string name="action_close_all_tabs">Chiudi tutti i tab</string>
-    <string name="showcase_youtube_title">Downloader video</string>
-    <string name="showcase_youtube_message">Scarica video da YouTube direttamente sul tuo smartphone.</string>
     <string name="please_wait">Un attimo, per favore…</string>
     <string name="send_tab_device_picker_title">Scegli la connessione:</string>
     <string name="send_tab_generic_error_title">Invio del tab non riuscito</string>
@@ -226,9 +224,6 @@ Procedere comunque?</string>
     <string name="settings_show_top_sites">Mostra i siti più visitati</string>
     <string name="settings_show_news">Mostra News</string>
     <string name="find_hint">Trova</string>
-    <string name="settings_category_download">Opzioni di download</string>
-    <string name="limit_data_usage">Usa meno dati mobili</string>
-    <string name="limit_data_usage_summary">Scarica video solo tramite Wi-Fi</string>
     <string name="no_wi_fi_title">Nessuna connessione Wi-Fi</string>
     <string name="no_wi_fi_message">Nessuna connessione Wi-Fi. Per scaricare video tramite dati mobili, vai a Impostazioni &gt; Generali &gt; Opzioni di download</string>
     <string name="dismiss">CHIUDI</string>
@@ -282,7 +277,7 @@ Procedere comunque?</string>
     <string name="cookies">Cookie</string>
     <string name="cache">Cache</string>
     <string name="action_set">Imposta</string>
-    <string name="clear_private_data">Cancella dati personali in chiusura</string>
+    <string name="clear_private_data_on_exit">Cancella dati personali in chiusura</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">News</string>

@@ -197,8 +197,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="resume_tab_dialog_msg">¿Quieres restaurar las pestañas abiertas previamente?</string>
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Cerrar todas las pestañas</string>
-    <string name="showcase_youtube_title">Descarga de vídeos</string>
-    <string name="showcase_youtube_message">Descarga vídeos de YouTube en tu teléfono.</string>
     <string name="please_wait">Por favor, espera…</string>
     <string name="send_tab_device_picker_title">Selecciona la conexión:</string>
     <string name="send_tab_generic_error_title">No se envió la pestaña</string>
@@ -254,9 +252,6 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="settings_show_top_sites">Mostrar las páginas más visitadas</string>
     <string name="settings_show_news">Mostrar noticias</string>
     <string name="find_hint">Buscar</string>
-    <string name="settings_category_download">Opciones de descarga</string>
-    <string name="limit_data_usage">Limitar el uso de datos</string>
-    <string name="limit_data_usage_summary">Descargar vídeo con conexión Wi-Fi</string>
     <string name="no_wi_fi_title">No estás conectado a una Wi-Fi</string>
     <string name="no_wi_fi_message">No estás conectado a una red Wi-Fi y la descarga de vídeos con la red móvil está desactivada.\n\nPara activarla, dirígete a Ajustes &gt; General &gt; Opciones de Descarga.</string>
     <string name="dismiss">OCULTAR</string>
@@ -287,7 +282,7 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="cookies">Cookies</string>
     <string name="cache">Caché</string>
     <string name="action_set">Aceptar</string>
-    <string name="clear_private_data">Eliminar datos personales al cerrar al app</string>
+    <string name="clear_private_data_on_exit">Eliminar datos personales al cerrar al app</string>
     <string name="myoffrz_word">MyOffrz</string>
     <string name="myoffrz_label">MyOffrz</string>
     <string name="news_label">Noticias</string>

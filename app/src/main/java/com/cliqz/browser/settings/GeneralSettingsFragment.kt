@@ -28,7 +28,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
     private var cbShowBackgroundImage: CheckBoxPreference? = null
     private var cbShowTopSites: CheckBoxPreference? = null
     private var cbShowNews: CheckBoxPreference? = null
-    private var cbLimitDataUsage: CheckBoxPreference? = null
     private var cbShowMyOffrz: CheckBoxPreference? = null
     private var aboutMyOffrz: Preference? = null
     private var selectedEngineIndex = -1
@@ -56,7 +55,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
         cbShowBackgroundImage = findPreference(SETTINGS_SHOW_BACKGROUND_IMAGE) as CheckBoxPreference?
         cbShowTopSites = findPreference(SETTINGS_SHOW_TOPSITES) as CheckBoxPreference?
         cbShowNews = findPreference(SETTINGS_SHOW_NEWS) as CheckBoxPreference?
-        cbLimitDataUsage = findPreference(SETTINGS_LIMIT_DATA_USAGE) as CheckBoxPreference?
         cbShowMyOffrz = findPreference(SETTINGS_SHOW_MY_OFFRZ) as CheckBoxPreference?
         aboutMyOffrz = findPreference(SETTINGS_about_MY_OFFRZ)
 
@@ -74,7 +72,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
         cbShowBackgroundImage?.onPreferenceChangeListener = this
         cbShowTopSites?.onPreferenceChangeListener = this
         cbShowNews?.onPreferenceChangeListener = this
-        cbLimitDataUsage?.onPreferenceChangeListener = this
         cbShowMyOffrz?.onPreferenceChangeListener = this
 
         if (API >= 19) {
@@ -89,7 +86,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
             cbShowBackgroundImage?.isChecked = isBackgroundImageEnabled
             cbShowTopSites?.isChecked = shouldShowTopSites()
             cbShowNews?.isChecked = shouldShowNews()
-            cbLimitDataUsage?.isChecked = shouldLimitDataUsage()
             cbShowMyOffrz?.isChecked = isMyOffrzEnable
         }
 
@@ -273,12 +269,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
                 mPreferenceManager.setShouldShowNews(newValue)
                 return true
             }
-            SETTINGS_LIMIT_DATA_USAGE -> {
-                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.LIMIT_DATA_USAGE, TelemetryKeys.GENERAL,
-                        !(newValue as Boolean))
-                mPreferenceManager.setLimitDataUsage(newValue)
-                return true
-            }
             SETTINGS_SHOW_MY_OFFRZ -> {
                 mPreferenceManager.isMyOffrzEnable = newValue as Boolean
                 return true
@@ -305,7 +295,6 @@ class GeneralSettingsFragment : BaseSettingsFragment() {
         private val SETTINGS_SHOW_BACKGROUND_IMAGE = "cb_show_background_image"
         private val SETTINGS_SHOW_TOPSITES = "cb_show_topsites"
         private val SETTINGS_SHOW_NEWS = "cb_show_news"
-        private val SETTINGS_LIMIT_DATA_USAGE = "cb_limit_data_usage"
         private val SETTINGS_SUBSCRIPTIONS = "subscriptions"
         private val SETTINGS_SHOW_MY_OFFRZ = "cb_show_my_offrz"
         private val SETTINGS_about_MY_OFFRZ = "about_my_offrz"

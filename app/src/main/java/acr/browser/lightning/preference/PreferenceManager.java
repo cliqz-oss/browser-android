@@ -120,7 +120,6 @@ public class PreferenceManager {
         static final String QUERY_SUGGESTIONS = "query_suggestion";
         static final String MAIN_ACTIVITY_LAST_STATE = "main_activity_last_state";
         static final String LATEST_APK_VERSION = "latest_installed_apk_version";
-        static final String SHOULD_SHOW_YOUTUBE_DESCRIPTION = "should_show_youtube_description";
         static final String AUTO_FORGET_MODE = "auto_forget_mode";
         static final String CLOSE_TABS_ON_EXIT = "close_tabs_on_exit";
         static final String IS_FIRST_SUBSCRIPTION = "is_first_subscription";
@@ -856,14 +855,6 @@ public class PreferenceManager {
         putBoolean(Name.AUTO_FORGET_MODE, newValue);
     }
 
-    public boolean getShouldShowYouTubeDescription() {
-        return mPrefs.getBoolean(Name.SHOULD_SHOW_YOUTUBE_DESCRIPTION, true);
-    }
-
-    public void setShouldShowYouTubeDescription(boolean value) {
-        putBoolean(Name.SHOULD_SHOW_YOUTUBE_DESCRIPTION, value);
-    }
-
     public void setCloseTabsExit(boolean value) {
         putBoolean(Name.CLOSE_TABS_ON_EXIT, value);
     }
@@ -874,14 +865,6 @@ public class PreferenceManager {
 
     public void setShouldShowNews(boolean value) {
         putBoolean(Name.SHOW_NEWS, value);
-    }
-
-    public boolean shouldLimitDataUsage() {
-        return mPrefs.getBoolean(Name.LIMIT_DATA_USAGE, true);
-    }
-
-    public void setLimitDataUsage(boolean value) {
-        putBoolean(Name.LIMIT_DATA_USAGE, value);
     }
 
     public int getStartsCount() {
@@ -939,11 +922,11 @@ public class PreferenceManager {
         putLong(Name.PREF_TIME_WHEN_TRIAL_MESSAGE_DISMISSED, System.currentTimeMillis());
     }
 
-    public boolean shouldShowLumenOnboarding() {
+    public boolean shouldShowOnboardingv2() {
         return mPrefs.getBoolean(Name.SHOULD_SHOW_LUMEN_ONBOARDING, true);
     }
 
-    public void setShouldShowLumenOnboarding(boolean val) {
+    public void setShouldShowOnboardingv2(boolean val) {
         putBoolean(Name.SHOULD_SHOW_LUMEN_ONBOARDING, val);
     }
 

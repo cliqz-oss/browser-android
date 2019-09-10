@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.extensions.IntentExtensionKt;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.telemetry.Telemetry;
@@ -131,6 +131,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                     "mailto", getString(R.string.lumen_support_mail), null));
             startActivity(emailIntent);
+        } else if (info.id == R.id.desktop_pairing) {
+            telemetry.sendSettingsMenuSignal(TelemetryKeys.CONNECT, TelemetryKeys.MAIN);
+            final Intent desktopPairingIntent = new Intent(this, SyncActivity.class);
+            startActivity(desktopPairingIntent);
         } else {
             super.onListItemClick(l, v, position, id);
         }

@@ -22,15 +22,6 @@
         android:layout_weight="1"/>
 
     <ImageButton
-        android:id="@+id/yt_download_icon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        app:srcCompat="@drawable/ic_file_download"
-        android:background="@color/transparent"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
-    <ImageButton
         android:id="@+id/reader_mode_button"
         android:layout_width="28dp"
         android:layout_height="28dp"

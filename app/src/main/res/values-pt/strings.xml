@@ -197,8 +197,6 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="resume_tab_dialog_msg">Gostaria de restaurar todos os separadores abertos anteriormente?</string>
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Fechar todos os separadores</string>
-    <string name="showcase_youtube_title">Descarregar vidoes</string>
-    <string name="showcase_youtube_message">"Descarregar vídeos de YouTube  em seu telemóvel."</string>
     <string name="please_wait">Por favor, aguarde…</string>
     <string name="send_tab_device_picker_title">Escolha a ligação:</string>
     <string name="send_tab_generic_error_title">Não foi enviado o separador</string>
@@ -259,11 +257,8 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="cookies">Cookies</string>
     <string name="cache">Cache</string>
     <string name="action_set">Ajustes</string>
-    <string name="clear_private_data">Exclua dados pessoais ao fechar o aplicativo</string>
+    <string name="clear_private_data_on_exit">Exclua dados pessoais ao fechar o aplicativo</string>
     <string name="find_hint">Pesquisar</string>
-    <string name="settings_category_download">Opções de download</string>
-    <string name="limit_data_usage">Limite o uso de dados</string>
-    <string name="limit_data_usage_summary">Baixe o vídeo com conexão Wi-Fi</string>
     <string name="no_wi_fi_title">Você não está conectado a um Wi-Fi</string>
     <string name="no_wi_fi_message">Você não está conectado a uma rede Wi-Fi e o download de vídeos com a rede móvel está desabilitado.Para ativá-lo, vá para Configurações&gt; Geral&gt; Opções de download</string>
     <string name="dismiss">ESCONDER</string>

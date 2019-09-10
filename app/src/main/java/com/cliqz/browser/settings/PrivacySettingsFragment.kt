@@ -3,7 +3,7 @@
  */
 package com.cliqz.browser.settings
 
-import android.annotation.SuppressLint
+import acr.browser.lightning.utils.WebUtils
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -16,9 +16,9 @@ import android.preference.PreferenceCategory
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import com.cliqz.browser.R
+import com.cliqz.browser.main.Messages
 import com.cliqz.browser.telemetry.TelemetryKeys
 import com.cliqz.browser.utils.HistoryCleaner
-import java.util.*
 
 class PrivacySettingsFragment : BaseSettingsFragment() {
 
@@ -46,10 +46,10 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
     }
 
     private fun initPrefs() {
-        cbattrack = findPreference(SETTINGS_ATTRACK) as CheckBoxPreference?
+        cbattrack = findPreference(SETTINGS_ANTITRACK) as CheckBoxPreference?
         prpermissions = findPreference(SETTINGS_APP_SETTINGS)
-        cbenablecookies = findPreference(SETTINGS_ENABLECOOKIES) as CheckBoxPreference?
-        cbsavepasswords = findPreference(SETTINGS_SAVEPASSWORD) as CheckBoxPreference?
+        cbenablecookies = findPreference(SETTINGS_ENABLE_COOKIES) as CheckBoxPreference?
+        cbsavepasswords = findPreference(SETTINGS_SAVE_PASSWORD) as CheckBoxPreference?
         cbclearexit = findPreference(SETTINGS_CLEAR_DATA_ON_EXIT) as CheckBoxPreference?
         cbautoforget = findPreference(SETTINGS_AUTO_FORGET) as CheckBoxPreference?
         cbsendusagedata = findPreference(SETTINGS_SEND_USAGE_DATA) as CheckBoxPreference?
@@ -72,9 +72,9 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                                         clearCookiesExitEnabled || clearHistoryExitEnabled)
         }
 
-        findPreference(SETTINGS_CLEARHISTORY)?.onPreferenceClickListener = this
-        findPreference(SETTINGS_RESTORETOPSITES)?.onPreferenceClickListener = this
-        findPreference(SETTINGS_CLEARFAVORITES)?.onPreferenceClickListener = this
+        findPreference(CLEAR_PRIVATE_DATA)?.onPreferenceClickListener = this
+        findPreference(SETTINGS_RESTORE_TOP_SITES)?.onPreferenceClickListener = this
+        findPreference(SETTINGS_CLEAR_FAVORITES)?.onPreferenceClickListener = this
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             (preferenceScreen.getPreference(PREFERENCE_GROUP_BROWSING_INDEX) as PreferenceCategory)
@@ -84,17 +84,17 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
 
     override fun onPreferenceClick(preference: Preference): Boolean {
         when (preference.key) {
-            SETTINGS_CLEARHISTORY -> {
+            CLEAR_PRIVATE_DATA -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_HISTORY, TelemetryKeys.PRIVACY)
-                clearHistoryDialog()
+                clearDataDialog()
                 return true
             }
-            SETTINGS_CLEARFAVORITES -> {
+            SETTINGS_CLEAR_FAVORITES -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_FAVORITES, TelemetryKeys.PRIVACY)
                 clearFavoritesDialog()
                 return true
             }
-            SETTINGS_RESTORETOPSITES -> {
+            SETTINGS_RESTORE_TOP_SITES -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.RESTORE_TOPSITES, TelemetryKeys.PRIVACY)
                 restoreTopSitesDialog()
                 return true
@@ -193,47 +193,70 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                 .setNegativeButton(resources.getString(R.string.action_cancel)) { dialog, _ -> dialog.dismiss() }.show()
     }
 
-    private fun clearDataDialog() {
-        @SuppressLint("UseSparseArrays")
-        val valueSet = HashMap<Int, Boolean>()
+    private fun clearDataOnExitDialog() {
         mPreferenceManager.apply {
-            valueSet[0] = closeTabsExit
-            valueSet[1] = clearHistoryExitEnabled
-            valueSet[2] = clearCookiesExitEnabled
-            valueSet[3] = clearCacheExit
-            val entries = arrayOf(mActivity!!.getString(R.string.open_tabs), mActivity!!.getString(R.string.history), mActivity!!.getString(R.string.cookies), mActivity!!.getString(R.string.cache))
-            val values = booleanArrayOf(closeTabsExit, clearHistoryExitEnabled, clearCookiesExitEnabled, clearCacheExit)
-            val dialogListener = DialogInterface.OnMultiChoiceClickListener { _, which, isChecked -> valueSet[which] = isChecked }
-            val builder = AlertDialog.Builder(mActivity!!)
-            builder.setMultiChoiceItems(entries, values, dialogListener)
+            val entries = arrayOf(
+                    getString(R.string.open_tabs),
+                    getString(R.string.history),
+                    getString(R.string.cookies),
+                    getString(R.string.cache) )
+            val values = booleanArrayOf(
+                    closeTabsExit,
+                    clearHistoryExitEnabled,
+                    clearCookiesExitEnabled,
+                    clearCacheExit )
+            AlertDialog.Builder(activity)
+                    .setMultiChoiceItems(entries, values) { _, which, isChecked ->
+                        values[which] = isChecked
+                    }
                     .setPositiveButton(R.string.action_set) { _, _ ->
-                        closeTabsExit = valueSet[0]!!
-                        clearHistoryExitEnabled = valueSet[1]!!
-                        clearCookiesExitEnabled = valueSet[2]!!
-                        clearCacheExit = valueSet[3]!!
-                        cbclearexit?.isChecked = valueSet[0]!! || valueSet[1]!! || valueSet[2]!! || valueSet[3]!!
+                        closeTabsExit = values[0]
+                        clearHistoryExitEnabled = values[1]
+                        clearCookiesExitEnabled = values[2]
+                        clearCacheExit = values[3]
+                        cbclearexit?.isChecked = values.reduce { a, v -> a || v }
                     }
                     .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
                     .show()
         }
     }
 
+    private fun clearDataDialog() {
+        val entries = arrayOf(mActivity!!.getString(R.string.open_tabs), mActivity!!.getString(R.string.history), mActivity!!.getString(R.string.cookies), mActivity!!.getString(R.string.cache), mActivity!!.getString(R.string.clear_passwords))
+        val values = BooleanArray(entries.size) { false }
+        val actions = arrayOf(
+                { bus.post(Messages.CloseOpenTabs()) },
+                { mHistoryDatabase.clearHistory(false) },
+                { WebUtils.clearCookies(activity) },
+                { WebUtils.clearCache(activity) },
+                { passwordDatabase.clearPasswords(); passwordDatabase.clearBlackList() } )
+        AlertDialog.Builder(mActivity!!)
+                .setMultiChoiceItems(entries, null) { _, which, isChecked ->
+                    values[which] = isChecked
+                }
+                .setPositiveButton(R.string.action_clear) { _, _ ->
+                    values.forEachIndexed { index, value -> if (value) actions[index]() }
+                }
+                .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
+                .show()
+    }
+
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         // switch preferences
         when (preference.key) {
-            SETTINGS_ATTRACK -> {
+            SETTINGS_ANTITRACK -> {
                 mPreferenceManager.isAttrackEnabled = newValue as Boolean
                 cbattrack!!.isChecked = newValue
                 return true
             }
-            SETTINGS_ENABLECOOKIES -> {
+            SETTINGS_ENABLE_COOKIES -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_COOKIES, TelemetryKeys.PRIVACY,
                         !(newValue as Boolean))
                 mPreferenceManager.cookiesEnabled = newValue
                 cbenablecookies!!.isChecked = newValue
                 return true
             }
-            SETTINGS_SAVEPASSWORD -> {
+            SETTINGS_SAVE_PASSWORD -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.SAVE_PASSWORDS, TelemetryKeys.PRIVACY,
                         !(newValue as Boolean))
                 mPreferenceManager.savePasswordsEnabled = newValue
@@ -246,7 +269,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
             SETTINGS_CLEAR_DATA_ON_EXIT -> {
                 mTelemetry.sendSettingsMenuSignal(TelemetryKeys.CLEAR_CACHE, TelemetryKeys.PRIVACY,
                         !(newValue as Boolean))
-                clearDataDialog()
+                clearDataOnExitDialog()
                 return false
             }
             SETTINGS_AUTO_FORGET -> {
@@ -273,14 +296,14 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
     companion object {
 
         private const val SETTINGS_APP_SETTINGS = "settings"
-        private const val SETTINGS_ENABLECOOKIES = "allow_cookies"
-        private const val SETTINGS_SAVEPASSWORD = "password"
-        private const val SETTINGS_CLEARHISTORY = "clear_history"
-        private const val SETTINGS_CLEARFAVORITES = "clear_favorites"
+        private const val SETTINGS_ENABLE_COOKIES = "allow_cookies"
+        private const val SETTINGS_SAVE_PASSWORD = "password"
+        private const val CLEAR_PRIVATE_DATA = "clear_private_data"
+        private const val SETTINGS_CLEAR_FAVORITES = "clear_favorites"
         private const val SETTINGS_CLEAR_DATA_ON_EXIT = "clear_private_data_exit"
-        private const val SETTINGS_RESTORETOPSITES = "restore_top_sites"
+        private const val SETTINGS_RESTORE_TOP_SITES = "restore_top_sites"
         private const val SETTINGS_AUTO_FORGET = "autoforget"
-        private const val SETTINGS_ATTRACK = "attrack"
+        private const val SETTINGS_ANTITRACK = "attrack"
         private const val SETTINGS_SEND_USAGE_DATA = "send_usage_data"
         private const val PREFERENCE_GROUP_BROWSING_INDEX = 0
     }

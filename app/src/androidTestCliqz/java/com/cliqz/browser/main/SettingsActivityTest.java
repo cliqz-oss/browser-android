@@ -10,8 +10,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.test.CustomFailureHandler;
 import com.cliqz.browser.test.DeviceShellHelper;
 import com.cliqz.browser.utils.ViewHelpers;
@@ -208,7 +206,6 @@ public class SettingsActivityTest {
         onView(withText("Show MyOffrz")).check(matches(isDisplayed()));
         onView(withText("News notifications")).check(matches(isDisplayed()));
         onView(withText("Reset all subscriptions")).check(matches(isDisplayed()));
-        onView(withText("Limit mobile data usage")).check(matches(isDisplayed()));
     }
 
     @Test
@@ -221,7 +218,7 @@ public class SettingsActivityTest {
         onView(withText("Save your passwords")).check(matches(isDisplayed()));
         onView(withText("Restore most visited websites")).check(matches(isDisplayed()));
         onView(withResourceName("prefs")).perform(swipeUp());
-        onView(withText("Clear history")).check(matches(isDisplayed()));
+        onView(withText("Clear private data")).check(matches(isDisplayed()));
         onView(withText("Clear favorites")).check(matches(isDisplayed()));
         onView(withText("Clear private data on exit")).check(matches(isDisplayed()));
         onView(withText("Send usage data")).check(matches(isDisplayed()));
@@ -289,6 +286,7 @@ public class SettingsActivityTest {
 
     @Test
     public void viewSupportSettings() {
+        onView(withText("Imprint")).perform(swipeUp());
         ViewHelpers.onView(withText("FAQs & Support")).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .withTimeout(1, TimeUnit.MINUTES)

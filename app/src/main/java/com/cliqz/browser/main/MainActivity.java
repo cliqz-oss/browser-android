@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private CustomViewHandler mCustomViewHandler;
     protected String currentMode;
     private boolean mIsColdStart = true;
-    private final HashSet<Long> downloadIds = new HashSet<>();
     private final FileChooserHelper fileChooserHelper = new FileChooserHelper(this);
     private BroadcastReceiver mDownoloadCompletedBroadcastReceiver = null;
 
@@ -370,19 +369,31 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     private void setupContentView() {
         setContentView(R.layout.activity_main);
         mSearchView = findViewById(R.id.search_view);
-        if (BuildConfig.IS_LUMEN && preferenceManager.shouldShowLumenOnboarding()) {
+        if (isFirstInstall() && preferenceManager.shouldShowOnboardingv2()) {
             final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            final View onboardingView = inflater.inflate(R.layout.lumen_onboarding, null);
+            final View onboardingView = inflater.inflate(
+                    BuildConfig.IS_LUMEN ? R.layout.lumen_onboarding : R.layout.cliqz_onboarding, null);
             final FrameLayout rootView = findViewById(R.id.content_frame);
             rootView.addView(onboardingView);
-            final Button closeOnboarding = onboardingView.findViewById(R.id.lumen_onboarding_close_button);
+            final Button closeOnboarding = onboardingView.findViewById(R.id.onboarding_close_button);
             closeOnboarding.setOnClickListener(view -> {
-                preferenceManager.setShouldShowLumenOnboarding(false);
+                preferenceManager.setShouldShowOnboardingv2(false);
                 rootView.removeView(onboardingView);
             });
         }
         if (firstTabBuilder != null) {
             firstTabBuilder.show();
+        }
+    }
+
+    public boolean isFirstInstall() {
+        try {
+            final long firstInstallTime = getPackageManager().getPackageInfo(getPackageName(), 0).firstInstallTime;
+            final long lastUpdateTime = getPackageManager().getPackageInfo(getPackageName(), 0).lastUpdateTime;
+            return firstInstallTime == lastUpdateTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e, "error getting package name");
+            return true;
         }
     }
 
@@ -664,11 +675,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
-    @Subscribe
-    public void saveDownloadId(Messages.SaveId event) {
-        downloadIds.add(event.downloadId);
-    }
-
     @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void closeTab(BrowserEvents.CloseTab event) {
@@ -816,10 +822,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return historyDatabase;
     }
 
-    boolean removeDownloadId(long downloadId) {
-        return downloadIds.remove(downloadId);
-    }
-
     @Subscribe
     void openTab(CliqzMessages.OpenTab event) {
         if (!event.isValid) {
@@ -857,7 +859,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             return;
         }
         final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI && preferenceManager.shouldLimitDataUsage()) {
+        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI) {
             NoWiFiDialog.show(this, bus);
             return;
         }
@@ -966,5 +968,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private boolean isPurchaseFragmentVisible() {
         return purchaseFragment != null && purchaseFragment.isVisible();
+    }
+
+    @Subscribe
+    public void closeOpenTabs(Messages.CloseOpenTabs event) {
+        tabsManager.deleteAllTabs();
     }
 }

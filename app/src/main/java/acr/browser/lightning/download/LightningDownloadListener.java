@@ -68,7 +68,7 @@ public class LightningDownloadListener implements DownloadListener {
                             bus.post(new ShowSnackBarMessage(activity
                                     .getString(R.string.download_started)));
                             DownloadHandler.onDownloadStart(activity, url, userAgent,
-                                    contentDisposition, mimetype, false);
+                                    contentDisposition, mimetype);
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
