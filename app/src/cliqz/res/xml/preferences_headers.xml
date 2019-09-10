@@ -17,6 +17,9 @@
         android:title="@string/make_default_browser"
         android:id="@+id/default_browser"/>
     <header
+        android:title="@string/desktop_pairing"
+        android:id="@+id/desktop_pairing"/>
+    <header
         android:fragment="com.cliqz.browser.settings.AboutSettingsFragment"
         android:title="@string/settings_about"
         android:summary="@string/settings_about_explain" />

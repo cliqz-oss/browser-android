@@ -42,7 +42,6 @@ import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.CliqzBrowserState.Mode;
 import com.cliqz.browser.main.FlavoredActivityComponent;
@@ -105,8 +104,7 @@ public class OverFlowMenu extends FrameLayout {
         QUIT(EntryType.REGULAR, R.id.quit_menu_button, R.string.exit),
         CODE_SCANNER(EntryType.REGULAR, R.id.code_scanner, R.string.code_scanner),
         SEND_TAB_TO_DESKTOP(EntryType.REGULAR, R.id.send_tab_menu_button, R.string.send_tab_to_desktop),
-        SET_DEFAULT_BROWSER(EntryType.REGULAR, R.id.set_default_browser, R.string.set_default_browser),
-        DESKTOP_PAIRING(EntryType.REGULAR, R.id.desktop_pairing, R.string.desktop_pairing);
+        SET_DEFAULT_BROWSER(EntryType.REGULAR, R.id.set_default_browser, R.string.set_default_browser);
 
         final EntryType type;
         final int stringID;
@@ -126,7 +124,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.TABS,
             Entries.SEARCH_IN_PAGE,
             Entries.GO_TO_FAVORITES,
-            Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
             Entries.SET_DEFAULT_BROWSER,
             Entries.CODE_SCANNER,
@@ -142,7 +139,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.NEW_INCOGNITO_TAB,
             Entries.TABS,
             Entries.SEARCH_IN_PAGE,
-            Entries.DESKTOP_PAIRING,
             Entries.SEND_TAB_TO_DESKTOP,
             Entries.SET_DEFAULT_BROWSER,
             Entries.CODE_SCANNER,
@@ -334,7 +330,6 @@ public class OverFlowMenu extends FrameLayout {
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
 
         if (BuildConfig.IS_LUMEN) {
-            entries.remove(Entries.DESKTOP_PAIRING);
             entries.remove(Entries.SEND_TAB_TO_DESKTOP);
         }
         if (BuildConfig.IS_NOT_LUMEN) {
@@ -606,12 +601,6 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.QUIT, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.Quit());
-                    break;
-                case DESKTOP_PAIRING:
-                    telemetry.sendMainMenuSignal(TelemetryKeys.CONNECT, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
-                    final Intent desktopPairingIntent = new Intent(activity, SyncActivity.class);
-                    activity.startActivity(desktopPairingIntent);
                     break;
                 case SEND_TAB_TO_DESKTOP:
                     telemetry.sendMainMenuSignal(TelemetryKeys.SEND_TAB, isIncognitoMode(), "web");
