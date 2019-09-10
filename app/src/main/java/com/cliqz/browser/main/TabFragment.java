@@ -131,7 +131,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     // TODO: @Ravjit this should not be public (avoid public members)
     public final CliqzBrowserState state = new CliqzBrowserState();
     protected boolean isHomePageShown = false;
-    private JSONArray videoUrls = null;
     private int mTrackerCount = 0;
     String lastQuery = "";
     private String mId;
@@ -177,10 +176,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @BindView(R.id.in_page_search_bar)
     View inPageSearchBar;
-
-    @Nullable
-    @BindView(R.id.yt_download_icon)
-    ImageButton ytDownloadIcon;
 
     @Nullable
     @BindView(R.id.control_center)
@@ -357,10 +352,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final WebView webView = mLightningView.getWebView();
         webView.setId(R.id.browser_view);
         ViewUtils.safelyAddView(localContainer, webView);
-        if (webView.getVisibility() == View.VISIBLE &&
-                UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
-            fetchYoutubeVideo(null);
-        }
         searchView.setCurrentTabState(state);
         ViewUtils.safelyAddView(localContainer, searchView);
         searchBar.setTrackerCount(mTrackerCount);
@@ -612,29 +603,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                 mLightningView.getUrl());
         mControlCenterHelper.toggleControlCenter();
         telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
-    }
-
-    @Optional
-    @OnClick(R.id.yt_download_icon)
-    void showYTDownloadDialog() {
-        try {
-            final Context context = FragmentUtilsV4.getContext(this);
-            telemetry.sendYTIconClickedSignal(mIsIncognito);
-            final ConnectivityManager connectivityManager =
-                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            final NetworkInfo activeNetwork = connectivityManager != null ?
-                    connectivityManager.getActiveNetworkInfo() : null;
-            if (activeNetwork != null && activeNetwork.getType() != ConnectivityManager.TYPE_WIFI &&
-                    preferenceManager.shouldLimitDataUsage()) {
-                NoWiFiDialog.show(getContext(), bus);
-                return;
-            }
-            if (videoUrls != null) {
-                YTDownloadDialog.show((MainActivity) getActivity(), videoUrls, telemetry);
-            }
-        } catch (NoInstanceException e) {
-            Timber.e(e, "Null context");
-        }
     }
 
     @OnClick(R.id.reader_mode_button)
@@ -986,9 +954,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                     !"".equals(url) &&
                     !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME + "=" + TrampolineConstants.TRAMPOLINE_COMMAND_SEARCH)) {
                 bringWebViewToFront(null);
-                if (UrlUtils.isYoutubeVideo(mLightningView.getUrl())) {
-                    fetchYoutubeVideo(null);
-                }
             } else if (mLightningView.canGoBack()) {
                 // In any case the trampoline will be current page predecessor
                 if (mode == Mode.SEARCH) {
@@ -1065,7 +1030,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void saveLink(Messages.SaveLink event) {
         final WebSettings settings = mLightningView.getWebView().getSettings();
         final String userAgent = settings != null ? settings.getUserAgentString() : null;
-        Utils.downloadFile(getActivity(), mLightningView.getUrl(), userAgent, "attachment", false);
+        Utils.downloadFile(getActivity(), mLightningView.getUrl(), userAgent, "attachment");
     }
 
     @Subscribe
@@ -1099,39 +1064,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             }
         } catch (NoInstanceException e) {
             Timber.e(e, "Null context");
-        }
-    }
-
-    @Subscribe
-    public void setYoutubeUrls(Messages.SetVideoUrls event) {
-        videoUrls = event.urls;
-        if (videoUrls == null) {
-            hideYTIcon();
-            return;
-        }
-        if (videoUrls.length() == 0) {
-            telemetry.sendVideoPageSignal(false);
-            hideYTIcon();
-        } else {
-            telemetry.sendVideoPageSignal(true);
-            showYTIcon();
-            onBoardingHelper.conditionallyShowYouTubeDescription();
-        }
-    }
-
-    @Subscribe
-    public void fetchYoutubeVideo(Messages.FetchYoutubeVideoUrls event) {
-        videoUrls = null;
-        // To fetch the videos url we have to run the ytdownloader.getUrls script that is bundled
-        // with the extension
-        searchView.fetchYouTubeUrls(mLightningView.getUrl());
-    }
-
-    @Subscribe
-    public void downloadYoutubeVideo(Messages.DownloadYoutubeVideo event) {
-        if (videoUrls != null) {
-            YTDownloadDialog.show((MainActivity) getActivity(), videoUrls, telemetry);
-            preferenceManager.setShouldShowYouTubeDescription(false);
         }
     }
 
@@ -1359,7 +1291,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         } catch (NoInstanceException e) {
             Timber.e("Null context");
         }
-        hideYTIcon();
     }
 
     @Subscribe
@@ -1472,24 +1403,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
         mContentContainer.requestLayout();
-    }
-
-    private void showYTIcon() {
-        if (ytDownloadIcon == null ||
-                ytDownloadIcon.getVisibility() == View.VISIBLE ||
-                state.getMode() == Mode.SEARCH) {
-            return;
-        }
-        telemetry.sendYTIconVisibleSignal();
-        ytDownloadIcon.setVisibility(View.VISIBLE);
-    }
-
-    void hideYTIcon() {
-        if (ytDownloadIcon == null ||
-                ytDownloadIcon.getVisibility() == View.GONE) {
-            return;
-        }
-        ytDownloadIcon.setVisibility(View.GONE);
     }
 
     // TODO: dirty hack due to the Oreo multi-process WebView

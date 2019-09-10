@@ -224,8 +224,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="cdn">CDN</string>
     <string name="control_center_tracker_ad_blocked">%1$d Trackers</string>
     <string name="action_close_all_tabs">Close All Tabs</string>
-    <string name="showcase_youtube_title">Video Downloader</string>
-    <string name="showcase_youtube_message">Download YouTube videos to your Smartphone.</string>
     <string name="please_wait">Please, wait…</string>
     <string name="send_tab_device_picker_title">Select the connection:</string>
     <string name="send_tab_generic_error_title">Tab could not be sent</string>
@@ -264,9 +262,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="action_set">Set</string>
     <string name="clear_private_data">Clear private data on exit</string>
     <string name="find_hint">Find</string>
-    <string name="settings_category_download">Download Options</string>
-    <string name="limit_data_usage">Limit mobile data usage</string>
-    <string name="limit_data_usage_summary">Only download video on Wi-Fi</string>
     <string name="no_wi_fi_title">No Wi-Fi Connection</string>
     <string name="no_wi_fi_message">You are not connected to Wi-Fi. To download videos also via mobile data, go to Settings &gt; General &gt; Download Options</string>
     <string name="dismiss">DISMISS</string>

@@ -51,8 +51,6 @@ public class LightningDialogBuilder {
     public void showLongPressImageDialog(final String linkUrl, @NonNull final String imageUrl,
                                          @NonNull final String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.IMAGE);
-        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(imageUrl);
-        telemetry.sendLongPressSignal(isYoutubeVideo ? TelemetryKeys.VIDEO : TelemetryKeys.IMAGE);
 
         final CharSequence[] linkAndImageOptions = new CharSequence[]{
                 activity.getString(R.string.action_copy),
@@ -87,7 +85,7 @@ public class LightningDialogBuilder {
                                         if (imageUrl.startsWith("data:image/jpeg;base64,")) {
                                             Utils.writeBase64ToStorage(activity, imageUrl);
                                         } else {
-                                            Utils.downloadFile(activity, imageUrl, userAgent, "attachment", false);
+                                            Utils.downloadFile(activity, imageUrl, userAgent, "attachment");
                                         }
                                         break;
                                     case 2:
@@ -110,7 +108,6 @@ public class LightningDialogBuilder {
 
     public void showLongPressLinkDialog(final String url, final String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.LINK);
-        final boolean isYoutubeVideo = UrlUtils.isYoutubeVideo(url);
         final CharSequence[] mOptions = new CharSequence[]{
                 activity.getString(R.string.action_copy),
                 activity.getString(R.string.open_in_new_tab),
@@ -140,7 +137,7 @@ public class LightningDialogBuilder {
                                 break;
                             case 3:
                                 telemetry.sendLinkDialogSignal(TelemetryKeys.SAVE);
-                                Utils.downloadFile(activity, url, userAgent, "attachment", false);
+                                Utils.downloadFile(activity, url, userAgent, "attachment");
                                 break;
                         }
                     }

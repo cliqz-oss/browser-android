@@ -172,7 +172,6 @@ public final class TelemetryKeys {
     public static final String VERSION_HOST = "version_host";
     public static final String VERSION_OS = "version_os";
     public static final String VIDEO = "video";
-    public static final String VIDEO_DOWNLOADER = "video_downloader";
     public static final String VIEW = "view";
 
     public static final String WEB = "web";
@@ -236,7 +235,6 @@ public final class TelemetryKeys {
     public static final String USE = "use";
     public static final String SHOW_TOPSITES = "show_topsites";
     public static final String SHOW_NEWS = "show_news";
-    public static final String LIMIT_DATA_USAGE = "limit_data_usage";
     public static final String RESET_SUBSCRIPTIONS = "reset_subscriptions";
     public static final String LOCALNEWS_COUNT = "localnews_count";
     public static final String LOCALNEWS = "localnews";

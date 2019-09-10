@@ -104,11 +104,6 @@ class LightningChromeClient extends WebChromeClient {
             }
         }
         lightningView.isHistoryItemCreationEnabled = true;
-        if (UrlUtils.isYoutubeVideo(url)) {
-            eventBus.post(new Messages.FetchYoutubeVideoUrls());
-        } else {
-            eventBus.post(new Messages.SetVideoUrls(null));
-        }
         lightningView.setUrlSSLError(false);
     }
 

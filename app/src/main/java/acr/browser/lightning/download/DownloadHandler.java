@@ -58,7 +58,7 @@ public class DownloadHandler {
      * @param mimetype           The mimetype of the content reported by the server
      */
     public static void onDownloadStart(Activity activity, String url, String userAgent,
-                                       String contentDisposition, String mimetype, boolean isYouTubeVideo) {
+                                       String contentDisposition, String mimetype) {
         // if we're dealing wih A/V content that's not explicitly marked
         // for download, check if it's streamable.
         if (contentDisposition == null
@@ -92,7 +92,7 @@ public class DownloadHandler {
                 }
             }
         }
-        onDownloadStartNoStream(activity, url, userAgent, contentDisposition, mimetype, isYouTubeVideo);
+        onDownloadStartNoStream(activity, url, userAgent, contentDisposition, mimetype);
     }
 
     // This is to work around the fact that java.net.URI throws Exceptions
@@ -137,10 +137,10 @@ public class DownloadHandler {
      */
     /* package */
     private static void onDownloadStartNoStream(final Activity activity, String url, String userAgent,
-                                                String contentDisposition, String mimetype, final boolean isYouTubeVideo) {
+                                                String contentDisposition, String mimetype) {
 
         if (mimetype == null || mimetype.isEmpty()) {
-            new FetchUrlMimeType(activity, url, contentDisposition, mimetype, isYouTubeVideo).start();
+            new FetchUrlMimeType(activity, url, contentDisposition, mimetype).start();
             return;
         }
 
@@ -209,10 +209,7 @@ public class DownloadHandler {
             @Override
             public void run() {
                 try {
-                    final long downloadId = manager.enqueue(request);
-                    if (isYouTubeVideo) {
-                        eventBus.post(new Messages.SaveId(downloadId));
-                    }
+                    manager.enqueue(request);
                 } catch (IllegalArgumentException e) {
                     // Probably got a bad URL or something
                     e.printStackTrace();

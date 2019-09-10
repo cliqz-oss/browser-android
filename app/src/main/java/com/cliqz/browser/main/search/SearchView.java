@@ -16,7 +16,6 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.JSYTDownloadCallback;
 import com.cliqz.browser.main.MainActivityHandler;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.starttab.StartTabContainer;
@@ -118,10 +117,6 @@ public class SearchView extends FrameLayout {
                         ContextCompat.getColor(context, R.color.fresh_tab_background));
             }
         }
-    }
-
-    public void fetchYouTubeUrls(String url) {
-        engine.callAction("video-downloader:getVideoLinks", new JSYTDownloadCallback(bus,handler), url);
     }
 
     public void initExtensionPreferences() {

@@ -528,42 +528,6 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-    public void sendVideoPageSignal(boolean isDownloadable) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.PAGE_LOAD);
-            signal.put(TelemetryKeys.IS_DOWNLOADABLE, isDownloadable);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.VIDEO_DOWNLOADER);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendVideoDownloadedSignal(boolean success) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.DOWNLOAD);
-            signal.put(TelemetryKeys.IS_SUCCESS, success);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.VIDEO_DOWNLOADER);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendVideoDialogSignal(String target) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.VIDEO_DOWNLOADER);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, target);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.VIDEO_DOWNLOADER);
-        }
-        saveSignal(signal, false);
-    }
-
     public void sendSettingsMenuSignal(String target, String view) {
         JSONObject signal = new JSONObject();
         try {
@@ -1041,32 +1005,6 @@ public class Telemetry {
             signal.put(TelemetryKeys.VIEW, TelemetryKeys.START);
         } catch (JSONException e) {
             logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendYTIconVisibleSignal() {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.VIDEO_DOWNLOADER);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.TOOLBAR);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendYTIconClickedSignal(boolean isIncognito) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.TOOLBAR);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.VIDEO_DOWNLOADER);
-            signal.put(TelemetryKeys.IS_FORGET, isIncognito);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.WEB);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.TOOLBAR);
         }
         saveSignal(signal, false);
     }

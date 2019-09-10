@@ -203,8 +203,6 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="send_tab_no_connection_error_title">Keine Verbindung</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Tab an Desktop senden</string>
-    <string name="showcase_youtube_title">Video Downloader</string>
-    <string name="showcase_youtube_message">Lade YouTube-Videos auf dein Smartphone herunter.</string>
     <string name="please_wait">Bitte warten…</string>
     <string name="code_scanner">QR-Code Scanner</string>
     <string name="qrcode_scanner_scanning_instructions">![QR-Code example](qr_code_icon_small) QR-Code scannen</string>
@@ -228,9 +226,6 @@ Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicke
     <string name="settings_show_top_sites">Meistbesuchte Seiten anzeigen</string>
     <string name="settings_show_news">News anzeigen</string>
     <string name="find_hint">Finden</string>
-    <string name="settings_category_download">Download Optionen</string>
-    <string name="limit_data_usage">Mobile Daten begrenzen</string>
-    <string name="limit_data_usage_summary">Videos nur über WLAN herunterladen</string>
     <string name="no_wi_fi_title">Keine WLAN-Verbindung</string>
     <string name="no_wi_fi_message">"Du bist nicht mit dem WLAN verbunden. Um Videos auch über mobile Daten herunterzuladen,  
 gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
