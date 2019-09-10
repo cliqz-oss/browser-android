@@ -1,4 +1,4 @@
-package com.cliqz.browser.inproductmessaging
+package com.cliqz.browser.messaging
 
 import android.os.AsyncTask
 
@@ -15,7 +15,8 @@ import java.net.URL
  */
 class MessageFetcher internal constructor(private val mMessageReceivedListener: MessageReceivedListener) : AsyncTask<Void, Void, JSONArray>() {
 
-    private val MESSAGE_URL = "https://s3.amazonaws.com/cdn.cliqz.com/notifications/messages.19.02.2019.json"
+    //@Todo Set up an url for mobile messages
+    private val MESSAGE_URL = "https://s3.amazonaws.com/cdn.cliqz.com/notifications/messages_android.json"
 
     override fun doInBackground(vararg voids: Void): JSONArray? {
         try {
@@ -27,8 +28,10 @@ class MessageFetcher internal constructor(private val mMessageReceivedListener: 
         return null
     }
 
-    override fun onPostExecute(jsonArray: JSONArray) {
+    override fun onPostExecute(jsonArray: JSONArray?) {
         super.onPostExecute(jsonArray)
-        mMessageReceivedListener.onMessageReceived(jsonArray)
+        if (jsonArray != null) {
+            mMessageReceivedListener.onMessageReceived(jsonArray)
+        }
     }
 }

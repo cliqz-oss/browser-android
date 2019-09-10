@@ -436,8 +436,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             bringWebViewToFront(null);
         } else {
             bringSearchToFront();
-            //update topsites and news whenever app resumes or comes back from settings
-            searchView2.updateFreshTab();
         }
 
         // The code below shouldn't be executed if app is reset

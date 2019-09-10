@@ -1,19 +1,17 @@
-package com.cliqz.browser.inproductmessaging
+package com.cliqz.browser.messaging
 
 import org.json.JSONArray
 import org.json.JSONException
+import timber.log.Timber
 import java.util.*
-import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
  */
 class MessagingHandler private constructor() : MessageReceivedListener {
 
-    private var mMessages: MutableList<Message>? = null
-
-    val messages: List<Message>?
-        get() = mMessages
+    lateinit var mMessages: MutableList<Message>
+    private set
 
     fun init() {
         mMessages = ArrayList()
@@ -39,7 +37,7 @@ class MessagingHandler private constructor() : MessageReceivedListener {
                 }
                 if (rulesSatisifed) {
                     val message = Message(messageJson.getString("title"), messageJson.getString("cta_url"), messageJson.getString("id"))
-                    mMessages!!.add(message)
+                    mMessages.add(message)
                 }
 
             }
@@ -50,10 +48,11 @@ class MessagingHandler private constructor() : MessageReceivedListener {
     }
 
     fun hasNewMessages(): Boolean {
-        return mMessages!!.size != 0
+        return mMessages.size != 0
     }
 
     companion object {
+        @JvmStatic
         val instance = MessagingHandler()
     }
 }

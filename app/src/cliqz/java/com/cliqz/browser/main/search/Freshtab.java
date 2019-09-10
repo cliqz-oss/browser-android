@@ -27,9 +27,9 @@ import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.inproductmessaging.Message;
-import com.cliqz.browser.inproductmessaging.MessageView;
-import com.cliqz.browser.inproductmessaging.MessagingHandler;
+import com.cliqz.browser.messaging.Message;
+import com.cliqz.browser.messaging.MessageView;
+import com.cliqz.browser.messaging.MessagingHandler;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.MainActivity;
@@ -203,8 +203,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         if (mIsFreshInstall) {
             return;
         }
-        if (contanier.findViewById(R.id.message_view) == null && MessagingHandler.Companion.getInstance().hasNewMessages()) {
-            final Message message = MessagingHandler.Companion.getInstance().getMessages().get(0);
+        if (contanier.findViewById(R.id.message_view) == null && MessagingHandler.getInstance().hasNewMessages()) {
+            final Message message = MessagingHandler.getInstance().getMMessages().get(0);
             final Set<String> shownMessageIDs = new HashSet<>(preferenceManager.getShownMessageIds());
             final int shownCount = preferenceManager.getMessageShowCount();
             if (shownMessageIDs.contains(message.getId()) && shownCount > 3) {
@@ -233,7 +233,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         }
     }
 
-    public void updateFreshTab(boolean mIsIncognito) {
+    public void updateFreshTab(boolean isIncognito) {
         // TODO @Khaled: please pull news every 30 minutes instead every time the view is brought to front
         this.mIsIncognito = isIncognito;
         refreshTopsites();

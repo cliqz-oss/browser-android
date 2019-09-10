@@ -1,6 +1,6 @@
 package com.cliqz.browser.app;
 
-import com.cliqz.browser.inproductmessaging.MessagingHandler;
+import com.cliqz.browser.messaging.MessagingHandler;
 
 public class BrowserApp extends BaseBrowserApp {
 
@@ -9,6 +9,6 @@ public class BrowserApp extends BaseBrowserApp {
         //intialize common libraries
         super.init();
         //initialize flavour specific libraries below iff any
-        MessagingHandler.Companion.getInstance().init();
+        MessagingHandler.getInstance().init();
     }
 }

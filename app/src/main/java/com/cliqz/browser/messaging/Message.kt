@@ -1,4 +1,4 @@
-package com.cliqz.browser.inproductmessaging
+package com.cliqz.browser.messaging
 
 /**
  * @author Ravjit Uppal

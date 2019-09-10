@@ -1,4 +1,4 @@
-package com.cliqz.browser.inproductmessaging
+package com.cliqz.browser.messaging
 
 import android.content.Context
 import android.util.AttributeSet
