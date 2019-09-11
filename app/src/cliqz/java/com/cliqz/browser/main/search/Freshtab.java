@@ -3,10 +3,6 @@ package com.cliqz.browser.main.search;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import android.os.Build;
 import android.text.Spannable;
@@ -16,16 +12,24 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.messaging.Message;
+import com.cliqz.browser.messaging.MessageView;
+import com.cliqz.browser.messaging.MessagingHandler;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.MainActivity;
@@ -37,7 +41,9 @@ import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -71,7 +77,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     TextView newsLabel;
 
     @BindView(R.id.container)
-    ScrollView contanier;
+    FrameLayout contanier;
 
     @BindView(R.id.made_in_germany_watermark)
     TextView madeInGermanyTextView;
@@ -105,6 +111,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
 
     private final Drawable expandNewsIcon, collapseNewsIcon;
     private boolean isNewsExpanded = true;
+    private boolean mIsFreshInstall = false;
 
     public Freshtab(Context context) {
         this(context, null);
@@ -147,6 +154,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 new TopsitesEventsListener(this);
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
+        mIsFreshInstall = preferenceManager.getIsFreshInstall();
+        preferenceManager.setIsFreshInstall(false);
         updateFreshTab(mIsIncognito);
     }
 
@@ -190,11 +199,46 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         updateFreshTab(mIsIncognito);
     }
 
+    private void checkForMessages() {
+        if (mIsFreshInstall) {
+            return;
+        }
+        if (contanier.findViewById(R.id.message_view) == null && MessagingHandler.getInstance().hasNewMessages()) {
+            final Message message = MessagingHandler.getInstance().getMMessages().get(0);
+            final Set<String> shownMessageIDs = new HashSet<>(preferenceManager.getShownMessageIds());
+            final int shownCount = preferenceManager.getMessageShowCount();
+            if (shownMessageIDs.contains(message.getId()) && shownCount > 3) {
+                return;
+            } else if(!shownMessageIDs.contains(message.getId())) {
+                preferenceManager.setMessageShownCount(1);
+                shownMessageIDs.add(message.getId());
+                preferenceManager.setShownMessageIds(shownMessageIDs);
+            }
+            preferenceManager.setMessageShownCount(preferenceManager.getMessageShowCount()+1);
+            final MessageView messageView = new MessageView(getContext());
+            messageView.setMessage(message);
+            messageView.setOnClickListener(new MessageView.OnClickListener() {
+                @Override
+                public void onCloseClick() {
+                    ((ViewGroup)messageView.getParent()).removeView(messageView);
+                }
+
+                @Override
+                public void onActionClick(String url) {
+                    bus.post(CliqzMessages.OpenLink.open(url));
+                    ((ViewGroup)messageView.getParent()).removeView(messageView);
+                }
+            });
+            contanier.addView(messageView);
+        }
+    }
+
     public void updateFreshTab(boolean isIncognito) {
         // TODO @Khaled: please pull news every 30 minutes instead every time the view is brought to front
         this.mIsIncognito = isIncognito;
         refreshTopsites();
         getTopnews();
+        checkForMessages();
         final Context context = getContext();
         if (preferenceManager.isBackgroundImageEnabled()) {
             appBackgroundManager.setViewBackground(this,

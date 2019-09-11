@@ -1,6 +1,7 @@
 package com.cliqz.browser.main.search;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -43,7 +44,7 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(URL... params) {
-        return HttpHandler.sendRequest("PUT", params[0], CONTENT_TYPE_JSON, null, NEWS_PAYLOAD);
+        return (JSONObject) HttpHandler.sendRequest("PUT", params[0], CONTENT_TYPE_JSON, null, NEWS_PAYLOAD);
     }
 
     protected void onPostExecute(@Nullable JSONObject result) {

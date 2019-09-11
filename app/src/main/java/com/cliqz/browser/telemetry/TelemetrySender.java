@@ -65,7 +65,7 @@ class TelemetrySender implements Runnable {
                 }
                 reader = new BufferedReader(new FileReader(file));
                 final String content = reader.readLine();
-                JSONObject response = HttpHandler.sendRequest("POST", new URL("https://stats.cliqz.com"), CONTENT_TYPE_JSON, null, content);
+                JSONObject response = (JSONObject) HttpHandler.sendRequest("POST", new URL("https://stats.cliqz.com"), CONTENT_TYPE_JSON, null, content);
                 if(response != null && response.has("new_session")) {
                     BrowserApp.getAppComponent().getPreferenceManager().setSessionId(response.getString("new_session"));
                 }

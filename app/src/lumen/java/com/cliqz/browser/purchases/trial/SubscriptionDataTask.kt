@@ -50,7 +50,7 @@ class SubscriptionDataTask(private val context: Context,
                 .put("revenue_cat_token", Purchases.sharedInstance.appUserID)
                 .toString()
         val responseJSON = HttpHandler.sendRequest("POST", URL(CliqzConfig.CREDENTIAL_URL),
-                CONTENT_TYPE_JSON, HEADERS, requestBody)
+                CONTENT_TYPE_JSON, HEADERS, requestBody) as JSONObject
         var trialDaysLeft = 0
         var userName = ""
         var password = ""
