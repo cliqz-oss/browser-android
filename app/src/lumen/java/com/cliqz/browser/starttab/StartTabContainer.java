@@ -50,7 +50,7 @@ public class StartTabContainer extends FrameLayout {
         pagerTabStrip.setupWithViewPager(mViewPager);
     }
 
-    public void updateFreshTab() {
+    public void updateFreshTab(boolean isIncognito) {
         mViewPager.setCurrentItem(mViewPager.getCurrentItem());
         mStartTabAdapter.updateView(mViewPager.getCurrentItem());
     }

@@ -766,11 +766,17 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         if (mIsIncognito) {
             appBackgroundManager.setViewBackgroundColor(toolBarContainer,
                     ContextCompat.getColor(context, R.color.incognito_tab_primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
+                    ContextCompat.getColor(context, R.color.incognito_tab_primary_color));
         } else if (isBackgroundEnabled) {
             appBackgroundManager.setViewBackground(toolBarContainer,
                     ContextCompat.getColor(context, R.color.primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
+                    ContextCompat.getColor(context, R.color.primary_color));
         } else {
             appBackgroundManager.setViewBackgroundColor(toolBarContainer,
+                    ContextCompat.getColor(context, R.color.primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
                     ContextCompat.getColor(context, R.color.primary_color));
         }
     }

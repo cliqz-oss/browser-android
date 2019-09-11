@@ -25,6 +25,7 @@
         android:background="@null"
         android:layout_marginTop="8dp"
         android:layout_gravity="end"
+        android:tint="@color/ic_tab_close_tint"
         app:srcCompat="@drawable/ic_clear_black"
         tools:src="@drawable/ic_clear_black"/>
 
@@ -41,7 +42,7 @@
         android:lines="1"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@color/black"
+        android:textColor="@color/ic_tab_close_tint"
         android:textStyle="bold"
         tools:text="A possibly very very very long title" />
 
@@ -54,13 +55,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp">
 
-        <TextView
+        <com.cliqz.widget.CliqzTextView
             android:id="@+id/urlTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="middle"
             android:singleLine="true"
-            android:textColor="@color/primary_color"
+            android:textColor="@color/tab_overview_deck_url_color"
             tools:text="http://it.m.subdomain.example.com/folder/folder/search.php?q=long%20long%20query" />
 
         <FrameLayout

@@ -7,6 +7,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -14,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -24,6 +28,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainThreadHandler;
+import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -50,6 +55,8 @@ import butterknife.OnClick;
 public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted{
 
     private static final int COLLAPSED_NEWS_NO = 2;
+
+    private boolean mIsIncognito = false;
 
     @BindView(R.id.topsites_grid)
     GridView topsitesGridView;
@@ -117,7 +124,11 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     private void init() {
         final Context context = getContext();
         inflate(context, R.layout.freshtab, this);
-        setBackgroundColor(ContextCompat.getColor(context, R.color.fresh_tab_background));
+        setBackground(context.getDrawable(R.drawable.fresh_tab_blue_background));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ((MainActivity) context).getWindow().setNavigationBarColor(
+                    ContextCompat.getColor(context, R.color.fresh_tab_blue_start_color));
+        }
         this.setVisibility(View.VISIBLE);
         ButterKnife.bind(this, this);
 
@@ -136,7 +147,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 new TopsitesEventsListener(this);
         topsitesGridView.setOnItemLongClickListener(topsitesEventsListener);
         topsitesGridView.setOnItemClickListener(topsitesEventsListener);
-        updateFreshTab();
+        updateFreshTab(mIsIncognito);
     }
 
     @OnClick(R.id.news_label)
@@ -176,11 +187,12 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             return;
         }
         super.bringToFront();
-        updateFreshTab();
+        updateFreshTab(mIsIncognito);
     }
 
-    public void updateFreshTab() {
+    public void updateFreshTab(boolean isIncognito) {
         // TODO @Khaled: please pull news every 30 minutes instead every time the view is brought to front
+        this.mIsIncognito = isIncognito;
         refreshTopsites();
         getTopnews();
         final Context context = getContext();
@@ -189,11 +201,24 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                     ContextCompat.getColor(context, R.color.primary_color));
             madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
                     R.color.made_in_germany_color));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final int navigationBarColor = mIsIncognito ? R.color.incognito_tab_primary_color_dark : R.color.white;
+                ((MainActivity) context).getWindow().setNavigationBarColor(
+                        ContextCompat.getColor(context, navigationBarColor));
+            }
         } else {
-            appBackgroundManager.setViewBackgroundColor(this,
-                    ContextCompat.getColor(context, R.color.fresh_tab_background));
+            appBackgroundManager.setViewBackgroundResource(this, R.drawable.fresh_tab_blue_background);
             madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
                     R.color.made_in_germany_color_no_background));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final int appBackgroundResource = mIsIncognito ? R.drawable.private_tab_background
+                        : R.drawable.fresh_tab_blue_background;
+                final Window window = ((MainActivity) context).getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setNavigationBarColor(
+                        ContextCompat.getColor(context, android.R.color.transparent));
+                window.setBackgroundDrawableResource(appBackgroundResource);
+            }
         }
     }
 
