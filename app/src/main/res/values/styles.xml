@@ -49,7 +49,7 @@
 
     <style name="Theme.Cliqz.Overview" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryDark">@color/primary_color_dark</item>
+        <item name="colorPrimaryDark">@color/primary_color</item>
         <item name="android:textColorPrimary">@color/text_color_primary</item>
         <item name="android:textColorPrimaryDisableOnly">#9fff</item>
         <item name="android:textColor">@color/black</item>

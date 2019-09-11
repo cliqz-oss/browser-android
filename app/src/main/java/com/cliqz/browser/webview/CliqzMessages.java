@@ -245,4 +245,7 @@ public class CliqzMessages {
         }
 
     }
+
+    public static class OnReadableVersionAvailable {
+    }
 }

@@ -83,7 +83,6 @@ import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
-import acr.browser.lightning.view.LightningView;
 import timber.log.Timber;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -154,9 +153,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     GCMRegistrationBroadcastReceiver gcmReceiver;
 
     @Inject
-    SearchView searchView;
-
-    @Inject
     OnBoardingHelper onBoardingHelper;
 
     @Inject
@@ -166,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     PurchasesManager purchasesManager;
 
     private CliqzShortcutsHelper mCliqzShortcutsHelper;
+
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -295,6 +293,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    @Nullable
+    SearchView getSearchView() {
+        return mSearchView;
+    }
+
     private void showVpnPanel() {
         tabsManager.buildTab().setOpenVpnPanel().show();
     }
@@ -365,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     private void setupContentView() {
         setContentView(R.layout.activity_main);
+        mSearchView = findViewById(R.id.search_view);
         if (isFirstInstall() && preferenceManager.shouldShowOnboardingv2()) {
             final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
             final View onboardingView = inflater.inflate(
@@ -535,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @Subscribe
     public void createWindow(BrowserEvents.CreateWindow event) {
         final int tabPosition = tabsManager.findTabFor(event.view);
-        final TabFragment fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
+        final TabFragment2 fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
         final TabsManager.Builder builder = tabsManager.buildTab();
         if (fromTab != null) {
             builder.setOriginTab(fromTab).setForgetMode(fromTab.state.isIncognito());
@@ -559,15 +563,14 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    public void sendTabToDesctop(Messages.SentTabToDesktop event) {
-        final TabFragment tabFragment = tabsManager.getCurrentTab();
-        final LightningView lightningView = tabFragment != null ? tabFragment.mLightningView : null;
-        if (lightningView == null) {
+    public void sendTabToDesktop(Messages.SentTabToDesktop event) {
+        final TabFragment2 tabFragment = tabsManager.getCurrentTab();
+        if (tabFragment == null) {
             return;
         }
-        final String url = lightningView.getUrl();
-        final String title = lightningView.getTitle();
-        final boolean isIncognito = lightningView.isIncognitoTab();
+        final String url = tabFragment.getUrl();
+        final String title = tabFragment.getTitle();
+        final boolean isIncognito = tabFragment.isIncognito();
         if (url.isEmpty()) {
             return;
         }
@@ -622,10 +625,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final FragmentTransaction transaction = fm.beginTransaction();
         //workaround for getting the mode in hitroy fragment
         //noinspection ConstantConditions
-        currentMode = tabsManager.getCurrentTab().getTelemetryView();
-        transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
+        final TabFragment2 currentTab = tabsManager.getCurrentTab();
+        if (currentTab != null) {
+            currentMode = tabsManager.getCurrentTab().getTelemetryView();
+            transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+        }
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -728,7 +734,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     // returns screen that is visible
     private String getCurrentVisibleFragmentName() {
         final String name;
-        final TabFragment currentTab = tabsManager.getCurrentTab();
+        final TabFragment2 currentTab = tabsManager.getCurrentTab();
         if (mOverViewFragment != null && mOverViewFragment.isVisible()) {
             name = "past";
         } else if (currentTab != null) {

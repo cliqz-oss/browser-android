@@ -3,6 +3,7 @@ package com.cliqz.browser.vpn;
 import android.app.Dialog;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 /**
@@ -15,8 +16,9 @@ public class VpnPanel {
     public static final int VPN_LAUNCH_REQUEST_CODE = 70;
     public static final String ACTION_DISCONNECT_VPN = null;
 
+    @NonNull
     public static VpnPanel create(View view) {
-        return null;
+        return new VpnPanel();
     }
 
     public void show(FragmentManager fragmentManager, String tag) {

@@ -60,13 +60,10 @@ class SearchInPageDialog implements DialogInterface.OnClickListener {
                 Utils.dpToPx(verticalMargin), sidePadding, Utils.dpToPx(verticalMargin));
         searchInPageDialog.queryEditText.setLayoutParams(layoutParams);
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                InputMethodManager inputMethodManager = (InputMethodManager) searchInPageDialog.context
-                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(searchInPageDialog.queryEditText, InputMethodManager.SHOW_IMPLICIT);
-            }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            InputMethodManager inputMethodManager = (InputMethodManager) searchInPageDialog.context
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.showSoftInput(searchInPageDialog.queryEditText, InputMethodManager.SHOW_IMPLICIT);
         }, KEYBOARD_DELAY);
     }
 
@@ -77,6 +74,7 @@ class SearchInPageDialog implements DialogInterface.OnClickListener {
                 String query = queryEditText.getText().toString();
                 if (!query.isEmpty()) {
                     inPageSearchBar.setVisibility(View.VISIBLE);
+                    inPageSearchBar.bringToFront();
                     lightningView.findInPage(query);
                 }
                 break;

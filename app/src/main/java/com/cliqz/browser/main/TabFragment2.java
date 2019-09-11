@@ -11,27 +11,21 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.ValueCallback;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -64,6 +58,7 @@ import com.cliqz.browser.vpn.VpnHandler;
 import com.cliqz.browser.vpn.VpnPanel;
 import com.cliqz.browser.webview.BrowserActionTypes;
 import com.cliqz.browser.webview.CliqzMessages;
+import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.browser.widget.SearchBar;
 import com.cliqz.browser.widget.TabsCounter;
@@ -72,21 +67,15 @@ import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
-import com.cliqz.utils.StreamUtils;
 import com.cliqz.utils.StringUtils;
 import com.cliqz.utils.ViewUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.net.URLDecoder;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -104,17 +93,17 @@ import butterknife.OnEditorAction;
 import butterknife.Optional;
 import timber.log.Timber;
 
-public class TabFragment extends BaseFragment implements LightningView.LightingViewListener {
+import static android.R.attr.statusBarColor;
 
-    @SuppressWarnings("unused")
+public class TabFragment2 extends FragmentWithBus implements LightningView.LightingViewListener {
 
-    public static final String KEY_URL = "cliqz_url_key";
-    public static final String KEY_QUERY = "query";
-    public static final String KEY_NEW_TAB_MESSAGE = "new_tab_message";
-    public static final String KEY_TAB_ID = "tab_id";
-    public static final String KEY_TITLE = "tab_title";
-    public static final String KEY_FORCE_RESTORE = "tab_force_restore";
-    public static final String KEY_OPEN_VPN_PANEL = "open_vpn_panel";
+    static final String KEY_URL = "cliqz_url_key";
+    static final String KEY_QUERY = "query";
+    static final String KEY_NEW_TAB_MESSAGE = "new_tab_message";
+    static final String KEY_TAB_ID = "tab_id";
+    static final String KEY_TITLE = "tab_title";
+    static final String KEY_FORCE_RESTORE = "tab_force_restore";
+    static final String KEY_OPEN_VPN_PANEL = "open_vpn_panel";
 
     private OverFlowMenu mOverFlowMenu = null;
     protected boolean mIsIncognito = false;
@@ -128,42 +117,39 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private String mSearchEngine;
     private Message newTabMessage = null;
     private String mExternalQuery = null;
-    // TODO: @Ravjit this should not be public (avoid public members)
     public final CliqzBrowserState state = new CliqzBrowserState();
-    protected boolean isHomePageShown = false;
+    boolean isHomePageShown = false;
     private int mTrackerCount = 0;
     String lastQuery = "";
     private String mId;
 
-    protected LightningView mLightningView = null;
     private String mDelayedUrl = null;
 
     // A flag used to handle back button on old phones
-    protected boolean mShowWebPageAgain = false;
+    private boolean mShowWebPageAgain = false;
     private boolean mRequestDesktopSite = false;
     private boolean mIsReaderModeOn = false;
 
     private VpnPanel mVpnPanel;
 
-    @BindView(R.id.local_container)
-    FrameLayout localContainer;
+    private static final int KEYBOARD_ANIMATION_DELAY = 200;
 
-    @Inject
-    SearchView searchView;
+    private ControlCenterHelper mControlCenterHelper;
 
-    @Inject
-    SubscriptionsManager subscriptionsManager;
+    @BindView(R.id.statusbar)
+    AppBarLayout statusBar;
 
-    @Inject
-    AppBackgroundManager appBackgroundManager;
+    @BindView(R.id.toolbar)
+    FrameLayout toolbar;
 
-    @Inject
-    TabsManager tabsManager;
+    @BindView(R.id.search_edit_text)
+    AutocompleteEditText searchEditText;
+
+    @BindView(R.id.search_view_container)
+    FrameLayout searchViewContainer;
 
     @BindView(R.id.progress_view)
     AnimatedProgressBar progressBar;
-
-    ControlCenterHelper mControlCenterHelper;
 
     @BindView(R.id.search_bar)
     SearchBar searchBar;
@@ -195,22 +181,35 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @BindView(R.id.reader_mode_button)
     ImageButton readerModeButton;
 
-    @BindView(R.id.reader_mode_webview)
-    WebView readerModeWebview;
+    @Nullable
+    @BindView(R.id.cc_icon)
+    AppCompatImageView ccIcon;
 
     @Nullable
     @BindView(R.id.vpn_panel_button)
     AppCompatImageView mVpnPanelButton;
 
+    @BindView(R.id.webview_container)
+    LightningView lightningView;
+
+    @Inject
+    SearchView searchView2;
+
+    @Inject
+    SubscriptionsManager subscriptionsManager;
+
+    @Inject
+    AppBackgroundManager appBackgroundManager;
+
+    @Inject
+    TabsManager tabsManager;
+
     @Inject
     OnBoardingHelper onBoardingHelper;
 
+
     @Inject
     QueryManager queryManager;
-
-    @Nullable
-    @BindView(R.id.cc_icon)
-    AppCompatImageView ccIcon;
 
     @Inject
     Adblocker adblocker;
@@ -224,20 +223,90 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Inject
     VpnHandler vpnHandler;
 
-    @Inject
-    MainActivityHandler mainActivityHandler;
-
-    private String mDomainName = "";
-
     @NonNull
-    public final String getTabId() {
+    final String getTabId() {
         return mId;
     }
 
-    public TabFragment() {
+    public TabFragment2() {
         super();
-        // This must be not null
+        // This must be not null, but it can be rewritten by setArguments()
         mId = RelativelySafeUniqueId.createNewUniqueId();
+    }
+
+    @NotNull
+    @Override
+    public final View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final int themeResId = getFragmentTheme();
+
+        final Activity activity = Objects.requireNonNull(getActivity());
+        final Resources.Theme theme = activity.getTheme();
+        final TypedValue value = new TypedValue();
+        theme.resolveAttribute(R.attr.colorPrimaryDark, value, true);
+        @ColorInt final int color = value.data;
+        activity.getWindow().setStatusBarColor(color);
+        SystemBarTintManager tintManager = new SystemBarTintManager(getActivity());
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+        tintManager.setTintColor(statusBarColor);
+
+
+        final LayoutInflater localInflater;
+        if (themeResId != 0) {
+            final Context themedContext = new ContextThemeWrapper(getContext(), themeResId);
+            localInflater = inflater.cloneInContext(themedContext);
+        } else {
+            localInflater = inflater;
+        }
+
+        final View view = localInflater.inflate(R.layout.fragment_tab, container, false);
+        if (BuildConfig.IS_NOT_LUMEN) {
+            final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
+            stub.inflate();
+        }
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
+        searchBar.setSearchEditText(searchEditText);
+        searchBar.setProgressBar(progressBar);
+        final MainActivity activity = (MainActivity) getActivity();
+        final FlavoredActivityComponent component = activity != null ?
+                BrowserApp.getActivityComponent(activity) : null;
+        if (component != null) {
+            component.inject(this);
+        }
+
+        mControlCenterHelper =
+                new ControlCenterHelper(getContext(), getChildFragmentManager());
+
+        if (openTabsCounter != null) {
+            openTabsCounter.setCounter(tabsManager.getTabCount());
+        }
+
+        updateUI();
+        inPageSearchBar.setVisibility(View.GONE);
+        state.setIncognito(mIsIncognito);
+        searchBar.setStyle(mIsIncognito);
+        lightningView.restoreTab(mId);
+        lightningView.setListener(this);
+
+        TabFragmentListener.create(this);
+        searchView2.setCurrentTabState(state);
+        ViewUtils.safelyAddView(searchViewContainer, searchView2);
+        searchBar.setTrackerCount(mTrackerCount);
+        if (quickAccessBar != null) {
+            quickAccessBar.setSearchTextView(searchEditText);
+            quickAccessBar.hide();
+        }
+        onPageFinished(null);
+    }
+
+    private void delayedPostOnBus(final Object event) {
+        handler.postDelayed(() -> bus.post(event), KEYBOARD_ANIMATION_DELAY);
     }
 
     @Override
@@ -248,7 +317,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         newTabMessage = args.getParcelable(KEY_NEW_TAB_MESSAGE);
         // Remove asap the message from the bundle
         args.remove(KEY_NEW_TAB_MESSAGE);
-        mId = args.getString(KEY_TAB_ID);
+        final String argsId = args.getString(KEY_TAB_ID);
+        if  (argsId != null) {
+            mId = argsId;
+        }
 
         final String url = args.getString(KEY_URL);
         final String title = args.getString(KEY_TITLE);
@@ -256,7 +328,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
             state.setTitle(title != null ? title : url);
-            state.setMode(CliqzBrowserState.Mode.WEBPAGE);
+            state.setMode(Mode.WEBPAGE);
             state.setIncognito(incognito);
         }
         super.setArguments(args);
@@ -298,77 +370,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     String getTelemetryView() {
         if (state.getMode() == Mode.WEBPAGE) {
             return TelemetryKeys.WEB;
-        } else if (searchView.isFreshTabVisible()) {
+        } else if (searchView2.isFreshTabVisible()) {
             return TelemetryKeys.HOME;
         } else {
             return TelemetryKeys.CARDS;
         }
-    }
-
-    @Override
-    protected View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_search, container, false);
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (BuildConfig.IS_NOT_LUMEN) {
-            final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
-            stub.inflate();
-        }
-        ButterKnife.bind(this, view);
-        searchBar.setSearchEditText(searchEditText);
-        searchBar.setProgressBar(progressBar);
-        final MainActivity activity = (MainActivity) getActivity();
-        final FlavoredActivityComponent component = activity != null ?
-                BrowserApp.getActivityComponent(activity) : null;
-        if (component != null) {
-            component.inject(this);
-        }
-
-        mControlCenterHelper =
-                new ControlCenterHelper(getContext(), getChildFragmentManager());
-
-        if (openTabsCounter != null) {
-            openTabsCounter.setCounter(tabsManager.getTabCount());
-        }
-
-        updateUI();
-        inPageSearchBar.setVisibility(View.GONE);
-        state.setIncognito(mIsIncognito);
-        searchBar.setStyle(mIsIncognito);
-        //openTabsCounter.setBa
-        if (activity != null && (searchView == null || mLightningView == null)) {
-            // Must use activity due to Crosswalk webview
-            searchView = activity.searchView;
-            final String id = mId != null ? mId : RelativelySafeUniqueId.createNewUniqueId();
-            mLightningView = new LightningView(getActivity(), mIsIncognito, id);
-            mLightningView.setListener(this);
-        }
-
-        TabFragmentListener.create(this);
-        final WebView webView = mLightningView.getWebView();
-        webView.setId(R.id.browser_view);
-        ViewUtils.safelyAddView(localContainer, webView);
-        searchView.setCurrentTabState(state);
-        ViewUtils.safelyAddView(localContainer, searchView);
-        searchBar.setTrackerCount(mTrackerCount);
-        if (quickAccessBar != null) {
-            quickAccessBar.setSearchTextView(searchEditText);
-            quickAccessBar.hide();
-        }
-        //way to handle links in the readermode article
-        readerModeWebview.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                toggleReaderMode();
-                mLightningView.loadUrl(url);
-                return true;
-            }
-        });
-        onPageFinished(null);
     }
 
     private void updateVpnIcon() {
@@ -383,16 +389,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     private void updateCCIcon(boolean isLoadingFinished) {
         if (BuildConfig.IS_LUMEN) {
-            final String url = mLightningView.getWebView().getUrl();
-            if (url != null && url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+            final String url = lightningView.getUrl();
+            if (url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
                 return; //We don't update dashboard icon states for trampoline redirects
             }
+
             if (purchasesManager.isDashboardEnabled() && preferenceManager.getAdBlockEnabled()
                     && preferenceManager.isAttrackEnabled()) {
-                ccIcon.setImageResource(getFlavorDrawable(isLoadingFinished
+                Objects.requireNonNull(ccIcon).setImageResource(getFlavorDrawable(isLoadingFinished
                         ? "ic_dashboard_checked" : "ic_dashboard_on"));
             } else {
-                ccIcon.setImageResource(getFlavorDrawable("ic_dashboard_off"));
+                Objects.requireNonNull(ccIcon).setImageResource(getFlavorDrawable("ic_dashboard_off"));
             }
         }
     }
@@ -410,24 +417,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mDelayedUrl = null;
         }
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
-        if (searchView != null) {
-            searchView.onResume();
-            searchView.setVisibility(View.VISIBLE);
+        if (searchView2 != null) {
+            searchView2.onResume();
+            searchView2.setVisibility(View.VISIBLE);
         }
-        final WebView webView;
-        if (mLightningView != null) {
-            mLightningView.onResume();
-            mLightningView.resumeTimers();
-            webView = mLightningView.getWebView();
-        } else {
-            webView = null;
-        }
-        if (webView != null) {
-            webView.setVisibility(View.VISIBLE);
+        if (lightningView != null) {
+            lightningView.onResume();
+            lightningView.resumeTimers();
         }
 
         searchBar.setIsAutocompletionEnabled(preferenceManager.getAutocompletionEnabled());
@@ -435,9 +435,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (state.getMode() == Mode.WEBPAGE) {
             bringWebViewToFront(null);
         } else {
-            searchView.bringToFront();
+            bringSearchToFront();
             //update topsites and news whenever app resumes or comes back from settings
-            searchView.updateFreshTab();
+            searchView2.updateFreshTab();
         }
 
         // The code below shouldn't be executed if app is reset
@@ -448,13 +448,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         } else if (mInitialUrl != null) {
             state.setMode(Mode.WEBPAGE);
             bus.post(CliqzMessages.OpenLink.resetAndOpen(mInitialUrl));
-        }else if (mOverviewEvent != null && mOverviewEvent.url != null && !mOverviewEvent.url.isEmpty()) {
+        } else if (mOverviewEvent != null && mOverviewEvent.url != null && !mOverviewEvent.url.isEmpty()) {
             state.setMode(Mode.WEBPAGE);
             // Repost the message
             bus.post(mOverviewEvent);
-        } else if (newTabMessage != null && webView != null && newTabMessage.obj != null) {
+        } else if (newTabMessage != null && newTabMessage.obj != null) {
             final WebView.WebViewTransport transport = (WebView.WebViewTransport) newTabMessage.obj;
-            transport.setWebView(webView);
+            lightningView.setTransportWebView(transport);
             newTabMessage.sendToTarget();
             newTabMessage = null;
             bringWebViewToFront(null);
@@ -462,28 +462,26 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             state.setMode(Mode.SEARCH);
             bus.post(new Messages.ShowSearch(mExternalQuery));
         } else {
-            final String lightningUrl = mLightningView.getUrl();
             final String query = state.getQuery();
-            final boolean mustShowSearch = lightningUrl.isEmpty() && query != null && !query.isEmpty();
+            final String url = state.getUrl();
+            final boolean mustShowSearch = url.isEmpty() && !query.isEmpty();
             if (mustShowSearch) {
                 state.setMode(Mode.SEARCH);
             }
             if (state.getMode() == Mode.SEARCH) {
-                //showToolBar(null);
                 if (!query.isEmpty()) {
                     delayedPostOnBus(new Messages.ShowSearch(query));
                 } else {
                     searchBar.setTitle(searchBar.getQuery());
                     searchBar.showTitleBar();
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             } else {
-                mLightningView.getWebView().bringToFront();
                 enableUrlBarScrolling();
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-                searchBar.setTitle(mLightningView.getUrl());
+                searchBar.setTitle(url);
             }
         }
 
@@ -499,25 +497,20 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         updateCCIcon(progressBar.getProgress() == 100);
         updateVpnIcon();
         if (mShouldShowVpnPanel) {
-            getView().post(() -> {
+            handler.post(() -> {
                 toggleVpnView();
                 mShouldShowVpnPanel = false;
             });
         }
     }
 
-    @Override
-    protected int getMenuResource() {
-        return R.menu.fragment_search_menu;
+    void bringSearchToFront() {
+        lightningView.setVisibility(View.GONE);
+        searchViewContainer.setVisibility(View.VISIBLE);
+        searchView2.refresh();
     }
 
-    @Override
-    protected boolean onMenuItemClick(MenuItem item) {
-        return false;
-    }
-
-    @Override
-    protected int getFragmentTheme() {
+    private int getFragmentTheme() {
         if (mIsIncognito) {
             return R.style.Theme_LightTheme_Incognito;
         } else {
@@ -525,16 +518,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
-    @Nullable
-    @Override
-    protected View onCreateCustomToolbarView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_search_toolbar, container, false);
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+                quickAccessBar != null) {
             quickAccessBar.hide();
         }
     }
@@ -554,16 +542,16 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (mOverFlowMenu != null && mOverFlowMenu.isShown()) {
             mOverFlowMenu.dismiss();
         } else {
-            final String url = mLightningView.getUrl();
+            final String url = lightningView.getUrl();
             mOverFlowMenu = new OverFlowMenu(getActivity());
-            mOverFlowMenu.setCanGoForward(mLightningView.canGoForward());
+            mOverFlowMenu.setCanGoForward(lightningView.canGoForward());
             mOverFlowMenu.setAnchorView(overflowMenuButton);
             mOverFlowMenu.setIncognitoMode(mIsIncognito);
             mOverFlowMenu.setUrl(url);
             mOverFlowMenu.setFavorite(historyDatabase.isFavorite(url));
-            mOverFlowMenu.setTitle(mLightningView.getTitle());
+            mOverFlowMenu.setTitle(lightningView.getTitle());
             mOverFlowMenu.setState(state);
-            mOverFlowMenu.setIsFreshTabVisible(searchView.isFreshTabVisible());
+            mOverFlowMenu.setIsFreshTabVisible(searchView2.isFreshTabVisible());
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
             hideKeyboard(null);
@@ -581,26 +569,26 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @OnClick(R.id.in_page_search_cancel_button)
     void closeInPageSearchClosed() {
         inPageSearchBar.setVisibility(View.GONE);
-        mLightningView.findInPage("");
+        lightningView.findInPage("");
     }
 
     @OnClick(R.id.in_page_search_up_button)
     void previousResultInPageSearchClicked() {
-        mLightningView.findPrevious();
+        lightningView.findPrevious();
     }
 
     @OnClick(R.id.in_page_search_down_button)
     void nextResultInPageSearchClicked() {
-        mLightningView.findNext();
+        lightningView.findNext();
     }
 
     // TODO @Ravjit, the dialog should disappear if you pause the app
     @Optional
     @OnClick(R.id.cc_icon)
     void showControlCenter() {
-        final WebView webView = mLightningView.getWebView();
-        mControlCenterHelper.setControlCenterData(mStatusBar, mIsIncognito, webView.hashCode(),
-                mLightningView.getUrl());
+        mControlCenterHelper.setControlCenterData(statusBar, mIsIncognito,
+                lightningView.webViewHashCode(),
+                lightningView.getUrl());
         mControlCenterHelper.toggleControlCenter();
         telemetry.sendControlCenterOpenSignal(mIsIncognito, mTrackerCount);
     }
@@ -610,13 +598,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (!mIsReaderModeOn) {
             mIsReaderModeOn = true;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_on);
-            readerModeWebview.setVisibility(View.VISIBLE);
-            readerModeWebview.bringToFront();
-            readerModeWebview.scrollTo(0,0);
+            lightningView.readerMode();
         } else {
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
-            readerModeWebview.setVisibility(View.GONE);
+            lightningView.webMode();
         }
     }
 
@@ -627,11 +613,9 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             mVpnPanel.getDialog().dismiss();
             return;
         }
-        mVpnPanel = VpnPanel.create(mStatusBar);
+        mVpnPanel = VpnPanel.create(statusBar);
         mVpnPanel.show(getChildFragmentManager(), Constants.VPN_PANEL);
-        mainActivityHandler.postDelayed(() -> {
-            bus.post(new Messages.DismissControlCenter());
-        }, 500);
+        handler.postDelayed(() -> bus.post(new Messages.DismissControlCenter()), 500);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -716,18 +700,19 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (state.getMode() == Mode.SEARCH) {
             return;
         }
-        if (!mLightningView.getUrl().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+        if (!lightningView.getUrl().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
             if (event.progress == 100) {
                 // Re-adjust the layout in cases when height of content is not more than the
                 // visible content height + toolbar height
-                final AppBarLayout.LayoutParams params =
-                        (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-                final WebView webView = mLightningView.getWebView();
-                if (webView.getContentHeight() <= webView.getHeight()) {
-                    disableUrlBarScrolling();
-                } else if (params.getScrollFlags() == 0) {
-                    enableUrlBarScrolling();
-                }
+                // TODO Check this
+//                final AppBarLayout.LayoutParams params =
+//                        (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+//                final WebView webView = lightningView.getWebView();
+//                if (webView.getContentHeight() <= webView.getHeight()) {
+//                    disableUrlBarScrolling();
+//                } else if (params.getScrollFlags() == 0) {
+//                    enableUrlBarScrolling();
+//                }
             }
         }
     }
@@ -748,15 +733,15 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private void bringWebViewToFront(Animation animation) {
-        final WebView webView = mLightningView.getWebView();
+        lightningView.setVisibility(View.VISIBLE);
+        searchViewContainer.setVisibility(View.INVISIBLE);
         searchBar.showTitleBar();
         searchBar.showProgressBar();
-        final String url = webView.getUrl();
+        final String url = lightningView.getUrl();
         searchBar.setTitle(url);
         searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
-        webView.setAnimation(animation);
-        webView.bringToFront();
+        lightningView.setWebViewAnimation(animation);
         enableUrlBarScrolling();
         state.setMode(Mode.WEBPAGE);
         try {
@@ -769,6 +754,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         }
     }
 
+    LightningView getLightningView() {
+        return lightningView;
+    }
+
     private boolean isHttpsUrl(@Nullable String url) {
         return url != null && url.startsWith("https://");
     }
@@ -777,11 +766,17 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         if (mIsIncognito) {
             appBackgroundManager.setViewBackgroundColor(toolBarContainer,
                     ContextCompat.getColor(context, R.color.incognito_tab_primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
+                    ContextCompat.getColor(context, R.color.incognito_tab_primary_color));
         } else if (isBackgroundEnabled) {
             appBackgroundManager.setViewBackground(toolBarContainer,
                     ContextCompat.getColor(context, R.color.primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
+                    ContextCompat.getColor(context, R.color.primary_color));
         } else {
             appBackgroundManager.setViewBackgroundColor(toolBarContainer,
+                    ContextCompat.getColor(context, R.color.primary_color));
+            appBackgroundManager.setViewBackgroundColor(toolbar,
                     ContextCompat.getColor(context, R.color.primary_color));
         }
     }
@@ -800,59 +795,19 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void searchOnPage(BrowserEvents.SearchInPage event) {
-        SearchInPageDialog.show(getContext(), inPageSearchBar, mLightningView);
+        SearchInPageDialog.show(getContext(), inPageSearchBar, lightningView);
+    }
+
+    @Subscribe
+    public void onReadableVersionAvailable(CliqzMessages.OnReadableVersionAvailable event) {
+        readerModeButton.setVisibility(View.VISIBLE);
     }
 
     @Subscribe
     public void onPageFinished(CliqzMessages.OnPageFinished event) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                final InputStream inputStream = getResources().openRawResource(R.raw.readability);
-                final String script = StreamUtils.readTextStream(inputStream);
-                inputStream.close();
-                final WebView webView = mLightningView.getWebView();
-                webView.evaluateJavascript(script, readabilityCallBack);
-            } catch (IOException e) {
-                Timber.e(e, "Problem reading the file readability.js");
-            }
-        }
         updateCCIcon(true);
     }
 
-    private ValueCallback<String> readabilityCallBack = new ValueCallback<String>() {
-        @Override
-        public void onReceiveValue(String s) {
-            if (s == null) {
-                return;
-            }
-            try {
-                final String decodedResponse = URLDecoder.decode(s, "UTF-8");
-                //removing extra quotation marks at the start
-                final String jsonString = decodedResponse.substring(1,decodedResponse.length()-1);
-                final JSONObject jsonObject = new JSONObject(jsonString);
-                final String readerModeText = jsonObject.optString("content", "");
-                final String readerModeTitle = jsonObject.optString("title", "");
-                if (readerModeText != null && !readerModeText.isEmpty() && state.getMode() == Mode.WEBPAGE) {
-                    readerModeButton.setVisibility(View.VISIBLE);
-                    readerModeWebview.loadDataWithBaseURL("",
-                            getFormattedHtml(readerModeTitle, readerModeText),
-                            "text/html", "UTF-8", "");
-                }
-            } catch (JSONException e) {
-                Timber.i(e,"error reading the json object");
-            } catch (UnsupportedEncodingException e) {
-                Timber.e(e,"error decoding the response from readability.js");
-            }
-        }
-    };
-
-    //This function adds the title to the page content and resizes the images to fit the screen
-    private String getFormattedHtml(String title, String bodyHTML) {
-        final String head = "<head><style>img{max-width: 100%; height: auto;}</style></head>";
-        final String titleHTML = "<h2>" + title + "</h2>";
-        return "<html>" + head + "<body>" +
-                titleHTML + bodyHTML + "</body></html>";
-    }
 
     public void openLink(String eventUrl, boolean reset, boolean fromHistory, Animation animation) {
 
@@ -861,7 +816,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             eventUrl = eventUrl.replaceFirst("m.", "");
         }
 
-        if (mLightningView == null) {
+        if (lightningView == null) {
             mDelayedUrl = eventUrl;
             return;
         }
@@ -880,7 +835,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             builder.appendQueryParameter(TrampolineConstants.TRAMPOLINE_FROM_HISTORY_PARAM_NAME, "true");
         }
         final String url = builder.build().toString();
-        mLightningView.loadUrl(url);
+        lightningView.loadUrl(url);
         searchBar.setTitle(eventUrl);
         searchBar.setSecure(isHttpsUrl(eventUrl));
         bringWebViewToFront(animation);
@@ -895,22 +850,22 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
      *
      * @param query the query to display (and search)
      */
-    public void searchQuery(String query) {
+    public void searchQuery(@Nullable String query) {
+        // Sanitize the query
+        query = query != null ? query : "";
         searchBar.showSearchEditText();
-        searchView.bringToFront();
+        bringSearchToFront();
         disableUrlBarScrolling();
         inPageSearchBar.setVisibility(View.GONE);
-        mLightningView.findInPage("");
+        lightningView.findInPage("");
         searchBar.requestSearchFocus();
-        if (query != null) {
-            searchBar.setSearchText(query);
-            searchBar.setCursorPosition(query.length());
-        }
+        searchBar.setSearchText(query);
+        searchBar.setCursorPosition(query.length());
         state.setMode(Mode.SEARCH);
         state.setQuery(query);
         searchBar.setAntiTrackingDetailsVisibility(View.GONE);
         searchBar.showKeyBoard();
-        searchView.updateQuery(query, 0, query.length());
+        searchView2.updateQuery(query, 0, query.length());
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -929,12 +884,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     private void onBackPressedV16() {
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
-            if (readerModeWebview.getVisibility() == View.VISIBLE) {
-                toggleReaderMode();
-            } else if (mode == Mode.WEBPAGE && mLightningView.canGoBack()) {
+            if (mIsReaderModeOn) {
+                lightningView.webMode();
+            } else if (mode == Mode.WEBPAGE && lightningView.canGoBack()) {
                 telemetry.backPressed = true;
                 telemetry.showingCards = false;
-                mLightningView.goBack();
+                lightningView.goBack();
                 mShowWebPageAgain = false;
             } else if (mode == Mode.SEARCH && mShowWebPageAgain) {
                 bringWebViewToFront(null);
@@ -945,7 +900,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     }
 
     private void onBackPressedV21() {
-        final String url = mLightningView != null ? mLightningView.getUrl() : "";
+        final String url = lightningView != null ? lightningView.getUrl() : "";
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
             if (mIsReaderModeOn) {
@@ -954,14 +909,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
                     !"".equals(url) &&
                     !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME + "=" + TrampolineConstants.TRAMPOLINE_COMMAND_SEARCH)) {
                 bringWebViewToFront(null);
-            } else if (mLightningView.canGoBack()) {
+            } else if (lightningView.canGoBack()) {
                 // In any case the trampoline will be current page predecessor
                 if (mode == Mode.SEARCH) {
                     bringWebViewToFront(null);
                 }
                 telemetry.backPressed = true;
                 telemetry.showingCards = mode == Mode.SEARCH;
-                mLightningView.goBack();
+                lightningView.goBack();
             } else {
                 bus.post(new BrowserEvents.CloseTab());
             }
@@ -981,8 +936,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void onGoForward(Messages.GoForward event) {
-        if (mLightningView.canGoForward()) {
-            mLightningView.goForward();
+        if (lightningView.canGoForward()) {
+            lightningView.goForward();
             if (state.getMode() == Mode.SEARCH) {
                 bringWebViewToFront(null);
             }
@@ -1001,14 +956,13 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void reloadPage(Messages.ReloadPage event) {
-        final WebView webView = mLightningView.getWebView();
-        webView.reload();
+        lightningView.reload();
     }
 
     @Subscribe
     public void shareLink(Messages.ShareLink event) {
         if (state.getMode() != Mode.SEARCH) {
-            final String url = mLightningView.getUrl();
+            final String url = lightningView.getUrl();
             shareText(url);
             telemetry.sendShareSignal(TelemetryKeys.WEB);
         }
@@ -1016,21 +970,20 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void shareCard(Messages.ShareCard event) {
-        new ShareCardHelper(getActivity(), localContainer, event.cardDetails);
+        new ShareCardHelper(getActivity(), lightningView, event.cardDetails);
         telemetry.sendShareSignal(TelemetryKeys.CARDS);
 
     }
 
     @Subscribe
     public void copyUrl(Messages.CopyUrl event) {
-        putInClipboard(R.string.message_url_copied, mLightningView.getUrl(), "link");
+        putInClipboard(R.string.message_url_copied, lightningView.getUrl(), "link");
     }
 
     @Subscribe
     public void saveLink(Messages.SaveLink event) {
-        final WebSettings settings = mLightningView.getWebView().getSettings();
-        final String userAgent = settings != null ? settings.getUserAgentString() : null;
-        Utils.downloadFile(getActivity(), mLightningView.getUrl(), userAgent, "attachment");
+        final String userAgent = lightningView.getUserAgentString();
+        Utils.downloadFile(getActivity(), lightningView.getUrl(), userAgent, "attachment");
     }
 
     @Subscribe
@@ -1098,7 +1051,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void resetTrackerCount(Messages.ResetTrackerCount event) {
         mTrackerCount = 0;
         searchBar.setTrackerCount(mTrackerCount);
-        readerModeWebview.setVisibility(View.GONE);
         readerModeButton.setVisibility(View.GONE);
     }
 
@@ -1113,11 +1065,11 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void updateUserAgent(Messages.ChangeUserAgent event) {
-        if (mLightningView != null) {
+        if (lightningView != null) {
             if (event.isDesktopSiteEnabled) {
-                mLightningView.setDesktopUserAgent();
+                lightningView.setDesktopUserAgent();
             } else {
-                mLightningView.setMobileUserAgent();
+                lightningView.setMobileUserAgent();
             }
         }
         mRequestDesktopSite = event.isDesktopSiteEnabled;
@@ -1125,16 +1077,16 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void openUrlInCurrentTab(BrowserEvents.OpenUrlInCurrentTab event) {
-        if (mLightningView != null && !event.url.isEmpty()) {
-            mLightningView.loadUrl(event.url);
+        if (lightningView != null && !event.url.isEmpty()) {
+            lightningView.loadUrl(event.url);
         }
     }
 
-    void updateTitle() {
+    private void updateTitle() {
         if (state.getMode() == Mode.SEARCH) {
             return;
         }
-        final String title = mLightningView.getTitle();
+        final String title = lightningView.getTitle();
         state.setTitle(title);
     }
 
@@ -1142,10 +1094,14 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         mSearchEngine = getString(preferenceManager.getSearchChoice().engineUrl);
     }
 
-    public void resetFindInPage() {
-        if (mLightningView != null) {
-            mLightningView.findInPage("");
+    void resetFindInPage() {
+        if (lightningView != null) {
+            lightningView.findInPage("");
         }
+    }
+
+    private void showToolbar() {
+        statusBar.setExpanded(true, true);
     }
 
     @Subscribe
@@ -1153,10 +1109,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         Toast.makeText(getContext(), getString(R.string.switched_to_forget), Toast.LENGTH_SHORT).show();
         mIsIncognito = true;
         state.setIncognito(true);
-        mLightningView.setIsIncognitoTab(true);
-        mLightningView.setIsAutoForgetTab(true);
+        lightningView.setIsIncognitoTab(true);
+        lightningView.setIsAutoForgetTab(true);
         updateUI();
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
         queryManager.setForgetMode(true);
     }
 
@@ -1164,10 +1120,10 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void switchToNormalMode(Messages.SwitchToNormalTab event) {
         mIsIncognito = false;
         state.setIncognito(false);
-        mLightningView.setIsIncognitoTab(false);
-        mLightningView.setIsAutoForgetTab(false);
+        lightningView.setIsIncognitoTab(false);
+        lightningView.setIsAutoForgetTab(false);
         updateUI();
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
     }
 
     @Subscribe
@@ -1193,20 +1149,20 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     @Subscribe
     public void enableAdBlock(Messages.EnableAdBlock event) {
         preferenceManager.setAdBlockEnabled(true);
-        mLightningView.enableAdBlock();
-        mLightningView.reload();
+        lightningView.enableAdBlock();
+        lightningView.reload();
     }
 
     @Subscribe
     public void enableAttrack(Messages.EnableAttrack event) {
         preferenceManager.setAttrackEnabled(true);
-        mLightningView.enableAttrack();
-        mLightningView.reload();
+        lightningView.enableAttrack();
+        lightningView.reload();
     }
 
     @Subscribe
     public void updateFavIcon(Messages.UpdateFavIcon event) {
-        state.setFavIcon(mLightningView.getFavicon());
+        state.setFavIcon(lightningView.getFavicon());
     }
 
     @Subscribe
@@ -1273,7 +1229,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     public void notifySubscrioption(Messages.NotifySubscription event) {
-        searchView.initExtensionPreferences();
+        searchView2.initExtensionPreferences();
     }
 
     @Subscribe
@@ -1284,7 +1240,6 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             updateToolbarContainer(context, isBackgroundEnabled);
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            readerModeWebview.setVisibility(View.GONE);
             readerModeButton.setVisibility(View.GONE);
             mIsReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
@@ -1297,7 +1252,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
     public void onOrientationChanged(Configuration newConfig) {
         final String view;
         if (state.getMode() == Mode.SEARCH) {
-            if (searchView.isFreshTabVisible()) {
+            if (searchView2.isFreshTabVisible()) {
                 view = TelemetryKeys.HOME;
             } else {
                 view = TelemetryKeys.CARDS;
@@ -1327,8 +1282,8 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
-        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView.isFreshTabVisible());
-        if (!mLightningView.getUrl().isEmpty()) {
+        telemetry.sendBackIconPressedSignal(mIsIncognito, searchView2.isFreshTabVisible());
+        if (!lightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
         } else {
             searchQuery("");
@@ -1343,7 +1298,7 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
 
         state.setMode(Mode.SEARCH);
         searchBar.showSearchEditText();
-        searchView.showFavorites();
+        searchView2.showFavorites();
     }
 
     @Subscribe
@@ -1362,12 +1317,12 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             try {
                 final Field field = android.R.attr.class.getDeclaredField("statusBarColor");
                 final int attr = field.getInt(null);
-                attrs = new int[] {
+                attrs = new int[]{
                         attr,
                         R.attr.textColorPrimary,
                 };
             } catch (Throwable e) {
-                attrs = new int[] {
+                attrs = new int[]{
                         R.attr.colorPrimaryDark,
                         R.attr.textColorPrimary
                 };
@@ -1380,29 +1335,28 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
             typedArray.recycle();
             overflowMenuIcon.getDrawable().setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
             updateToolbarContainer(activity, preferenceManager.isBackgroundImageEnabled());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                activity.getWindow().setStatusBarColor(statusBarColor);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                final SystemBarTintManager tintManager = new SystemBarTintManager(activity);
-                tintManager.setStatusBarTintEnabled(true);
-                tintManager.setNavigationBarTintEnabled(true);
-                tintManager.setTintColor(statusBarColor);
-            }
+            activity.getWindow().setStatusBarColor(statusBarColor);
+            final SystemBarTintManager tintManager = new SystemBarTintManager(activity);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setNavigationBarTintEnabled(true);
+            tintManager.setTintColor(statusBarColor);
         } catch (NoInstanceException e) {
             Timber.e(e, "Null activity");
         }
     }
 
-    protected void disableUrlBarScrolling() {
-        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-        params.setScrollFlags(0);
-        mContentContainer.requestLayout();
+    void disableUrlBarScrolling() {
+        // TODO Restore this
+//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+//        params.setScrollFlags(0);
+//        mContentContainer.requestLayout();
     }
 
-    protected void enableUrlBarScrolling() {
-        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
-        mContentContainer.requestLayout();
+    private void enableUrlBarScrolling() {
+        // Todo Restore this
+//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+//        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+//        mContentContainer.requestLayout();
     }
 
     // TODO: dirty hack due to the Oreo multi-process WebView
@@ -1412,4 +1366,41 @@ public class TabFragment extends BaseFragment implements LightningView.LightingV
         mOverviewEvent = event;
     }
 
+    void onDeleteTab() {
+        if (lightningView != null) {
+            lightningView.stopLoading();
+            lightningView.onDestroy();
+        }
+    }
+
+    void onPauseTab() {
+        if (lightningView != null) {
+            lightningView.onPause();
+        }
+    }
+
+    void onResumeTab() {
+        if (lightningView != null) {
+            lightningView.onResume();
+        }
+    }
+
+    @NonNull
+    public String getUrl() {
+        return lightningView != null ? lightningView.getUrl() : "";
+    }
+
+    @NonNull
+    public String getTitle() {
+        return lightningView != null ? lightningView.getTitle() : "";
+    }
+
+    public boolean isIncognito() {
+        return lightningView != null && lightningView.isIncognitoTab();
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    void setShowWebPageAgain(boolean value) {
+        mShowWebPageAgain = value;
+    }
 }

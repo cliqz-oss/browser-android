@@ -1,13 +1,15 @@
 package com.cliqz.browser.main.search;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.anthonycr.grant.PermissionsManager;
@@ -16,7 +18,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.CliqzBrowserState;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.MainActivityHandler;
+import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.QueryManager;
 import com.cliqz.browser.starttab.StartTabContainer;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -36,7 +38,6 @@ import acr.browser.lightning.preference.PreferenceManager;
 /**
  * @author Khaled Tantawy
  */
-@SuppressLint("ViewConstructor")
 public class SearchView extends FrameLayout {
 
     private final Incognito incognito;
@@ -52,7 +53,7 @@ public class SearchView extends FrameLayout {
     SubscriptionsManager subscriptionsManager;
 
     @Inject
-    MainActivityHandler handler;
+    MainThreadHandler handler;
 
     @Inject
     Bus bus;
@@ -63,18 +64,28 @@ public class SearchView extends FrameLayout {
     @Inject
     QueryManager queryManager;
 
+    @Inject
+    Engine engine;
+
     private final Context context;
-    private final Engine engine;
     private CliqzBrowserState state;
 
-    public SearchView(AppCompatActivity context, Engine engine) {
-        super(context);
+    public SearchView(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public SearchView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public SearchView(@NonNull Context context, @Nullable AttributeSet attrs,
+                       @AttrRes int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
         if (component != null) {
             component.inject(this);
         }
         this.context = context;
-        this.engine = engine;
         mReactView = engine.reactRootView;
         startTabContainer = new StartTabContainer(this.context);
         incognito = BuildConfig.IS_NOT_LUMEN ? new Incognito(this.context) : null;
@@ -93,16 +104,13 @@ public class SearchView extends FrameLayout {
         addView(startTabContainer);
     }
 
-    @Override
-    public void bringToFront() {
-        super.bringToFront();
+    public void refresh() {
         final String query = state.getQuery();
         if (query.equals("")) {
             setIncognito(state.isIncognito());
             mReactView.setVisibility(View.GONE);
-            startTabContainer.updateFreshTab();
+            startTabContainer.updateFreshTab(state.isIncognito());
         } else {
-            mReactView.bringToFront();
             startTabContainer.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
             final Context context = getContext();
@@ -185,7 +193,7 @@ public class SearchView extends FrameLayout {
         map.putString("query", query);
         engine.publishEvent("urlbar:input", map);
         performSearch(query);
-        bringToFront();
+        refresh();
     }
 
     public boolean isFreshTabVisible() {
@@ -193,7 +201,7 @@ public class SearchView extends FrameLayout {
     }
 
     public void updateFreshTab() {
-        startTabContainer.updateFreshTab();
+        startTabContainer.updateFreshTab(state.isIncognito());
     }
 
     public void handleUrlbarFocusChange(boolean hasFocus) {

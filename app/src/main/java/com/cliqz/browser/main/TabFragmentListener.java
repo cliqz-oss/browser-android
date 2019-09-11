@@ -18,20 +18,20 @@ import acr.browser.lightning.view.TrampolineConstants;
  * @author Stefano Pacifici
  */
 class TabFragmentListener implements SearchBar.Listener {
-    private final TabFragment fragment;
+    private final TabFragment2 fragment;
 
-    public static TabFragmentListener create(TabFragment fragment) {
+    public static TabFragmentListener create(TabFragment2 fragment) {
         return new TabFragmentListener(fragment);
     }
 
-    private TabFragmentListener(TabFragment fragment) {
+    private TabFragmentListener(TabFragment2 fragment) {
         this.fragment = fragment;
         fragment.searchBar.setListener(this);
     }
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        final SearchView searchView = fragment.searchView;
+        final SearchView searchView = fragment.searchView2;
         if (searchView != null) {
             searchView.handleUrlbarFocusChange(hasFocus);
         }
@@ -45,11 +45,11 @@ class TabFragmentListener implements SearchBar.Listener {
                 fragment.searchBar.showProgressBar();
                 fragment.searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
             }
-            ViewCompat.setElevation(fragment.mStatusBar, Utils.dpToPx(0));
+            ViewCompat.setElevation(fragment.statusBar, Utils.dpToPx(0));
         } else {
             fragment.bus.post(new Messages.AdjustPan());
             fragment.timings.setUrlBarFocusedTime();
-            fragment.searchView.bringToFront();
+            fragment.bringSearchToFront();
             if (!ResumeTabDialog.isShown()) {
                 fragment.telemetry.sendQuickAccessBarSignal(TelemetryKeys.SHOW, null,
                         fragment.getTelemetryView());
@@ -64,7 +64,7 @@ class TabFragmentListener implements SearchBar.Listener {
             fragment.resetFindInPage();
             fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(),
                     fragment.getTelemetryView());
-            ViewCompat.setElevation(fragment.mStatusBar, Utils.dpToPx(5));
+            ViewCompat.setElevation(fragment.statusBar, Utils.dpToPx(5));
         }
     }
 
@@ -86,10 +86,10 @@ class TabFragmentListener implements SearchBar.Listener {
         // fragment.showSearch(null);
 
         final String q = s.toString();
-        final SearchView searchView = fragment.searchView;
+        final SearchView searchView = fragment.searchView2;
         final boolean shouldSend = (((start + count) != before) ||
                 !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
-        if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.mLightningView.getUrl()))) {
+        if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.getUrl()))) {
             fragment.lastQuery = q;
             searchView.updateQuery(q, start, count);
         }
@@ -114,15 +114,15 @@ class TabFragmentListener implements SearchBar.Listener {
             return;
         }
         fragment.state.setMode(Mode.SEARCH);
-        final String url = fragment.mLightningView.getUrl();
+        final String url = fragment.getUrl();
         if (url.toLowerCase().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME+"=")) {
             searchBar.setSearchText("");
         } else {
             searchBar.setSearchText(url);
         }
         searchBar.selectAllText();
-        fragment.searchView.updateQuery("", 0, -1);
-        fragment.mShowWebPageAgain = true;
+        fragment.searchView2.updateQuery("", 0, -1);
+        fragment.setShowWebPageAgain(true);
     }
 
     @Override

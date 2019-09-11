@@ -193,7 +193,6 @@ public class SearchBar extends FrameLayout {
         }
         mShowSearchEditTextAnimationRunning = true;
 
-        progressBar.setVisibility(GONE);
         final Animation animation = new ScaleAnimation(scaleX, 1.0f, scaleY, 1.0f, pivotX, pivotY);
         animation.setDuration(150);
         animation.setAnimationListener(new Animation.AnimationListener() {

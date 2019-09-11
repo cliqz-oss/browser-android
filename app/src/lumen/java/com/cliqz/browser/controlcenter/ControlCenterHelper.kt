@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.cliqz.browser.app.BrowserApp
-import com.cliqz.browser.main.MainActivityHandler
+import com.cliqz.browser.main.MainThreadHandler
 import com.cliqz.browser.main.Messages
 import com.cliqz.nove.Bus
 import com.cliqz.nove.Subscribe
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class ControlCenterHelper(context : Context, private val fragmentManager: FragmentManager) : ControlCenterActions {
 
     @Inject
-    lateinit var handler: MainActivityHandler
+    lateinit var handler: MainThreadHandler
 
     @Inject
     lateinit var bus : Bus

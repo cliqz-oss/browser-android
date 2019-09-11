@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -113,12 +112,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 return null;
             }
             if (webRequest.getTabHasChanged(view)) {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        lightningView.lightingViewListenerListener.increaseAntiTrackingCounter();
-                    }
-                });
+                view.post(() -> lightningView.lightingViewListenerListener.increaseAntiTrackingCounter());
                 webRequest.resetTabHasChanged(view);
             }
             return response;
@@ -186,12 +180,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
 
     private boolean handleCloseCommand(@NonNull WebView view, @Nullable String cmd) {
         if (TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE.equals(cmd)) {
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    lightningView.eventBus.post(new BrowserEvents.CloseTab());
-                }
-            });
+            view.post(() -> lightningView.eventBus.post(new BrowserEvents.CloseTab()));
             return true;
         }
         return false;
@@ -214,12 +203,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     }
 
     private <T> void post(View view, final T msg) {
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                lightningView.eventBus.post(msg);
-            }
-        });
+        view.post(() -> lightningView.eventBus.post(msg));
     }
 
     @SuppressLint("ObsoleteSdkInt")
@@ -237,25 +221,27 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             lightningView.mTitle.setTitle(view.getTitle());
             post(view, new Messages.UpdateTitle());
             if (!lightningView.isIncognitoTab()) {
-                lightningView.persister.persist(lightningView.getId(), title, url, view);
+                final String tabId = lightningView.tabsManager.getTabId(lightningView);
+                if (tabId != null) {
+                    lightningView.persister.persist(tabId, title, url, view);
+                }
             }
-        }
-        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT &&
-                lightningView.getInvertePage()) {
-            view.evaluateJavascript(Constants.JAVASCRIPT_INVERT_PAGE, null);
         }
 
         if (!lightningView.isIncognitoTab() && lightningView.preferences.getSavePasswordsEnabled()) {
             //Inject javascript to check for id and pass fields in the page
             lightningView.passwordManager.injectJavascript(view);
         }
-        ((CliqzWebView)view).executeJS(Constants.JAVASCRIPT_COLLAPSE_SECTIONS);
+        view.evaluateJavascript(Constants.JAVASCRIPT_COLLAPSE_SECTIONS, null);
+        lightningView.injectReadabilityScript();
         post(view, new CliqzMessages.OnPageFinished());
     }
 
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         final Uri uri = Uri.parse(url);
+        // sanitise the url
+        url = url != null ? url : "";
         final Set<String> params = uri.isHierarchical() ? uri.getQueryParameterNames() : null;
 
         final String host = uri.getHost();
@@ -286,7 +272,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         if (!mLastUrl.equals(url)) {
             lightningView.historyId = -1;
             mLastUrl = url;
-            if (url != null && !url.isEmpty() && !url.startsWith("cliqz://")) {
+            if (!url.isEmpty() && !url.startsWith("cliqz://")) {
                 lightningView.antiPhishing.processUrl(url, this);
             }
         }
@@ -338,23 +324,14 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         builder.setView(passLayout);
         builder.setCancelable(true)
                 .setPositiveButton(context.getString(R.string.title_sign_in),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                String user = name.getText().toString();
-                                String pass = password.getText().toString();
-                                handler.proceed(user.trim(), pass.trim());
-                                Timber.d("Request Login");
-                            }
+                        (dialog, id) -> {
+                            String user = name.getText().toString();
+                            String pass = password.getText().toString();
+                            handler.proceed(user.trim(), pass.trim());
+                            Timber.d("Request Login");
                         })
                 .setNegativeButton(context.getString(R.string.action_cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                handler.cancel();
-
-                            }
-                        });
+                        (dialog, id) -> handler.cancel());
         AlertDialog alert = builder.create();
         alert.show();
 
@@ -372,15 +349,10 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             if (mIsRunning)
                 return;
             if (Math.abs(mZoomScale - newScale) > 0.01f) {
-                mIsRunning = view.postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        mZoomScale = newScale;
-                        view.evaluateJavascript(Constants.JAVASCRIPT_TEXT_REFLOW, null);
-                        mIsRunning = false;
-                    }
-
+                mIsRunning = view.postDelayed(() -> {
+                    mZoomScale = newScale;
+                    view.evaluateJavascript(Constants.JAVASCRIPT_TEXT_REFLOW, null);
+                    mIsRunning = false;
                 }, 100);
             }
 
@@ -437,19 +409,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         builder.setMessage(alertMessage)
                 .setCancelable(true)
                 .setPositiveButton(context.getString(R.string.action_yes),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                handler.proceed();
-                            }
-                        })
+                        (dialog, id) -> handler.proceed())
                 .setNegativeButton(context.getString(R.string.action_no),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                handler.cancel();
-                            }
-                        });
+                        (dialog, id) -> handler.cancel());
         builder.create().show();
     }
 
@@ -460,19 +422,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         builder.setMessage(context.getString(R.string.message_form_resubmission))
                 .setCancelable(true)
                 .setPositiveButton(context.getString(R.string.action_yes),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                resend.sendToTarget();
-                            }
-                        })
+                        (dialog, id) -> resend.sendToTarget())
                 .setNegativeButton(context.getString(R.string.action_no),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                dontResend.sendToTarget();
-                            }
-                        });
+                        (dialog, id) -> dontResend.sendToTarget());
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -480,7 +432,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
     @TargetApi(Build.VERSION_CODES.N)
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        switch (internalShouldOverrideUrlLoading(view, request.getUrl())) {
+        switch (internalShouldOverrideUrlLoading(request.getUrl())) {
             case CODE_CALL_SUPER:
                 return super.shouldOverrideUrlLoading(view, request);
             case CODE_RETURN_TRUE:
@@ -492,7 +444,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        switch (internalShouldOverrideUrlLoading(view, Uri.parse(url))) {
+        switch (internalShouldOverrideUrlLoading(Uri.parse(url))) {
             case CODE_CALL_SUPER:
                 return super.shouldOverrideUrlLoading(view, url);
             case CODE_RETURN_TRUE:
@@ -502,7 +454,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         }
     }
 
-    private int internalShouldOverrideUrlLoading(WebView view, Uri uri) {
+    private int internalShouldOverrideUrlLoading(Uri uri) {
         if (uri == null) {
             return CODE_RETURN_FALSE;
         }

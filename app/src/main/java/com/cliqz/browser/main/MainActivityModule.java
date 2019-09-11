@@ -8,7 +8,6 @@ import com.cliqz.browser.utils.AppBackgroundManager;
 import com.cliqz.browser.utils.BloomFilterUtils;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.vpn.VpnHandler;
-import com.cliqz.jsengine.Engine;
 
 import acr.browser.lightning.preference.PreferenceManager;
 import dagger.Module;
@@ -51,20 +50,16 @@ public class MainActivityModule {
 
     @PerActivity
     @Provides
-    SearchView providesSearchView(Engine engine) {
-        return new SearchView(activity, engine);
+    SearchView providesSearchView() {
+        final SearchView searchView = activity.getSearchView();
+        assert searchView != null;
+        return searchView;
     }
 
     @PerActivity
     @Provides
     CrashDetector provideCrashDetector(PreferenceManager preferenceManager) {
         return new CrashDetector(preferenceManager);
-    }
-
-    @PerActivity
-    @Provides
-    MainActivityHandler providesMainActivityHandler() {
-        return new MainActivityHandler(activity);
     }
 
     @PerActivity
