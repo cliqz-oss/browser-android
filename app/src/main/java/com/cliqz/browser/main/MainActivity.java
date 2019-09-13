@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -71,7 +72,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         setContentView(R.layout.activity_main);
         mSearchView = findViewById(R.id.search_view);
         if (isFirstInstall() && preferenceManager.shouldShowOnboardingv2()) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             final LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
             final View onboardingView = inflater.inflate(
                     BuildConfig.IS_LUMEN ? R.layout.lumen_onboarding : R.layout.cliqz_onboarding, null);
@@ -377,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             rootView.addView(onboardingView);
             final Button closeOnboarding = onboardingView.findViewById(R.id.onboarding_close_button);
             closeOnboarding.setOnClickListener(view -> {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                 preferenceManager.setShouldShowOnboardingv2(false);
                 rootView.removeView(onboardingView);
             });
