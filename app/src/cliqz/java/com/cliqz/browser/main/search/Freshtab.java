@@ -246,7 +246,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
                     R.color.made_in_germany_color));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                final int navigationBarColor = mIsIncognito ? R.color.incognito_tab_primary_color_dark : R.color.white;
+                final int navigationBarColor = mIsIncognito ? R.color.incognito_tab_primary_color_dark : android.R.color.black;
                 ((MainActivity) context).getWindow().setNavigationBarColor(
                         ContextCompat.getColor(context, navigationBarColor));
             }
