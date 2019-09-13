@@ -138,10 +138,17 @@ public class AppBackgroundManager {
         }
         final int[] location = new int[2];
         view.getLocationOnScreen(location);
-        final int offLeft = (backgroundSize - screenWitdh) / 2;
-        final int offTop = (backgroundSize - screenHeight) / 2;
-        final int l = offLeft + location[0];
-        final int t = offTop + Math.max(0, location[1]);
+        final int l;
+        final int t;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            final int offTop = (backgroundSize - screenHeight) / 2;
+            final int offLeft = (backgroundSize - screenWitdh) / 2;
+            l = offLeft + location[0];
+            t = offTop + Math.max(0, location[1]);
+        } else {
+            l = location[0];
+            t = Math.max(0, location[1]);
+        }
         final int r = l + view.getWidth();
         final int b = t + view.getHeight();
         return new Rect(l, t, r, b);
