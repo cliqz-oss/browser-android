@@ -34,7 +34,7 @@
     <string name="incognito_tab_title">Forget Tab</string>
     <string name="incognito_tab_description">You are browsing in Forget Mode: websites you visit in this mode will not be saved in your history, and local data, including cookies, will not be stored.</string>
     <string name="auto_forget_tab">Automatic Forget Tab</string>
-    <string name="cliqz_onboarding_welcome_text">Congrats on choosing Cliqz for private browsing.</string>
+    <string name="cliqz_onboarding_welcome_text">Congrats on choosing Cliqz for private browsing</string>
     <string name="made_in_germany">Made in Germany</string>
     <string name="start">START</string>
 </resources>
