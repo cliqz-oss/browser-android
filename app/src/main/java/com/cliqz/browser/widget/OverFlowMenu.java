@@ -616,7 +616,7 @@ public class OverFlowMenu extends FrameLayout {
                     } else {
                         final Toast setDefaultBrowserToast = Toast.makeText(getContext(),
                                 R.string.set_default_browser_msg, Toast.LENGTH_LONG);
-                        setDefaultBrowserToast.setGravity(Gravity.TOP, 0, 300);
+                        setDefaultBrowserToast.setGravity(Gravity.CENTER, 0, 0);
                         setDefaultBrowserToast.show();
                         activity.startActivity(openBrowserIntent);
                     }

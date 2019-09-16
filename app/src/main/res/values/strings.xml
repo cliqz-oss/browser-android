@@ -232,7 +232,7 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="send_tab_no_connection_error_title">No Connection</string>
     <string name="action_connect">Connect</string>
     <string name="send_tab_to_desktop">Send Tab to Desktop</string>
-    <string name="set_default_browser">Set default</string>
+    <string name="set_default_browser">Set as default browser</string>
     <string name="code_scanner">QR-Code scanner</string>
     <string name="qrcode_scanner_scanning_instructions">![QR-Code example](qr_code_icon_small) Scan the QR-Code</string>
     <string name="tab_send_success_msg">Tab sent to %1$s</string>
