@@ -266,4 +266,10 @@ public final class Messages {
 
     public static class CloseOpenTabs {
     }
+
+    public static class DisableScrolling {
+    }
+
+    public static class EnableScrolling {
+    }
 }

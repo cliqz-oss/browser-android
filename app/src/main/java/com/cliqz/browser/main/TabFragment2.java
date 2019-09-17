@@ -1298,6 +1298,18 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         updateCCIcon(false);
     }
 
+    @Subscribe
+    void disableUrlBarScrolling(Messages.DisableScrolling event) {
+        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
+    }
+
+    @Subscribe
+    void enableUrlBarScrolling(Messages.EnableScrolling event) {
+        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+    }
+
     private void updateUI() {
         try {
             final Activity activity = FragmentUtilsV4.getActivity(this);
