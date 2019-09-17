@@ -1,15 +1,16 @@
 package com.cliqz.browser.main.search
 
 import acr.browser.lightning.bus.BrowserEvents
+import acr.browser.lightning.utils.Utils
+import android.app.Activity
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import com.cliqz.browser.R
 import com.cliqz.browser.webview.Topsite
-import com.google.android.material.snackbar.Snackbar
 
 class TopSitesContextMenu(
-        view: View,
+        private val view: View,
         private val freshTab: Freshtab,
         private val topSite: Topsite
 ) :
@@ -27,12 +28,12 @@ class TopSitesContextMenu(
         R.id.remove -> {
             freshTab.historyDatabase.blockDomainsForTopsites(topSite.domain)
             freshTab.refreshTopsites()
-            Snackbar.make(freshTab, R.string.snackbar_topsite_removed, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.btn_undo_topsite_removal) {
-                        freshTab.historyDatabase.removeDomainFromBlockedTopSites(topSite.domain)
-                        freshTab.refreshTopsites()
-                    }
-                    .show()
+            Utils.showSnackbar(view.context as Activity,
+                    view.context.getString(R.string.snackbar_topsite_removed),
+                    view.context.getString(R.string.action_undo)) {
+                freshTab.historyDatabase.removeDomainFromBlockedTopSites(topSite.domain)
+                freshTab.refreshTopsites()
+            }
             true
         }
         else -> false
