@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/open_new_tab"
-        android:title="@string/context_menu_open_new_tab" />
+        android:title="@string/open_in_new_tab" />
     <item
         android:id="@+id/open_forget_tab"
-        android:title="@string/context_menu_open_forget_tab" />
+        android:title="@string/open_in_incognito_tab" />
     <item
         android:id="@+id/remove"
         android:title="@string/context_menu_remove_topsite" />
