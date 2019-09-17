@@ -17,7 +17,7 @@ public class PurchasesManager {
     }
 
     public boolean isDashboardEnabled() {
-        return false;
+        return true;
     }
 
     public void checkPurchases() {}

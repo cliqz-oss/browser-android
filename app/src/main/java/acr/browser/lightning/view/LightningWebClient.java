@@ -250,7 +250,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         }
         mCurrentHost = host;
         final ControlCenterStatus status;
-        if (host != null && lightningView.attrack.isWhitelisted(host)) {
+        if (host != null && lightningView.attrack.isWhitelisted(url)) {
             status = ControlCenterStatus.DISABLED; //hack change whitelisted icon instead
         } else {
             status = ControlCenterStatus.ENABLED;
