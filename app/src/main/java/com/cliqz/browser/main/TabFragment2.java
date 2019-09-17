@@ -1021,10 +1021,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Override
     public void increaseAntiTrackingCounter() {
         mTrackerCount++;
-        // Quick fix for Ad-Block loading problems (attrack.isWhitelist(...) timeout)
-        if (mTrackerCount == 1) {
-            bus.post(new Messages.UpdateControlCenterIcon(ControlCenterStatus.ENABLED));
-        }
         searchBar.setTrackerCount(mTrackerCount);
         if (mTrackerCount > 0 && onBoardingHelper.conditionallyShowAntiTrackingDescription()) {
             hideKeyboard(null);
