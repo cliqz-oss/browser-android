@@ -42,5 +42,4 @@
     <item name="favorites_view_parent" type="id" />
     <item name="tabs_manager_button" type="id" />
     <item name="tabs_menu_button" type="id" />
-    <item name="set_default_browser" type="id" />
 </resources>
