@@ -67,9 +67,9 @@ node('master'){
                     set -e
                     rm -f app/cliqz-config.json
                     rm -f app/google-services.json
-                    rm -rf app/build
-                    rm -rf jsengine/*
-                    rm -rf gradle_home/
+                    rm -rf app/build || true
+                    rm -rf jsengine/* || true
+                    rm -rf gradle_home/ || true
                 '''
             }
         }
