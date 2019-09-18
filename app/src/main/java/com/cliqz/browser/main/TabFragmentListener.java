@@ -59,7 +59,6 @@ class TabFragmentListener implements SearchBar.Listener {
                     fragment.quickAccessBar.show();
                 }
             }
-            fragment.disableUrlBarScrolling();
             fragment.inPageSearchBar.setVisibility(View.GONE);
             fragment.resetFindInPage();
             fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(),
