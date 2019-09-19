@@ -475,7 +475,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             } else {
-                enableUrlBarScrolling();
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
@@ -505,6 +504,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     void bringSearchToFront() {
         lightningView.setVisibility(View.GONE);
         searchViewContainer.setVisibility(View.VISIBLE);
+        disableUrlBarScrolling();
         searchView2.refresh();
     }
 
@@ -733,6 +733,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     private void bringWebViewToFront(Animation animation) {
         lightningView.setVisibility(View.VISIBLE);
         searchViewContainer.setVisibility(View.INVISIBLE);
+        enableUrlBarScrolling();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
         final String url = lightningView.getUrl();
@@ -740,7 +741,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         searchBar.setSecure(isHttpsUrl(url));
         searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
         lightningView.setWebViewAnimation(animation);
-        enableUrlBarScrolling();
         state.setMode(Mode.WEBPAGE);
         try {
             final Context context = FragmentUtilsV4.getContext(this);
@@ -853,7 +853,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         query = query != null ? query : "";
         searchBar.showSearchEditText();
         bringSearchToFront();
-        disableUrlBarScrolling();
         inPageSearchBar.setVisibility(View.GONE);
         lightningView.findInPage("");
         searchBar.requestSearchFocus();
@@ -1337,18 +1336,14 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         }
     }
 
-    void disableUrlBarScrolling() {
-        // TODO Restore this
-//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-//        params.setScrollFlags(0);
-//        mContentContainer.requestLayout();
+    private void disableUrlBarScrolling() {
+        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
     }
 
     private void enableUrlBarScrolling() {
-        // Todo Restore this
-//        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-//        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
-//        mContentContainer.requestLayout();
+        final AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
     }
 
     // TODO: dirty hack due to the Oreo multi-process WebView
