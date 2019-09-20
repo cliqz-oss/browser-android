@@ -291,6 +291,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         inPageSearchBar.setVisibility(View.GONE);
         state.setIncognito(mIsIncognito);
         searchBar.setStyle(mIsIncognito);
+        lightningView.setIsIncognitoTab(mIsIncognito);
         lightningView.restoreTab(mId);
         lightningView.setListener(this);
 
