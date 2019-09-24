@@ -696,24 +696,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Subscribe
     public void updateProgress(BrowserEvents.UpdateProgress event) {
         searchBar.setProgress(event.progress);
-        if (state.getMode() == Mode.SEARCH) {
-            return;
-        }
-        if (!lightningView.getUrl().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
-            if (event.progress == 100) {
-                // Re-adjust the layout in cases when height of content is not more than the
-                // visible content height + toolbar height
-                // TODO Check this
-//                final AppBarLayout.LayoutParams params =
-//                        (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-//                final WebView webView = lightningView.getWebView();
-//                if (webView.getContentHeight() <= webView.getHeight()) {
-//                    disableUrlBarScrolling();
-//                } else if (params.getScrollFlags() == 0) {
-//                    enableUrlBarScrolling();
-//                }
-            }
-        }
     }
 
     @Subscribe

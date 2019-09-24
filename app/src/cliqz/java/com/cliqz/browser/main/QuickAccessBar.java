@@ -264,13 +264,17 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        final int maxY = ((ViewGroup) getParent()).getHeight();
+        final int maxY = getParentHeight();
         if (!hasWindowFocus && maxY != mY) {
             setY(maxY);
             mY = maxY;
         }
     }
 
+    private int getParentHeight() {
+        return ((ViewGroup) getParent()).getHeight();
+    }
+    
     @OnClick(R.id.tabs_overview_btn)
     void onTabsOverviewButtonClicked() {
         safeBusPost(new Messages.GoToOverview());
@@ -357,7 +361,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         if (mY == Integer.MAX_VALUE) {
             return;
         }
-        final float fromY = ((ViewGroup) getParent()).getHeight();
+        final float fromY = getParentHeight();
         setY(fromY);
         mCurrentAnimantor = ObjectAnimator.ofFloat(this, "y", fromY, mY);
         if (!now) {
@@ -371,14 +375,14 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         if (mY == Integer.MAX_VALUE) {
             return;
         }
-        final float toY = ((ViewGroup) getParent()).getHeight();
+        final float toY = getParentHeight();
         mCurrentAnimantor = ObjectAnimator.ofFloat(this, "y", mY, toY);
         mCurrentAnimantor.setDuration(DISAPPEAR_ANIMATION_DURATION);
         mCurrentAnimantor.start();
     }
 
     private boolean isKeyboardVisible() {
-        final int parentHeight = ((ViewGroup) getParent()).getHeight();
+        final int parentHeight = getParentHeight();
         if (parentHeight == 0) {
             return false;
         }
@@ -403,6 +407,8 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
                         startAppearAnimation(false);
                     }
                 }
+            } else {
+                setY(getParentHeight());
             }
         }
     }
