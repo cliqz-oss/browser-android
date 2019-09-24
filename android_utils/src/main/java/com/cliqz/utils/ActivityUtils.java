@@ -5,6 +5,8 @@ import android.app.ActivityManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -70,5 +72,9 @@ public class ActivityUtils {
                     new ActivityManager.TaskDescription(title, icon, color);
             activity.setTaskDescription(description);
         }
+    }
+
+    public static void setNavigationBarColor(@NonNull Activity activity, @ColorRes int color) {
+        activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, color));
     }
 }
