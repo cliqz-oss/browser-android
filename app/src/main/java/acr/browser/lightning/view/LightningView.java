@@ -41,6 +41,7 @@ import com.cliqz.jsengine.Engine;
 import com.cliqz.jsengine.EngineNotYetAvailable;
 import com.cliqz.jsengine.Insights;
 import com.cliqz.nove.Bus;
+import com.cliqz.utils.ViewUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -83,7 +84,6 @@ public class LightningView extends FrameLayout {
     private CliqzWebView mWebView;
     private boolean mIsIncognitoTab;
     private static final int API = android.os.Build.VERSION.SDK_INT;
-    // private String mId;
     private boolean mIsAutoForgetTab;
     private boolean urlSSLError = false;
     /**
@@ -173,8 +173,6 @@ public class LightningView extends FrameLayout {
         // mId = RelativelySafeUniqueId.createNewUniqueId();
         mIsIncognitoTab = false;
         mTitle = new LightningViewTitle(context, false);
-        createWebView();
-        addView(mWebView);
     }
 
     /**
@@ -541,31 +539,49 @@ public class LightningView extends FrameLayout {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    private void createWebView() {
+    /**
+     * Create a CliqzWebView tied to this LightningView.
+     *
+     * TODO: Refactor this, there is a weird call loop between the LightningView and the
+     *       TabsManager in which the first call the restoreTab method on the latter and it call
+     *       back this method (if needed) to create a CliqzWebView
+     *       {@see LightningView::restoreTab(...)}
+     *
+     * @return always return a fully configured CliqzWebView
+     */
+    @NonNull
+    public CliqzWebView createWebView() {
         final Context context = getContext();
-        mWebView = new CliqzWebView(context);
-        mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-        mWebView.setFocusableInTouchMode(true);
-        mWebView.setFocusable(true);
-        mWebView.setDrawingCacheEnabled(false);
-        mWebView.setWillNotCacheDrawing(true);
+        final CliqzWebView cliqzWebView = new CliqzWebView(context);
+        cliqzWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        cliqzWebView.setFocusableInTouchMode(true);
+        cliqzWebView.setFocusable(true);
+        cliqzWebView.setDrawingCacheEnabled(false);
+        cliqzWebView.setWillNotCacheDrawing(true);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            mWebView.setAnimationCacheEnabled(false);
-            mWebView.setAlwaysDrawnWithCacheEnabled(false);
+            cliqzWebView.setAnimationCacheEnabled(false);
+            cliqzWebView.setAlwaysDrawnWithCacheEnabled(false);
         }
-        mWebView.setBackgroundColor(Color.WHITE);
+        cliqzWebView.setBackgroundColor(Color.WHITE);
 
-        mWebView.setSaveEnabled(true);
-        mWebView.setNetworkAvailable(true);
-        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-        mWebView.setWebViewClient(new LightningWebClient(context, this));
-        mWebView.setDownloadListener(new LightningDownloadListener(context));
-        initializeSettings(mWebView.getSettings(), context);
+        cliqzWebView.setSaveEnabled(true);
+        cliqzWebView.setNetworkAvailable(true);
+        cliqzWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+        cliqzWebView.setWebViewClient(new LightningWebClient(context, this));
+        cliqzWebView.setDownloadListener(new LightningDownloadListener(context));
+        initializeSettings(cliqzWebView.getSettings(), context);
+        return cliqzWebView;
     }
 
+    /**
+     * Restore the tab content
+     * @param tabId the tab id to be reloaded
+     */
     public void restoreTab(@NonNull String tabId) {
-        persister.restore(tabId, mWebView);
+        mWebView = tabsManager.restoreTab(this, tabId);
+        ViewUtils.removeViewFromParent(mWebView);
+        addView(mWebView);
     }
 
     public Bitmap getFavicon() {
