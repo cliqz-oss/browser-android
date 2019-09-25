@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.utils.CustomLinkMovementMethod;
+import com.cliqz.utils.ActivityUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ public class EulaSettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eula_setting);
+        ActivityUtils.setNavigationBarColor(this, android.R.color.black);
         ButterKnife.bind(this);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

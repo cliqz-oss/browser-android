@@ -18,6 +18,7 @@ import com.cliqz.browser.connect.SyncEvents;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
+import com.cliqz.utils.ActivityUtils;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,7 @@ public class CodeScannerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(androidx.appcompat.R.style.Theme_AppCompat_Light);
         super.onCreate(savedInstanceState);
+        ActivityUtils.setNavigationBarColor(this, android.R.color.black);
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP |

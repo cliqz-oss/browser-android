@@ -58,6 +58,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         ActivityUtils.setTaskDescription(this, R.string.app_name, R.color.primary_color_dark,
                 R.mipmap.ic_launcher);
 
+        ActivityUtils.setNavigationBarColor(this, android.R.color.black);
         BrowserApp.getAppComponent().inject(this);
         // this is a workaround for the Toolbar in PreferenceActitivty
         ViewGroup root = findViewById(android.R.id.content);

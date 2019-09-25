@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         ActivityUtils.setTaskDescription(this, R.string.app_name, R.color.primary_color_dark,
                 R.mipmap.ic_launcher);
 
+        ActivityUtils.setNavigationBarColor(this, android.R.color.black);
         mMainActivityComponent = BrowserApp.createActivityComponent(this);
         mMainActivityComponent.inject(this);
         if (BuildConfig.IS_LUMEN) {
