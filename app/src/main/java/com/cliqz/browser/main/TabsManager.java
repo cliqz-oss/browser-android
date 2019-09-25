@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
 
@@ -120,7 +121,9 @@ public class TabsManager {
             }
             newTab.setArguments(arguments);
             final int position = mFragmentsList.size();
-            mFragmentsList.add(newTab);
+            final TabData tabData = new TabData();
+            tabData.fragment = newTab;
+            mFragmentsList.add(tabData);
             return position;
         }
 
@@ -134,7 +137,12 @@ public class TabsManager {
         }
     }
 
-    private final List<TabFragment2> mFragmentsList = new ArrayList<>();
+    private static final class TabData {
+        TabFragment2 fragment = null;
+        CliqzWebView webView = null;
+    }
+
+    private final List<TabData> mFragmentsList = new ArrayList<>();
     private final FragmentManager mFragmentManager;
     private int currentVisibleTab = -1;
 
@@ -174,7 +182,7 @@ public class TabsManager {
         if (getCurrentTabPosition() == -1) {
             return null;
         } else {
-            return mFragmentsList.get(getCurrentTabPosition());
+            return mFragmentsList.get(getCurrentTabPosition()).fragment;
         }
     }
 
@@ -182,7 +190,7 @@ public class TabsManager {
      * @return Returns the tabfragment at the required position
      */
     public TabFragment2 getTab(int position) {
-        return mFragmentsList.get(position);
+        return mFragmentsList.get(position).fragment;
     }
 
     /**
@@ -191,7 +199,7 @@ public class TabsManager {
      */
     @NonNull
     public String getTabId(int position) {
-        return mFragmentsList.get(position).getTabId();
+        return mFragmentsList.get(position).fragment.getTabId();
     }
 
     /**
@@ -224,7 +232,7 @@ public class TabsManager {
         if (currentTab != null) {
             currentTab.state.setSelected(false);
         }
-        final TabFragment2 tab = mFragmentsList.get(position);
+        final TabFragment2 tab = mFragmentsList.get(position).fragment;
         tab.state.setSelected(true);
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M && animation != 0) {
@@ -245,6 +253,23 @@ public class TabsManager {
     public Builder buildTab() {
         return new Builder();
     }
+
+    public CliqzWebView restoreTab(@NonNull LightningView lightningView, @NonNull String tabId) {
+        final int index = findTabFor(lightningView);
+        if (index == -1) {
+            // This is technically an error but we are still able to recover in this case
+            final CliqzWebView webView = lightningView.createWebView();
+            persister.restore(tabId, webView);
+            return webView;
+        }
+        final TabData tabData = mFragmentsList.get(index);
+        if (tabData.webView == null) {
+            tabData.webView = lightningView.createWebView();
+            persister.restore(tabId, tabData.webView);
+        }
+        return tabData.webView;
+    }
+
 
     /**
      * It closes the tab associated with the given {@link LightningView}, the method is meant to
@@ -276,7 +301,7 @@ public class TabsManager {
      */
     int findTabFor(LightningView view) {
         for (int i = 0; i < mFragmentsList.size(); i++) {
-            final TabFragment2 tab = mFragmentsList.get(i);
+            final TabFragment2 tab = mFragmentsList.get(i).fragment;
             if (tab != null && tab.getLightningView() == view) {
                 return i;
             }
@@ -294,7 +319,7 @@ public class TabsManager {
             return;
         }
 
-        final TabFragment2 reference = mFragmentsList.get(position);
+        final TabFragment2 reference = mFragmentsList.get(position).fragment;
         if (reference == null) {
             return;
         }
@@ -313,9 +338,9 @@ public class TabsManager {
      * Handles closing all tabs from the 3-dots menu
      */
     public void deleteAllTabs() {
-        for (TabFragment2 fragment : mFragmentsList) {
-            fragment.onDeleteTab();
-            persister.remove(fragment.getTabId());
+        for (TabData tabData : mFragmentsList) {
+            tabData.fragment.onDeleteTab();
+            persister.remove(tabData.fragment.getTabId());
         }
 
         mFragmentsList.clear();
@@ -324,14 +349,14 @@ public class TabsManager {
     }
 
     void pauseAllTabs() {
-        for (TabFragment2 tabFragment : mFragmentsList) {
-            tabFragment.onPauseTab();
+        for (TabData tabData : mFragmentsList) {
+            tabData.fragment.onPauseTab();
         }
     }
 
     void resumeAllTabs() {
-        for (TabFragment2 tabFragment : mFragmentsList) {
-            tabFragment.onResumeTab();
+        for (TabData tabData : mFragmentsList) {
+            tabData.fragment.onResumeTab();
         }
     }
 
