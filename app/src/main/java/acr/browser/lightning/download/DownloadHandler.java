@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
 
@@ -23,7 +22,6 @@ import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 import com.cliqz.utils.WebAddress;
 
@@ -177,6 +175,9 @@ public class DownloadHandler {
         // depending on mimetype?
 
         final File downloadDir = new File(Environment.getExternalStorageDirectory(), "Download");
+        if (!downloadDir.exists()) {
+            downloadDir.mkdir();
+        }
         if (!downloadDir.isDirectory()) {
             // Cannot make the directory
             eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_location_download));
