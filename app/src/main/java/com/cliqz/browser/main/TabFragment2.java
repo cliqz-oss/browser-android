@@ -1259,7 +1259,10 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Subscribe
     void onSearchBarBackPressed(@Nullable Messages.SearchBarBackPressed msg) {
         telemetry.sendBackIconPressedSignal(mIsIncognito, searchView2.isFreshTabVisible());
-        if (lightningView.canGoBack()) {
+        if (lightningView.getUrl().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
+            lightningView.goForward();
+        }
+        if (!lightningView.getUrl().isEmpty()) {
             bringWebViewToFront(null);
         }
     }
