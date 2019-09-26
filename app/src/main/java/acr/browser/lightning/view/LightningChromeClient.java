@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -72,6 +73,22 @@ class LightningChromeClient extends WebChromeClient {
         if (lightningView.lightingViewListenerListener != null) {
             lightningView.lightingViewListenerListener.onFavIconLoaded(icon);
         }
+    }
+
+    @Override
+    public void onPermissionRequest(PermissionRequest request) {
+        activity.runOnUiThread(() -> PermissionsManager.getInstance()
+                .requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
+            @Override
+            public void onGranted() {
+                request.grant(request.getResources());
+            }
+
+            @Override
+            public void onDenied(String permission) {
+                // no-op
+            }
+        }, Manifest.permission.CAMERA));
     }
 
     @Override
