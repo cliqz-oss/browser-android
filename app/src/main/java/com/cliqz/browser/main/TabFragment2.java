@@ -486,8 +486,12 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         mInitialUrl = null;
         mOverviewEvent = null;
 
-        if (!preferenceManager.isAttrackEnabled() && ccIcon != null) {
-            ccIcon.setImageLevel(ControlCenterStatus.DISABLED.ordinal());
+        if (ccIcon != null) {
+            if (!preferenceManager.isAttrackEnabled() ) {
+                ccIcon.setImageLevel(ControlCenterStatus.DISABLED.ordinal());
+            } else {
+                ccIcon.setImageLevel(ControlCenterStatus.ENABLED.ordinal());
+            }
         }
         queryManager.setForgetMode(mIsIncognito);
         mIsReaderModeOn = false;
