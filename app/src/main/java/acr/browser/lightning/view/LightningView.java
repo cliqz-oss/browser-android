@@ -695,7 +695,7 @@ public class LightningView extends FrameLayout {
     }
 
     public int getProgress() {
-        return mWebView.getProgress();
+        return mWebView != null ? mWebView.getProgress() : 100;
     }
 
     public boolean isUrlWhiteListed(){
