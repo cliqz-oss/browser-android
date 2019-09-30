@@ -6,6 +6,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.cliqz.utils.ContextUtils;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -36,7 +38,7 @@ import butterknife.ButterKnife;
  */
 public class ControlCenterDialog extends DialogFragment {
 
-    private static String TAG = ControlCenterDialog.class.getSimpleName();
+    private static final String TAG = ControlCenterDialog.class.getSimpleName();
 
     private static final String KEY_ANCHOR_HEIGHT = TAG + ".ANCHOR_HEIGHT";
     private static final String KEY_HASHCODE = TAG + ".HASHCODE";
@@ -106,8 +108,10 @@ public class ControlCenterDialog extends DialogFragment {
         final Activity activity = getActivity();
         final View contentView = activity != null ? activity.findViewById(android.R.id.content) : null;
 
-        if (window != null && contentView != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, contentView.getHeight() - mAnchorHeight);
+        final Context context = getContext();
+        if (window != null && contentView != null && context != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,contentView.getHeight() -
+                    (mAnchorHeight + ContextUtils.getStatusBarHeight(context)));
             window.setGravity(Gravity.BOTTOM);
         }
     }
