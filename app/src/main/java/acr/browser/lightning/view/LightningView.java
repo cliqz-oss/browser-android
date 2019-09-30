@@ -694,6 +694,10 @@ public class LightningView extends FrameLayout {
         this.lightingViewListenerListener = lightingViewListenerListener;
     }
 
+    public int getProgress() {
+        return mWebView != null ? mWebView.getProgress() : 100;
+    }
+
     public boolean isUrlWhiteListed(){
         final Uri uri = Uri.parse(getUrl());
         final String host = uri.getHost();

@@ -478,6 +478,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             } else {
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
+                progressBar.setProgress(lightningView.getProgress());
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
                 searchBar.setTitle(url);
             }
@@ -771,6 +772,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         queryManager.addLatestQueryToDatabase();
         openLink(event.url, event.reset, event.fromHistory, event.animation);
         mShowWebPageAgain = false;
+        state.setUrl(event.url);
     }
 
     @Subscribe
