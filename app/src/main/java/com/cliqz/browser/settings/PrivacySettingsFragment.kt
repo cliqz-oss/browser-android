@@ -14,6 +14,7 @@ import android.preference.CheckBoxPreference
 import android.preference.Preference
 import android.preference.PreferenceCategory
 import android.provider.Settings
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.cliqz.browser.R
 import com.cliqz.browser.main.Messages
@@ -236,6 +237,8 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                 }
                 .setPositiveButton(R.string.action_clear) { _, _ ->
                     values.forEachIndexed { index, value -> if (value) actions[index]() }
+                    mPreferenceManager.setShouldRefreshPage()
+                    Toast.makeText(activity, R.string.privated_data_cleared, Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton(R.string.action_cancel) { dialog, _ -> dialog.dismiss() }
                 .show()

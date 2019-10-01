@@ -505,6 +505,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                 mShouldShowVpnPanel = false;
             });
         }
+        if (preferenceManager.shouldRefreshPage()) {
+            lightningView.reload();
+        }
     }
 
     void bringSearchToFront() {

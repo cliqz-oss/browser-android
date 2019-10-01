@@ -41,6 +41,7 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
+        static final String SHOULD_REFRESH = "should_refresh";
         static final String SHOWN_MESSAGE_COUNT = "shown_message_count";
         static final String SHOWN_MESSAGE_IDS = "message_ids";
         static final String VPN_START_TIME = "vpn_start_time";
@@ -960,5 +961,15 @@ public class PreferenceManager {
 
     public void setMessageShownCount(int count) {
         putInt(Name.SHOWN_MESSAGE_COUNT, count);
+    }
+
+    public void setShouldRefreshPage() {
+        putBoolean(Name.SHOULD_REFRESH, true);
+    }
+
+    public boolean shouldRefreshPage() {
+        final boolean shouldRefresh = mPrefs.getBoolean(Name.SHOULD_REFRESH, false);
+        putBoolean(Name.SHOULD_REFRESH, false);
+        return shouldRefresh;
     }
 }

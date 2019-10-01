@@ -310,4 +310,5 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="action_take_survey">Teilnehmen</string>
     <string name="clear_private_data">Private Daten löschen</string>
     <string name="action_clear">Löschen</string>
+    <string name="privated_data_cleared">Private Daten gelöscht</string>
 </resources>
