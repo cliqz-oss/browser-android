@@ -399,7 +399,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
             if (isKeyboardVisible()) {
                 final Rect visibleFrame = new Rect();
                 getWindowVisibleDisplayFrame(visibleFrame);
-                final int y = visibleFrame.bottom - visibleFrame.top - accessBarContainer.getHeight();
+                final int y = visibleFrame.bottom - accessBarContainer.getHeight();
                 if (y != mY) {
                     mY = y;
                     if (mShown) {
