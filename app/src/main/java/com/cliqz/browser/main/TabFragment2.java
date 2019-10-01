@@ -478,6 +478,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             } else {
                 searchBar.showTitleBar();
                 searchBar.showProgressBar();
+                progressBar.setProgress(lightningView.getProgress());
                 searchBar.setAntiTrackingDetailsVisibility(View.VISIBLE);
                 searchBar.setTitle(url);
             }
@@ -486,8 +487,12 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         mInitialUrl = null;
         mOverviewEvent = null;
 
-        if (!preferenceManager.isAttrackEnabled() && ccIcon != null) {
-            ccIcon.setImageLevel(ControlCenterStatus.DISABLED.ordinal());
+        if (ccIcon != null) {
+            if (!preferenceManager.isAttrackEnabled() ) {
+                ccIcon.setImageLevel(ControlCenterStatus.DISABLED.ordinal());
+            } else {
+                ccIcon.setImageLevel(ControlCenterStatus.ENABLED.ordinal());
+            }
         }
         queryManager.setForgetMode(mIsIncognito);
         mIsReaderModeOn = false;
@@ -767,6 +772,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         queryManager.addLatestQueryToDatabase();
         openLink(event.url, event.reset, event.fromHistory, event.animation);
         mShowWebPageAgain = false;
+        state.setUrl(event.url);
     }
 
     @Subscribe
