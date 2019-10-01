@@ -16,7 +16,6 @@ import android.preference.PreferenceCategory
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import com.cliqz.browser.R
-import com.cliqz.browser.main.Messages
 import com.cliqz.browser.telemetry.TelemetryKeys
 import com.cliqz.browser.utils.HistoryCleaner
 
@@ -222,10 +221,9 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
     }
 
     private fun clearDataDialog() {
-        val entries = arrayOf(mActivity!!.getString(R.string.open_tabs), mActivity!!.getString(R.string.history), mActivity!!.getString(R.string.cookies), mActivity!!.getString(R.string.cache), mActivity!!.getString(R.string.clear_passwords))
+        val entries = arrayOf(mActivity!!.getString(R.string.history), mActivity!!.getString(R.string.cookies), mActivity!!.getString(R.string.cache), mActivity!!.getString(R.string.clear_passwords))
         val values = BooleanArray(entries.size) { false }
         val actions = arrayOf(
-                { bus.post(Messages.CloseOpenTabs()) },
                 { mHistoryDatabase.clearHistory(false) },
                 { WebUtils.clearCookies(activity) },
                 { WebUtils.clearCache(activity) },
