@@ -155,7 +155,7 @@ public class DownloadHandler {
         } catch (Exception e) {
             // This only happens for very bad urls, we want to catch the
             // exception here
-            Timber.e(e, "Exception while trying to parse url '" + url + '\'');
+            Timber.e(e, "Exception while trying to parse url");
             eventBus.post(new BrowserEvents.ShowSnackBarMessage(R.string.problem_download));
             return;
         }
