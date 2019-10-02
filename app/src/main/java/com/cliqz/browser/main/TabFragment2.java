@@ -591,7 +591,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     // TODO @Ravjit, the dialog should disappear if you pause the app
     @Optional
-    @OnClick(R.id.cc_icon)
+    @OnClick(R.id.control_center)
     void showControlCenter() {
         mControlCenterHelper.setControlCenterData(statusBar, mIsIncognito,
                 lightningView.webViewHashCode(),
