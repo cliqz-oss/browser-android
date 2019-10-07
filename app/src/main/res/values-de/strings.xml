@@ -97,7 +97,7 @@
     <string name="save_link">Link speichern</string>
     <string name="news_notification">News-Benachrichtigungen</string>
     <string name="restore_top_sites">Meist-besuchte Seiten wiederherstellen</string>
-    <string name="message_restore_top_sites">Startseite zeigt wieder deine meist-besuchten Seiten</string>
+    <string name="message_restore_top_sites">Cliqz Tab zeigt wieder deine meist-besuchten Seiten</string>
     <string name="download_successful">Download abgeschlossen</string>
     <string name="download_failed">Download fehlgeschlagen</string>
     <string name="action_search_on_page">Auf Seite finden</string>

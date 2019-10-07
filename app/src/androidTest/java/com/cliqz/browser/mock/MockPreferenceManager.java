@@ -62,4 +62,9 @@ public class MockPreferenceManager extends PreferenceManager{
     public boolean getPopupsEnabled() {
         return false;
     }
+
+    @Override
+    public boolean shouldShowOnboardingv2() {
+        return false;
+    }
 }
