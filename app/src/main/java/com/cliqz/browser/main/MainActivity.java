@@ -251,8 +251,12 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
 
         if (checkPlayServices() && isImportantEnough()) {
-            final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
-            startService(registrationIntent);
+            try {
+                final Intent registrationIntent = new Intent(this, RegistrationIntentService.class);
+                startService(registrationIntent);
+            } catch (Throwable e) {
+                Timber.e(e, "Error running gcm RegistrationService");
+            }
         }
 
         if (shouldUpdateWebview()) {

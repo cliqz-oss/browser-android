@@ -24,8 +24,8 @@ public final class ViewUtils {
 
     public static void removeViewFromParent(@NonNull View view) {
         final ViewParent viewParent = view.getParent();
-        if (viewParent != null && viewParent instanceof ViewManager) {
-            final ViewManager viewManager = ViewManager.class.cast(viewParent);
+        if (viewParent instanceof ViewManager) {
+            final ViewManager viewManager = (ViewManager) viewParent;
             viewManager.removeView(view);
         }
     }
