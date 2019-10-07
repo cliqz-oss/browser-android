@@ -30,7 +30,6 @@ import java.io.File;
 
 import acr.browser.lightning.view.CliqzWebView;
 
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
@@ -51,13 +50,13 @@ import static androidx.test.espresso.web.sugar.Web.onWebView;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.getText;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
+import static com.cliqz.browser.test.Matchers.withProperty;
 import static com.cliqz.browser.utils.ViewHelpers.clickXY;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
-import static com.cliqz.browser.test.Matchers.withProperty;
 
 /**
  * @author Kiiza Joseph Bazaare

@@ -102,7 +102,7 @@
     <string name="error_registering" translatable="false">Error registering the device</string>
     <string name="news_notification">News notifications</string>
     <string name="restore_top_sites">Restore most visited websites </string>
-    <string name="message_restore_top_sites">Start page shows most-visited websites again</string>
+    <string name="message_restore_top_sites">Cliqz Tab shows most-visited websites again</string>
     <string name="descr_search_bar">Search Bar</string>
     <string name="action_search_on_page">Find in page</string>
     <string name="in_page_search_next_result">In-page search next result</string>
