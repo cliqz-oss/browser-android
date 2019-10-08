@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.SendTabErrorTypes;
+import com.cliqz.browser.main.search.NewsUtils;
 import com.cliqz.browser.purchases.PurchasesManager;
 
 import org.json.JSONArray;
@@ -873,6 +874,7 @@ public class Telemetry {
         try {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.HOME);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
+            signal.put(TelemetryKeys.NEWS_EDITION, NewsUtils.getEdition());
             signal.put(TelemetryKeys.TARGET, target);
             signal.put(TelemetryKeys.INDEX, index);
         } catch (JSONException e) {
@@ -893,6 +895,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.LOCALNEWS_COUNT, localNewsCount);
             signal.put(TelemetryKeys.AVAILABLE_TOP_NEWS_COUNT, availableTopNewsCount);
             signal.put(TelemetryKeys.NEWS_VERSION, newsVersion);
+            signal.put(TelemetryKeys.NEWS_EDITION, NewsUtils.getEdition());
             signal.put(TelemetryKeys.IS_TOPSITES_ON, preferenceManager.shouldShowTopSites());
             signal.put(TelemetryKeys.IS_NEWS_ON, preferenceManager.shouldShowNews());
 
@@ -1130,6 +1133,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.TYPE, TelemetryKeys.HOME);
             signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
             signal.put(TelemetryKeys.TARGET, isNewsExpanded ? TelemetryKeys.SHOW_MORE : TelemetryKeys.SHOW_LESS);
+            signal.put(TelemetryKeys.NEWS_EDITION, NewsUtils.getEdition());
             signal.put(TelemetryKeys.VIEW, TelemetryKeys.NEWS);
         } catch (JSONException e) {
             logError(TelemetryKeys.SEND_TAB);

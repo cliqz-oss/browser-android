@@ -193,6 +193,7 @@ public final class TelemetryKeys {
     public static final String TOPSITE_COUNT = "topsite_count";
     public static final String TOPNEWS = "topnews";
     public static final String NEWS_VERSION = "topnews_version";
+    public static final String NEWS_EDITION = "edition";
     public static final String TOPNEWS_COUNT = "topnews_count";
     public static final String BREAKING_NEWS_COUNT = "breakingnews_count";
     public static final String AB_TEST_LIST = "ab_test_list";

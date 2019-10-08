@@ -34,7 +34,6 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
     private static final String TAG = NewsFetcher.class.getSimpleName();
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String NEWS_PAYLOAD = "{\"q\":\"\",\"results\":[{\"url\":\"rotated-top-news.cliqz.com\",\"snippet\":{}}]}";
-    private static final String NEWS_URL = "https://api.cliqz.com/api/v2/rich-header?path=/v2/map";
 
     private final OnTaskCompleted listener;
 
@@ -87,45 +86,6 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
             listener.onTaskCompleted(topnews, breakingNewsCount, localNewsCount, newsVersion);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Nullable
-    static URL getTopNewsUrl(PreferenceManager preferenceManager,
-                             @SuppressWarnings("SameParameterValue") int newsCount,
-                             LocationCache locationCache) {
-        String locale = Locale.getDefault().toString().replace("_", "-");
-        final String[] parts = locale.split("-");
-        String lang = null;
-        String country;
-        String newsEdition = "intl";
-        if (parts.length > 0) {
-            lang = parts[0].toLowerCase();
-        }
-        country = preferenceManager.getCountryChoice().countryCode;
-        final StringBuilder sb = new StringBuilder(NEWS_URL);
-        sb.append("&locale=").append(locale);
-        if (lang != null) {
-            sb.append("&lang=").append(lang);
-            if (lang.equals(Locale.GERMAN.getLanguage()) || lang.equals(Locale.FRENCH.getLanguage())) {
-                newsEdition = lang;
-            }
-        }
-        sb.append("&edition=").append(newsEdition);
-        if (country != null) {
-            sb.append("&country=").append(country);
-        }
-        sb.append("&count=").append(newsCount);
-        sb.append("&platform=1");
-        if (locationCache.getLastLocation() != null) {
-            sb.append("&loc=").append(locationCache.getLastLocation().getLatitude()).append(",")
-                    .append(locationCache.getLastLocation().getLongitude());
-        }
-        try {
-            return new URL(sb.toString());
-        } catch (MalformedURLException e) {
-            Timber.e("Error fetching request%s", NEWS_URL);
-            return null;
         }
     }
 
