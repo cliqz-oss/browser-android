@@ -174,8 +174,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         if (preferenceManager.shouldShowNews()) {
             topnewsListView.setVisibility(VISIBLE);
             newsLabel.setVisibility(VISIBLE);
-            new NewsFetcher(this).execute(NewsFetcher.getTopNewsUrl(preferenceManager,
-                    Integer.MAX_VALUE, locationCache));
+            new NewsFetcher(this)
+                    .execute(NewsUtils.getTopNewsUrl(Integer.MAX_VALUE, locationCache));
         } else {
             topnewsListView.setVisibility(GONE);
             newsLabel.setVisibility(GONE);
@@ -216,7 +216,7 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
                 }
 
                 @Override
-                public void onActionClick(String url) {
+                public void onActionClick(@NonNull String url) {
                     bus.post(CliqzMessages.OpenLink.open(url));
                     ((ViewGroup)messageView.getParent()).removeView(messageView);
                 }
