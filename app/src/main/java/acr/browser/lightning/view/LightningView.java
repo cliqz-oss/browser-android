@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -54,7 +53,6 @@ import javax.inject.Inject;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
-import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
 import timber.log.Timber;
 
@@ -304,7 +302,7 @@ public class LightningView extends FrameLayout {
      * @param context  the Context which was used to construct the WebView.
      */
     @SuppressLint("NewApi")
-    private void initializeSettings(WebSettings settings, Context context) {
+    public static void initializeSettings(WebSettings settings, Context context, boolean isIncognito) {
         if (API < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             //noinspection deprecation
             settings.setAppCacheMaxSize(Long.MAX_VALUE);
@@ -316,13 +314,13 @@ public class LightningView extends FrameLayout {
         if (API > Build.VERSION_CODES.JELLY_BEAN) {
             settings.setMediaPlaybackRequiresUserGesture(true);
         }
-        if (API >= Build.VERSION_CODES.LOLLIPOP && !mIsIncognitoTab) {
+        if (API >= Build.VERSION_CODES.LOLLIPOP && !isIncognito) {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         } else if (API >= Build.VERSION_CODES.LOLLIPOP) {
             // We're in Incognito mode, reject
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         }
-        if (!mIsIncognitoTab) {
+        if (!isIncognito) {
             settings.setDomStorageEnabled(true);
             settings.setAppCacheEnabled(true);
             settings.setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -539,39 +537,9 @@ public class LightningView extends FrameLayout {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    /**
-     * Create a CliqzWebView tied to this LightningView.
-     *
-     * TODO: Refactor this, there is a weird call loop between the LightningView and the
-     *       TabsManager in which the first call the restoreTab method on the latter and it call
-     *       back this method (if needed) to create a CliqzWebView
-     *       {@see LightningView::restoreTab(...)}
-     *
-     * @return always return a fully configured CliqzWebView
-     */
-    @NonNull
-    public CliqzWebView createWebView() {
-        final Context context = getContext();
-        final CliqzWebView cliqzWebView = new CliqzWebView(context);
-        cliqzWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-        cliqzWebView.setFocusableInTouchMode(true);
-        cliqzWebView.setFocusable(true);
-        cliqzWebView.setDrawingCacheEnabled(false);
-        cliqzWebView.setWillNotCacheDrawing(true);
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            cliqzWebView.setAnimationCacheEnabled(false);
-            cliqzWebView.setAlwaysDrawnWithCacheEnabled(false);
-        }
-        cliqzWebView.setBackgroundColor(Color.WHITE);
-
-        cliqzWebView.setSaveEnabled(true);
-        cliqzWebView.setNetworkAvailable(true);
-        cliqzWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-        cliqzWebView.setWebViewClient(new LightningWebClient(context, this));
-        cliqzWebView.setDownloadListener(new LightningDownloadListener(context));
-        initializeSettings(cliqzWebView.getSettings(), context);
-        return cliqzWebView;
+    private void attachListeners(final CliqzWebView webView) {
+        webView.setWebChromeClient(new LightningChromeClient(activity, this));
+        webView.setWebViewClient(new LightningWebClient(activity, this));
     }
 
     /**
@@ -580,6 +548,7 @@ public class LightningView extends FrameLayout {
      */
     public void restoreTab(@NonNull String tabId) {
         mWebView = tabsManager.restoreTab(this, tabId);
+        attachListeners(mWebView);
         ViewUtils.removeViewFromParent(mWebView);
         addView(mWebView);
     }

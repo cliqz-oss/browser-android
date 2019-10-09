@@ -1,5 +1,7 @@
 package com.cliqz.browser.main;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
@@ -258,16 +261,48 @@ public class TabsManager {
         final int index = findTabFor(lightningView);
         if (index == -1) {
             // This is technically an error but we are still able to recover in this case
-            final CliqzWebView webView = lightningView.createWebView();
+            final CliqzWebView webView = createWebView(lightningView.getContext(), lightningView.isIncognitoTab());
             persister.restore(tabId, webView);
             return webView;
         }
         final TabData tabData = mFragmentsList.get(index);
         if (tabData.webView == null) {
-            tabData.webView = lightningView.createWebView();
+            tabData.webView = createWebView(lightningView.getContext(), lightningView.isIncognitoTab());
             persister.restore(tabId, tabData.webView);
         }
         return tabData.webView;
+    }
+
+    /**
+     * Create a CliqzWebView tied to this LightningView.
+     *
+     * TODO: Refactor this, there is a weird call loop between the LightningView and the
+     *       TabsManager in which the first call the restoreTab method on the latter and it call
+     *       back this method (if needed) to create a CliqzWebView
+     *       {@see LightningView::restoreTab(...)}
+     *
+     * @return always return a fully configured CliqzWebView
+     */
+    @NonNull
+    public static CliqzWebView createWebView(@NonNull Context context, boolean isIncognito) {
+        final CliqzWebView cliqzWebView = new CliqzWebView(context);
+        cliqzWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        cliqzWebView.setFocusableInTouchMode(true);
+        cliqzWebView.setFocusable(true);
+        cliqzWebView.setDrawingCacheEnabled(false);
+        cliqzWebView.setWillNotCacheDrawing(true);
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            cliqzWebView.setAnimationCacheEnabled(false);
+            cliqzWebView.setAlwaysDrawnWithCacheEnabled(false);
+        }
+        cliqzWebView.setBackgroundColor(Color.WHITE);
+
+        cliqzWebView.setSaveEnabled(true);
+        cliqzWebView.setNetworkAvailable(true);
+        cliqzWebView.setDownloadListener(new LightningDownloadListener(context));
+        LightningView.initializeSettings(cliqzWebView.getSettings(), context, isIncognito);
+        return cliqzWebView;
     }
 
 
