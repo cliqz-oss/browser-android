@@ -112,6 +112,7 @@ public class SearchView extends FrameLayout {
             startTabContainer.updateFreshTab(state.isIncognito());
         } else {
             startTabContainer.setVisibility(View.GONE);
+            incognito.setVisibility(View.GONE);
             mReactView.setVisibility(View.VISIBLE);
             final Context context = getContext();
             if (state.isIncognito()) {
