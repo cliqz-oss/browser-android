@@ -295,63 +295,6 @@ public class LightningView extends FrameLayout {
     }
 
     /**
-     * Initialize the settings of the WebView that are intrinsic to Lightning and cannot
-     * be altered by the user. Distinguish between Incognito and Regular tabs here.
-     *
-     * @param settings the WebSettings object to use.
-     * @param context  the Context which was used to construct the WebView.
-     */
-    @SuppressLint("NewApi")
-    public static void initializeSettings(WebSettings settings, Context context, boolean isIncognito) {
-        if (API < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            //noinspection deprecation
-            settings.setAppCacheMaxSize(Long.MAX_VALUE);
-        }
-        if (API < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            //noinspection deprecation
-            settings.setEnableSmoothTransition(true);
-        }
-        if (API > Build.VERSION_CODES.JELLY_BEAN) {
-            settings.setMediaPlaybackRequiresUserGesture(true);
-        }
-        if (API >= Build.VERSION_CODES.LOLLIPOP && !isIncognito) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        } else if (API >= Build.VERSION_CODES.LOLLIPOP) {
-            // We're in Incognito mode, reject
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        }
-        if (!isIncognito) {
-            settings.setDomStorageEnabled(true);
-            settings.setAppCacheEnabled(true);
-            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-            settings.setDatabaseEnabled(true);
-        } else {
-            settings.setDomStorageEnabled(false);
-            settings.setAppCacheEnabled(false);
-            settings.setDatabaseEnabled(false);
-            settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        }
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-        settings.setAllowContentAccess(true);
-        settings.setAllowFileAccess(true);
-        settings.setDefaultTextEncodingName("utf-8");
-        // setAccessFromUrl(urlView, settings);
-        if (API >= Build.VERSION_CODES.JELLY_BEAN) {
-            settings.setAllowFileAccessFromFileURLs(false);
-            settings.setAllowUniversalAccessFromFileURLs(false);
-        }
-
-        settings.setAppCachePath(context.getDir("appcache", 0).getPath());
-        settings.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
-        if (API < Build.VERSION_CODES.KITKAT) {
-            //noinspection deprecation
-            settings.setDatabasePath(context.getDir("databases", 0).getPath());
-        }
-    }
-
-    /**
      * If reader content is available, display the reader mode. It creates the reader webview
      * if needed.
      */
@@ -442,7 +385,6 @@ public class LightningView extends FrameLayout {
     public synchronized void onResume() {
         if (mWebView != null) {
             Timber.w("Resuming");
-            initializePreferences(mWebView.getSettings());
             mWebView.onResume();
         }
     }
@@ -537,18 +479,15 @@ public class LightningView extends FrameLayout {
         return mWebView != null && mWebView.canGoForward();
     }
 
-    private void attachListeners(final CliqzWebView webView) {
-        webView.setWebChromeClient(new LightningChromeClient(activity, this));
-        webView.setWebViewClient(new LightningWebClient(activity, this));
-    }
-
     /**
      * Restore the tab content
      * @param tabId the tab id to be reloaded
      */
     public void restoreTab(@NonNull String tabId) {
         mWebView = tabsManager.restoreTab(this, tabId);
-        attachListeners(mWebView);
+        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+        mWebView.setWebViewClient(new LightningWebClient(activity, this));
+        initializePreferences(mWebView.getSettings());
         ViewUtils.removeViewFromParent(mWebView);
         addView(mWebView);
     }
@@ -665,11 +604,5 @@ public class LightningView extends FrameLayout {
 
     public int getProgress() {
         return mWebView != null ? mWebView.getProgress() : 100;
-    }
-
-    public boolean isUrlWhiteListed(){
-        final Uri uri = Uri.parse(getUrl());
-        final String host = uri.getHost();
-        return attrack.isWhitelisted(host);
     }
 }
