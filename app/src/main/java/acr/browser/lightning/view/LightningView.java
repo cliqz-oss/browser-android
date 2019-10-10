@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -54,7 +53,6 @@ import javax.inject.Inject;
 import acr.browser.lightning.constant.Constants;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.dialog.LightningDialogBuilder;
-import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
 import timber.log.Timber;
 
@@ -297,63 +295,6 @@ public class LightningView extends FrameLayout {
     }
 
     /**
-     * Initialize the settings of the WebView that are intrinsic to Lightning and cannot
-     * be altered by the user. Distinguish between Incognito and Regular tabs here.
-     *
-     * @param settings the WebSettings object to use.
-     * @param context  the Context which was used to construct the WebView.
-     */
-    @SuppressLint("NewApi")
-    private void initializeSettings(WebSettings settings, Context context) {
-        if (API < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            //noinspection deprecation
-            settings.setAppCacheMaxSize(Long.MAX_VALUE);
-        }
-        if (API < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            //noinspection deprecation
-            settings.setEnableSmoothTransition(true);
-        }
-        if (API > Build.VERSION_CODES.JELLY_BEAN) {
-            settings.setMediaPlaybackRequiresUserGesture(true);
-        }
-        if (API >= Build.VERSION_CODES.LOLLIPOP && !mIsIncognitoTab) {
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        } else if (API >= Build.VERSION_CODES.LOLLIPOP) {
-            // We're in Incognito mode, reject
-            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        }
-        if (!mIsIncognitoTab) {
-            settings.setDomStorageEnabled(true);
-            settings.setAppCacheEnabled(true);
-            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-            settings.setDatabaseEnabled(true);
-        } else {
-            settings.setDomStorageEnabled(false);
-            settings.setAppCacheEnabled(false);
-            settings.setDatabaseEnabled(false);
-            settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        }
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-        settings.setAllowContentAccess(true);
-        settings.setAllowFileAccess(true);
-        settings.setDefaultTextEncodingName("utf-8");
-        // setAccessFromUrl(urlView, settings);
-        if (API >= Build.VERSION_CODES.JELLY_BEAN) {
-            settings.setAllowFileAccessFromFileURLs(false);
-            settings.setAllowUniversalAccessFromFileURLs(false);
-        }
-
-        settings.setAppCachePath(context.getDir("appcache", 0).getPath());
-        settings.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
-        if (API < Build.VERSION_CODES.KITKAT) {
-            //noinspection deprecation
-            settings.setDatabasePath(context.getDir("databases", 0).getPath());
-        }
-    }
-
-    /**
      * If reader content is available, display the reader mode. It creates the reader webview
      * if needed.
      */
@@ -444,7 +385,6 @@ public class LightningView extends FrameLayout {
     public synchronized void onResume() {
         if (mWebView != null) {
             Timber.w("Resuming");
-            initializePreferences(mWebView.getSettings());
             mWebView.onResume();
         }
     }
@@ -540,46 +480,14 @@ public class LightningView extends FrameLayout {
     }
 
     /**
-     * Create a CliqzWebView tied to this LightningView.
-     *
-     * TODO: Refactor this, there is a weird call loop between the LightningView and the
-     *       TabsManager in which the first call the restoreTab method on the latter and it call
-     *       back this method (if needed) to create a CliqzWebView
-     *       {@see LightningView::restoreTab(...)}
-     *
-     * @return always return a fully configured CliqzWebView
-     */
-    @NonNull
-    public CliqzWebView createWebView() {
-        final Context context = getContext();
-        final CliqzWebView cliqzWebView = new CliqzWebView(context);
-        cliqzWebView.setDrawingCacheBackgroundColor(Color.WHITE);
-        cliqzWebView.setFocusableInTouchMode(true);
-        cliqzWebView.setFocusable(true);
-        cliqzWebView.setDrawingCacheEnabled(false);
-        cliqzWebView.setWillNotCacheDrawing(true);
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            cliqzWebView.setAnimationCacheEnabled(false);
-            cliqzWebView.setAlwaysDrawnWithCacheEnabled(false);
-        }
-        cliqzWebView.setBackgroundColor(Color.WHITE);
-
-        cliqzWebView.setSaveEnabled(true);
-        cliqzWebView.setNetworkAvailable(true);
-        cliqzWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-        cliqzWebView.setWebViewClient(new LightningWebClient(context, this));
-        cliqzWebView.setDownloadListener(new LightningDownloadListener(context));
-        initializeSettings(cliqzWebView.getSettings(), context);
-        return cliqzWebView;
-    }
-
-    /**
      * Restore the tab content
      * @param tabId the tab id to be reloaded
      */
     public void restoreTab(@NonNull String tabId) {
         mWebView = tabsManager.restoreTab(this, tabId);
+        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
+        mWebView.setWebViewClient(new LightningWebClient(activity, this));
+        initializePreferences(mWebView.getSettings());
         ViewUtils.removeViewFromParent(mWebView);
         addView(mWebView);
     }
@@ -696,11 +604,5 @@ public class LightningView extends FrameLayout {
 
     public int getProgress() {
         return mWebView != null ? mWebView.getProgress() : 100;
-    }
-
-    public boolean isUrlWhiteListed(){
-        final Uri uri = Uri.parse(getUrl());
-        final String host = uri.getHost();
-        return attrack.isWhitelisted(host);
     }
 }

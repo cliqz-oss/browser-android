@@ -1,9 +1,13 @@
 package com.cliqz.browser.main;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,9 +26,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.view.CliqzWebView;
 import acr.browser.lightning.view.LightningView;
 import acr.browser.lightning.view.TrampolineConstants;
+
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR2;
+import static android.os.Build.VERSION_CODES.KITKAT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 /**
  * @author Ravjit Uppal
@@ -80,6 +92,7 @@ public class TabsManager {
             return this;
         }
 
+        @SuppressWarnings("WeakerAccess")
         public Builder setRestore(@SuppressWarnings("SameParameterValue") boolean restore) {
             this.mRestore = restore;
             return this;
@@ -197,6 +210,7 @@ public class TabsManager {
      * @param position the tab position
      * @return the tab id
      */
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String getTabId(int position) {
         return mFragmentsList.get(position).fragment.getTabId();
@@ -235,7 +249,7 @@ public class TabsManager {
         final TabFragment2 tab = mFragmentsList.get(position).fragment;
         tab.state.setSelected(true);
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M && animation != 0) {
+        if (SDK_INT != Build.VERSION_CODES.M && animation != 0) {
             //cannot pass null for exit animation
             transaction.setCustomAnimations(animation, R.anim.dummy_transition);
         }
@@ -258,18 +272,101 @@ public class TabsManager {
         final int index = findTabFor(lightningView);
         if (index == -1) {
             // This is technically an error but we are still able to recover in this case
-            final CliqzWebView webView = lightningView.createWebView();
+            final CliqzWebView webView = createWebView(lightningView.getContext(), lightningView.isIncognitoTab());
             persister.restore(tabId, webView);
             return webView;
         }
         final TabData tabData = mFragmentsList.get(index);
         if (tabData.webView == null) {
-            tabData.webView = lightningView.createWebView();
+            tabData.webView = createWebView(lightningView.getContext(), lightningView.isIncognitoTab());
             persister.restore(tabId, tabData.webView);
         }
         return tabData.webView;
     }
 
+    /**
+     * Create a CliqzWebView.
+     *
+     * @return always return a fully configured CliqzWebView
+     */
+    @NonNull
+    private static CliqzWebView createWebView(@NonNull Context context, boolean isIncognito) {
+        final CliqzWebView cliqzWebView = new CliqzWebView(context);
+        cliqzWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        cliqzWebView.setFocusableInTouchMode(true);
+        cliqzWebView.setFocusable(true);
+        cliqzWebView.setDrawingCacheEnabled(false);
+        cliqzWebView.setWillNotCacheDrawing(true);
+
+        if (SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            cliqzWebView.setAnimationCacheEnabled(false);
+            cliqzWebView.setAlwaysDrawnWithCacheEnabled(false);
+        }
+        cliqzWebView.setBackgroundColor(Color.WHITE);
+
+        cliqzWebView.setSaveEnabled(true);
+        cliqzWebView.setNetworkAvailable(true);
+        cliqzWebView.setDownloadListener(new LightningDownloadListener(context));
+        initializeSettings(cliqzWebView.getSettings(), context, isIncognito);
+        return cliqzWebView;
+    }
+
+    /**
+     * Initialize the settings of the WebView that are intrinsic to Lightning and cannot
+     * be altered by the user. Distinguish between Incognito and Regular tabs here.
+     *
+     * @param settings the WebSettings object to use.
+     * @param context  the Context which was used to construct the WebView.
+     */
+    @SuppressLint({"NewApi", "ObsoleteSdkInt"})
+    private static void initializeSettings(WebSettings settings, Context context, boolean isIncognito) {
+        if (SDK_INT < JELLY_BEAN_MR2) {
+            //noinspection deprecation
+            settings.setAppCacheMaxSize(Long.MAX_VALUE);
+        }
+        if (SDK_INT < JELLY_BEAN_MR1) {
+            //noinspection deprecation
+            settings.setEnableSmoothTransition(true);
+        }
+        if (SDK_INT > JELLY_BEAN) {
+            settings.setMediaPlaybackRequiresUserGesture(true);
+        }
+        if (SDK_INT >= LOLLIPOP && !isIncognito) {
+            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+        } else if (SDK_INT >= LOLLIPOP) {
+            // We're in Incognito mode, reject
+            settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        }
+        if (!isIncognito) {
+            settings.setDomStorageEnabled(true);
+            settings.setAppCacheEnabled(true);
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            settings.setDatabaseEnabled(true);
+        } else {
+            settings.setDomStorageEnabled(false);
+            settings.setAppCacheEnabled(false);
+            settings.setDatabaseEnabled(false);
+            settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        }
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccess(true);
+        settings.setDefaultTextEncodingName("utf-8");
+        // setAccessFromUrl(urlView, settings);
+        if (SDK_INT >= JELLY_BEAN) {
+            settings.setAllowFileAccessFromFileURLs(false);
+            settings.setAllowUniversalAccessFromFileURLs(false);
+        }
+
+        settings.setAppCachePath(context.getDir("appcache", 0).getPath());
+        settings.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
+        if (SDK_INT < KITKAT) {
+            //noinspection deprecation
+            settings.setDatabasePath(context.getDir("databases", 0).getPath());
+        }
+    }
 
     /**
      * It closes the tab associated with the given {@link LightningView}, the method is meant to
