@@ -664,23 +664,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
-    @Subscribe
-    public void onQueryNotified(final CliqzMessages.NotifyQuery event) {
-        final FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack();
-        //noinspection ConstantConditions
-        tabsManager.getCurrentTab().state.setQuery(event.query);
-        if (event.query != null) {
-            fm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-                @Override
-                public void onBackStackChanged() {
-                    fm.removeOnBackStackChangedListener(this);
-                    tabsManager.getCurrentTab().searchQuery(event.query);
-                }
-            });
-        }
-    }
-
     @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void closeTab(BrowserEvents.CloseTab event) {

@@ -6,8 +6,6 @@ import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.CommonOverviewFragment;
 import com.cliqz.browser.overview.TabOverviewFragment;
 import com.cliqz.browser.utils.PasswordManager;
-import com.cliqz.browser.webview.BaseWebView;
-import com.cliqz.browser.webview.CliqzBridge;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.deckview.TabsDeckView;
 import com.cliqz.nove.Bus;
@@ -25,8 +23,6 @@ interface MainActivityComponent {
 
     void inject(FragmentWithBus fragmentWithBus);
 
-    void inject(CliqzBridge bridge);
-
     void inject(OverFlowMenu overFlowMenu);
 
     Bus getBus();
@@ -38,8 +34,6 @@ interface MainActivityComponent {
     void inject(TabOverviewFragment tabOverviewFragment);
 
     void inject(OnBoardingHelper onBoardingHelper);
-
-    void inject(BaseWebView webView);
 
     void inject(SearchView searchView);
 

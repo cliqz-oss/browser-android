@@ -46,17 +46,6 @@ public class CliqzMessages {
     }
 
     /**
-     * The extension notify us it want to change the query string in the url bar
-     */
-    public static final class NotifyQuery {
-        public final String query;
-
-        NotifyQuery(String query) {
-            this.query = query;
-        }
-    }
-
-    /**
      * More generic message than open search result! Used by the FreshTab to open suggested article
      * or history element and by the search to open result pages. The reset flag is used when
      * opening a new tab in a new Task, it avoids the search screen to appear when back is pressed:
