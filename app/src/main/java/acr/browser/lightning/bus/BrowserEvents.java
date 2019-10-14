@@ -1,6 +1,8 @@
 package acr.browser.lightning.bus;
 
 import android.os.Message;
+
+import androidx.annotation.AnimRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,22 +56,22 @@ public final class BrowserEvents {
      * The user ask to open the given url as new tab
      */
     public final static class OpenUrlInNewTab {
+        public final String parentId;
         public final String url;
         public final boolean isIncognito;
         public final boolean showImmediately;
 
-        public OpenUrlInNewTab(final String url) {
-            this.url = url;
-            this.isIncognito = false;
-            this.showImmediately = false;
+        public OpenUrlInNewTab( @Nullable String parentId,
+                                @NonNull String url,
+                                boolean isIncognito) {
+            this(parentId, url, isIncognito, false);
         }
 
-        public OpenUrlInNewTab(final String url, boolean isIncognito) {
-            this.url = url;
-            this.isIncognito = isIncognito;
-            this.showImmediately = false;
-        }
-        public OpenUrlInNewTab(final String url, boolean isIncognito, boolean showImmediately) {
+        public OpenUrlInNewTab( @Nullable String parentId,
+                                @NonNull String url,
+                                boolean isIncognito,
+                                boolean showImmediately) {
+            this.parentId = parentId;
             this.url = url;
             this.isIncognito = isIncognito;
             this.showImmediately = showImmediately;
@@ -112,10 +114,10 @@ public final class BrowserEvents {
      */
     public static class CreateWindow {
         public final Message msg;
-        public final LightningView view;
+        public final String tabId;
 
-        public CreateWindow(final LightningView view, final Message msg) {
-            this.view = view;
+        public CreateWindow(@NonNull final String tabId, final Message msg) {
+            this.tabId = tabId;
             this.msg = msg;
         }
     }
@@ -125,10 +127,10 @@ public final class BrowserEvents {
      * from the view system
      */
     public static class CloseWindow {
-        public final LightningView lightningView;
+        public final String tabId;
 
-        public CloseWindow(LightningView lightningView) {
-            this.lightningView = lightningView;
+        public CloseWindow(@NonNull String tabId) {
+            this.tabId = tabId;
         }
     }
 
@@ -192,9 +194,24 @@ public final class BrowserEvents {
 
     public static class NewTab {
         public final boolean isIncognito;
+        @AnimRes
+        public final int animation;
 
         public NewTab(boolean isIncognito) {
+            this(isIncognito, 0);
+        }
+
+        public NewTab(boolean isIncognito, @AnimRes int animation) {
             this.isIncognito = isIncognito;
+            this.animation = animation;
+        }
+    }
+
+    public static class ShowTab {
+        public final String tabId;
+
+        public ShowTab(@NonNull String tabId) {
+            this.tabId = tabId;
         }
     }
 
@@ -208,4 +225,9 @@ public final class BrowserEvents {
      * Sent when the user want to close the current tab
      */
     public static class CloseTab {}
+
+    /**
+     * Sent when we want to close all the active tabs
+     */
+    public static class CloseAllTabs {}
 }

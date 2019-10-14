@@ -10,20 +10,18 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.nove.Bus;
 
 import javax.inject.Inject;
 
+import acr.browser.lightning.bus.BrowserEvents;
+
 public class CommonOverviewFragment extends Fragment {
 
     @Inject
     Bus bus;
-
-    @Inject
-    TabsManager tabsManager;
 
     @Inject
     Telemetry telemetry;
@@ -55,12 +53,12 @@ public class CommonOverviewFragment extends Fragment {
         switch (id) {
             case R.id.action_new_tab:
                 telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, false, TelemetryKeys.OVERVIEW);
-                tabsManager.buildTab().show();
+                bus.post(new BrowserEvents.NewTab(false));
                 return true;
             case R.id.action_new_forget_tab:
                 telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, false,
                         TelemetryKeys.OVERVIEW);
-                tabsManager.buildTab().setForgetMode(true).show();
+                bus.post(new BrowserEvents.NewTab(true));
                 return true;
             case R.id.action_settings:
                 telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, false, TelemetryKeys.OVERVIEW);
@@ -71,7 +69,7 @@ public class CommonOverviewFragment extends Fragment {
             case R.id.action_close_all_tabs:
                 telemetry.sendMainMenuSignal(TelemetryKeys.CLOSE_ALL_TABS, false,
                         TelemetryKeys.OVERVIEW);
-                tabsManager.deleteAllTabs();
+                bus.post(new BrowserEvents.CloseAllTabs());
                 return true;
             default:
                 return false;

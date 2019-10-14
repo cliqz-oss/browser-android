@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.CliqzBrowserState;
+import com.cliqz.browser.tabs.Tab;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.jsengine.Engine;
 
@@ -28,24 +28,29 @@ public class TabsDeckView extends FrameLayout {
 
     private RecyclerView recyclerView;
 
-    final ArrayList<CliqzBrowserState> entries = new ArrayList<>();
+    final ArrayList<Tab> entries = new ArrayList<>();
 
     // Store the current card, it's used only on screen rotations
     private int mCurrentCard = 0;
+
+    private TabsDeckViewAdapter adapter;
+
+    private TabsDeckViewListener mListener = null;
+
 
     // The cards remainder size
     int mRemainderSize;
     int mDeckPadding;
 
-    public interface TabsDeckViewListener {
-        void onTabClosed(int position, CliqzBrowserState state);
-
-        void onTabClicked(int position, CliqzBrowserState state);
+    public void setSelectedTab(int position) {
+        adapter.setSelectedTab(position);
     }
 
-    private TabsDeckViewAdapter adapter;
+    public interface TabsDeckViewListener {
+        void onTabClosed(int position, Tab state);
 
-    private TabsDeckViewListener mListener = null;
+        void onTabClicked(int position, Tab state);
+    }
 
     public void setListener(TabsDeckViewListener listener) {
         this.mListener = listener;
@@ -97,7 +102,7 @@ public class TabsDeckView extends FrameLayout {
     }
 
     void closeTab(int position) {
-        final CliqzBrowserState state = adapter.remove(position);
+        final Tab state = adapter.remove(position);
         if (mListener == null || state == null) {
             return;
         }
@@ -108,11 +113,11 @@ public class TabsDeckView extends FrameLayout {
         if (mListener == null) {
             return;
         }
-        final CliqzBrowserState state = entries.get(position);
+        final Tab state = entries.get(position);
         mListener.onTabClicked(position, state);
     }
 
-    public void refreshEntries(ArrayList<CliqzBrowserState> entries) {
+    public void refreshEntries(ArrayList<Tab> entries) {
         this.entries.clear();
         this.entries.addAll(entries);
         adapter.notifyDataSetChanged();

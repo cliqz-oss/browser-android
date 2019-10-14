@@ -16,7 +16,7 @@ import com.anthonycr.grant.PermissionsManager;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.CliqzBrowserState;
+import com.cliqz.browser.tabs.Tab;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.QueryManager;
@@ -68,7 +68,7 @@ public class SearchView extends FrameLayout {
     Engine engine;
 
     private final Context context;
-    private CliqzBrowserState state;
+    private Tab state;
 
     public SearchView(@NonNull Context context) {
         this(context, null);
@@ -154,7 +154,7 @@ public class SearchView extends FrameLayout {
         initExtensionPreferences();
     }
 
-    public void setCurrentTabState(CliqzBrowserState state) {
+    public void setCurrentTabState(Tab state) {
         this.state = state;
         setIncognito(state.isIncognito());
     }

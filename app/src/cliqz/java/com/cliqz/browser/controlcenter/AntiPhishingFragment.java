@@ -3,6 +3,7 @@ package com.cliqz.browser.controlcenter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import android.view.LayoutInflater;
@@ -42,11 +43,10 @@ public class AntiPhishingFragment extends ControlCenterFragment {
     @BindView(R.id.button_ok)
     AppCompatButton helpButton;
 
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Bundle arguments = getArguments();
-        mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
+    protected void parseArguments(@NonNull Bundle args) {
+        // Nothing to do here
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AntiPhishingFragment extends ControlCenterFragment {
     void onLearnMoreClicked(View v) {
         final String helpUrl = Locale.getDefault().getLanguage().equals("de") ?
                 antiPhishingHelupUrlDe : antiPhishingHelupUrlEn;
-        bus.post(new BrowserEvents.OpenUrlInNewTab(helpUrl));
+        bus.post(new BrowserEvents.OpenUrlInNewTab(getTabId(), helpUrl, false));
         bus.post(new Messages.DismissControlCenter());
         telemetry.sendLearnMoreClickSignal(TelemetryKeys.ATPHISH);
     }

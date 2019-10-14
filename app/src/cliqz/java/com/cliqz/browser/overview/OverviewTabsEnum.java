@@ -14,7 +14,7 @@ import com.cliqz.browser.main.OffrzFragment;
 public enum OverviewTabsEnum {
 
     UNDEFINED(R.string.untitled, null),
-    TABS(R.string.open_tabs, TabOverviewFragment.class),
+    TABS(R.string.open_tabs, TabsOverviewFragment.class),
     HISTORY(R.string.history, HistoryFragment.class),
     OFFRZ(R.string.myoffrz_label, OffrzFragment.class),
     FAVORITES(R.string.favorites, FavoritesFragment.class);

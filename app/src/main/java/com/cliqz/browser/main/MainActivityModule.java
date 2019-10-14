@@ -2,6 +2,9 @@ package com.cliqz.browser.main;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+
 import com.cliqz.browser.annotations.PerActivity;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.utils.AppBackgroundManager;
@@ -32,14 +35,15 @@ public class MainActivityModule {
 
     @PerActivity
     @Provides
-    TabsManager providesTabsManager() {
-        return new TabsManager(activity.getSupportFragmentManager());
+    OnBoardingHelper providesOnBoardingHelper() {
+        return new OnBoardingHelper(activity);
     }
 
     @PerActivity
     @Provides
-    OnBoardingHelper providesOnBoardingHelper() {
-        return new OnBoardingHelper(activity);
+    @NonNull
+    FragmentManager provideFragmentManager() {
+        return activity.getSupportFragmentManager();
     }
 
     @PerActivity

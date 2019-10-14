@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cliqz.browser.main.BackgroundThreadHandler;
 import com.cliqz.browser.main.MainThreadHandler;
@@ -58,14 +59,19 @@ public class WebViewPersister {
     }
 
     @MainThread
-    public void persist(@NonNull String identifier, @NonNull String title,
-                        @NonNull String url, @NonNull Bitmap favicon, @NonNull WebView webView) {
+    public void persist(@NonNull String identifier,
+                        @Nullable String parentIdentifier,
+                        @NonNull String title,
+                        @NonNull String url,
+                        @NonNull Bitmap favicon,
+                        @NonNull WebView webView) {
 
         // Do not persist any tab that has the trampoline close command in the url
         if (url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE_FORMAT)) {
             return;
         }
-        backgroundThreadHandler.post(new PersistTabOperation(identifier, url, title, favicon, webView));
+        backgroundThreadHandler
+                .post(new PersistTabOperation(identifier, parentIdentifier, url, title, favicon, webView));
     }
 
     @MainThread
@@ -87,6 +93,7 @@ public class WebViewPersister {
     @NonNull
     public List<Bundle> loadTabsMetaData() {
         final List<Bundle> metadata = new LinkedList<>();
+        // This is weird but needed because the lambda below
         final MutableInt maxFileSize = new MutableInt(0);
         final File[] metafiles = destDirectory.listFiles(pathname -> {
             final boolean isMetaFile = pathname.getName().endsWith(META_FILE_EXTENSION);
@@ -167,9 +174,11 @@ public class WebViewPersister {
         private final String url;
         private final Bitmap favicon;
         private final Bundle state;
+        private final String parentId;
 
-        PersistTabOperation(String id, String url, String title, Bitmap favicon, WebView webView) {
+        PersistTabOperation(String id, String parentId, String url, String title, Bitmap favicon, WebView webView) {
             this.id = id;
+            this.parentId = parentId;
             this.url = url;
             this.title = title;
             this.favicon = favicon;
@@ -204,6 +213,9 @@ public class WebViewPersister {
             metaBundle.putString(TabBundleKeys.TITLE, title);
             metaBundle.putString(TabBundleKeys.URL, url);
             metaBundle.putParcelable(TabBundleKeys.FAVICON, favicon);
+            if (parentId != null && !parentId.isEmpty()) {
+                metaBundle.putString(TabBundleKeys.PARENT_ID, parentId);
+            }
             writeBundleOut(metaFile, metaBundle);
 
             try {

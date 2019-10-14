@@ -226,15 +226,6 @@ public class CliqzMessages {
 
     public static class OnPageFinished {}
 
-    public static class RestoreTabs {
-        public final List<Bundle> storedTabs;
-
-        public RestoreTabs(List<Bundle> storedTabs) {
-            this.storedTabs = storedTabs;
-        }
-
-    }
-
     public static class OnReadableVersionAvailable {
     }
 }

@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -13,6 +11,9 @@ import android.text.style.URLSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
@@ -30,12 +31,16 @@ import acr.browser.lightning.bus.BrowserEvents;
  */
 class AntiPhishingDialog extends AlertDialog {
 
+    private final String tabId;
     private final Bus eventBus;
-    private String mUrl;
-    private Telemetry telemetry;
+    private final Telemetry telemetry;
 
-    public AntiPhishingDialog(Context context, Bus eventBus, Telemetry telemetry) {
+    public AntiPhishingDialog(@NonNull Context context,
+                              @NonNull String tabId,
+                              @NonNull Bus eventBus,
+                              @NonNull Telemetry telemetry) {
         super(context);
+        this.tabId = tabId;
         this.eventBus = eventBus;
         this.telemetry = telemetry;
         final Resources resources = context.getResources();
@@ -80,8 +85,7 @@ class AntiPhishingDialog extends AlertDialog {
     };
 
     public void setUrl(String url) {
-        this.mUrl = url;
-        final Spannable message = linkify(getContext().getString(R.string.antiphishing_message, mUrl));
+        final Spannable message = linkify(getContext().getString(R.string.antiphishing_message, url));
         setMessage(message);
     }
 

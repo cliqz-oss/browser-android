@@ -41,7 +41,7 @@ class CustomViewHandler {
     }
 
     void showCustomView() {
-        // final LightningView currentTab = mTabsManager.getCurrentTab();
+        // final LightningView currentTab = mTabsManager.getSelectedTab();
         if (customView == null) {
             if (callback != null) {
                 try {

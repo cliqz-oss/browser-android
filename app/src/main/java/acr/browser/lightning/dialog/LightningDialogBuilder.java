@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.cliqz.browser.R;
@@ -16,17 +17,12 @@ import com.cliqz.nove.Bus;
 import javax.inject.Inject;
 
 import acr.browser.lightning.bus.BrowserEvents;
-import acr.browser.lightning.database.HistoryDatabase;
-import acr.browser.lightning.utils.UrlUtils;
 import acr.browser.lightning.utils.Utils;
 
 /**
  * Created by Stefano Pacifici on 02/09/15, based on Anthony C. Restaino's code.
  */
 public class LightningDialogBuilder {
-
-    @Inject
-    HistoryDatabase mHistoryDatabase;
 
     @Inject
     Bus eventBus;
@@ -42,8 +38,10 @@ public class LightningDialogBuilder {
     }
 
     // TODO There should be a way in which we do not need an activity reference to dowload a file
-    public void showLongPressImageDialog(final String linkUrl, @NonNull final String imageUrl,
-                                         @NonNull final String userAgent) {
+    public void showLongPressImageDialog(@Nullable String parentTabId,
+                                         @Nullable String linkUrl,
+                                         @NonNull String imageUrl,
+                                         @NonNull String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.IMAGE);
 
         final CharSequence[] linkAndImageOptions = new CharSequence[]{
@@ -62,7 +60,8 @@ public class LightningDialogBuilder {
         };
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        dialogBuilder.setTitle(linkUrl == null ? imageUrl : linkUrl)
+        final String nonNullLinkUrl = linkUrl != null ? linkUrl : imageUrl;
+        dialogBuilder.setTitle(nonNullLinkUrl)
                 .setItems(linkUrl == null || linkUrl.equals(imageUrl) ? imageOptions : linkAndImageOptions,
                         (dialogInterface, which) -> {
                             switch (which) {
@@ -81,23 +80,25 @@ public class LightningDialogBuilder {
                                     }
                                     break;
                                 case 2:
-                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, false));
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, imageUrl, false));
                                     break;
                                 case 3:
-                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(imageUrl, true));
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, imageUrl, true));
                                     break;
                                 case 4:
-                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, false));
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, nonNullLinkUrl, false));
                                     break;
                                 case 5:
-                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(linkUrl, true));
+                                    eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, nonNullLinkUrl, true));
                                     break;
                             }
                         });
         dialogBuilder.show();
     }
 
-    public void showLongPressLinkDialog(final String url, final String userAgent) {
+    public void showLongPressLinkDialog(@Nullable String parentTabId,
+                                        @NonNull String url,
+                                        @Nullable String userAgent) {
         telemetry.sendLongPressSignal(TelemetryKeys.LINK);
         final CharSequence[] mOptions = new CharSequence[]{
                 activity.getString(R.string.action_copy),
@@ -118,11 +119,11 @@ public class LightningDialogBuilder {
                             break;
                         case 1:
                             telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_TAB);
-                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, false));
+                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, url, false));
                             break;
                         case 2:
                             telemetry.sendLinkDialogSignal(TelemetryKeys.NEW_FORGET_TAB);
-                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(url, true));
+                            eventBus.post(new BrowserEvents.OpenUrlInNewTab(parentTabId, url, true));
                             break;
                         case 3:
                             telemetry.sendLinkDialogSignal(TelemetryKeys.SAVE);

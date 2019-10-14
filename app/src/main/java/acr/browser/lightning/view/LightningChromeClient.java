@@ -17,44 +17,62 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
+import com.cliqz.browser.app.BrowserApp;
+import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
+import acr.browser.lightning.dialog.LightningDialogBuilder;
 import timber.log.Timber;
 
 /**
  * @author Anthony C. Restaino
  * @author Stefano Pacifici
  */
-class LightningChromeClient extends WebChromeClient {
+public class LightningChromeClient extends WebChromeClient implements CliqzWebView.CliqzChromeClient {
 
     private static final String LOG_FORMAT = "%s:%d - %s";
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
 
     private final Activity activity;
     private final LightningView lightningView;
-    private final Bus eventBus;
+    private final String tabId;
 
     // These fields are used to avoid multiple history point creation when we receive multiple
     // titles for the same web page
     private String mLastUrl = null;
     private String mLastTitle = null;
 
-    LightningChromeClient(Activity activity, LightningView lightningView) {
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    LightningDialogBuilder dialogBuilder;
+
+    LightningChromeClient(@NonNull String tabId, @NonNull Activity activity, @NonNull LightningView lightningView) {
         super();
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
+        if (component == null) {
+            throw new RuntimeException("Dependency injection failed");
+        }
+        component.inject(this);
         this.activity = activity;
         this.lightningView = lightningView;
-        eventBus = lightningView.eventBus;
+        this.tabId = tabId;
     }
 
     @Override
@@ -168,13 +186,13 @@ class LightningChromeClient extends WebChromeClient {
     @Override
     public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture,
                                   Message resultMsg) {
-        eventBus.post(new BrowserEvents.CreateWindow(lightningView, resultMsg));
+        eventBus.post(new BrowserEvents.CreateWindow(tabId, resultMsg));
         return true;
     }
 
     @Override
     public void onCloseWindow(WebView window) {
-        eventBus.post(new BrowserEvents.CloseWindow(lightningView));
+        eventBus.post(new BrowserEvents.CloseWindow(tabId));
     }
 
     @SuppressWarnings("unused")
@@ -268,5 +286,25 @@ class LightningChromeClient extends WebChromeClient {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onLinkLongPressed(@NonNull WebView webView, @NonNull String url, @Nullable String imageUrl) {
+        final String userAgent = webView.getSettings().getUserAgentString();
+        if (url.equals(imageUrl)) {
+            // This is just a long pressed image
+            dialogBuilder.showLongPressImageDialog(tabId, null, imageUrl, userAgent);
+        } else if (imageUrl != null) {
+            // This is an anchor image
+            dialogBuilder.showLongPressImageDialog(tabId, url, imageUrl, userAgent);
+        } else {
+            // This is just a long press on a link
+            dialogBuilder.showLongPressLinkDialog(tabId, url, userAgent);
+        }
+    }
+
+    @Override
+    public void onAdjustResize(@NonNull WebView webView) {
+        eventBus.post(new Messages.AdjustResize());
     }
 }

@@ -4,14 +4,14 @@ import com.cliqz.browser.controlcenter.ControlCenterHelper;
 import com.cliqz.browser.main.search.Incognito;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.CommonOverviewFragment;
-import com.cliqz.browser.overview.TabOverviewFragment;
+import com.cliqz.browser.overview.TabsOverviewFragment;
 import com.cliqz.browser.utils.PasswordManager;
 import com.cliqz.browser.widget.OverFlowMenu;
 import com.cliqz.deckview.TabsDeckView;
 import com.cliqz.nove.Bus;
 
 import acr.browser.lightning.download.LightningDownloadListener;
-import acr.browser.lightning.view.CliqzWebView;
+import acr.browser.lightning.view.LightningChromeClient;
 import acr.browser.lightning.view.LightningView;
 
 interface MainActivityComponent {
@@ -27,11 +27,9 @@ interface MainActivityComponent {
 
     Bus getBus();
 
-    void inject(CliqzWebView cliqzWebView);
-
     void inject(CommonOverviewFragment overviewFragment);
 
-    void inject(TabOverviewFragment tabOverviewFragment);
+    void inject(TabsOverviewFragment tabsOverviewFragment);
 
     void inject(OnBoardingHelper onBoardingHelper);
 
@@ -46,4 +44,6 @@ interface MainActivityComponent {
     void inject(ControlCenterHelper controlCenterHelper);
 
     void inject(LightningDownloadListener lightningDownloadListener);
+
+    void inject(LightningChromeClient lightningChromeClient);
 }

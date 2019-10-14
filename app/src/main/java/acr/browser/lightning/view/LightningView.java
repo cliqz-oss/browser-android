@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Base64;
@@ -27,7 +26,7 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.antiphishing.AntiPhishing;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
-import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.tabs.TabsManager;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.utils.BloomFilterUtils;
@@ -487,13 +486,15 @@ public class LightningView extends FrameLayout {
      * Restore the tab content
      * @param tabId the tab id to be reloaded
      */
-    public void restoreTab(@NonNull String tabId) {
-        mWebView = tabsManager.restoreTab(this, tabId);
-        mWebView.setWebChromeClient(new LightningChromeClient(activity, this));
-        mWebView.setWebViewClient(new LightningWebClient(activity, this));
-        initializePreferences(mWebView.getSettings());
-        ViewUtils.removeViewFromParent(mWebView);
-        addView(mWebView);
+    public void restoreTab(@NonNull String tabId, @Nullable String parentId) {
+        tabsManager.restoreTab(tabId, webView -> {
+            mWebView = webView;
+            mWebView.setWebChromeClient(new LightningChromeClient(tabId, activity, this));
+            mWebView.setWebViewClient(new LightningWebClient(tabId, parentId, activity, this));
+            initializePreferences(mWebView.getSettings());
+            ViewUtils.removeViewFromParent(mWebView);
+            addView(mWebView);
+        });
     }
 
     public Bitmap getFavicon() {
