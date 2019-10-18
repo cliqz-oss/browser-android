@@ -29,7 +29,6 @@
         <item name="progressBackgroundColor">@color/secondary_color</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="progressColor">@color/gray_medium</item>
-        <item name="autoCompleteUrlColor">@color/gray_medium</item>
         <item name="actionOverflowButtonStyle">@style/overFlowButtonStyle</item>
         <item name="dividerColor">@color/divider_light</item>
         <item name="selectedBackground">@drawable/list_bg_light</item>
