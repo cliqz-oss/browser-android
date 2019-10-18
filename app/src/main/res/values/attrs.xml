@@ -3,7 +3,6 @@
 
     <attr name="listBackground" format="reference|color" />
     <attr name="toolbarSettingsBackground" format="reference|color" />
-    <attr name="selectedBackground" format="reference|color" />
     <attr name="textColorPrimary" format="reference|color" />
     <attr name="colorSecondary" format="reference|color" />
 

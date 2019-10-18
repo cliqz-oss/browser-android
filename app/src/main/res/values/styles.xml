@@ -27,7 +27,6 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="progressColor">@color/gray_medium</item>
         <item name="actionOverflowButtonStyle">@style/overFlowButtonStyle</item>
-        <item name="selectedBackground">@drawable/list_bg_light</item>
     </style>
 
     <style name="Theme.LightTheme.Incognito" parent="Theme.LightTheme">
