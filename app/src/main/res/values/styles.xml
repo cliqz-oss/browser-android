@@ -19,7 +19,6 @@
     <style name="Theme.LightTheme" parent="Theme.AppCompat.Light">
 
         <!-- customize the color palette -->
-        <item name="searchBackground">@drawable/card_bg_elevate</item>
         <item name="listBackground">@drawable/list_bg</item>
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryDark">@color/secondary_color</item>
