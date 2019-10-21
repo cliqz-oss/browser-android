@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import acr.browser.lightning.dialog.LightningDialogBuilder;
+import timber.log.Timber;
 
 /**
  * A WebView that support nested scrolling
@@ -232,7 +233,15 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
      * thingy, if it is null, this method tries to deal with it and find a workaround
      */
     private void longClickPage(final String url) {
-        final WebView.HitTestResult result = getHitTestResult();
+
+        WebView.HitTestResult result;
+        try {
+            result = getHitTestResult();
+        } catch (Throwable e) {
+            // Bug in WebViewChromium
+            Timber.e(e, "Error getting hit test result from the WebView");
+            result = null;
+        }
         final String userAgent = getSettings().getUserAgentString();
         if (url != null) {
             if (result != null) {
