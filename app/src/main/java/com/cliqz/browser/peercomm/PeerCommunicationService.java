@@ -26,12 +26,12 @@ public class PeerCommunicationService extends Service {
 
         private PeerThread thread = null;
 
-        synchronized void startPeer(PeerCommunicationService service) {
+        synchronized void startPeer(@NonNull Context context) {
             if (thread != null) {
                 Timber.w("Can't start two peer thread");
                 return;
             }
-            thread = new PeerThread(service);
+            thread = new PeerThread(context);
             thread.start();
         }
 

@@ -1,8 +1,11 @@
 package com.cliqz.browser.peercomm;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
 
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.webview.AbstractionWebView;
@@ -25,14 +28,12 @@ public class PeerWebView extends AbstractionWebView {
 
     private final Handler handler;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private final PeerCommunicationService service;
 
     @Inject
     Engine jsEngine;
 
-    public PeerWebView(PeerCommunicationService service) {
-        super(service);
-        this.service = service;
+    public PeerWebView(@NonNull Context context) {
+        super(context);
         this.handler = new Handler(Looper.getMainLooper());
         BrowserApp.getAppComponent().inject(this);
         setup();
@@ -45,14 +46,11 @@ public class PeerWebView extends AbstractionWebView {
     }
 
     public final void sendPeerInfo(final String peerInfo) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    jsEngine.getBridge().callAction("mobile-pairing:receiveQRValue", peerInfo);
-                } catch (ActionNotAvailable | EmptyResponseException | EngineNotYetAvailable e) {
-                    e.printStackTrace();
-                }
+        handler.post(() -> {
+            try {
+                jsEngine.getBridge().callAction("mobile-pairing:receiveQRValue", peerInfo);
+            } catch (ActionNotAvailable | EmptyResponseException | EngineNotYetAvailable e) {
+                e.printStackTrace();
             }
         });
     }
