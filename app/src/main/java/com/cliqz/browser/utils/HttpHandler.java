@@ -1,7 +1,5 @@
 package com.cliqz.browser.utils;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -80,7 +78,7 @@ public class HttpHandler {
         int responseCode = -1;
         try {
             responseCode = connection.getResponseCode();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Timber.i(e, "Invalid server response");
         }
 
@@ -94,7 +92,7 @@ public class HttpHandler {
             final InputStream stream = connection.getInputStream();
             response = StreamUtils.readTextStream(stream);
             stream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Timber.i(e, "Error reading server response");
             return null;
         }
