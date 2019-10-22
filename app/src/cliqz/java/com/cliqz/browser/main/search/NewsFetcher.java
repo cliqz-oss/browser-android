@@ -1,25 +1,18 @@
 package com.cliqz.browser.main.search;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.cliqz.browser.utils.HttpHandler;
-import com.cliqz.browser.utils.LocationCache;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import acr.browser.lightning.preference.PreferenceManager;
-import timber.log.Timber;
 
 /**
  * @author Ravjit Uppal
@@ -31,7 +24,6 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
                              String newsVersion);
     }
 
-    private static final String TAG = NewsFetcher.class.getSimpleName();
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String NEWS_PAYLOAD = "{\"q\":\"\",\"results\":[{\"url\":\"rotated-top-news.cliqz.com\",\"snippet\":{}}]}";
 
@@ -43,7 +35,13 @@ public class NewsFetcher extends AsyncTask<URL, Void, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(URL... params) {
-        return (JSONObject) HttpHandler.sendRequest("PUT", params[0], CONTENT_TYPE_JSON, null, NEWS_PAYLOAD);
+        final Object result = HttpHandler
+                .sendRequest("PUT", params[0], CONTENT_TYPE_JSON, null, NEWS_PAYLOAD);
+        if (result instanceof JSONObject) {
+            return (JSONObject) result;
+        } else {
+            return null;
+        }
     }
 
     protected void onPostExecute(@Nullable JSONObject result) {
