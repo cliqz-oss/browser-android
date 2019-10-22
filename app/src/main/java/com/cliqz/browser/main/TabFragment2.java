@@ -550,14 +550,14 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             mOverFlowMenu.dismiss();
         } else {
             final String url = lightningView.getUrl();
-            mOverFlowMenu = new OverFlowMenu(getActivity());
+            final Activity activity = Objects.requireNonNull(getActivity());
+            mOverFlowMenu = new OverFlowMenu(activity, state);
             mOverFlowMenu.setCanGoForward(lightningView.canGoForward());
             mOverFlowMenu.setAnchorView(overflowMenuButton);
             mOverFlowMenu.setIncognitoMode(mIsIncognito);
             mOverFlowMenu.setUrl(url);
             mOverFlowMenu.setFavorite(historyDatabase.isFavorite(url));
             mOverFlowMenu.setTitle(lightningView.getTitle());
-            mOverFlowMenu.setState(state);
             mOverFlowMenu.setIsFreshTabVisible(searchView2.isFreshTabVisible());
             mOverFlowMenu.setDesktopSiteEnabled(mRequestDesktopSite);
             mOverFlowMenu.show();
