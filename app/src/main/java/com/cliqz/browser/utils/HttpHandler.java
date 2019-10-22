@@ -1,7 +1,5 @@
 package com.cliqz.browser.utils;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -108,7 +106,7 @@ public class HttpHandler {
             outputStream = connection.getOutputStream();
             outputStream.write(content.getBytes());
             outputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new SendContentException(e);
         }
     }
