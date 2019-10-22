@@ -212,12 +212,13 @@ public class OverFlowMenu extends FrameLayout {
     @BindView(R.id.open_tabs_count)
     TabsCounter tabsCounter;
 
-    private CliqzBrowserState state;
+    private final CliqzBrowserState state;
     private final ListView listView;
 
-    public OverFlowMenu(Activity activity) {
+    public OverFlowMenu(@NonNull Activity activity, @NonNull CliqzBrowserState state) {
         super(activity);
         this.activity = activity;
+        this.state = state;
         prepareEntries();
         listView = new ListView(activity);
         listView.setId(R.id.overflow_menu_list);
@@ -345,10 +346,6 @@ public class OverFlowMenu extends FrameLayout {
         this.mTitle = title;
     }
 
-    public void setState(CliqzBrowserState state) {
-        this.state = state;
-    }
-
     public void setFavorite(boolean value) {
         mIsFavorite = value;
     }
@@ -390,7 +387,7 @@ public class OverFlowMenu extends FrameLayout {
         public boolean isEnabled(int position) {
             final Entries entry = mEntries[position];
             final boolean hasValidId = mUrl != null &&  !mUrl.isEmpty() && !mUrl.contains("cliqz://trampoline");
-            final boolean isShowingWebPage = state.getMode() == Mode.WEBPAGE;
+            final boolean isShowingWebPage = state == null || state.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
             final boolean isSendTab = entry == Entries.SEND_TAB_TO_DESKTOP;
             return (!isSearchInPage && !isSendTab) ||

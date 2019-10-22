@@ -483,11 +483,14 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
                 };
                 for (Intent i: toBeResolved) {
                     if (i.resolveActivity(context.getPackageManager()) != null) {
-                        context.startActivity(i);
-                        break;
+                        try {
+                            context.startActivity(i);
+                            return CODE_RETURN_TRUE;
+                        } catch (ActivityNotFoundException e) {
+                            Timber.w(e, "Can't resolve %s", i.toString());
+                        }
                     }
                 }
-                return CODE_RETURN_TRUE;
             }
         }
 

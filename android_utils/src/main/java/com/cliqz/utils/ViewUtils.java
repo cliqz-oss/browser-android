@@ -24,8 +24,8 @@ public final class ViewUtils {
 
     public static void removeViewFromParent(@NonNull View view) {
         final ViewParent viewParent = view.getParent();
-        if (viewParent != null && viewParent instanceof ViewManager) {
-            final ViewManager viewManager = ViewManager.class.cast(viewParent);
+        if (viewParent instanceof ViewManager) {
+            final ViewManager viewManager = (ViewManager) viewParent;
             viewManager.removeView(view);
         }
     }
@@ -49,8 +49,8 @@ public final class ViewUtils {
         viewsStack.push(root);
         while (!viewsStack.isEmpty()) {
             final View view = viewsStack.pop();
-            if (ViewGroup.class.isInstance(view)) {
-                final ViewGroup viewGroup = ViewGroup.class.cast(view);
+            if (view instanceof ViewGroup) {
+                final ViewGroup viewGroup = (ViewGroup) view;
                 final int childCount = viewGroup.getChildCount();
                 for (int index = 0; index < childCount; index++) {
                     viewsStack.push(viewGroup.getChildAt(index));
