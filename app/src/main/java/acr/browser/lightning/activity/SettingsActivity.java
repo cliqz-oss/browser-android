@@ -3,6 +3,7 @@
  */
 package acr.browser.lightning.activity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -32,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -117,7 +120,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.CONTACT, TelemetryKeys.MAIN);
             openUrl(getString(R.string.support_url));
         } else if (info.id == R.id.rate_us) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+            final Uri marketUri = Uri.parse("market://details?id=" + getPackageName());
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
+            } catch (ActivityNotFoundException e) {
+                Timber.w(e, "No activity handles %s", marketUri.toString());
+                openUrl("https://play.google.com/store/apps/details?id=" + getPackageName());
+            }
         } else if (info.id == R.id.tips_and_tricks) {
             telemetry.sendSettingsMenuSignal(TelemetryKeys.TIPS_AND_TRICKS, TelemetryKeys.MAIN);
             openUrl(getString(R.string.tips_and_tricks_url));
