@@ -248,15 +248,24 @@ public class TabsManager {
         }
         final TabFragment2 tab = mFragmentsList.get(position).fragment;
         tab.state.setSelected(true);
+        currentVisibleTab = position;
+        persister.visit(tab.getTabId());
+        if (mFragmentManager.isDestroyed()) {
+            // Do not perform the transaction, the Activity is destroyed
+            return;
+        }
         final FragmentTransaction transaction = mFragmentManager.beginTransaction();
         if (SDK_INT != Build.VERSION_CODES.M && animation != 0) {
             //cannot pass null for exit animation
             transaction.setCustomAnimations(animation, R.anim.dummy_transition);
         }
         transaction.replace(R.id.content_frame, tab, MainActivity.TAB_FRAGMENT_TAG);
-        transaction.commit();
-        currentVisibleTab = position;
-        persister.visit(tab.getTabId());
+        if (mFragmentManager.isStateSaved()) {
+            // Only on exceptional cases
+            transaction.commitAllowingStateLoss();
+        } else {
+            transaction.commit();
+        }
     }
 
     /**
