@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
-import androidx.core.view.MotionEventCompat;
 import androidx.core.view.NestedScrollingChild2;
 import androidx.core.view.NestedScrollingChildHelper;
 import androidx.core.view.ViewCompat;
@@ -29,6 +28,9 @@ import javax.inject.Inject;
 
 import acr.browser.lightning.dialog.LightningDialogBuilder;
 import timber.log.Timber;
+
+import static android.webkit.WebView.HitTestResult.IMAGE_TYPE;
+import static android.webkit.WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE;
 
 /**
  * A WebView that support nested scrolling
@@ -63,11 +65,16 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
         if (component != null) {
             component.inject(this);
         }
+
+        // Disable saving the WebView state as we manage saving the state via the WebViewPersister,
+        // this also mitigate crashes due to TransactionTooLargeException.
+        setSaveEnabled(false);
         mChildHelper = new NestedScrollingChildHelper(this);
         gestureDetector = new GestureDetector(context, new CustomGestureListener());
         setNestedScrollingEnabled(true);
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     @Override
     public void bringToFront() {
         final ViewGroup container = (ViewGroup) getParent();
@@ -85,20 +92,16 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
     @Override
     public void loadUrl(final String url) {
-        loadUrl(url, Collections.<String, String>emptyMap());
+        loadUrl(url, Collections.emptyMap());
     }
 
     @Override
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CliqzWebView.super.loadUrl(url, additionalHttpHeaders);
-            }
-        }, LOAD_URL_DELAY_SECONDS);
+        postDelayed(() -> CliqzWebView.super.loadUrl(url, additionalHttpHeaders), LOAD_URL_DELAY_SECONDS);
     }
 
     //Below code has been taken and modified from the GitHub repo takahirom/webview-in-coordinatorlayout
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (gestureDetector.onTouchEvent(ev)) {
@@ -107,7 +110,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
         boolean returnValue = false;
         MotionEvent event = MotionEvent.obtain(ev);
-        final int action = MotionEventCompat.getActionMasked(event);
+        final int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
             mNestedOffsetY = 0;
         }
@@ -233,8 +236,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
      * thingy, if it is null, this method tries to deal with it and find a workaround
      */
     private void longClickPage(final String url) {
-
-        WebView.HitTestResult result;
+        HitTestResult result;
         try {
             result = getHitTestResult();
         } catch (Throwable e) {
@@ -245,8 +247,10 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
         final String userAgent = getSettings().getUserAgentString();
         if (url != null) {
             if (result != null) {
-                if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
-                    final String imageUrl = result.getExtra();
+                final String imageUrl = result.getExtra();
+                final int resultType = result.getType();
+                if ((resultType == SRC_IMAGE_ANCHOR_TYPE && imageUrl != null) ||
+                        (resultType == IMAGE_TYPE && imageUrl != null)) {
                     dialogBuilder.showLongPressImageDialog(url, imageUrl, userAgent);
                 } else {
                     dialogBuilder.showLongPressLinkDialog(url, userAgent);
@@ -256,7 +260,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
             }
         } else if (result != null && result.getExtra() != null) {
             final String newUrl = result.getExtra();
-            if (result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE || result.getType() == WebView.HitTestResult.IMAGE_TYPE) {
+            if (result.getType() == SRC_IMAGE_ANCHOR_TYPE || result.getType() == IMAGE_TYPE) {
                 dialogBuilder.showLongPressImageDialog(null, newUrl, userAgent);
             } else {
                 dialogBuilder.showLongPressLinkDialog(newUrl, userAgent);
