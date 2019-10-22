@@ -320,7 +320,11 @@ public class LightningView extends FrameLayout {
                 });
                 mReaderModeWebViewRef = new WeakReference<>(readerWebView);
             }
-            removeView(mWebView);
+            removeAllViews();
+            // Let's be careful here and double check if the readerWebView has a parent
+            if (readerWebView.getParent() != null) {
+                ViewUtils.removeViewFromParent(readerWebView);
+            }
             addView(readerWebView);
             readerWebView.loadData(contentBase64, "text/html; charset=utf-8", "base64");
         } catch (UnsupportedEncodingException e) {
