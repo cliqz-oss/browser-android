@@ -46,6 +46,10 @@
     @com.squareup.otto.Produce public *;
 }
 
+-keepclassmembers class androidx.core.util.Preconditions {
+    public static *;
+}
+
 #-assumenosideeffects class android.util.Log {
 #    public static *** d(...);
 #    public static *** v(...);
