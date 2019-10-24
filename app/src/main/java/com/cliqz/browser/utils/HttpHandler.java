@@ -106,7 +106,7 @@ public class HttpHandler {
             outputStream = connection.getOutputStream();
             outputStream.write(content.getBytes());
             outputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new SendContentException(e);
         }
     }
