@@ -6,18 +6,10 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.content.res.AppCompatResources;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -30,12 +22,18 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
-import com.cliqz.browser.widget.AutocompleteEditText;
 import com.cliqz.nove.Bus;
 
 import java.util.Objects;
@@ -53,7 +51,7 @@ import butterknife.OnClick;
  *
  * @author Stefano Pacifici
  */
-public class QuickAccessBar extends FrameLayout implements TextWatcher {
+public class QuickAccessBar extends FrameLayout {
 
     /*
         A little bit of information over this delay, to be acceptable the UI must be refreshed
@@ -70,13 +68,11 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     private static final int APPEAR_ANIMATION_START_DELAY = 200;
     private static final int APPEAR_ANIMATION_DURATION = 200;
     private static final int DISAPPEAR_ANIMATION_DURATION = 10;
+    private static final int MAX_Y = Integer.MAX_VALUE >> 2;
 
-    private ObjectAnimator mCurrentAnimantor;
+    private ObjectAnimator mCurrentAnimator;
     private boolean mShown;
     private final PositionUpdater positionUpdater = new PositionUpdater();
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private AutocompleteEditText mSearchTextView = null;
     private int mY = Integer.MAX_VALUE;
 
     @BindView(R.id.query_suggestion_container)
@@ -110,17 +106,11 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         this(context, attrs,0);
     }
 
-    public void setSearchTextView(@Nullable AutocompleteEditText searchTextView) {
-        mSearchTextView = searchTextView;
-        if (mSearchTextView != null) {
-            mSearchTextView.addTextChangedListener(this);
-        }
-    }
-
     public QuickAccessBar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
         setButtonsTopDrawable(context);
+        setSaveEnabled(false);
     }
 
     private void init(Context context) {
@@ -181,6 +171,11 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
             nhms = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY);
         }
         super.onMeasure(widthMeasureSpec, nhms);
+    }
+
+    public void showAccessBar() {
+        querySuggestionContainer.setVisibility(INVISIBLE);
+        accessBarContainer.setVisibility(VISIBLE);
     }
 
     public void showSuggestions(String[] suggestions, String originalQuery) {
@@ -264,10 +259,9 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        final int maxY = getParentHeight();
-        if (!hasWindowFocus && maxY != mY) {
-            setY(maxY);
-            mY = maxY;
+        if (!hasWindowFocus && MAX_Y < mY) {
+            setY(MAX_Y);
+            mY = MAX_Y;
         }
     }
 
@@ -313,24 +307,6 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         }
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        // Nothig to do here
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        // Nothing to do here
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        if (s != null && s.length() == 0) {
-            querySuggestionContainer.setVisibility(INVISIBLE);
-            accessBarContainer.setVisibility(VISIBLE);
-        }
-    }
-
     public void show() {
         if (mShown) {
             return;
@@ -351,9 +327,9 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
     }
 
     private void cancelCurrentAnimation() {
-        if (mCurrentAnimantor != null) {
-            mCurrentAnimantor.cancel();
-            mCurrentAnimantor = null;
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+            mCurrentAnimator = null;
         }
     }
 
@@ -363,12 +339,12 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
         }
         final float fromY = getParentHeight();
         setY(fromY);
-        mCurrentAnimantor = ObjectAnimator.ofFloat(this, "y", fromY, mY);
+        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", fromY, mY);
         if (!now) {
-            mCurrentAnimantor.setStartDelay(APPEAR_ANIMATION_START_DELAY);
+            mCurrentAnimator.setStartDelay(APPEAR_ANIMATION_START_DELAY);
         }
-        mCurrentAnimantor.setDuration(APPEAR_ANIMATION_DURATION);
-        mCurrentAnimantor.start();
+        mCurrentAnimator.setDuration(APPEAR_ANIMATION_DURATION);
+        mCurrentAnimator.start();
     }
 
     private void startDisappearAnimation() {
@@ -376,9 +352,9 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
             return;
         }
         final float toY = getParentHeight();
-        mCurrentAnimantor = ObjectAnimator.ofFloat(this, "y", mY, toY);
-        mCurrentAnimantor.setDuration(DISAPPEAR_ANIMATION_DURATION);
-        mCurrentAnimantor.start();
+        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", mY, toY);
+        mCurrentAnimator.setDuration(DISAPPEAR_ANIMATION_DURATION);
+        mCurrentAnimator.start();
     }
 
     private boolean isKeyboardVisible() {
@@ -400,7 +376,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
                 final Rect visibleFrame = new Rect();
                 getWindowVisibleDisplayFrame(visibleFrame);
                 final int y = visibleFrame.bottom - accessBarContainer.getHeight();
-                if (y != mY) {
+                if (y < mY) {
                     mY = y;
                     if (mShown) {
                         cancelCurrentAnimation();
@@ -408,7 +384,7 @@ public class QuickAccessBar extends FrameLayout implements TextWatcher {
                     }
                 }
             } else {
-                setY(getParentHeight());
+                setY(MAX_Y);
             }
         }
     }

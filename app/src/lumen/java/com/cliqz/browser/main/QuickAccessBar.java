@@ -29,10 +29,6 @@ public class QuickAccessBar extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setSearchTextView(AutocompleteEditText searchEditText) {
-
-    }
-
     public void hide() {
 
     }
@@ -42,6 +38,10 @@ public class QuickAccessBar extends FrameLayout {
     }
 
     public void showSuggestions(String[] suggestions, String query) {
+
+    }
+
+    public void showAccessBar() {
 
     }
 }
