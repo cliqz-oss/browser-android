@@ -297,6 +297,7 @@ public class Telemetry {
             prefsJson.put(TelemetryKeys.CONFIG_LOCATION, preferenceManager.getLastKnownLocation());
             prefsJson.put(TelemetryKeys.NOTIFICATION, preferenceManager.getNewsNotificationEnabled());
             prefsJson.put(TelemetryKeys.LOCATION_ACCESS_SYSTEM, isLocationGranted());
+            prefsJson.put(TelemetryKeys.FRESHTAB_PREFS, getFreshTabPrefs());
             if (BuildConfig.IS_LUMEN) {
                 prefsJson.put(TelemetryKeys.PROTECTION_ENABLED, purchasesManager.isDashboardEnabled() &&
                         preferenceManager.isAttrackEnabled() && preferenceManager.getAdBlockEnabled());
@@ -305,6 +306,18 @@ public class Telemetry {
             }
         } catch (JSONException e) {
             Timber.e("Can't read preferences");
+        }
+        return prefsJson;
+    }
+
+    private JSONObject getFreshTabPrefs() {
+        final JSONObject prefsJson = new JSONObject();
+        try {
+            final JSONObject newsPrefs = new JSONObject();
+            newsPrefs.put(TelemetryKeys.PREFERED_COUNTRY, NewsUtils.getEdition());
+            prefsJson.put(TelemetryKeys.NEWS, newsPrefs);
+        } catch (JSONException e) {
+            Timber.e(e, "Can't add FreshTab prefs");
         }
         return prefsJson;
     }
