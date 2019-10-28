@@ -58,6 +58,10 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
 
     private static final int COLLAPSED_NEWS_NO = 2;
 
+    private static final long NEWS_REFRESH_PERIOD = 30 * 60 * 1000L; // 30 minutes
+
+    private long newsLastRefreshedOn = 0L;
+
     private boolean mIsIncognito = false;
 
     @BindView(R.id.topsites_grid)
@@ -226,10 +230,12 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     }
 
     public void updateFreshTab(boolean isIncognito) {
-        // TODO @Khaled: please pull news every 30 minutes instead every time the view is brought to front
         this.mIsIncognito = isIncognito;
         refreshTopsites();
-        getTopnews();
+        if (shouldRefreshNews()) {
+            getTopnews();
+            newsLastRefreshedOn = System.currentTimeMillis();
+        }
         checkForMessages();
         final Context context = getContext();
         if (preferenceManager.isBackgroundImageEnabled()) {
@@ -242,6 +248,10 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
             madeInGermanyTextView.setTextColor(ContextCompat.getColor(getContext(),
                     R.color.made_in_germany_color_no_background));
         }
+    }
+
+    private boolean shouldRefreshNews() {
+        return newsLastRefreshedOn == 0L || (System.currentTimeMillis() - newsLastRefreshedOn) > NEWS_REFRESH_PERIOD;
     }
 
     public void refreshTopsites() {
