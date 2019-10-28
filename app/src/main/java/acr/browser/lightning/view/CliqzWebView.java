@@ -147,8 +147,7 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
                 // start NestedScroll
                 startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
+            default:
                 firstScroll = true;
                 returnValue = super.onTouchEvent(event);
                 // end NestedScroll
