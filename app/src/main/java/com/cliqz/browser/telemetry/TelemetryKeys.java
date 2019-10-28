@@ -257,4 +257,6 @@ public final class TelemetryKeys {
     public static final String PROTECTION_ENABLED = "lumen.protection.isEnabled";
     public static final String SUBSCRIPTION_TYPE = "lumen.subscription";
 
+    public static final String FRESHTAB_PREFS = "freshtabConfig";
+    public static final String PREFERED_COUNTRY = "preferedCountry";
 }
