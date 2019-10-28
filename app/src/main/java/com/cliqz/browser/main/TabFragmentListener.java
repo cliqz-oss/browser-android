@@ -29,6 +29,10 @@ class TabFragmentListener implements SearchBar.Listener {
         fragment.searchBar.setListener(this);
     }
 
+    public static void remove(TabFragment2 tabFragment) {
+        tabFragment.searchBar.setListener(null);
+    }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         final SearchView searchView = fragment.searchView2;

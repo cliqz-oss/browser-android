@@ -90,7 +90,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import butterknife.OnTextChanged;
 import butterknife.Optional;
+import butterknife.Unbinder;
 import timber.log.Timber;
 
 import static android.R.attr.statusBarColor;
@@ -135,6 +137,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     private static final int KEYBOARD_ANIMATION_DELAY = 200;
 
     private ControlCenterHelper mControlCenterHelper;
+    private Unbinder mUnbinder;
 
     @BindView(R.id.statusbar)
     AppBarLayout statusBar;
@@ -270,7 +273,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
         final MainActivity activity = (MainActivity) getActivity();
@@ -300,10 +303,16 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         ViewUtils.safelyAddView(searchViewContainer, searchView2);
         searchBar.setTrackerCount(mTrackerCount);
         if (quickAccessBar != null) {
-            quickAccessBar.setSearchTextView(searchEditText);
             quickAccessBar.hide();
         }
         onPageFinished(null);
+    }
+
+    @Override
+    public void onDestroyView() {
+        TabFragmentListener.remove(this);
+        mUnbinder.unbind();
+        super.onDestroyView();
     }
 
     private void delayedPostOnBus(final Object event) {
@@ -660,6 +669,14 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         return false;
     }
 
+    @OnTextChanged(R.id.search_edit_text)
+    void onSearchTextChanged(CharSequence text) {
+        final int textLength = text != null ? text.length() : 0;
+        if (quickAccessBar != null && textLength == 0) {
+            quickAccessBar.showAccessBar();
+        }
+    }
+
     @Subscribe
     public void showKeyBoard(CliqzMessages.ShowKeyboard event) {
         searchBar.postDelayed(searchBar::showKeyBoard, 200);
@@ -672,7 +689,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             final Context context = FragmentUtilsV4.getContext(this);
             InputMethodManager imm = (InputMethodManager) context
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm == null) {
+            if (imm == null || searchBar == null) {
                 return;
             }
             imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
