@@ -532,6 +532,19 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         bus.post(new Messages.BackPressed());
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        switch (level) {
+            case TRIM_MEMORY_RUNNING_LOW:
+            case TRIM_MEMORY_RUNNING_CRITICAL:
+                tabsManager.unloadUnusedTabs();
+                break;
+            default:
+                break;
+        }
+        super.onTrimMemory(level);
+    }
+
     @Subscribe
     public void openLinkInNewTab(BrowserEvents.OpenUrlInNewTab event) {
         createTab(event.url, event.isIncognito, event.showImmediately);
@@ -626,8 +639,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         telemetry.resetBackNavigationVariables(-1);
         final FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction transaction = fm.beginTransaction();
-        //workaround for getting the mode in hitroy fragment
-        //noinspection ConstantConditions
+        // workaround for getting the mode in history fragment
         final TabFragment2 currentTab = tabsManager.getCurrentTab();
         if (currentTab != null) {
             currentMode = tabsManager.getCurrentTab().getTelemetryView();
