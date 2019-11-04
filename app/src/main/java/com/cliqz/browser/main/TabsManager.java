@@ -467,6 +467,19 @@ public class TabsManager {
     }
 
     /**
+     * Unload the cached webviews to free some memory.
+     */
+    public void unloadUnusedTabs() {
+        final int currentTabIndex = getCurrentTabPosition();
+        for (int index = 0; index < mFragmentsList.size(); index++) {
+            if (index != currentTabIndex) {
+                final TabData data = mFragmentsList.get(index);
+                data.webView = null;
+            }
+        }
+    }
+
+    /**
      * Delete all the stored tabs data, use this one if you do not want to create a new empty tab.
      */
     void clearTabsData() {

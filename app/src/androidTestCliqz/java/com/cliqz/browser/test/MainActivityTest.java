@@ -1,5 +1,6 @@
 package com.cliqz.browser.test;
 
+import android.Manifest;
 import android.content.Context;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -10,6 +11,7 @@ import androidx.test.espresso.web.assertion.WebViewAssertions;
 import androidx.test.espresso.web.matcher.DomMatchers;
 import androidx.test.espresso.web.webdriver.Locator;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
@@ -23,7 +25,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestName;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.io.File;
@@ -66,14 +70,22 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    @Rule
-    public TestName testName = new TestName();
+    private TestName testName = new TestName();
 
-    private static Process recorder;
+    private ActivityTestRule<MainActivity> mActivityRule =
+            new ActivityTestRule<>(MainActivity.class, false, false);
+
+    private GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
     @Rule
-    public ActivityTestRule<MainActivity>
-            mActivityRule = new ActivityTestRule<>(MainActivity.class, false, false);
+    public TestRule rule = RuleChain
+            .outerRule(testName)
+            .around(grantPermissionRule)
+            .around(new ClearTabsDataRule())
+            .around(new ClearPreferencesRule())
+            .around(mActivityRule);
 
     @Before
     public void setUp() {
@@ -83,33 +95,6 @@ public class MainActivityTest {
     @After
     public void tearDown() {
         DeviceShellHelper.takeScreenshot(testName.getMethodName());
-        mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
-        onView(withContentDescription("More options")).perform(click());
-        onView(withText("Close All Tabs")).perform(click());
-    }
-
-    public void resetApp() {
-        try {
-            File root = InstrumentationRegistry.getTargetContext().getFilesDir().getParentFile();
-            String[] sharedPreferencesFileNames = new File(root, "shared_prefs").list();
-            for (String fileName : sharedPreferencesFileNames) {
-                InstrumentationRegistry.getTargetContext()
-                        .getSharedPreferences(
-                                fileName.replace(".xml", ""), Context.MODE_PRIVATE)
-                        .edit()
-                        .clear()
-                        .commit();
-            }
-            /* Presently Not Working o/
-            String[] tabsFiles = new File(root, "files/tabs").list();
-            for (String fileName : tabsFiles) {
-                InstrumentationRegistry.getTargetContext().deleteFile(fileName);
-            }
-            /o  TODO: Fix deleting of tabs files. Faster than closing all tabs in Tear Down. */
-        }
-        catch (Exception e) {
-            Log.e("EspressoTests", e.getMessage());
-        }
     }
 
     @Test

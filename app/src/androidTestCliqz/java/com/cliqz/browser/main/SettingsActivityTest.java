@@ -1,5 +1,6 @@
 package com.cliqz.browser.main;
 
+import android.Manifest;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -7,9 +8,12 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.web.assertion.WebViewAssertions;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
+import com.cliqz.browser.test.ClearPreferencesRule;
+import com.cliqz.browser.test.ClearTabsDataRule;
 import com.cliqz.browser.test.CustomFailureHandler;
 import com.cliqz.browser.test.DeviceShellHelper;
 import com.cliqz.browser.utils.ViewHelpers;
@@ -17,9 +21,12 @@ import com.cliqz.browser.utils.WebHelpers;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestName;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.util.Random;
@@ -37,7 +44,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withResourceName;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -54,29 +60,32 @@ import static org.hamcrest.Matchers.equalToIgnoringCase;
 @LargeTest
 public class SettingsActivityTest {
 
-    @Rule
-    public TestName testName = new TestName();
+    private TestName testName = new TestName();
 
-    private static Process recorder;
+    private GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+    private ActivityTestRule<MainActivity> mActivityRule =
+            new ActivityTestRule<>(MainActivity.class, false, false);
 
     @Rule
-    public ActivityTestRule<MainActivity>
-            mActivityRule = new ActivityTestRule<>(MainActivity.class, false, false);
+    public TestRule rule = RuleChain
+            .outerRule(testName)
+            .around(grantPermissionRule)
+            .around(new ClearTabsDataRule())
+            .around(new ClearPreferencesRule())
+            .around(mActivityRule);
+
+    @BeforeClass
+    public static void allowLocationAccess() {
+        System.setProperty("ALLOW_LOCATION", "true");
+    }
 
     @Before
     public void setUp() {
         Log.d("AUTOBOTS", testName.getMethodName());
         Espresso.setFailureHandler(new CustomFailureHandler(mActivityRule.launchActivity(null)));
-        mActivityRule.getActivity().goToOverView(new Messages.GoToOverview());
-        try {
-            ViewHelpers.onView(withContentDescription("More options")).perform(click());
-            ViewHelpers.onView(withText("Close All Tabs")).perform(click());
-        } catch(Exception e) {
-            Log.e("AUTOBOTS", e.getMessage());
-            ViewHelpers.onView(withContentDescription("More options")).perform(click());
-            ViewHelpers.onView(withText("Close All Tabs")).perform(click());
-        }
-        Espresso.closeSoftKeyboard();
         mActivityRule.getActivity().goToSettings(new Messages.GoToSettings());
     }
 

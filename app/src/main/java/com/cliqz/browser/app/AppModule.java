@@ -120,14 +120,6 @@ public class AppModule {
 
     @Provides
     @Singleton
-    WebViewPersister provideWebViewPersister(Context context,
-                                             MainThreadHandler mainThreadHandler,
-                                             BackgroundThreadHandler backgroundThreadHandler) {
-        return new WebViewPersister(context, mainThreadHandler, backgroundThreadHandler);
-    }
-
-    @Provides
-    @Singleton
     SubscriptionsManager provideSubscriptionsManager(Context context) {
         return new SubscriptionsManager(context);
     }
