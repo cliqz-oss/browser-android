@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1320,8 +1319,8 @@ public class Telemetry {
         if (activityManager == null) {
             return 0;
         }
-        final int pids[] = new int[] { android.os.Process.myPid() };
-        final Debug.MemoryInfo[] memoryInfoArray = activityManager.getProcessMemoryInfo(pids);
+        final int[] PIDs = new int[] { android.os.Process.myPid() };
+        final Debug.MemoryInfo[] memoryInfoArray = activityManager.getProcessMemoryInfo(PIDs);
         return memoryInfoArray[0].getTotalPss() / 1024;
     }
 

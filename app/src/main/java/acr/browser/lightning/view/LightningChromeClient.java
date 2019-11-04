@@ -30,7 +30,6 @@ import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.bus.BrowserEvents.ShowFileChooser;
-import acr.browser.lightning.utils.UrlUtils;
 import timber.log.Timber;
 
 /**
@@ -129,10 +128,20 @@ class LightningChromeClient extends WebChromeClient {
         PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
             @Override
             public void onGranted() {
+                // We allow by default location access if a property named ALLOW_LOCATION is set
+                // to "true" and we are in debug mode. This is an hack to run automation tests.
+                final boolean allowByConfiguration = Boolean
+                        .parseBoolean(System.getProperty("ALLOW_LOCATION", "false")) &&
+                        BuildConfig.DEBUG;
+                if (allowByConfiguration) {
+                    callback.invoke(origin, true, false);
+                    return;
+                }
+
                 final boolean remember = true;
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setTitle(activity.getString(R.string.location));
-                String org;
+                final String org;
                 if (origin.length() > 50) {
                     org = origin.subSequence(0, 50) + "...";
                 } else {

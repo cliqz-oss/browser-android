@@ -24,6 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.view.TrampolineConstants;
 import timber.log.Timber;
@@ -33,6 +36,7 @@ import timber.log.Timber;
  *
  * @author Stefano Pacifici
  */
+@Singleton
 public class WebViewPersister {
 
     private static final String META_FILE_EXTENSION = "tabmeta";
@@ -43,6 +47,7 @@ public class WebViewPersister {
     private final BackgroundThreadHandler backgroundThreadHandler;
     private final File destDirectory;
 
+    @Inject
     public WebViewPersister(@NonNull Context context,
                             @NonNull MainThreadHandler mainThreadHandler,
                             @NonNull BackgroundThreadHandler backgroundThreadHandler) {
