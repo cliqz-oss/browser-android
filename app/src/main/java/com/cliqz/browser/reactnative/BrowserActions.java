@@ -50,23 +50,24 @@ public class BrowserActions extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    @SuppressWarnings("unused")
-    public void callNumber(String number) {
+    public void callNumber(Object... params) {
+        final String number = params != null && params.length > 0 && params[0] instanceof String ?
+                (String) params[0] : null;
+        if (number != null) {
+            mHandler.post(() -> mBus.post(new CliqzMessages.CallNumber(number)));
+        }
     }
 
     @ReactMethod
-    @SuppressWarnings("unused")
     public void openMap(String mapUrl) {
         openLink(mapUrl, "");
     }
 
     @ReactMethod
-    @SuppressWarnings("unused")
     public void hideKeyboard() {
     }
 
     @ReactMethod
-    @SuppressWarnings("unused")
     public void searchHistory(String query, Callback callback) {
         if (query != null && !query.isEmpty()) {
             final Bundle[] historyResults = historyDatabase.searchHistory(query, 5);
@@ -78,15 +79,9 @@ public class BrowserActions extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    @SuppressWarnings("unused")
     public void openLink(final String url, final String query) {
         if (url != null) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mBus.post(CliqzMessages.OpenLink.open(url));
-                }
-            });
+            mHandler.post(() -> mBus.post(CliqzMessages.OpenLink.open(url)));
         }
     }
 }
