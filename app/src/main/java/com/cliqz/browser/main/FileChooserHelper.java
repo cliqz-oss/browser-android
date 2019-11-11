@@ -7,6 +7,8 @@ import android.provider.MediaStore;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 
+import androidx.core.content.FileProvider;
+
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.R;
@@ -116,8 +118,12 @@ class FileChooserHelper {
                 }
                 // Create the File where the photo should go
                 mPhotoFile = Utils.createImageFile();
-                takePictureIntent.putExtra("PhotoPath", Uri.fromFile(mPhotoFile));
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+                final Uri uri = FileProvider
+                        .getUriForFile( mainActivity,
+                                        mainActivity.getPackageName() + ".provider",
+                                        mPhotoFile );
+                takePictureIntent.putExtra("PhotoPath",uri);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 intent = takePictureIntent;
             } catch (Exception e) {
                 Timber.e(e, "Can't capture pictures");
