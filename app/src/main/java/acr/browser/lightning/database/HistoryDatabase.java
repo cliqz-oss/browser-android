@@ -32,7 +32,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     // Database Name
     private static final String DATABASE_NAME = "historyManager";
@@ -109,7 +109,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.beginTransaction();
         try {
-            createV7DB(db);
+            createV8DB(db);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -123,30 +123,14 @@ public class HistoryDatabase extends SQLiteOpenHelper {
         db.execSQL(res.getString(R.string.create_visits_index_v4));
     }
 
-    // We keep this method to keep track of the differences between v5 and v6
-    @SuppressWarnings("unused")
-    private void createV5DB(SQLiteDatabase db) {
-        db.execSQL(res.getString(R.string.create_urls_table_v5));
-        db.execSQL(res.getString(R.string.create_history_table_v5));
-        db.execSQL(res.getString(R.string.create_urls_index_v5));
-        db.execSQL(res.getString(R.string.create_visits_index_v5));
-    }
-
-    private void createV6DB(SQLiteDatabase db) {
-        db.execSQL(res.getString(R.string.create_urls_table_v6));
-        db.execSQL(res.getString(R.string.create_history_table_v5));
-        db.execSQL(res.getString(R.string.create_urls_index_v5));
-        db.execSQL(res.getString(R.string.create_visits_index_v5));
-        db.execSQL(res.getString(R.string.create_blocked_topsites_table_v6));
-    }
-
-    private void createV7DB(SQLiteDatabase db) {
+    private void createV8DB(SQLiteDatabase db) {
         db.execSQL(res.getString(R.string.create_urls_table_v6));
         db.execSQL(res.getString(R.string.create_history_table_v5));
         db.execSQL(res.getString(R.string.create_urls_index_v5));
         db.execSQL(res.getString(R.string.create_visits_index_v5));
         db.execSQL(res.getString(R.string.create_blocked_topsites_table_v6));
         db.execSQL(res.getString(R.string.create_queries_table_v7));
+        db.execSQL(res.getString(R.string.create_history_time_index_v8));
     }
 
 
@@ -178,6 +162,9 @@ public class HistoryDatabase extends SQLiteOpenHelper {
                 case 6:
                     //create queries table
                     db.execSQL(res.getString(R.string.create_queries_table_v7));
+                case 7:
+                    // Create historyTimeIndex
+                    db.execSQL(res.getString(R.string.create_history_time_index_v8));
                     db.setTransactionSuccessful();
                     break;
                 default:
@@ -187,7 +174,7 @@ public class HistoryDatabase extends SQLiteOpenHelper {
                     db.execSQL("DROP TABLE IF EXISTS " + BlockedTopSitesTable.TABLE_NAME);
                     db.execSQL("DROP TABLE IF EXISTS " + QueriesTable.TABLE_NAME);
                     // Create tables again
-                    createV7DB(db);
+                    createV8DB(db);
 
                     db.setTransactionSuccessful();
                     break;
@@ -392,9 +379,14 @@ public class HistoryDatabase extends SQLiteOpenHelper {
         if (limit <= 0) {
             limit = 5;
         }
-        final String formattedSearch = String.format("%%%s%%", search);
-        final String selectQuery = res.getString(R.string.seach_history_query_v5);
+        final String lcSearch = search.toLowerCase();
+        final String formattedSearch = String.format("%%%s%%", lcSearch);
+        final String selectQuery = res.getString(R.string.seach_history_query_v8);
         final Cursor cursor = mDatabase.rawQuery(selectQuery, new String[]{
+                lcSearch,
+                lcSearch,
+                lcSearch,
+                formattedSearch,
                 formattedSearch,
                 formattedSearch,
                 Integer.toString(limit)
