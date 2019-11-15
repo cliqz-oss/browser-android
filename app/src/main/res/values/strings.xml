@@ -327,4 +327,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="privated_data_cleared">Private data cleared</string>
     <string name="revision">Revision</string>
     <string name="build_time">Build Date &amp; Time</string>
+    <string name="enable_android_backup_title">Enable Android Auto Backup</string>
+    <string name="enable_android_backup_summary">Auto Backup for Apps automatically backs up a user\'s data by uploading it to the user\'s Google Drive</string>
 </resources>

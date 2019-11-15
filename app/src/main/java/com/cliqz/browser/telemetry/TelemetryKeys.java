@@ -251,6 +251,7 @@ public final class TelemetryKeys {
     public static final String NEVER = "never";
     public static final String SHOW_BACKGROUND_IMAGE = "show_background_image";
     public static final String SEND_USAGE_DATA = "send_usage_data";
+    public static final String ENABLE_ANDROID_BACKUP = "enable_android_backup";
 
     // Lumen specific telemetry keys.
 

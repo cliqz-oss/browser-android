@@ -30,6 +30,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
     private var cbautoforget: CheckBoxPreference? = null
     private var cbattrack: CheckBoxPreference? = null
     private var cbsendusagedata: CheckBoxPreference? = null
+    private var cbandroidbackup: CheckBoxPreference? = null
 
     private var prpermissions: Preference? = null
 
@@ -53,6 +54,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
         cbclearexit = findPreference(SETTINGS_CLEAR_DATA_ON_EXIT) as CheckBoxPreference?
         cbautoforget = findPreference(SETTINGS_AUTO_FORGET) as CheckBoxPreference?
         cbsendusagedata = findPreference(SETTINGS_SEND_USAGE_DATA) as CheckBoxPreference?
+        cbandroidbackup = findPreference(SETTINGS_ENABLE_ANDROID_BACKUP) as CheckBoxPreference?
 
         cbattrack?.onPreferenceChangeListener = this
         prpermissions?.onPreferenceClickListener = this
@@ -62,6 +64,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
         cbclearexit?.onPreferenceChangeListener = this
         cbautoforget?.onPreferenceChangeListener = this
         cbsendusagedata?.onPreferenceChangeListener = this
+        cbandroidbackup?.onPreferenceChangeListener = this
 
         mPreferenceManager.apply {
             cbattrack?.isChecked = isAttrackEnabled
@@ -70,6 +73,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
             cbautoforget?.isChecked = isAutoForgetEnabled
             cbclearexit?.isChecked = (  closeTabsExit || clearCacheExit ||
                                         clearCookiesExitEnabled || clearHistoryExitEnabled)
+            cbandroidbackup?.isChecked = isAndroidBackupEnabled
         }
 
         findPreference(CLEAR_PRIVATE_DATA)?.onPreferenceClickListener = this
@@ -285,6 +289,12 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
                 mPreferenceManager.setSendUsageData(newValue)
                 return true
             }
+            SETTINGS_ENABLE_ANDROID_BACKUP -> {
+                mTelemetry.sendSettingsMenuSignal(TelemetryKeys.ENABLE_ANDROID_BACKUP,
+                        TelemetryKeys.PRIVACY, newValue as Boolean)
+                mPreferenceManager.isAndroidBackupEnabled = newValue as Boolean
+                return true
+            }
             else -> return false
         }
     }
@@ -306,6 +316,7 @@ class PrivacySettingsFragment : BaseSettingsFragment() {
         private const val SETTINGS_AUTO_FORGET = "autoforget"
         private const val SETTINGS_ANTITRACK = "attrack"
         private const val SETTINGS_SEND_USAGE_DATA = "send_usage_data"
+        private const val SETTINGS_ENABLE_ANDROID_BACKUP = "enable_android_backup"
         private const val PREFERENCE_GROUP_BROWSING_INDEX = 0
     }
 }

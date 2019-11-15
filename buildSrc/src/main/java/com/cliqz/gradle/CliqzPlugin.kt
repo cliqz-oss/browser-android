@@ -68,8 +68,7 @@ class CliqzPlugin: Plugin<Project> {
     }
 
     private fun setVersionCode(variant: ApplicationVariant) {
-        val buildNumber = System.getenv("BUILD_NUMBER")?.toIntOrNull()
-        if (buildNumber == null) return;
+        val buildNumber = System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: return
         val versionCode = 150 + buildNumber
         val apiVersion = variant.productFlavors[0].versionCode
         variant.outputs.forEach { output ->

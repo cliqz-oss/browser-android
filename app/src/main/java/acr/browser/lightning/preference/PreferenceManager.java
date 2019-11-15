@@ -41,6 +41,7 @@ public class PreferenceManager {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static class Name {
+        static final String ANDROID_BACKUP_ENABLED = "android_backup_enabled";
         static final String SHOULD_REFRESH = "should_refresh";
         static final String SHOWN_MESSAGE_COUNT = "shown_message_count";
         static final String SHOWN_MESSAGE_IDS = "message_ids";
@@ -488,6 +489,10 @@ public class PreferenceManager {
         return mPrefs.getBoolean(Name.SEND_USAGE_DATA, true);
     }
 
+    public boolean isAndroidBackupEnabled() {
+        return mPrefs.getBoolean(Name.ANDROID_BACKUP_ENABLED, false);
+    }
+
     private void putBoolean(String name, boolean value) {
         mPrefs.edit().putBoolean(name, value).apply();
     }
@@ -508,8 +513,12 @@ public class PreferenceManager {
         mPrefs.edit().putStringSet(name, values).apply();
     }
 
+    public void setAndroidBackupEnabled(boolean value) {
+        putBoolean(Name.ANDROID_BACKUP_ENABLED, value);
+    }
+
     public void setSendUsageData(boolean value) {
-        mPrefs.edit().putBoolean(Name.SEND_USAGE_DATA, value).apply();
+        putBoolean(Name.SEND_USAGE_DATA, value);
     }
 
     public void setShouldShowBackgroundImage(boolean value) {
