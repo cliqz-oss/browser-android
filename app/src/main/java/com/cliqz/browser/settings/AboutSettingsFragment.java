@@ -19,6 +19,9 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
     private int mExtVerCounter = 1;
 
     private static final String SETTINGS_VERSION = "pref_version";
+    private static final String SETTINGS_REVISION = "pref_revision";
+    private static final String SETTINGS_BUILD_TIME = "pref_build_time";
+
     private static final String EXTENSION_VERSION = "pref_ext_ver";
     private static final String AMAZON_ARN = "pref_arn";
     private static final String SETTING_EULA = "pref_eula";
@@ -35,6 +38,12 @@ public class AboutSettingsFragment extends BaseSettingsFragment {
         final Preference version = findPreference(SETTINGS_VERSION);
         version.setSummary(getVersion());
         version.setOnPreferenceClickListener(versionClickListener);
+
+        final Preference revision = findPreference(SETTINGS_REVISION);
+        revision.setSummary(BuildConfig.REVISION);
+
+        final Preference buildTime = findPreference(SETTINGS_BUILD_TIME);
+        buildTime.setSummary(BuildConfig.BUILD_TIME);
 
         Preference arn = findPreference(AMAZON_ARN);
         if (BuildConfig.DEBUG) {

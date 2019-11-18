@@ -325,4 +325,6 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="snackbar_topsite_removed">Topsite removed</string>
     <string name="context_menu_remove_topsite">Remove</string>
     <string name="privated_data_cleared">Private data cleared</string>
+    <string name="revision">Revision</string>
+    <string name="build_time">Build Time</string>
 </resources>

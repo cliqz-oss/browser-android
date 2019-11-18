@@ -8,6 +8,9 @@ apply plugin: 'com.getkeepsafe.dexcount'
 apply from: 'cliqz.gradle'
 
 def useGoogleServices = System.getenv("DISABLE_GOOGLE_SERVICES") == null
+// GIT_COMMIT is an environment variable set by Jenkins
+def revision = System.getenv("GIT_COMMIT")?.substring(0, 7) ?: "UNKNOWN"
+def buildTime = new Date().format("yyyy.MM.dd HH:mm z")
 
 android {
     compileOptions {
@@ -24,6 +27,8 @@ android {
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
         buildConfigField "int", "MINIMUM_WEBVIEW_VERSION", "55"
         buildConfigField 'int', "VISIBLE_TOP_SITES", '4'
+        buildConfigField 'String', "REVISION", "\"${revision}\""
+        buildConfigField 'String', "BUILD_TIME", "\"${buildTime}\""
         
         applicationId "com.cliqz.browser"
         testApplicationId "com.cliqz.browser.test"
