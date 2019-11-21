@@ -301,4 +301,7 @@ Procedere comunque?</string>
     <string name="myoffrz_activation_description">Attiva MyOffrz per ricevere accattivanti sconti e offerte.</string>
     <string name="settings_category_user_data_choices">Invio dei dati</string>
     <string name="send_usage_data">Invia dati sull\'utilizzo dell\'</string>
+    <string name="revision">Revisione</string>
+    <string name="privated_data_cleared">Dati privati rimossi</string>
+    <string name="build_time">Data della build</string>
 </resources>

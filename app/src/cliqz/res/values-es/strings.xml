@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="url_bar_search_hint">Buscar con Cliqz</string>
-    <string name="settings_about">Sobre Cliqz</string>
     <string name="app_name">Navegador Cliqz</string>
     <string name="shared_using">Compartido con Cliqz para Android</string>
     <string name="optimized_block_ads_description">El bloqueador de anuncios de Cliqz está en su fase Beta. La fase final incluirá las siguientes opciones: Bloqueo justo (por defecto), bloquear todos los anuncios, y permitir anuncios. Descubre más en https://cliqz.com/whycliqz/adblocking</string>

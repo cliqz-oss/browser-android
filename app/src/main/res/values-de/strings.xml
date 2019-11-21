@@ -311,4 +311,6 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="clear_private_data">Private Daten löschen</string>
     <string name="action_clear">Löschen</string>
     <string name="privated_data_cleared">Private Daten gelöscht</string>
+    <string name="build_time">Datum und Zeit der Erstellung</string>
+    <string name="revision">Revisionsnummer</string>
 </resources>

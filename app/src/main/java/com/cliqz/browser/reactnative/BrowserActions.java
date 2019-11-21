@@ -3,6 +3,7 @@ package com.cliqz.browser.reactnative;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
 import com.cliqz.browser.app.AppComponent;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.webview.CliqzMessages;
@@ -12,7 +13,10 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
@@ -22,8 +26,6 @@ import acr.browser.lightning.database.HistoryDatabase;
  * @author Khaled Tantawy
  */
 public class BrowserActions extends ReactContextBaseJavaModule {
-
-    private static final String TAG = BrowserActions.class.getSimpleName();
 
     // Used to post bus messages on the main thread
     private final Handler mHandler;
@@ -44,15 +46,19 @@ public class BrowserActions extends ReactContextBaseJavaModule {
         }
     }
 
+    @NotNull
     @Override
     public String getName() {
         return "BrowserActions";
     }
 
     @ReactMethod
-    public void callNumber(Object... params) {
-        final String number = params != null && params.length > 0 && params[0] instanceof String ?
-                (String) params[0] : null;
+    public void callNumber(String number, ReadableMap toBeIgnored) {
+       callNumber(number);
+    }
+
+    @ReactMethod
+    public void callNumber(String number) {
         if (number != null) {
             mHandler.post(() -> mBus.post(new CliqzMessages.CallNumber(number)));
         }

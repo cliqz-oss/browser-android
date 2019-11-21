@@ -305,4 +305,6 @@ Continuer tout de même ?</string>
     <string name="settings_category_user_data_choices">Collecte de données</string>
     <string name="send_usage_data_summary">Aidez-nous à améliorer votre expérience de navigation. Ces données d\'utilisation sont uniquement composées de statistiques anonymes, qui ne contiennent pas d\'information à caractère personnel.</string>
     <string name="send_usage_data">Autoriser la collecte de données d\'utilisation</string>
+    <string name="revision">Révision</string>
+    <string name="build_time">Date et heure de compilation</string>
 </resources>
