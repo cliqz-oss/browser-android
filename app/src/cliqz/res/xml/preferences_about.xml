@@ -4,6 +4,12 @@
         android:key="pref_version"
         android:title="@string/version" />
     <Preference
+        android:key="pref_revision"
+        android:title="@string/revision" />
+    <Preference
+        android:key="pref_build_time"
+        android:title="@string/build_time" />
+    <Preference
         android:key="pref_arn"
         android:title="Device ARN" />
     <Preference
