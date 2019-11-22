@@ -307,4 +307,5 @@ Las falsificaciones de páginas web están diseñadas para engañar al usuario, 
     <string name="myoffrz_activation_description">Activa MyOffrz para recibir atractivos descuentos y ofertas.</string>
     <string name="settings_category_user_data_choices">Opciones de envío de datos</string>
     <string name="send_usage_data">Enviar estadísticas de uso</string>
+    <string name="settings_about">Sobre Cliqz</string>
 </resources>

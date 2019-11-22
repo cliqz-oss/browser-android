@@ -25,7 +25,8 @@ node('master'){
             }
             withEnv([
                 "GRADLE_USER_HOME=${pwd()}/gradle_home",
-                "BUILD_NUMBER=${BUILD_NUMBER}"
+                "BUILD_NUMBER=${BUILD_NUMBER}",
+                "GIT_COMMIT=${GIT_COMMIT}"
                 ]) {
                 withCredentials([
                         file(credentialsId: '263e59fb-e9de-4e51-962c-0237c6ee167b', variable: 'CERT_PATH'),

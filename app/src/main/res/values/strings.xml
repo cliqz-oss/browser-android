@@ -319,12 +319,12 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="action_take_survey" tools:ignore="MissingTranslation">Take Survey</string>
     <string name="action_tabs_manager">Tabs</string>
     <string name="lumen_logo_description" translatable="false">Lumen Logo</string>
-    <string name="faq">FAQ</string>
+    <string name="faq" translatable="false">FAQ</string>
     <string name="support">Support</string>
     <string name="close">Close</string>
     <string name="snackbar_topsite_removed">Topsite removed</string>
     <string name="context_menu_remove_topsite">Remove</string>
     <string name="privated_data_cleared">Private data cleared</string>
     <string name="revision">Revision</string>
-    <string name="build_time">Build Time</string>
+    <string name="build_time">Build Date &amp; Time</string>
 </resources>
