@@ -7,8 +7,9 @@ properties([
 ])
 node('master'){
     def imageName = 'android-browser'
+    def scmVars = [:]
     stage('Checkout'){
-        checkout scm
+        scmVars = checkout scm
     }
     stage('Build docker image') {
         docker.build(imageName, '--build-arg UID=`id -u` --build-arg GID=`id -g` .')
@@ -26,7 +27,7 @@ node('master'){
             withEnv([
                 "GRADLE_USER_HOME=${pwd()}/gradle_home",
                 "BUILD_NUMBER=${BUILD_NUMBER}",
-                "GIT_COMMIT=${GIT_COMMIT}"
+                "GIT_COMMIT=${scmVars.GIT_COMMIT}"
                 ]) {
                 withCredentials([
                         file(credentialsId: '263e59fb-e9de-4e51-962c-0237c6ee167b', variable: 'CERT_PATH'),
