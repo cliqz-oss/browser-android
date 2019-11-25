@@ -130,7 +130,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     // A flag used to handle back button on old phones
     private boolean mShowWebPageAgain = false;
     private boolean mRequestDesktopSite = false;
-    private boolean mIsReaderModeOn = false;
+    boolean isReaderModeOn = false;
 
     private VpnPanel mVpnPanel;
 
@@ -504,7 +504,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             }
         }
         queryManager.setForgetMode(mIsIncognito);
-        mIsReaderModeOn = false;
+        isReaderModeOn = false;
         readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
         updateCCIcon(progressBar.getProgress() == 100);
         updateVpnIcon();
@@ -611,12 +611,12 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @OnClick(R.id.reader_mode_button)
     void toggleReaderMode() {
-        if (!mIsReaderModeOn) {
-            mIsReaderModeOn = true;
+        if (!isReaderModeOn) {
+            isReaderModeOn = true;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_on);
             lightningView.readerMode();
         } else {
-            mIsReaderModeOn = false;
+            isReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
             lightningView.webMode();
         }
@@ -890,7 +890,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     private void onBackPressedV16() {
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
-            if (mIsReaderModeOn) {
+            if (isReaderModeOn) {
                 lightningView.webMode();
             } else if (mode == Mode.WEBPAGE && lightningView.canGoBack()) {
                 telemetry.backPressed = true;
@@ -909,7 +909,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         final String url = lightningView != null ? lightningView.getUrl() : "";
         final Mode mode = state.getMode();
         if (!onBoardingHelper.close() && !hideOverFlowMenu()) {
-            if (mIsReaderModeOn) {
+            if (isReaderModeOn) {
                 toggleReaderMode();
             } else if (mode == Mode.SEARCH &&
                     !"".equals(url) &&
@@ -1243,7 +1243,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             @ColorInt final int color = ContextCompat.getColor(context, R.color.white);
             overflowMenuIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
             readerModeButton.setVisibility(View.GONE);
-            mIsReaderModeOn = false;
+            isReaderModeOn = false;
             readerModeButton.setImageResource(R.drawable.ic_reader_mode_off);
         } catch (NoInstanceException e) {
             Timber.e("Null context");

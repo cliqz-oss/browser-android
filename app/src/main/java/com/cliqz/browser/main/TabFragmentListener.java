@@ -111,6 +111,9 @@ class TabFragmentListener implements SearchBar.Listener {
 
     @Override
     public void onTitleClicked(SearchBar searchBar) {
+        if (fragment.isReaderModeOn) {
+            fragment.toggleReaderMode();
+        }
         if (fragment.state.getMode() == Mode.SEARCH) {
             searchBar.setQuery(fragment.state.getQuery());
             fragment.searchQuery(fragment.state.getQuery());
