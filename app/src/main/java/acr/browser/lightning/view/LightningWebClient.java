@@ -272,7 +272,9 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
         if (!mLastUrl.equals(url)) {
             lightningView.historyId = -1;
             mLastUrl = url;
-            if (!url.isEmpty() && !url.startsWith("cliqz://")) {
+            if (    !url.isEmpty() &&
+                    !url.startsWith("cliqz://") &&
+                    !url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME)) {
                 lightningView.antiPhishing.processUrl(url, this);
             }
         }

@@ -30,4 +30,5 @@
     <string name="incognito_tab_title">Pestaña privada</string>
     <string name="incognito_tab_description">Estás navegando en modo privado: las páginas que visites no se guardarán en tu historial ni se almacenará información local, cookies incluidas.</string>
     <string name="auto_forget_tab">Pestañas privadas automáticas</string>
+    <string name="antiphishing_message">%1$s ha sido identificada como falsificación de una página y ha sido bloqueada por ello. Las falsificaciones de páginas web están diseñadas para engañar al usuario, de modo que revele sus credenciales, contraseñas e información sensible. [Saber más|https://cliqz.com/en/whycliqz/anti-phishing]</string>
 </resources>

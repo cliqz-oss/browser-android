@@ -125,9 +125,6 @@
     <string name="antitracking_datapoints_count">Datos privados</string>
     <string name="others">Otros</string>
     <string name="app_not_found">No se encontró una app compatible</string>
-    <string name="antiphishing_message">%1$s ha sido identificada como falsificación de una página y ha sido bloqueada por ello.
-Las falsificaciones de páginas web están diseñadas para engañar al usuario, de modo que revele sus credenciales, contraseñas e información sensible.
-[Saber más|https://cliqz.com/en/whycliqz/anti-phishing]</string>
     <string name="download_started">Descarga iniciada</string>
     <string name="exit">Salir</string>
     <string name="view">Cambiar</string>
