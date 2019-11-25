@@ -11,6 +11,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -73,7 +74,8 @@ public class QuickAccessBar extends FrameLayout {
     private ObjectAnimator mCurrentAnimator;
     private boolean mShown;
     private final PositionUpdater positionUpdater = new PositionUpdater();
-    private int mY = Integer.MAX_VALUE;
+    // Quick access bar measured position by orientation
+    private SparseIntArray mY = new SparseIntArray();
 
     @BindView(R.id.query_suggestion_container)
     LinearLayout querySuggestionContainer;
@@ -248,10 +250,16 @@ public class QuickAccessBar extends FrameLayout {
         telemetry.sendQuerySuggestionShowSignal(Math.min(suggestions.length, SUGGESTIONS_LIMIT), shownSuggestions);
     }
 
+    private int getPositionForOrientation() {
+        final int orientation = getResources().getConfiguration().orientation;
+        return mY.get(orientation, Integer.MAX_VALUE);
+    }
+
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (visibility == VISIBLE && isKeyboardVisible() && mY != Integer.MAX_VALUE) {
+        if (visibility == VISIBLE && isKeyboardVisible() &&
+                getPositionForOrientation() != Integer.MAX_VALUE) {
             startAppearAnimation(true);
         }
     }
@@ -259,10 +267,15 @@ public class QuickAccessBar extends FrameLayout {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (!hasWindowFocus && MAX_Y < mY) {
+        if (!hasWindowFocus && MAX_Y < getPositionForOrientation()) {
             setY(MAX_Y);
-            mY = MAX_Y;
+            setPositionForOrientation(MAX_Y);
         }
+    }
+
+    private void setPositionForOrientation(int y) {
+        final int orientation = getResources().getConfiguration().orientation;
+        mY.append(orientation, y);
     }
 
     private int getParentHeight() {
@@ -334,12 +347,13 @@ public class QuickAccessBar extends FrameLayout {
     }
 
     private void startAppearAnimation(boolean now) {
-        if (mY == Integer.MAX_VALUE) {
+        final int toY = getPositionForOrientation();
+        if (toY == Integer.MAX_VALUE) {
             return;
         }
         final float fromY = getParentHeight();
         setY(fromY);
-        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", fromY, mY);
+        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", fromY, toY);
         if (!now) {
             mCurrentAnimator.setStartDelay(APPEAR_ANIMATION_START_DELAY);
         }
@@ -348,11 +362,12 @@ public class QuickAccessBar extends FrameLayout {
     }
 
     private void startDisappearAnimation() {
-        if (mY == Integer.MAX_VALUE) {
+        final int fromY = getPositionForOrientation();
+        if (fromY == Integer.MAX_VALUE) {
             return;
         }
         final float toY = getParentHeight();
-        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", mY, toY);
+        mCurrentAnimator = ObjectAnimator.ofFloat(this, "y", fromY, toY);
         mCurrentAnimator.setDuration(DISAPPEAR_ANIMATION_DURATION);
         mCurrentAnimator.start();
     }
@@ -376,8 +391,9 @@ public class QuickAccessBar extends FrameLayout {
                 final Rect visibleFrame = new Rect();
                 getWindowVisibleDisplayFrame(visibleFrame);
                 final int y = visibleFrame.bottom - accessBarContainer.getHeight();
-                if (y < mY) {
-                    mY = y;
+                final int currentY = getPositionForOrientation();
+                if (y < currentY) {
+                    setPositionForOrientation(y);
                     if (mShown) {
                         cancelCurrentAnimation();
                         startAppearAnimation(false);
