@@ -48,6 +48,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withResourceName;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.web.model.Atoms.getCurrentUrl;
+import static com.cliqz.browser.test.Matchers.isGone;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
@@ -303,5 +304,21 @@ public class SettingsActivityTest {
         onView(withId(R.id.title_bar)).perform(click());
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("support")));
+    }
+
+    @Test
+    public void shouldDisableNews() {
+        try {
+            mActivityRule.getActivity().preferenceManager.setShouldShowNews(true);
+            onView(withText("General")).perform(click());
+            onView(withText("Show News")).perform(click());
+            onView(withText("Show News")).perform(pressBack());
+            onView(withText("General")).perform(pressBack());
+            onView(withId(R.id.topnews_list)).check(isGone());
+            onView(withId(R.id.news_label)).check(isGone());
+        } finally {
+            // Reset the preference
+            mActivityRule.getActivity().preferenceManager.setShouldShowNews(true);
+        }
     }
 }

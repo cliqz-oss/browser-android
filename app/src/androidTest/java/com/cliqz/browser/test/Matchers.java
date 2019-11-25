@@ -3,12 +3,16 @@ package com.cliqz.browser.test;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import java.lang.reflect.Method;
+
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 /**
  * A collections of customized matchers for Views
@@ -27,6 +31,10 @@ public class Matchers {
     @NonNull
     public static Matcher<View> withProperty(@NonNull String propertyName, @NonNull Object value) {
         return new PropertyMatcher(propertyName, value);
+    }
+
+    public static ViewAssertion isGone() {
+        return matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE));
     }
 
     /**

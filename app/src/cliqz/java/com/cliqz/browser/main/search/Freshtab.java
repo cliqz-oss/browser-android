@@ -175,15 +175,8 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     }
 
     private void getTopnews() {
-        if (preferenceManager.shouldShowNews()) {
-            topnewsListView.setVisibility(VISIBLE);
-            newsLabel.setVisibility(VISIBLE);
-            new NewsFetcher(this)
-                    .execute(NewsUtils.getTopNewsUrl(Integer.MAX_VALUE, locationCache));
-        } else {
-            topnewsListView.setVisibility(GONE);
-            newsLabel.setVisibility(GONE);
-        }
+        new NewsFetcher(this)
+                .execute(NewsUtils.getTopNewsUrl(Integer.MAX_VALUE, locationCache));
     }
 
     @Override
@@ -232,9 +225,16 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
     public void updateFreshTab(boolean isIncognito) {
         this.mIsIncognito = isIncognito;
         refreshTopsites();
-        if (shouldRefreshNews()) {
-            getTopnews();
-            newsLastRefreshedOn = System.currentTimeMillis();
+        if (preferenceManager.shouldShowNews()) {
+            topnewsListView.setVisibility(VISIBLE);
+            newsLabel.setVisibility(VISIBLE);
+            if (shouldRefreshNews()) {
+                getTopnews();
+                newsLastRefreshedOn = System.currentTimeMillis();
+            }
+        } else {
+            topnewsListView.setVisibility(GONE);
+            newsLabel.setVisibility(GONE);
         }
         checkForMessages();
         final Context context = getContext();
