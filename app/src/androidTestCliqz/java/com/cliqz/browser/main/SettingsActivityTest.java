@@ -184,6 +184,11 @@ public class SettingsActivityTest {
     }
 
     @Test
+    public void changeComplementarySearchEngineToCliqz() {
+        setAndConfirmSearchEngine("Cliqz", "https://beta.cliqz.com");
+    }
+
+    @Test
     public void changeComplementarySearchEngineCheckMark() {
         onView(withId(R.id.action_bar_root)).check(matches(isDisplayed()));
         onView(withText(equalToIgnoringCase("General"))).check(matches(isDisplayed()))
