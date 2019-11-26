@@ -1,11 +1,8 @@
 package com.cliqz.browser.test;
 
 import android.Manifest;
-import android.content.Context;
-import android.util.Log;
 import android.view.KeyEvent;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.web.assertion.WebViewAssertions;
 import androidx.test.espresso.web.matcher.DomMatchers;
@@ -16,7 +13,6 @@ import androidx.test.runner.AndroidJUnit4;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.utils.ViewHelpers;
 import com.cliqz.browser.utils.WebHelpers;
 import com.cliqz.browser.widget.OverFlowMenu;
@@ -29,8 +25,6 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestName;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-
-import java.io.File;
 
 import acr.browser.lightning.view.CliqzWebView;
 
@@ -46,7 +40,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.web.assertion.WebViewAssertions.webMatches;
@@ -55,6 +48,7 @@ import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.getText;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static com.cliqz.browser.test.Matchers.withProperty;
+import static com.cliqz.browser.test.ViewActions.clickOnSpanText;
 import static com.cliqz.browser.utils.ViewHelpers.clickXY;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
@@ -241,14 +235,14 @@ public class MainActivityTest {
     @Test
     public void testControlCenterVisible() {
         onView(withId(R.id.topsites_grid)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.control_center))).check(matches(not(isDisplayed())));
+        onView(withId(R.id.control_center)).check(matches(not(isDisplayed())));
         onView(withId(R.id.title_bar)).perform(click());
         onView(withId(R.id.search_edit_text))
                 .perform(typeText("https://cdn.cliqz.com/mobile/browser/tests/testpage.html"),
                         pressKey(KeyEvent.KEYCODE_ENTER));
         WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
                 .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("datetime")));
-        onView(allOf(withId(R.id.control_center))).check(matches(isDisplayed()));
+        onView(withId(R.id.control_center)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -274,6 +268,19 @@ public class MainActivityTest {
         onView(withId(R.id.new_incognito_tab_menu_button)).perform(click());
         onView(withId(R.id.incognito_title)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_desc)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testAntiPhishingDialogLearnMore() throws InterruptedException {
+        onView(withId(R.id.title_bar)).perform(click());
+        onView(withId(R.id.search_edit_text)).perform(typeText(
+                "https://jstrieb.github.io/posts/digit-length/"),
+                pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(withText("Warning: deceptive website!")).check(matches(isDisplayed()));
+        onView(withId(android.R.id.message)).perform(clickOnSpanText("Learn more"));
+        Thread.sleep(1000);
+        onView(withId(R.id.title_bar)).check(matches(
+                withText(containsString("cliqz.com/en/whycliqz/anti-phishing"))));
     }
 
 }

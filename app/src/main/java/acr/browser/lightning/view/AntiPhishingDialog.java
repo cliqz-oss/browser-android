@@ -95,7 +95,7 @@ class AntiPhishingDialog extends AlertDialog {
             final String title = titleAndUrl[0];
             final String url = titleAndUrl[1];
             builder.append(title);
-            final OperURLSpan span = new OperURLSpan(url);
+            final OpenURLSpan span = new OpenURLSpan(url);
             builder.setSpan(span, builder.length() - title.length(), builder.length(), 0);
             if (entry.length > 1) {
                 builder.append(entry[1]);
@@ -113,16 +113,16 @@ class AntiPhishingDialog extends AlertDialog {
     }
 
     @SuppressLint("ParcelCreator")
-    private class OperURLSpan extends URLSpan {
+    private class OpenURLSpan extends URLSpan {
 
-        public OperURLSpan(String url) {
+        public OpenURLSpan(String url) {
             super(url);
         }
 
         @Override
         public void onClick(View widget) {
             telemetry.sendAntiPhisingSignal(TelemetryKeys.LEARN_MORE);
-            eventBus.post(new BrowserEvents.OpenUrlInNewTab(getURL()));
+            eventBus.post(new BrowserEvents.OpenUrlInCurrentTab(getURL()));
             AntiPhishingDialog.this.dismiss();
         }
     }

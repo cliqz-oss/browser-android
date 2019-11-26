@@ -75,4 +75,5 @@ public class Matchers {
             return "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
         }
     }
+
 }

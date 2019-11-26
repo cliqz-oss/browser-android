@@ -3,7 +3,7 @@
     <string name="url_bar_search_hint">Cliqz Suche</string>
     <string name="shared_using">Geteilt mit Cliqz für Android</string>
     <string name="optimized_block_ads_description">Der Werbeblocker von Cliqz ist noch in der Entwicklung (Beta). Die Wahlmöglichkeiten der fertigen Version werden sein: Faire Werbung zulassen (Voreinstellung), jegliche Werbung blockieren, jegliche Werbung akzeptieren. Mehr https://cliqz.com/whycliqz/adblocking</string>
-    <string name="antiphishing_message">Cliqz hat den Zugriff auf %1$s blockiert, weil diese Seite als Phishing-Website gemeldet wurde. Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldedaten, dein Passwort oder andere vertrauliche Informationen preisgibst. [Mehr erfahren|Link to https://cliqz.com/whycliqz/anti-phishing]</string>
+    <string name="antiphishing_message">Cliqz hat den Zugriff auf %1$s blockiert, weil diese Seite als Phishing-Website gemeldet wurde. Phishing-Websites geben vor, vertrauenswürdig zu sein, damit du deine Anmeldedaten, dein Passwort oder andere vertrauliche Informationen preisgibst. [Mehr erfahren|https://cliqz.com/whycliqz/anti-phishing]</string>
     <string name="rate_us">Cliqz Browser bewerten</string>
     <string name="summary_adblock_data">Bitte beachte: Cliqz Browser muss größere Informationspakete laden bevor der Werbeblocker effizient funktioniert. Dazu muss die App mit einem WLAN verbunden sein.</string>
     <string name="tips_and_tricks">Hol dir das Beste aus Cliqz</string>
