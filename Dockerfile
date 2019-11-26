@@ -69,12 +69,12 @@ USER jenkins
 RUN mkdir -p $ANDROID_HOME; \
     mkdir -p $GRADLE_USER_HOME; \
     cd $ANDROID_HOME; \
-    wget --output-document=sdktools.zip --quiet 'https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip'; \
+    wget -O sdktools.zip --quiet 'https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip'; \
     unzip sdktools.zip; \
     rm -r sdktools.zip; \
-    (while (true); do echo y; sleep 2; done) | \
-        tools/bin/sdkmanager  \
-        "build-tools;28.0.3" \
+    while (true); do echo y; done | tools/bin/sdkmanager --licenses && \
+    tools/bin/sdkmanager \
+        "build-tools;29.0.2" \
         "platforms;android-28" \
         "platform-tools" \
         "tools" \
@@ -84,13 +84,12 @@ RUN mkdir -p $ANDROID_HOME; \
 
 # Install Node.JS
 SHELL ["/bin/bash", "-l", "-c"]
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash && \
-    . $NVM_DIR/nvm.sh 
-
-ENV PATH "$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
-
-#Installation of Updated 'npm'
-RUN npm install --global npm
+RUN cd /home/jenkins && \
+    wget -O node.tar.gz https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz && \
+    tar xf node.tar.gz && \
+    rm -f node.tar.gz
+ENV PATH "/home/jenkins/node-v$NODE_VERSION-linux-x64/bin:$PATH"
+RUN npm install -g npm
 
 #Install Ruby and Fastlane
 RUN for key in 409B6B1796C275462A1703113804BB82D39DC0E3 \
@@ -99,13 +98,14 @@ RUN for key in 409B6B1796C275462A1703113804BB82D39DC0E3 \
                          "hkp://p80.pool.sks-keyservers.net:80" \
                          "pgp.mit.edu" \
                          "hkp://keyserver.ubuntu.com:80"; do \
-            gpg2 --keyserver "${server}" --recv-keys "${key}" || echo "Trying new server..."; \
+            gpg2 --keyserver "${server}" --recv-keys "${key}" || \
+            echo "${server} failed. Trying new server..."; \
         done; \
     done
-RUN curl -sSL https://get.rvm.io | bash -s stable --ruby=2.4.3 --autolibs=read-fail && \
+RUN curl -sSL https://get.rvm.io | bash -s stable --ruby=2.6.5 && \
     source /home/jenkins/.rvm/scripts/rvm \
     rvm reload && \
-    gem install fastlane --version 2.126.0
+    gem install fastlane --version 2.137.0
 
 #Install AWS CLI
 RUN pip install awscli --upgrade --user

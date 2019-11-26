@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply plugin: 'com.github.triplet.play'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: 'cliqz.gradle'
 
@@ -259,9 +258,6 @@ dependencies {
     testImplementation 'org.apache.velocity:velocity:1.7'
 }
 
-play {
-    track = 'alpha'
-}
 if (useGoogleServices) {
     apply plugin: 'com.google.gms.google-services'
 }
