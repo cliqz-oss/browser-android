@@ -76,21 +76,6 @@ if (props['Browser.storeFile']) {
     }
 }
 
-if (props['Browser.playStoreCert']) {
-    android{
-        playAccountConfigs {
-            defaultAccountConfig {
-                serviceAccountEmail = 'app-publish@api-5666285663749888703-218338.iam.gserviceaccount.com'
-                jsonFile = file(props['Browser.playStoreCert'])
-            }
-        }
-
-        defaultConfig {
-            playAccountConfig = playAccountConfigs.defaultAccountConfig
-        }
-    }
-}
-
 def extPath = file('../external/extension')
 
 def createBloomFilter(File outputDir) {
