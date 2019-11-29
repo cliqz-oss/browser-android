@@ -1,6 +1,7 @@
 package com.cliqz.browser.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.webkit.WebView;
@@ -58,13 +59,13 @@ public class WebViewPersister {
 
     @MainThread
     public void persist(@NonNull String identifier, @NonNull String title,
-                        @NonNull String url, @NonNull WebView webView) {
+                        @NonNull String url, @NonNull Bitmap favicon, @NonNull WebView webView) {
 
         // Do not persist any tab that has the trampoline close command in the url
         if (url.contains(TrampolineConstants.TRAMPOLINE_COMMAND_CLOSE_FORMAT)) {
             return;
         }
-        backgroundThreadHandler.post(new PersistTabOperation(identifier, url, title, webView));
+        backgroundThreadHandler.post(new PersistTabOperation(identifier, url, title, favicon, webView));
     }
 
     @MainThread
@@ -164,12 +165,14 @@ public class WebViewPersister {
         private final String id;
         private final String title;
         private final String url;
+        private final Bitmap favicon;
         private final Bundle state;
 
-        PersistTabOperation(String id, String url, String title, WebView webView) {
+        PersistTabOperation(String id, String url, String title, Bitmap favicon, WebView webView) {
             this.id = id;
             this.url = url;
             this.title = title;
+            this.favicon = favicon;
 
             state = new Bundle();
             webView.saveState(state);
@@ -200,6 +203,7 @@ public class WebViewPersister {
             metaBundle.putString(TabBundleKeys.ID, id);
             metaBundle.putString(TabBundleKeys.TITLE, title);
             metaBundle.putString(TabBundleKeys.URL, url);
+            metaBundle.putParcelable(TabBundleKeys.FAVICON, favicon);
             writeBundleOut(metaFile, metaBundle);
 
             try {
