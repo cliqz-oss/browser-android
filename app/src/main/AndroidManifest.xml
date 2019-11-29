@@ -35,8 +35,10 @@
 
     <application
         android:name=".app.BrowserApp"
-        android:allowBackup="false"
-        android:fullBackupContent="false"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:fullBackupOnly="true"
+        android:backupAgent="com.cliqz.browser.backup.CliqzBackupAgent"
         tools:replace="android:allowBackup"
         android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
