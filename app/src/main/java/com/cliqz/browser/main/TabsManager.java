@@ -2,6 +2,7 @@ package com.cliqz.browser.main;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,6 +53,7 @@ public class TabsManager {
         private Message mMessage = null;
         private String mId = null;
         private String mTitle = "";
+        private Bitmap mFavicon = null;
         private boolean mRestore = false;
         private boolean mOpenVpnPanel = false;
 
@@ -89,6 +91,11 @@ public class TabsManager {
 
         public Builder setTitle(String title) {
             mTitle = title != null ? title : "";
+            return this;
+        }
+
+        public Builder setFavicon(Bitmap favicon) {
+            mFavicon = favicon;
             return this;
         }
 
@@ -131,6 +138,10 @@ public class TabsManager {
 
             if (mTitle != null) {
                 arguments.putString(TabFragment2.KEY_TITLE, mTitle);
+            }
+
+            if (mFavicon != null) {
+                arguments.putParcelable(TabFragment2.KEY_FAVICON, mFavicon);
             }
             newTab.setArguments(arguments);
             final int position = mFragmentsList.size();
@@ -497,6 +508,7 @@ public class TabsManager {
             final String title = bundle.getString(TabBundleKeys.TITLE);
             final String id = bundle.getString(TabBundleKeys.ID);
             final String url = bundle.getString(TabBundleKeys.URL);
+            final Bitmap favicon = bundle.getParcelable(TabBundleKeys.FAVICON);
             // !!! HOTFIX FOR VERSION 1.7.0.5 !!!
             // Do not restore tabs that contain the trampoline close command. If this is the only
             // opened tab, it will cause the app to close itself.
@@ -508,7 +520,8 @@ public class TabsManager {
                     .setRestore(true)
                     .setId(id)
                     .setTitle(title)
-                    .setUrl(url);
+                    .setUrl(url)
+                    .setFavicon(favicon);
             final long visitTime = bundle.getLong(TabBundleKeys.LAST_VISIT, 0L);
             if (lastVisited == visitTime) {
                 tabBuilder.show();

@@ -215,6 +215,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             view.postInvalidate();
         }
         final String title = view.getTitle();
+        final Bitmap favicon = view.getFavicon();
         if (title != null &&
                 !title.isEmpty() &&
                 !TrampolineConstants.TRAMPOLINE_PAGE_TITLE.equals(title)) {
@@ -223,7 +224,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             if (!lightningView.isIncognitoTab()) {
                 final String tabId = lightningView.tabsManager.getTabId(lightningView);
                 if (tabId != null) {
-                    lightningView.persister.persist(tabId, title, url, view);
+                    lightningView.persister.persist(tabId, title, url, favicon, view);
                 }
             }
         }

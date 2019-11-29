@@ -104,6 +104,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     static final String KEY_NEW_TAB_MESSAGE = "new_tab_message";
     static final String KEY_TAB_ID = "tab_id";
     static final String KEY_TITLE = "tab_title";
+    static final String KEY_FAVICON = "favicon";
     static final String KEY_FORCE_RESTORE = "tab_force_restore";
     static final String KEY_OPEN_VPN_PANEL = "open_vpn_panel";
 
@@ -334,12 +335,14 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
         final String url = args.getString(KEY_URL);
         final String title = args.getString(KEY_TITLE);
+        final Bitmap favicon = args.getParcelable(KEY_FAVICON);
         final boolean incognito = args.getBoolean(MainActivity.EXTRA_IS_PRIVATE, false);
         if (url != null && !url.isEmpty()) {
             state.setUrl(url);
             state.setTitle(title != null ? title : url);
             state.setMode(Mode.WEBPAGE);
             state.setIncognito(incognito);
+            state.setFavIcon(favicon);
         }
         super.setArguments(args);
     }
@@ -1029,7 +1032,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Override
     public void increaseAntiTrackingCounter() {
         mTrackerCount++;
-        searchBar.setTrackerCount(mTrackerCount);
+        if (searchBar != null) {
+            searchBar.setTrackerCount(mTrackerCount);
+        }
         if (mTrackerCount > 0 && onBoardingHelper.conditionallyShowAntiTrackingDescription()) {
             hideKeyboard(null);
         }
@@ -1039,7 +1044,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @Override
     public void onFavIconLoaded(Bitmap favicon) {
-        state.setFavIcon(favicon);
+        if (favicon != null) {
+            state.setFavIcon(favicon);
+        }
     }
 
     //Hack to update the counter in the url bar to match with that in the CC when user opens CC

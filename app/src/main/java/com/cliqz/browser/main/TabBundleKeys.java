@@ -9,6 +9,7 @@ public final class TabBundleKeys {
     public static final String URL = PREFIX + ".URL";
     public static final String IS_INCOGNITO = PREFIX + ".IS_INCOGNITO";
     public static final String TITLE = PREFIX + ".TITLE";
+    public static final String FAVICON = PREFIX + ".FAVICON";
     public static final String ID = PREFIX + ".ID";
     public static final String LAST_VISIT = PREFIX + ".LAST_VISIT";
 
