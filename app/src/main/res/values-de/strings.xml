@@ -313,4 +313,6 @@ gehe zu Einstellungen &gt; Allgemein &gt; Download Optionen."</string>
     <string name="privated_data_cleared">Private Daten gelöscht</string>
     <string name="build_time">Datum und Zeit der Erstellung</string>
     <string name="revision">Revisionsnummer</string>
+    <string name="enable_android_backup_title">Android Auto Backup aktivieren</string>
+    <string name="enable_android_backup_summary">Auto Backup für Apps erstelllt automatisch Backups von Benutzerdaten, indem diese auf Google Drive hochgeladen werden.</string>
 </resources>
