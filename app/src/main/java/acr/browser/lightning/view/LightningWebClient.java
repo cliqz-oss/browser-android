@@ -81,16 +81,23 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             "http://ssl.p.jwpcdn.com/player/v/7.8.1/vast.js"
     ));
 
+    private final String tabId;
     private final Context context;
     private final LightningView lightningView;
+    private final String parentId;
     private String mLastUrl = "";
     private final AntiPhishingDialog antiPhishingDialog;
     private String mCurrentHost = "";
 
-    LightningWebClient(@NonNull Context context, @NonNull LightningView lightningView) {
+    LightningWebClient(@NonNull String tabId,
+                       @Nullable String parentId,
+                       @NonNull Context context,
+                       @NonNull LightningView lightningView) {
+        this.tabId = tabId;
+        this.parentId = parentId;
         this.context = context;
         this.lightningView = lightningView;
-        this.antiPhishingDialog = new AntiPhishingDialog(context, lightningView.eventBus, lightningView.telemetry);
+        this.antiPhishingDialog = new AntiPhishingDialog(context, tabId, lightningView.eventBus, lightningView.telemetry);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -222,10 +229,7 @@ class LightningWebClient extends WebViewClient implements AntiPhishing.AntiPhish
             lightningView.mTitle.setTitle(view.getTitle());
             post(view, new Messages.UpdateTitle());
             if (!lightningView.isIncognitoTab()) {
-                final String tabId = lightningView.tabsManager.getTabId(lightningView);
-                if (tabId != null) {
-                    lightningView.persister.persist(tabId, title, url, favicon, view);
-                }
+                lightningView.persister.persist(tabId, parentId, title, url, favicon, view);
             }
         }
 

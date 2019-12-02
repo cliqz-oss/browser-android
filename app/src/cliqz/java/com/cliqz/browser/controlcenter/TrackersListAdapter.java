@@ -1,10 +1,8 @@
 package com.cliqz.browser.controlcenter;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorRes;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.nove.Bus;
+import com.facebook.react.bridge.AssertionException;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -33,6 +37,7 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
     private final boolean isIncognito;
     private final Bus bus;
     private final Telemetry telemetry;
+    private final String tabId;
     private boolean isEnabled = true;
     private @ColorRes int mColorEnabled;
     private @ColorRes int mColorDisabled;
@@ -41,13 +46,19 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
         this.trackerDetails = new ArrayList<>();
         this.isIncognito = isIncognito;
         this.bus = antiTrackingFragment.bus;
+        this.tabId = antiTrackingFragment.getTabId();
         this.telemetry = antiTrackingFragment.telemetry;
-        mColorDisabled = getThemeColor(antiTrackingFragment.getContext().getTheme(), R.attr.colorSecondary);
-        mColorEnabled = getThemeColor(antiTrackingFragment.getContext().getTheme(), R.attr.colorPrimary);
+        final Context context = antiTrackingFragment.getContext();
+        if (context == null) {
+            throw new AssertionException("The context is null");
+        }
+        mColorDisabled = getThemeColor(context.getTheme(), R.attr.colorSecondary);
+        mColorEnabled = getThemeColor(context.getTheme(), R.attr.colorPrimary);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View view = inflater.inflate(R.layout.tracker_details_list_item, parent, false);
         return new ViewHolder(view);
@@ -59,17 +70,14 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
         holder.trackerName.setText(details.companyName);
         holder.trackerCount.setText(String.format(Locale.getDefault(), "%d", trackerDetails.get(position).trackerCount));
         holder.infoImage.setColorFilter(isEnabled ? mColorEnabled : mColorDisabled, PorterDuff.Mode.SRC_IN);
-        holder.infoImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int position = holder.getAdapterPosition();
-                telemetry.sendCCCompanyInfoSignal(position, TelemetryKeys.ATTRACK);
-                bus.post(new Messages.DismissControlCenter());
-                final String companyName = details.companyName.replaceAll("\\s", "-");
-                final String url =
-                        String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);
-                bus.post(new BrowserEvents.OpenUrlInNewTab(url, isIncognito));
-            }
+        holder.infoImage.setOnClickListener(v -> {
+            final int position1 = holder.getAdapterPosition();
+            telemetry.sendCCCompanyInfoSignal(position1, TelemetryKeys.ATTRACK);
+            bus.post(new Messages.DismissControlCenter());
+            final String companyName = details.companyName.replaceAll("\\s", "-");
+            final String url =
+                    String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);
+            bus.post(new BrowserEvents.OpenUrlInNewTab(tabId, url, isIncognito));
         });
     }
 
@@ -84,6 +92,7 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
         final TextView trackerCount;
         final ImageView infoImage;
 
+        @SuppressWarnings("RedundantCast")
         ViewHolder(View view) {
             super(view);
             trackerName = (TextView) view.findViewById(R.id.tracker_name);

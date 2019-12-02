@@ -34,7 +34,7 @@ class MessageView @JvmOverloads constructor(context: Context, attrs: AttributeSe
 
     fun setMessage(message: Message) {
         mMessage = message
-        messageTextView!!.text = message.message
+        messageTextView.text = message.message
     }
 
     fun setOnClickListener(listener: OnClickListener) {

@@ -1,23 +1,31 @@
-package com.cliqz.browser.main;
+package com.cliqz.browser.tabs;
 
 import android.graphics.Bitmap;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.cliqz.browser.main.TabFragment2;
+
 import java.io.Serializable;
 
+import acr.browser.lightning.view.CliqzWebView;
+
 /**
- * This class keep the state of the app and help to dispatch it to the extension during init.
+ * The tab model, it keeps all the information regarding the tab tab
  *
  * @author Stefano Pacifici
  */
-public class CliqzBrowserState implements Serializable {
+public abstract class Tab {
 
     public enum Mode {
         SEARCH,
         WEBPAGE
     }
+
+    public final String id;
+    public final String parentId;
 
     private String query = "";
     private String title = "";
@@ -25,7 +33,6 @@ public class CliqzBrowserState implements Serializable {
     private Mode mode = Mode.SEARCH;
     private boolean incognito;
     private Bitmap favicon = null;
-    private boolean selected = false;
 
     @NonNull
     public String getQuery() {
@@ -36,12 +43,13 @@ public class CliqzBrowserState implements Serializable {
         this.query = query != null ? query : "";
     }
 
+    @NonNull
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(@Nullable String title) {
+        this.title = title != null ? title : "";
     }
 
     @NonNull
@@ -69,22 +77,23 @@ public class CliqzBrowserState implements Serializable {
         this.incognito = incognito;
     }
 
-    void setFavIcon(Bitmap favIcon) {
+    public void setFavIcon(@Nullable Bitmap favIcon) {
         this.favicon = favIcon;
     }
 
+    @Nullable
     public Bitmap getFavIcon() {
         return favicon;
     }
 
-    void setSelected(boolean selected) {
-        this.selected = selected;
-    }
+    @Nullable
+    public abstract Message fetchMessage();
 
-    public boolean isSelected() {
-        return selected;
-    }
+    public abstract boolean hasToLoad();
 
-    public CliqzBrowserState() {
+    protected Tab(  @NonNull String id,
+                    @Nullable String parentId) {
+        this.id = id;
+        this.parentId = parentId;
     }
 }

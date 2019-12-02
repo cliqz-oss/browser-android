@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
-import com.cliqz.browser.main.CliqzBrowserState;
-import com.cliqz.browser.main.CliqzBrowserState.Mode;
+import com.cliqz.browser.tabs.Tab;
+import com.cliqz.browser.tabs.Tab.Mode;
 import com.cliqz.browser.main.search.DefaultIconDrawable;
 import com.cliqz.browser.main.search.Logo;
 import com.cliqz.jsengine.JSBridge;
@@ -43,6 +43,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     private final Context context;
     private static final String GET_LOGO_FUNCTION = "getLogoDetails";
     private final int defaultBackgroundColor;
+    private int selecteTab = -1;
 
     TabsDeckViewAdapter(TabsDeckView tabsDeckView) {
         this.tabsDeckView = tabsDeckView;
@@ -71,7 +72,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final CliqzBrowserState entry = tabsDeckView.entries.get(position);
+        final Tab entry = tabsDeckView.entries.get(position);
         final String entryTitle = entry.getTitle();
         final String entryUrl = entry.getUrl();
         final Mode mode = entry.getMode();
@@ -86,7 +87,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         }
         holder.urlTv.setText(url);
         final Typeface typeface = holder.titleTv.getTypeface();
-        if (BuildConfig.IS_LUMEN && entry.isSelected()) {
+        if (BuildConfig.IS_LUMEN && position == selecteTab) {
             holder.titleTv.setTypeface(null, Typeface.BOLD);
         } else {
             holder.titleTv.setTypeface(null, Typeface.NORMAL);
@@ -111,7 +112,7 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        final CliqzBrowserState entry = tabsDeckView.entries.get(position);
+        final Tab entry = tabsDeckView.entries.get(position);
         return entry.isIncognito() ? INCOGNITO_TYPE : REGULAR_TYPE;
     }
 
@@ -121,14 +122,18 @@ class TabsDeckViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Nullable
-    CliqzBrowserState remove(int position) {
+    Tab remove(int position) {
         if (position >= tabsDeckView.entries.size()) {
             return null;
         }
-        final CliqzBrowserState state = tabsDeckView.entries.get(position);
+        final Tab state = tabsDeckView.entries.get(position);
         tabsDeckView.entries.remove(position);
         notifyItemRemoved(position);
         return state;
+    }
+
+    public void setSelectedTab(int position) {
+        selecteTab = position;
     }
 
     private class LogoMetadataResult implements JSBridge.Callback {

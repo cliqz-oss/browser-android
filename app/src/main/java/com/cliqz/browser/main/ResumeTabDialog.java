@@ -45,8 +45,9 @@ class ResumeTabDialog implements Dialog.OnClickListener, DialogInterface.OnCance
                 mMainActivity.tabsManager.resumeAllTabs();
                 break;
             case Dialog.BUTTON_NEGATIVE:
-                if (mMainActivity.tabsManager.getCurrentTab() != null) {
-                    mMainActivity.tabsManager.getCurrentTab().searchBar.showTitleBar();
+                final TabFragment2 fragment = mMainActivity.tabsManager.getSelectedTabFragment();
+                if (fragment != null) {
+                    fragment.searchBar.showTitleBar();
                 }
                 break;
             default:

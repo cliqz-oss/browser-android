@@ -37,11 +37,11 @@ import com.anthonycr.grant.PermissionsResultAction;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.CliqzBrowserState;
-import com.cliqz.browser.main.CliqzBrowserState.Mode;
+import com.cliqz.browser.tabs.Tab;
+import com.cliqz.browser.tabs.Tab.Mode;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.main.TabsManager;
+import com.cliqz.browser.tabs.TabsManager;
 import com.cliqz.browser.qrscanner.CodeScannerActivity;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
@@ -212,13 +212,13 @@ public class OverFlowMenu extends FrameLayout {
     @BindView(R.id.open_tabs_count)
     TabsCounter tabsCounter;
 
-    private final CliqzBrowserState state;
+    private Tab tab;
     private final ListView listView;
 
-    public OverFlowMenu(@NonNull Activity activity, @NonNull CliqzBrowserState state) {
+    public OverFlowMenu(@NonNull Activity activity, @NonNull Tab tab) {
         super(activity);
         this.activity = activity;
-        this.state = state;
+        this.tab = tab;
         prepareEntries();
         listView = new ListView(activity);
         listView.setId(R.id.overflow_menu_list);
@@ -261,7 +261,7 @@ public class OverFlowMenu extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         telemetry.sendOverflowMenuHideSignal(isIncognitoMode(),
-                state.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
+                tab.getMode() == Mode.SEARCH ? TelemetryKeys.CARDS : TelemetryKeys.WEB);
     }
 
     private int measureListViewContent(int maxWidth, int maxHeight) {
@@ -387,7 +387,7 @@ public class OverFlowMenu extends FrameLayout {
         public boolean isEnabled(int position) {
             final Entries entry = mEntries[position];
             final boolean hasValidId = mUrl != null &&  !mUrl.isEmpty() && !mUrl.contains("cliqz://trampoline");
-            final boolean isShowingWebPage = state == null || state.getMode() == Mode.WEBPAGE;
+            final boolean isShowingWebPage = tab == null || tab.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
             final boolean isSendTab = entry == Entries.SEND_TAB_TO_DESKTOP;
             return (!isSearchInPage && !isSendTab) ||
@@ -399,7 +399,7 @@ public class OverFlowMenu extends FrameLayout {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
-            final Mode mode = state.getMode();
+            final Mode mode = tab.getMode();
             if(view == null) {
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
                 switch (mEntries[position].type) {
@@ -553,27 +553,27 @@ public class OverFlowMenu extends FrameLayout {
             switch (tag) {
                 case SETTINGS:
                     telemetry.sendMainMenuSignal(TelemetryKeys.SETTINGS, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.GoToSettings());
                     break;
                 case NEW_INCOGNITO_TAB:
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_FORGET_TAB, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(true));
                     break;
                 case NEW_TAB:
                     telemetry.sendMainMenuSignal(TelemetryKeys.NEW_TAB, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.NewTab(false));
                     break;
                 case TABS:
                     telemetry.sendMainMenuSignal(TelemetryKeys.TAB_COUNT, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.GoToOverview());
                     break;
                 case SEARCH_IN_PAGE:
                     telemetry.sendMainMenuSignal(TelemetryKeys.PAGE_SEARCH, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new BrowserEvents.SearchInPage());
                     break;
                 case GO_TO_FAVORITES:
@@ -585,7 +585,7 @@ public class OverFlowMenu extends FrameLayout {
                     break;
                 case QUIT:
                     telemetry.sendMainMenuSignal(TelemetryKeys.QUIT, isIncognitoMode(),
-                            state.getMode() == Mode.SEARCH ? "cards" : "web");
+                            tab.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.Quit());
                     break;
                 case SEND_TAB_TO_DESKTOP:
@@ -620,7 +620,7 @@ public class OverFlowMenu extends FrameLayout {
     @OnClick(R.id.action_forward)
     void onForwardClicked() {
         telemetry.sendMainMenuSignal(TelemetryKeys.FORWARD, isIncognitoMode(),
-                state.getMode() == Mode.SEARCH ? "cards" : "web");
+                tab.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.GoForward());
         this.dismiss();
     }
@@ -628,7 +628,7 @@ public class OverFlowMenu extends FrameLayout {
     @OnClick(R.id.action_refresh)
     void onRefreshClicked() {
         telemetry.sendMainMenuSignal(TelemetryKeys.REFRESH, isIncognitoMode(),
-                state.getMode() == Mode.SEARCH ? "cards" : "web");
+                tab.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.ReloadPage());
         this.dismiss();
     }
@@ -637,7 +637,7 @@ public class OverFlowMenu extends FrameLayout {
     @OnClick(R.id.action_share)
     void onShareClicked() {
         telemetry.sendMainMenuSignal(TelemetryKeys.SHARE, isIncognitoMode(),
-                state.getMode() == Mode.SEARCH ? "cards" : "web");
+                tab.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.ShareLink());
         this.dismiss();
     }
@@ -646,7 +646,7 @@ public class OverFlowMenu extends FrameLayout {
     @OnClick(R.id.open_tabs_count)
     void onTabsCounterClicked() {
         telemetry.sendMainMenuSignal(TelemetryKeys.TAB_COUNT, isIncognitoMode(),
-                state.getMode() == Mode.SEARCH ? "cards" : "web");
+                tab.getMode() == Mode.SEARCH ? "cards" : "web");
         bus.post(new Messages.GoToOverview());
         dismiss();
     }

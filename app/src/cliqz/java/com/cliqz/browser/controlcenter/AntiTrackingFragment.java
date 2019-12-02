@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -106,14 +107,9 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     TextView trackersBlocked;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments != null) {
-            mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
-            mUrl = arguments.getString(KEY_URL);
-            mHashCode = arguments.getInt(KEY_HASHCODE);
-        }
+    protected void parseArguments(@NonNull Bundle args) {
+        mUrl = args.getString(ControlCenterFragment.KEY_URL);
+        mHashCode = args.getInt(KEY_HASHCODE);
     }
 
     @Override
@@ -240,7 +236,7 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     void onLearnMoreClicked(View v) {
         final String helpUrl = Locale.getDefault().getLanguage().equals("de") ?
                 antiTrackingHelpUrlDe : antiTrackingHelpUrlEn;
-        bus.post(new BrowserEvents.OpenUrlInNewTab(helpUrl));
+        bus.post(new BrowserEvents.OpenUrlInNewTab(getTabId(), helpUrl, false));
         bus.post(new Messages.DismissControlCenter());
         telemetry.sendLearnMoreClickSignal(TelemetryKeys.ATTRACK);
     }
@@ -279,9 +275,10 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
         return trackerDetails;
     }
 
-    public static AntiTrackingFragment create(int hashCode, String url, boolean isIncognito) {
+    public static AntiTrackingFragment create(@NonNull String tabId, int hashCode, String url, boolean isIncognito) {
         final AntiTrackingFragment fragment = new AntiTrackingFragment();
         final Bundle arguments = new Bundle();
+        arguments.putString(KEY_TAB_ID, tabId);
         arguments.putInt(KEY_HASHCODE, hashCode);
         arguments.putString(KEY_URL, url);
         arguments.putBoolean(KEY_IS_INCOGNITO, isIncognito);

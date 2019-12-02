@@ -13,7 +13,6 @@ import com.cliqz.browser.main.MainActivityModule;
 import com.cliqz.browser.main.OnBoardingHelper;
 import com.cliqz.browser.main.SearchModule;
 import com.cliqz.browser.main.SubscriptionModule;
-import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.main.search.TopsitesAdapter;
 import com.cliqz.browser.peercomm.PeerCommBridge;
 import com.cliqz.browser.peercomm.PeerWebView;
@@ -39,7 +38,6 @@ import com.cliqz.jsengine.Engine;
 
 import acr.browser.lightning.activity.SettingsActivity;
 import acr.browser.lightning.database.HistoryDatabase;
-import acr.browser.lightning.download.LightningDownloadListener;
 import acr.browser.lightning.preference.PreferenceManager;
 
 /**
@@ -77,8 +75,6 @@ public interface BaseAppComponent {
     void inject(NotificationDismissedReceiver notificationDismissedReceiver);
 
     void inject(InstallReferrerReceiver installReferrerReceiver);
-
-    void inject(TabsManager tabsManager);
 
     void inject(SettingsActivity settingsActivity);
 

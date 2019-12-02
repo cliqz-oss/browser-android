@@ -8,8 +8,11 @@ import android.os.Message;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.NestedScrollingChild2;
 import androidx.core.view.NestedScrollingChildHelper;
@@ -18,17 +21,15 @@ import androidx.core.view.ViewCompat;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.nove.Bus;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.inject.Inject;
-
-import acr.browser.lightning.dialog.LightningDialogBuilder;
 import timber.log.Timber;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.webkit.WebView.HitTestResult.IMAGE_TYPE;
 import static android.webkit.WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE;
 
@@ -40,16 +41,20 @@ import static android.webkit.WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE;
  */
 @SuppressLint("ViewConstructor")
 public class CliqzWebView extends WebView implements NestedScrollingChild2 {
+
+    /**
+     * Extension to the {@link WebChromeClient}
+     */
+    public interface CliqzChromeClient {
+        void onLinkLongPressed(@NonNull WebView webView, @NonNull String url, @Nullable String imageUrl);
+        void onAdjustResize(@NonNull WebView webView);
+    }
+
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
+    private CliqzChromeClient mCliqzChromeClient = null;
     private final GestureDetector gestureDetector;
     private final WebViewHandler webViewHandler = new WebViewHandler(this);
-
-    @Inject
-    Bus bus;
-
-    @Inject
-    LightningDialogBuilder dialogBuilder;
 
     private int mLastY;
     private final NestedScrollingChildHelper mChildHelper;
@@ -61,20 +66,20 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
 
     public CliqzWebView(Context context) {
         super(context);
-        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(context);
-        if (component != null) {
-            component.inject(this);
-        }
-
-        // Disable saving the WebView state as we manage saving the state via the WebViewPersister,
-        // this also mitigate crashes due to TransactionTooLargeException.
-        setSaveEnabled(false);
         mChildHelper = new NestedScrollingChildHelper(this);
         gestureDetector = new GestureDetector(context, new CustomGestureListener());
         setNestedScrollingEnabled(true);
     }
 
     @SuppressLint("ObsoleteSdkInt")
+    @Override
+    public void setWebChromeClient(WebChromeClient client) {
+        super.setWebChromeClient(client);
+        if (client instanceof CliqzChromeClient) {
+            mCliqzChromeClient = (CliqzChromeClient) client;
+        }
+    }
+
     @Override
     public void bringToFront() {
         final ViewGroup container = (ViewGroup) getParent();
@@ -84,7 +89,10 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
             return;
         }
         super.bringToFront();
-        bus.post(new Messages.AdjustResize());
+        if (mCliqzChromeClient != null) {
+            // TODO bus.post(new Messages.AdjustResize());
+            mCliqzChromeClient.onAdjustResize(this);
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             requestLayout();
         }
@@ -98,6 +106,28 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
     @Override
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
         postDelayed(() -> CliqzWebView.super.loadUrl(url, additionalHttpHeaders), LOAD_URL_DELAY_SECONDS);
+    }
+
+    public void setIncognitoMode(boolean enable) {
+        final WebSettings settings = getSettings();
+        if (enable) {
+            if (SDK_INT >= LOLLIPOP) {
+                // We're in Incognito mode, reject
+                settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+            }
+            settings.setDomStorageEnabled(false);
+            settings.setAppCacheEnabled(false);
+            settings.setDatabaseEnabled(false);
+            settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        } else {
+            if (SDK_INT >= LOLLIPOP) {
+                settings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+            }
+            settings.setDomStorageEnabled(true);
+            settings.setAppCacheEnabled(true);
+            settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            settings.setDatabaseEnabled(true);
+        }
     }
 
     //Below code has been taken and modified from the GitHub repo takahirom/webview-in-coordinatorlayout
@@ -229,44 +259,6 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
         return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
     }
 
-    /**
-     * handles a long click on the page, parameter String urlView
-     * is the urlView that should have been obtained from the WebView touch node
-     * thingy, if it is null, this method tries to deal with it and find a workaround
-     */
-    private void longClickPage(final String url) {
-        HitTestResult result;
-        try {
-            result = getHitTestResult();
-        } catch (Throwable e) {
-            // Bug in WebViewChromium
-            Timber.e(e, "Error getting hit test result from the WebView");
-            result = null;
-        }
-        final String userAgent = getSettings().getUserAgentString();
-        if (url != null) {
-            if (result != null) {
-                final String imageUrl = result.getExtra();
-                final int resultType = result.getType();
-                if ((resultType == SRC_IMAGE_ANCHOR_TYPE && imageUrl != null) ||
-                        (resultType == IMAGE_TYPE && imageUrl != null)) {
-                    dialogBuilder.showLongPressImageDialog(url, imageUrl, userAgent);
-                } else {
-                    dialogBuilder.showLongPressLinkDialog(url, userAgent);
-                }
-            } else {
-                dialogBuilder.showLongPressLinkDialog(url, userAgent);
-            }
-        } else if (result != null && result.getExtra() != null) {
-            final String newUrl = result.getExtra();
-            if (result.getType() == SRC_IMAGE_ANCHOR_TYPE || result.getType() == IMAGE_TYPE) {
-                dialogBuilder.showLongPressImageDialog(null, newUrl, userAgent);
-            } else {
-                dialogBuilder.showLongPressLinkDialog(newUrl, userAgent);
-            }
-        }
-    }
-
     private class CustomGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         /**
@@ -320,10 +312,26 @@ public class CliqzWebView extends WebView implements NestedScrollingChild2 {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            final String url = msg.getData().getString("url");
-            CliqzWebView view = mReference.get();
-            if (view != null) {
-                view.longClickPage(url);
+            String url = msg.getData().getString("url");
+            final CliqzWebView view = mReference.get();
+            final CliqzChromeClient listener = view != null ? view.mCliqzChromeClient : null;
+            if (listener != null) {
+                final WebView.HitTestResult result = view.getHitTestResult();
+                final String userAgent = view.getSettings().getUserAgentString();
+                final int resultType = result != null ? result.getType() : HitTestResult.UNKNOWN_TYPE;
+                final String imageUrl;
+                if (resultType == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ||
+                    resultType == HitTestResult.IMAGE_TYPE) {
+                    imageUrl = result.getExtra();
+                } else {
+                    imageUrl = null;
+                }
+                if (url == null && imageUrl != null) {
+                    url = imageUrl;
+                }
+                if (url != null) {
+                    listener.onLinkLongPressed(view, url, imageUrl);
+                }
             }
         }
     }

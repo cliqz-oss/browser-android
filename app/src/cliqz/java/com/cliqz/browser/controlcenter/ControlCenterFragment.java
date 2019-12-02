@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
@@ -36,8 +37,10 @@ abstract class ControlCenterFragment extends Fragment {
     static final String KEY_HASHCODE = TAG + ".HASHCODE";
     static final String KEY_URL = TAG + ".URL";
     static final String KEY_IS_INCOGNITO = TAG + ".IS_INCOGNITO";
+    static final String KEY_TAB_ID = TAG + ".TAB_ID";
 
     protected boolean mIsIncognito = false;
+    private String mTabId = "";
     private boolean mEnabled;
     private List<View> mTaggedViews = null;
     private int mColorEnabled;
@@ -59,6 +62,24 @@ abstract class ControlCenterFragment extends Fragment {
         mTaggedViews = ViewUtils.findAllViewByTag(contentView, R.id.enableable_view, null);
         updateColors();
         return contentView;
+    }
+
+    @Override
+    public final void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final Bundle args = getArguments();
+        if (args != null) {
+            mIsIncognito = args.getBoolean(KEY_IS_INCOGNITO);
+            mTabId = args.getString(KEY_TAB_ID, "");
+            parseArguments(args);
+        }
+    }
+
+    protected abstract void parseArguments(@NonNull Bundle args);
+
+    @NonNull
+    public final String getTabId() {
+        return mTabId;
     }
 
     @ColorInt

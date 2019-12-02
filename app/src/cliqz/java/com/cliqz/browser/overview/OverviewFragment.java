@@ -21,14 +21,14 @@ import androidx.viewpager.widget.ViewPager;
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
-import com.cliqz.browser.main.TabFragment2;
 import com.cliqz.browser.telemetry.TelemetryKeys;
-import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.nove.Subscribe;
 import com.google.android.material.tabs.TabLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.Objects;
+
+import acr.browser.lightning.bus.BrowserEvents;
 
 public class OverviewFragment extends CommonOverviewFragment {
 
@@ -95,29 +95,8 @@ public class OverviewFragment extends CommonOverviewFragment {
     @Subscribe
     public void onBackPressed(Messages.BackPressed event) {
         sendCurrentPageHideSignal();
-        tabsManager.showTab(tabsManager.getCurrentTabPosition());
-    }
-
-    @Subscribe
-    public void openLink(CliqzMessages.OpenLink event) {
-        tabsManager.showTab(tabsManager.getCurrentTabPosition());
-        final TabFragment2 tab = tabsManager.getCurrentTab();
-        if (tab != null) {
-            if (tab.isResumed()) {
-                tab.openLink(event.url, false, true, null);
-            } else {
-                tab.openFromOverview(event);
-            }
-        }
-    }
-
-    @Subscribe
-    public void openQuery(Messages.OpenQuery event) {
-        tabsManager.showTab(tabsManager.getCurrentTabPosition());
-        final TabFragment2 tab = tabsManager.getCurrentTab();
-        if (tab != null) {
-            tab.searchQuery(event.query);
-        }
+        // This will force showing the current tab
+        bus.post(new BrowserEvents.ShowTab(""));
     }
 
     @Subscribe

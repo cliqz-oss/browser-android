@@ -1,10 +1,12 @@
 package com.cliqz.browser.controlcenter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ class  AdBlockListAdapter extends RecyclerView.Adapter<AdBlockListAdapter.ViewHo
     private final boolean isIncognito;
     private final Bus bus;
     private final Telemetry telemetry;
+    private final String tabId;
     private boolean isEnabled = true;
     private @ColorRes int mColorEnabled;
     private @ColorRes int mColorDisabled;
@@ -41,11 +44,17 @@ class  AdBlockListAdapter extends RecyclerView.Adapter<AdBlockListAdapter.ViewHo
         this.trackerDetails = new ArrayList<>();
         this.isIncognito = isIncognito;
         this.bus = antiTrackingFragment.bus;
+        this.tabId = antiTrackingFragment.getTabId();
         this.telemetry = antiTrackingFragment.telemetry;
-        mColorDisabled = getThemeColor(antiTrackingFragment.getContext().getTheme(), R.attr.colorSecondary);
-        mColorEnabled = getThemeColor(antiTrackingFragment.getContext().getTheme(), R.attr.colorPrimary);
+        final Context context = antiTrackingFragment.getContext();
+        if (context == null) {
+            throw new AssertionError("The context is null");
+        }
+        mColorDisabled = getThemeColor(context.getTheme(), R.attr.colorSecondary);
+        mColorEnabled = getThemeColor(context.getTheme(), R.attr.colorPrimary);
     }
 
+    @NonNull
     @Override
     public AdBlockListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -60,17 +69,14 @@ class  AdBlockListAdapter extends RecyclerView.Adapter<AdBlockListAdapter.ViewHo
         holder.trackerName.setText(details.companyName);
         holder.trackerCount.setText(Integer.toString(trackerDetails.get(position).adBlockCount));
         holder.infoImage.setColorFilter(isEnabled ? mColorEnabled : mColorDisabled, PorterDuff.Mode.SRC_IN);
-        holder.infoImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int position = holder.getAdapterPosition();
-                telemetry.sendCCCompanyInfoSignal(position, TelemetryKeys.ADBLOCK);
-                bus.post(new Messages.DismissControlCenter());
-                final String companyName = details.companyName.replaceAll("\\s", "-");
-                final String url =
-                        String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);
-                bus.post(new BrowserEvents.OpenUrlInNewTab(url, isIncognito));
-            }
+        holder.infoImage.setOnClickListener(v -> {
+            final int position1 = holder.getAdapterPosition();
+            telemetry.sendCCCompanyInfoSignal(position1, TelemetryKeys.ADBLOCK);
+            bus.post(new Messages.DismissControlCenter());
+            final String companyName = details.companyName.replaceAll("\\s", "-");
+            final String url =
+                    String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);
+            bus.post(new BrowserEvents.OpenUrlInNewTab(tabId, url, isIncognito));
         });
     }
 
@@ -85,6 +91,7 @@ class  AdBlockListAdapter extends RecyclerView.Adapter<AdBlockListAdapter.ViewHo
         final TextView trackerCount;
         final ImageView infoImage;
 
+        @SuppressWarnings("RedundantCast")
         ViewHolder(View view) {
             super(view);
             trackerName = (TextView) view.findViewById(R.id.tracker_name);

@@ -84,7 +84,7 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
 
     private void setupCrashReporting() {
         //noinspection ConstantConditions
-        if (!CliqzConfig.SENTRY_TOKEN.isEmpty()) {
+        if (!BuildConfig.DEBUG && !CliqzConfig.SENTRY_TOKEN.isEmpty()) {
             Sentry.init(CliqzConfig.SENTRY_TOKEN, new AndroidSentryClientFactory(this));
         }
     }

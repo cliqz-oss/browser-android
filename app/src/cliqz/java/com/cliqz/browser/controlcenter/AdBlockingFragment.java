@@ -117,14 +117,9 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments != null) {
-            mIsIncognito = arguments.getBoolean(KEY_IS_INCOGNITO, false);
-            mUrl = arguments.getString(ControlCenterFragment.KEY_URL);
-            mHashCode = arguments.getInt(KEY_HASHCODE);
-        }
+    protected void parseArguments(@NonNull Bundle args) {
+        mUrl = args.getString(ControlCenterFragment.KEY_URL);
+        mHashCode = args.getInt(KEY_HASHCODE);
     }
 
     @Override
@@ -227,7 +222,7 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
     void onLearnMoreClicked(View v) {
         final String helpUrl = Locale.getDefault().getLanguage().equals("de") ?
                 adBlockingHelpUrlDe : adBlockingHelpUrlEn;
-        bus.post(new BrowserEvents.OpenUrlInNewTab(helpUrl));
+        bus.post(new BrowserEvents.OpenUrlInNewTab(getTabId(), helpUrl, false));
         bus.post(new Messages.DismissControlCenter());
         telemetry.sendLearnMoreClickSignal(TelemetryKeys.ADBLOCK);
     }
@@ -275,9 +270,10 @@ public class AdBlockingFragment extends ControlCenterFragment implements Compoun
         bus.post(new Messages.DismissControlCenter());
     }
 
-    public static AdBlockingFragment create(int hashCode, String url, boolean isIncognito) {
+    public static AdBlockingFragment create(@NonNull String tabId, int hashCode, String url, boolean isIncognito) {
         final AdBlockingFragment fragment = new AdBlockingFragment();
         final Bundle arguments = new Bundle();
+        arguments.putString(KEY_TAB_ID, tabId);
         arguments.putInt(KEY_HASHCODE, hashCode);
         arguments.putString(KEY_URL, url);
         arguments.putBoolean(KEY_IS_INCOGNITO, isIncognito);

@@ -6,7 +6,7 @@ import android.view.View;
 
 import androidx.core.view.ViewCompat;
 
-import com.cliqz.browser.main.CliqzBrowserState.Mode;
+import com.cliqz.browser.tabs.Tab.Mode;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.widget.SearchBar;
@@ -39,9 +39,9 @@ class TabFragmentListener implements SearchBar.Listener {
         if (searchView != null) {
             searchView.handleUrlbarFocusChange(hasFocus);
         }
-        Mode mode = fragment.state.getMode();
+        Mode mode = fragment.tab.getMode();
         if (!hasFocus) {
-            fragment.telemetry.sendURLBarBlurSignal(fragment.state.isIncognito(),
+            fragment.telemetry.sendURLBarBlurSignal(fragment.tab.isIncognito(),
                     fragment.getTelemetryView());
             fragment.hideKeyboard(null);
             if(mode == Mode.WEBPAGE) {
@@ -65,7 +65,7 @@ class TabFragmentListener implements SearchBar.Listener {
             }
             fragment.inPageSearchBar.setVisibility(View.GONE);
             fragment.resetFindInPage();
-            fragment.telemetry.sendURLBarFocusSignal(fragment.state.isIncognito(),
+            fragment.telemetry.sendURLBarFocusSignal(fragment.tab.isIncognito(),
                     fragment.getTelemetryView());
             ViewCompat.setElevation(fragment.statusBar, Utils.dpToPx(5));
         }
@@ -91,7 +91,7 @@ class TabFragmentListener implements SearchBar.Listener {
         final String q = s.toString();
         final SearchView searchView = fragment.searchView2;
         final boolean shouldSend = (((start + count) != before) ||
-                !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.state.getQuery());
+                !q.equalsIgnoreCase(fragment.lastQuery)) && !q.equals(fragment.tab.getQuery());
         if (searchView != null && shouldSend && (q.isEmpty() || !q.equals(fragment.getUrl()))) {
             fragment.lastQuery = q;
             searchView.updateQuery(q, start, count);
@@ -114,12 +114,12 @@ class TabFragmentListener implements SearchBar.Listener {
         if (fragment.isReaderModeOn) {
             fragment.toggleReaderMode();
         }
-        if (fragment.state.getMode() == Mode.SEARCH) {
-            searchBar.setQuery(fragment.state.getQuery());
-            fragment.searchQuery(fragment.state.getQuery());
+        if (fragment.tab.getMode() == Mode.SEARCH) {
+            searchBar.setQuery(fragment.tab.getQuery());
+            fragment.searchQuery(fragment.tab.getQuery());
             return;
         }
-        fragment.state.setMode(Mode.SEARCH);
+        fragment.tab.setMode(Mode.SEARCH);
         final String url = fragment.getUrl();
         if (url.toLowerCase().contains(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME+"=")) {
             searchBar.setSearchText("");
@@ -133,7 +133,7 @@ class TabFragmentListener implements SearchBar.Listener {
 
     @Override
     public void onKeyboardOpen() {
-        fragment.telemetry.sendKeyboardSignal(true, fragment.mIsIncognito,
+        fragment.telemetry.sendKeyboardSignal(true, fragment.tab.isIncognito(),
                 fragment.getTelemetryView());
     }
 }

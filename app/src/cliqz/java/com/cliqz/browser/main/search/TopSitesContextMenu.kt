@@ -18,11 +18,11 @@ class TopSitesContextMenu(
 
     override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
         R.id.open_new_tab -> {
-            freshTab.bus.post(BrowserEvents.OpenUrlInNewTab(topSite.url))
+            freshTab.bus.post(BrowserEvents.OpenUrlInNewTab(null, topSite.url, false))
             true
         }
         R.id.open_forget_tab -> {
-            freshTab.bus.post(BrowserEvents.OpenUrlInNewTab(topSite.url, true))
+            freshTab.bus.post(BrowserEvents.OpenUrlInNewTab(null, topSite.url, true))
             true
         }
         R.id.remove -> {

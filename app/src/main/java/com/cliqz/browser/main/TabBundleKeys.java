@@ -11,6 +11,7 @@ public final class TabBundleKeys {
     public static final String TITLE = PREFIX + ".TITLE";
     public static final String FAVICON = PREFIX + ".FAVICON";
     public static final String ID = PREFIX + ".ID";
+    public static final String PARENT_ID = PREFIX + ".PARENT_ID";
     public static final String LAST_VISIT = PREFIX + ".LAST_VISIT";
 
     private TabBundleKeys() {} // No instances

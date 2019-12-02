@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.annotation.AnimRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -52,6 +53,8 @@ import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.reactnative.ReactMessages;
+import com.cliqz.browser.tabs.Tab;
+import com.cliqz.browser.tabs.TabsManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.telemetry.Timings;
@@ -87,6 +90,7 @@ import timber.log.Timber;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.os.Build.VERSION.SDK_INT;
 
 /**
  * Flat navigation browser
@@ -181,8 +185,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         bus.register(this);
         crashDetector.notifyOnCreate();
 
-        TabsManager.RestoreTabsTask restoreTabsTask = new TabsManager.RestoreTabsTask(tabsManager.persister, bus);
-        restoreTabsTask.execute();
+        tabsManager.loadTabsMetaData(this::restoreTabs);
 
         new ABTestFetcher().fetchTestList();
         mOverViewFragment = new OverviewFragment();
@@ -211,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                     if (lastSiteUrl == null || lastSiteUrl.isEmpty()) {
                         Toast.makeText(this, R.string.empty_history, Toast.LENGTH_SHORT).show();
                     } else {
-                        tabsManager.buildTab().setUrl(lastSiteUrl).show();
+                        show(tabsManager.buildTab().setUrl(lastSiteUrl));
                         isRestored = true;
                     }
                 } catch (JSONException e) {
@@ -294,13 +297,41 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
+    private void show(TabsManager.Builder builder) {
+        show(builder.create());
+    }
+
+    private void show(String tabId) {
+        show(tabId, 0);
+    }
+
+    private void show(String tabId, @AnimRes int animation) {
+        final Tab tabToShow = tabsManager.getTab(tabId);
+
+        if (tabToShow == null) {
+            // Nothing to show
+            return;
+        }
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        tabsManager.selectTab(tabId);
+        final TabFragment2 fragment = tabsManager.getSelectedTabFragment();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (SDK_INT != Build.VERSION_CODES.M && animation != 0) {
+            //cannot pass null for exit animation
+            transaction.setCustomAnimations(animation, R.anim.dummy_transition);
+        }
+        transaction.replace(R.id.content_frame, fragment, MainActivity.TAB_FRAGMENT_TAG);
+        transaction.commit();
+    }
+
     @Nullable
     SearchView getSearchView() {
         return mSearchView;
     }
 
     private void showVpnPanel() {
-        tabsManager.buildTab().setOpenVpnPanel().show();
+        show(tabsManager.buildTab().setOpenVpnPanel());
     }
 
     // Workaround for a bug in Android 9 (Pie) as reported here
@@ -385,7 +416,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
             });
         }
         if (firstTabBuilder != null) {
-            firstTabBuilder.show();
+            show(firstTabBuilder);
         }
     }
 
@@ -446,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
         final TabsManager.Builder builder = handleIntent(intent);
         if (builder != null) {
-            builder.show();
+            show(builder);
         }
         if (action != null && action.equals(VpnPanel.ACTION_DISCONNECT_VPN)) {
             showVpnPanel();
@@ -547,30 +578,62 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void openLinkInNewTab(BrowserEvents.OpenUrlInNewTab event) {
-        createTab(event.url, event.isIncognito, event.showImmediately);
+        final String tabId = createTab(event.url, event.parentId, event.isIncognito, 0, event.showImmediately);
         bus.post(new Messages.UpdateTabCounter(tabsManager.getTabCount()));
-        Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), v -> tabsManager.showTab(tabsManager.getTabCount() - 1));
+        Utils.showSnackbar(this, getString(R.string.tab_created), getString(R.string.view), v -> show(tabId));
     }
 
     @Subscribe
     public void createWindow(BrowserEvents.CreateWindow event) {
-        final int tabPosition = tabsManager.findTabFor(event.view);
-        final TabFragment2 fromTab = tabPosition >= 0 ? tabsManager.getTab(tabPosition) : null;
+        final String tabId = event.tabId;
+        final Tab fromTab = tabsManager.getTab(tabId);
         final TabsManager.Builder builder = tabsManager.buildTab();
         if (fromTab != null) {
-            builder.setOriginTab(fromTab).setForgetMode(fromTab.state.isIncognito());
+            builder.setOriginTab(fromTab.id).setForgetMode(fromTab.isIncognito());
         }
-        builder.setMessage(event.msg).show();
+        show(builder.setMessage(event.msg));
     }
 
     @Subscribe
     public void createNewTab(BrowserEvents.NewTab event) {
-        createTab("", event.isIncognito, true);
+        createTab("", null, event.isIncognito, event.animation, true);
+    }
+
+    @Subscribe
+    public void showTab(BrowserEvents.ShowTab event) {
+        if (event.tabId.isEmpty()) {
+            show(tabsManager.getCurrentTabId());
+        } else {
+            show(event.tabId);
+        }
+    }
+
+    @Subscribe
+    public void openLink(CliqzMessages.OpenLink event) {
+        show(tabsManager.getCurrentTabId());
+        final TabFragment2 fragment = tabsManager.getSelectedTabFragment();
+        if (fragment != null) {
+            if (fragment.isResumed()) {
+                fragment.openLink(event.url, false, true, null);
+            } else {
+                fragment.openFromOverview(event);
+            }
+        }
+    }
+
+    @Subscribe
+    public void openQuery(Messages.OpenQuery event) {
+        show(tabsManager.getCurrentTabId());
+        final TabFragment2 fragment = tabsManager.getSelectedTabFragment();
+        if (fragment != null) {
+            fragment.searchQuery(event.query);
+        }
     }
 
     @Subscribe
     public void closeWindow(BrowserEvents.CloseWindow event) {
-        tabsManager.closeTab(event.lightningView);
+        tabsManager.closeTab(event.tabId);
+        show(tabsManager.getCurrentTabId());
     }
 
     @Subscribe
@@ -580,13 +643,13 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
     @Subscribe
     public void sendTabToDesktop(Messages.SentTabToDesktop event) {
-        final TabFragment2 tabFragment = tabsManager.getCurrentTab();
-        if (tabFragment == null) {
+        final Tab tab = tabsManager.getSelectedTab();
+        if (tab == null) {
             return;
         }
-        final String url = tabFragment.getUrl();
-        final String title = tabFragment.getTitle();
-        final boolean isIncognito = tabFragment.isIncognito();
+        final String url = tab.getUrl();
+        final String title = tab.getTitle();
+        final boolean isIncognito = tab.isIncognito();
         if (url.isEmpty()) {
             return;
         }
@@ -602,17 +665,21 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         }
     }
 
-    private void createTab(String url, boolean isIncognito, boolean showImmediately) {
+    @NonNull
+    private String createTab(String url, String parentId, boolean isIncognito, @AnimRes int animation, boolean showImmediately) {
         final TabsManager.Builder builder = tabsManager.buildTab();
         builder.setForgetMode(isIncognito);
         if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
             builder.setUrl(url);
         }
-        if (showImmediately) {
-            builder.show();
-        } else {
-            builder.create();
+        if (parentId != null) {
+            builder.setOriginTab(parentId);
         }
+        final String tabId = builder.create();
+        if (showImmediately) {
+            show(tabId, animation);
+        }
+        return tabId;
     }
 
     @Subscribe
@@ -639,10 +706,10 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         telemetry.resetBackNavigationVariables(-1);
         final FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction transaction = fm.beginTransaction();
-        // workaround for getting the mode in history fragment
-        final TabFragment2 currentTab = tabsManager.getCurrentTab();
-        if (currentTab != null) {
-            currentMode = tabsManager.getCurrentTab().getTelemetryView();
+        //workaround for getting the mode in history fragment
+        final TabFragment2 fragment = tabsManager.getSelectedTabFragment();
+        if (fragment!= null) {
+            currentMode = fragment.getTelemetryView();
             transaction.replace(R.id.content_frame, mOverViewFragment, OVERVIEW_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commitAllowingStateLoss();
@@ -679,15 +746,24 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     @SuppressWarnings("UnusedParameters")
     @Subscribe
     public void closeTab(BrowserEvents.CloseTab event) {
-        if (tabsManager.getTabCount() > 1) {
-            tabsManager.deleteTab(tabsManager.getCurrentTabPosition());
-            final int currentPos = tabsManager.getCurrentTabPosition();
-            if (currentPos != -1) {
-                tabsManager.showTab(currentPos);
+        final String tabId = tabsManager.getCurrentTabId();
+        if (tabId != null && !tabId.isEmpty()) {
+            tabsManager.closeTab(tabsManager.getCurrentTabId());
+            final String tabToDisplay = tabsManager.getCurrentTabId();
+            if (tabToDisplay != null && !tabToDisplay.isEmpty()) {
+                show(tabToDisplay);
+            } else {
+                finish();
             }
         } else {
             finish();
         }
+    }
+
+    @Subscribe
+    public void closeAllTabs(BrowserEvents.CloseAllTabs event) {
+        tabsManager.deleteAllTabs();
+        show(tabsManager.getCurrentTabId());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -732,11 +808,11 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     // returns screen that is visible
     private String getCurrentVisibleFragmentName() {
         final String name;
-        final TabFragment2 currentTab = tabsManager.getCurrentTab();
+        final Tab currentTab = tabsManager.getSelectedTab();
         if (mOverViewFragment != null && mOverViewFragment.isVisible()) {
             name = "past";
         } else if (currentTab != null) {
-            name = currentTab.state.getMode() == CliqzBrowserState.Mode.SEARCH ? "cards" : "web";
+            name = currentTab.getMode() == Tab.Mode.SEARCH ? "cards" : "web";
         } else {
             name = "cards";
         }
@@ -932,16 +1008,17 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         return result == PERMISSION_GRANTED;
     }
 
-    @Subscribe
-    public void restoreTabs(CliqzMessages.RestoreTabs restoreTabs) {
-        if (crashDetector.hasCrashed() && !restoreTabs.storedTabs.isEmpty()) {
-            ResumeTabDialog.show(this, restoreTabs.storedTabs);
+    private void restoreTabs(@NonNull List<Bundle> storedTabs) {
+        if (crashDetector.hasCrashed() && storedTabs.isEmpty()) {
+            ResumeTabDialog.show(this, storedTabs);
             crashDetector.resetCrash();
             isRestored = false;
         } else {
-            isRestored = tabsManager.restoreTabs(restoreTabs.storedTabs);
+            isRestored = tabsManager.restoreTabs(storedTabs);
         }
-        if (!isRestored || url != null || query != null) {
+        if (isRestored) {
+            show(tabsManager.getCurrentTabId());
+        } else {
             firstTabBuilder = tabsManager.buildTab();
             firstTabBuilder.setForgetMode(isIncognito);
             if (url != null && Patterns.WEB_URL.matcher(url).matches()) {
@@ -951,7 +1028,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
                 setIntent(null);
                 firstTabBuilder.setQuery(query);
             }
-            firstTabBuilder.show();
+            show(firstTabBuilder);
         }
     }
 
