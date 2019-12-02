@@ -326,4 +326,23 @@ public class SettingsActivityTest {
             mActivityRule.getActivity().preferenceManager.setShouldShowNews(true);
         }
     }
+
+    @Test
+    public void shouldNavigateToWhatIsHumanWeb() {
+        onView(withText(R.string.humanweb)).perform(click());
+        onView(withText(R.string.what_is_humanweb)).perform(click());
+        WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
+                .withTimeout(1, TimeUnit.MINUTES)
+                .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("human-web")));
+    }
+
+    @Test
+    public void shouldNavigateToAboutMyOffrz() {
+        onView(withText(R.string.settings_general)).perform(click());
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        onView(withText(R.string.settings_about_my_offrz)).perform(click());
+        WebHelpers.onWebView(withClassName(equalTo(CliqzWebView.class.getName())))
+                .withTimeout(1, TimeUnit.MINUTES)
+                .check(WebViewAssertions.webMatches(getCurrentUrl(), containsString("cliqz-angebote")));
+    }
 }

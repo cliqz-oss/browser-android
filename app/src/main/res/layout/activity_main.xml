@@ -2,11 +2,5 @@
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/normal_tab_primary_color">
-    <com.cliqz.browser.main.search.SearchView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/search_view"
-        android:visibility="invisible" />
-</com.cliqz.browser.widget.ReverseFrameLayout>
+    android:background="@color/normal_tab_primary_color"/>
 
