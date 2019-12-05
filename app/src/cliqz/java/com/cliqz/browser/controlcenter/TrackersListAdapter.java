@@ -23,6 +23,7 @@ import com.cliqz.nove.Bus;
 import com.facebook.react.bridge.AssertionException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import acr.browser.lightning.bus.BrowserEvents;
@@ -33,7 +34,7 @@ import acr.browser.lightning.bus.BrowserEvents;
  */
 class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewHolder> {
 
-    private ArrayList<TrackerDetailsModel> trackerDetails;
+    private List<TrackerDetailsModel> trackerDetails;
     private final boolean isIncognito;
     private final Bus bus;
     private final Telemetry telemetry;
@@ -74,10 +75,8 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
             final int position1 = holder.getAdapterPosition();
             telemetry.sendCCCompanyInfoSignal(position1, TelemetryKeys.ATTRACK);
             bus.post(new Messages.DismissControlCenter());
-            final String companyName = details.companyName.replaceAll("\\s", "-");
-            final String url =
-                    String.format("https://cliqz.com/whycliqz/anti-tracking/tracker#%s", companyName);
-            bus.post(new BrowserEvents.OpenUrlInNewTab(tabId, url, isIncognito));
+            final String url = String.format("https://whotracks.me/trackers/%s.html", details.wtm);
+            bus.post(new BrowserEvents.OpenUrlInNewTab(tabId, url, isIncognito, true));
         });
     }
 
@@ -101,7 +100,7 @@ class TrackersListAdapter extends RecyclerView.Adapter<TrackersListAdapter.ViewH
         }
     }
 
-    void updateList(ArrayList<TrackerDetailsModel> trackerDetails) {
+    void updateList(List<TrackerDetailsModel> trackerDetails) {
         this.trackerDetails = trackerDetails;
         notifyDataSetChanged();
     }

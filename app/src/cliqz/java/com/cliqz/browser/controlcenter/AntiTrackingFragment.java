@@ -3,6 +3,13 @@ package com.cliqz.browser.controlcenter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
+
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,12 +17,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.main.Messages;
@@ -25,12 +26,16 @@ import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.jsengine.AntiTracking;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -128,7 +133,6 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     @Nullable
     @Override
     protected View onCreateThemedView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //noinspection ConstantConditions
         ControlCenterDialog.getComponent().inject(this);
         mAdapter = new TrackersListAdapter(mIsIncognito, this);
         final @LayoutRes int layout;
@@ -171,10 +175,14 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
             return;
         }
         setEnabled(isEnabled);
-        if (isEnabled) {
-            attrack.removeDomainFromWhitelist(Uri.parse(mUrl).getHost());
-        } else {
-            attrack.addDomainToWhitelist(Uri.parse(mUrl).getHost());
+        final Uri uri = Uri.parse(mUrl);
+        final String host = uri != null ? uri.getHost() : null;
+        if (host != null) {
+            if (isEnabled) {
+                attrack.removeDomainFromWhitelist(host);
+            } else {
+                attrack.addDomainToWhitelist(host);
+            }
         }
         telemetry.sendCCToggleSignal(isEnabled, TelemetryKeys.ATTRACK);
     }
@@ -206,7 +214,7 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
         bus.post(new Messages.UpdateControlCenterIcon(status));
     }
 
-    private void setTableVisibility(ArrayList<TrackerDetailsModel> details) {
+    private void setTableVisibility(List<TrackerDetailsModel> details) {
         if (!preferenceManager.isAttrackEnabled()) {
             antitrackingTable.setVisibility(View.GONE);
             trackersList.setVisibility(View.GONE);
@@ -248,31 +256,74 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
     }
 
     private void updateList() {
-        ArrayList<TrackerDetailsModel> details = getTrackerDetails();
+        final List<TrackerDetailsModel> details = getTrackerDetails();
         counter.setText(String.format(Locale.getDefault(), "%d", mTrackerCount));
         mAdapter.updateList(details);
         setTableVisibility(details);
     }
 
-    private ArrayList<TrackerDetailsModel> getTrackerDetails() {
+    private List<TrackerDetailsModel> getTrackerDetails() {
         mTrackerCount = 0;
-        final ArrayList<TrackerDetailsModel> trackerDetails = new ArrayList<>();
         final ReadableMap attrackData = attrack.getTabBlockingInfo(mHashCode);
         if(attrackData == null) {
-            return trackerDetails;
+            return Collections.emptyList();
         }
-        final ReadableMapKeySetIterator iterator = attrackData.keySetIterator();
-        while (iterator.hasNextKey()) {
-            final String companyName = iterator.nextKey();
-            final int trackersCount = attrackData.getInt(companyName);
-            mTrackerCount += trackersCount;
-            trackerDetails.add(new TrackerDetailsModel(companyName, trackersCount));
+
+        final ReadableMap companies = attrackData.getMap("companies");
+        final ReadableMap trackers = attrackData.getMap("trackers");
+        final ReadableMap companyInfo = attrackData.getMap("companyInfo");
+
+        if (companies == null || trackers == null || companyInfo == null) {
+            return Collections.emptyList();
         }
-        Collections.sort(trackerDetails, (lhs, rhs) -> {
+
+        final Map<String, String> domainsToName = new HashMap<>();
+        final ReadableMapKeySetIterator companiesIterator = companies.keySetIterator();
+        while (companiesIterator.hasNextKey()) {
+            final String companyName = companiesIterator.nextKey();
+            final ReadableArray domains = companies.getArray(companyName);
+            if (domains == null) {
+                continue;
+            }
+            for (Object obj: domains.toArrayList()) {
+                domainsToName.put(obj.toString(), companyName);
+            }
+        }
+        final ReadableMapKeySetIterator trackersIterator = trackers.keySetIterator();
+        final Map<String, TrackerDetailsModel> trackerDetails = new HashMap<>();
+        while (trackersIterator.hasNextKey()) {
+            final String domain = trackersIterator.nextKey();
+            final ReadableMap trackerInfo = trackers.getMap(domain);
+            if (trackerInfo == null) {
+                continue;
+            }
+            final int c = trackerInfo.getInt("tokens_removed");
+            final String companyName = domainsToName.containsKey(domain) ?
+                    domainsToName.get(domain) : domain;
+            mTrackerCount += c;
+            if (companyName == null) {
+                continue;
+            }
+            if (trackerDetails.containsKey(companyName)) {
+                final TrackerDetailsModel tdm = trackerDetails.get(companyName);
+                trackerDetails.put(companyName, new TrackerDetailsModel(
+                        companyName, tdm.trackerCount + c, tdm.wtm));
+            } else {
+                final ReadableMap domainInfo = companyInfo.getMap(companyName);
+                if (domainInfo == null) {
+                    continue;
+                }
+                final String wtm = domainInfo.getString("wtm");
+                trackerDetails.put(companyName,
+                        new TrackerDetailsModel(companyName, c, wtm != null ? wtm : "unknown"));
+            }
+        }
+        final List<TrackerDetailsModel> result = new ArrayList<>(trackerDetails.values());
+        Collections.sort(result, (lhs, rhs) -> {
             final int count = rhs.trackerCount - lhs.trackerCount;
             return count != 0 ? count : lhs.companyName.compareToIgnoreCase(rhs.companyName);
         });
-        return trackerDetails;
+        return result;
     }
 
     public static AntiTrackingFragment create(@NonNull String tabId, int hashCode, String url, boolean isIncognito) {
@@ -292,10 +343,14 @@ public class AntiTrackingFragment extends ControlCenterFragment implements Compo
             return;
         }
         setEnabled(isChecked);
-        if (isChecked) {
-            attrack.removeDomainFromWhitelist(Uri.parse(mUrl).getHost());
-        } else {
-            attrack.addDomainToWhitelist(Uri.parse(mUrl).getHost());
+        final Uri uri = Uri.parse(mUrl);
+        final String host = uri != null ? uri.getHost() : null;
+        if (host != null) {
+            if (isChecked) {
+                attrack.removeDomainFromWhitelist(host);
+            } else {
+                attrack.addDomainToWhitelist(host);
+            }
         }
         telemetry.sendCCToggleSignal(isChecked, TelemetryKeys.ATTRACK);
         bus.post(new Messages.ReloadPage());
