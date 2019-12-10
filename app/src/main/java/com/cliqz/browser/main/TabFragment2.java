@@ -1029,7 +1029,9 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @Override
     public void increaseAntiTrackingCounter() {
         mTrackerCount++;
-        searchBar.setTrackerCount(mTrackerCount);
+        if (searchBar != null) {
+            searchBar.setTrackerCount(mTrackerCount);
+        }
         if (mTrackerCount > 0 && onBoardingHelper.conditionallyShowAntiTrackingDescription()) {
             hideKeyboard(null);
         }
