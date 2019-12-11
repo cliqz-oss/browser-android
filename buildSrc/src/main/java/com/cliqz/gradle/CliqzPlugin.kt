@@ -23,7 +23,7 @@ class CliqzPlugin: Plugin<Project> {
 
         project.afterEvaluate {
             android.applicationVariants.forEach { variant ->
-                setVersionCode(variant)
+                setVersionCode(project, variant)
                 createCliqzConfigTasks(project, variant)
                 if (variant.buildType.isDebuggable) {
                     createTestdroidTask(project, variant)
@@ -67,16 +67,17 @@ class CliqzPlugin: Plugin<Project> {
         }
     }
 
-    private fun setVersionCode(variant: ApplicationVariant) {
-        val buildNumber = System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: return
-        val versionCode = 150 + buildNumber
-        val apiVersion = variant.productFlavors[0].versionCode
+    private fun setVersionCode(project: Project, variant: ApplicationVariant) {
+        val now = System.currentTimeMillis()
+        val hoursSinceJan2019 = (now - janFirst2019) / millisInHour
         variant.outputs.forEach { output ->
             val abi = output.filters.find { it.filterType == OutputFile.ABI }
             abi?.let {
                 val abiVersion = ABI_CODES[it.identifier]
-                (output as ApkVariantOutput).versionCodeOverride =
-                        versionCode * 100 + apiVersion * 10 + abiVersion!!
+                val versionCode = hoursSinceJan2019.toInt() * 10 + abiVersion!!
+                project.logger.warn("${variant.name} ${it.identifier} version code: $versionCode")
+                (output as ApkVariantOutput).versionCodeOverride = versionCode
+
             }
         }
     }
@@ -86,5 +87,7 @@ class CliqzPlugin: Plugin<Project> {
     companion object {
         private val ABI_CODES = mapOf(
                 "armeabi-v7a" to 2, "arm64-v8a" to 4, "x86" to 6, "x86_64" to 8)
+        private const val janFirst2019 = 1546297200000L
+        private const val millisInHour = 3600000L
     }
 }
