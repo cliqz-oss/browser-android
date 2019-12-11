@@ -4,12 +4,27 @@ import com.android.build.OutputFile
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
+import java.io.FileNotFoundException
 
 @Suppress("unused")
 class CliqzPlugin: Plugin<Project> {
+
+    var versionName: String = "0.0.0"
+
     override fun apply(project: Project) {
+        // Read the version name from <projectRoot>/version.txt
+        val versionFile = File(project.rootProject.rootDir, versionFileName)
+        try {
+            if (!versionFile.isFile) throw FileNotFoundException("$versionFile does not exists or is not a file")
+            versionName = versionFile.readLines().first()
+        } catch (e: Throwable) {
+            throw GradleException("Error reading the version name from ${versionFile.path}", e)
+        }
+
         // TODO: Can this be moved to afterEvaluate too?
         val android = project.property("android") as AppExtension
         android.productFlavors.names.forEach {
@@ -76,8 +91,10 @@ class CliqzPlugin: Plugin<Project> {
                 val abiVersion = ABI_CODES[it.identifier]
                 val versionCode = hoursSinceJan2019.toInt() * 10 + abiVersion!!
                 project.logger.warn("${variant.name} ${it.identifier} version code: $versionCode")
-                (output as ApkVariantOutput).versionCodeOverride = versionCode
-
+                (output as ApkVariantOutput).apply {
+                    versionCodeOverride = versionCode
+                    versionNameOverride = versionName
+                }
             }
         }
     }
@@ -85,6 +102,7 @@ class CliqzPlugin: Plugin<Project> {
 
 
     companion object {
+        private const val versionFileName = "version.txt"
         private val ABI_CODES = mapOf(
                 "armeabi-v7a" to 2, "arm64-v8a" to 4, "x86" to 6, "x86_64" to 8)
         private const val janFirst2019 = 1546297200000L
