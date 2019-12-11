@@ -199,6 +199,7 @@ dependencies {
     amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
 
     // memory leak analysis
+    debugImplementation 'com.gu.android:toolargetool:0.2.1@aar'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'

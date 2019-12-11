@@ -1,6 +1,7 @@
 package com.cliqz.browser.app;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,9 @@ import com.cliqz.browser.main.MainActivity;
 import com.cliqz.browser.main.MainActivityModule;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.squareup.leakcanary.LeakCanary;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
@@ -54,6 +58,20 @@ public abstract class BaseBrowserApp extends MultiDexApplication {
         installSupportLibraries();
         sTestInProgress = testInProgres();
         setupCrashReporting();
+        setupTooLargeTool();
+    }
+
+    private void setupTooLargeTool() {
+        if (BuildConfig.DEBUG) {
+            final ClassLoader loader = getClassLoader();
+            try {
+                final Class clazz = loader.loadClass("com.gu.toolargetool.TooLargeTool");
+                final Method method = clazz.getMethod("startLogging", Application.class);
+                method.invoke(null, this);
+            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                Timber.e(e, "Can't start TooLargeTool");
+            }
+        }
     }
 
     /**
