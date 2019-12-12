@@ -57,6 +57,9 @@ allprojects {
             url  "http://dl.bintray.com/cliqz/cliqz-oss"
         }
         maven {
+            url 'https://dl.bintray.com/guardian/android'
+        }
+        maven {
             url "${rootProject.projectDir}/node_modules/react-native/android"
         }
         maven {

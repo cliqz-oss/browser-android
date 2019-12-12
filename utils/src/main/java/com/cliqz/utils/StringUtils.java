@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.util.regex.Pattern;
 
 import io.mola.galimatias.GalimatiasParseException;
+import io.mola.galimatias.Host;
 import io.mola.galimatias.ParseIssue;
 import io.mola.galimatias.URL;
 
@@ -156,17 +157,19 @@ public final class StringUtils {
         try {
             webAddress = parseURL(retVal);
             // Check host
-            if (webAddress.host() == null) {
-                if (URL_WITH_USERNAME_AND_PASSWORD_WITHOUT_SCHEME.matcher(retVal).matches()) {
-                    webAddress = parseURL("http://" + retVal);
-                }
+            final Host host = webAddress.host();
+            if (host == null) {
                 if (URL_WITH_HOST_AND_PORT.matcher(retVal).matches()) {
                     return retVal; // I.E.: magrathea:8080
                 }
-            }
-            final String hostStr = webAddress.host().toString();
-            if (!"localhost".equalsIgnoreCase(hostStr) && !hostStr.contains(".")) {
-                webAddress = webAddress.withHost("www." + hostStr + ".com");
+                if (URL_WITH_USERNAME_AND_PASSWORD_WITHOUT_SCHEME.matcher(retVal).matches()) {
+                    webAddress = parseURL("http://" + retVal);
+                }
+            } else {
+                final String hostStr = host.toString();
+                if (!"localhost".equalsIgnoreCase(hostStr) && !hostStr.contains(".")) {
+                    webAddress = webAddress.withHost("www." + hostStr + ".com");
+                }
             }
         } catch (GalimatiasParseException e) {
            return retVal;
