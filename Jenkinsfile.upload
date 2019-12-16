@@ -1,10 +1,6 @@
 #!/bin/env groovy
 @Library(['cliqz-shared-library@v1.2']) _
-properties([
-    parameters([
-        choice(choices: ['cliqz', 'lumen'], description: 'Which Product?', name: 'product')
-    ])
-])
+
 node('master'){
     def imageName = 'android-browser'
     def scmVars = [:]
@@ -42,22 +38,28 @@ node('master'){
                                 cp "$CLIQZ_CONFIG_JSON" app/cliqz-config.json
                                 cp "$GOOGLE_SERVICES" app/google-services.json
                             '''
-                            if(params.product == "cliqz") {
-                                sh '''#!/bin/bash -l
-                                    set -x
-                                    set -e
-                                    export APP_PACKAGE="com.cliqz.browser"
-                                    fastlane android internal_cliqz
-                                '''
+                            def pkg = ""
+                            def lane = ""
+                            switch (env.PRODUCT) {
+                                case 'lumen':
+                                    pkg = 'com.cliqz.lumen'
+                                    lane = 'internal_lumen'
+                                    break
+                                case 'cliqz':
+                                    pkg = 'com.cliqz.browser'
+                                    lane = 'internal_cliqz'
+                                    break
+                                default:
+                                    pkg = 'com.cliqz.browser.ut'
+                                    lane = 'production_canary'
+                                    break
                             }
-                            if(params.product == "lumen") {
-                                sh '''#!/bin/bash -l
-                                    set -x
-                                    set -e
-                                    export APP_PACKAGE="com.cliqz.lumen"
-                                    fastlane android internal_lumen
-                                '''
-                            }
+                            sh """#!/bin/bash -l
+                                set -x
+                                set -e
+                                export APP_PACKAGE="$pkg"
+                                fastlane android $lane
+                            """
                         }
                     }
                 }
