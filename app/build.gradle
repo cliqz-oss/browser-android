@@ -66,12 +66,30 @@ android {
                     "${rootDir}/jsengine"
             ]
         }
-        amazon {
-            java.srcDirs += [
-                    'src/cliqz/java',
-            ]
+        canary {
             res.srcDirs += [
-                    'src/cliqz/res',
+                    'src/cliqz/res'
+            ]
+            java.srcDirs += [
+                    'src/cliqz/java'
+            ]
+        }
+        amazon {
+            res.srcDirs += [
+                    'src/cliqz/res'
+            ]
+            java.srcDirs += [
+                    'src/cliqz/java'
+            ]
+        }
+        amazonDebug {
+            res.srcDirs += [
+                    'src/cliqzDebug/res'
+            ]
+        }
+        amazonRelease {
+            res.srcDirs += [
+                    'src/cliqzRelease/res'
             ]
         }
 //        huawei {
@@ -89,6 +107,11 @@ android {
         cliqz {
             dimension "api"
             versionCode 5
+        }
+        canary {
+            dimension "api"
+            versionCode 5
+            applicationIdSuffix '.ut'
         }
         lumen {
             dimension "api"
@@ -196,6 +219,7 @@ dependencies {
 
     // On-boarding
     cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    canaryImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
     amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
 
     // memory leak analysis
