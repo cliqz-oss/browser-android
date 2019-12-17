@@ -185,6 +185,14 @@ public class HistoryDatabase extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion == 8 && newVersion == 7) {
+            return; // Do nothing the only difference is an extra index on the history table
+        }
+        super.onDowngrade(db, oldVersion, newVersion);
+    }
+
+    @Override
     public synchronized void close() {
         dbHandler.close();
         super.close();

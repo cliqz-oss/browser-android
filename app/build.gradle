@@ -6,6 +6,8 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply from: 'cliqz.gradle'
 
+apply plugin: com.cliqz.gradle.CliqzPlugin
+
 def useGoogleServices = System.getenv("DISABLE_GOOGLE_SERVICES") == null
 // GIT_COMMIT is an environment variable set by Jenkins
 def revision = System.getenv("GIT_COMMIT")?.substring(0, 7) ?: "UNKNOWN"
@@ -20,7 +22,7 @@ android {
 
     defaultConfig {
         versionCode 1
-        versionName "0.0.0"
+        versionName cliqzVersionName
         multiDexEnabled true
 
         buildConfigField 'String', 'LIGHTNING_VERSION_NAME', '"4.2.3.1"'
@@ -286,5 +288,3 @@ dependencies {
 if (useGoogleServices) {
     apply plugin: 'com.google.gms.google-services'
 }
-
-apply plugin: com.cliqz.gradle.CliqzPlugin

@@ -7,6 +7,7 @@ import com.android.build.gradle.api.ApplicationVariant
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -25,18 +26,21 @@ class CliqzPlugin: Plugin<Project> {
             throw GradleException("Error reading the version name from ${versionFile.path}", e)
         }
 
-        // TODO: Can this be moved to afterEvaluate too?
-        val android = project.property("android") as AppExtension
-        android.productFlavors.names.forEach {
-            android.defaultConfig.apply {
-                val upperName = it.toUpperCase()
-                buildConfigField("String", "FLAVOR_$upperName", "\"$it\"")
-                buildConfigField("boolean", "IS_$upperName", "FLAVOR.equals(FLAVOR_$upperName)")
-                buildConfigField("boolean", "IS_NOT_$upperName", "!IS_$upperName")
-            }
+        (project.property("ext") as? DefaultExtraPropertiesExtension)?.apply {
+            setProperty("cliqzVersionName", versionName)
         }
 
         project.afterEvaluate {
+            val android = project.property("android") as AppExtension
+            android.productFlavors.names.forEach {
+                android.defaultConfig.apply {
+                    val upperName = it.toUpperCase()
+                    buildConfigField("String", "FLAVOR_$upperName", "\"$it\"")
+                    buildConfigField("boolean", "IS_$upperName", "FLAVOR.equals(FLAVOR_$upperName)")
+                    buildConfigField("boolean", "IS_NOT_$upperName", "!IS_$upperName")
+                }
+            }
+
             android.applicationVariants.forEach { variant ->
                 setVersionCode(project, variant)
                 createCliqzConfigTasks(project, variant)
