@@ -118,7 +118,8 @@ public class LightningChromeClient extends WebChromeClient implements CliqzWebVi
 
             @Override
             public void onDenied(String permission) {
-                // no-op
+                Timber.i("The permission was denied by the user");
+                request.deny();
             }
         }, permissions.toArray(new String[permissions.size()])));
     }
