@@ -38,6 +38,7 @@
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:fullBackupOnly="true"
+        android:icon="@mipmap/ic_launcher"
         android:backupAgent="com.cliqz.browser.backup.CliqzBackupAgent"
         tools:replace="android:allowBackup"
         android:hardwareAccelerated="true"
