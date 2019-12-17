@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
@@ -27,15 +26,12 @@ import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.browser.telemetry.Telemetry;
-import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.nove.Bus;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 /**
  * Custom EditText widget with autocompletion
@@ -58,17 +54,14 @@ public class AutocompleteEditText extends AppCompatEditText {
     Bus bus;
 
     private final ArrayList<TextWatcher> mListeners = new ArrayList<>();
-    private volatile boolean mIsAutocompleting;
-    private volatile boolean mDeleting = false;
 
     // private AutocompleteService mAutocompleteService;
 
     private boolean mIsAutocompleted;
-    private volatile boolean mIsTyping = false;
     private boolean mIsAutocompletionEnabled = true;
 
-    private AutocompleteRunnable autocompleteRunnable = null;
     private String mQuery = "";
+    private boolean mIsDeleting = false;
 
     public AutocompleteEditText(Context context) {
         this(context, null);
@@ -83,7 +76,6 @@ public class AutocompleteEditText extends AppCompatEditText {
         super.addTextChangedListener(new DefaultTextWatcher());
         final int imeOptions = getImeOptions() | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
         setImeOptions(imeOptions);
-        mIsAutocompleting = false;
         mIsAutocompleted = false;
         BrowserApp.getAppComponent().inject(this);
         setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_URI);
@@ -160,7 +152,7 @@ public class AutocompleteEditText extends AppCompatEditText {
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+        if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
             bus.post(new Messages.KeyBoardClosed());
             return true;
         }
@@ -173,32 +165,26 @@ public class AutocompleteEditText extends AppCompatEditText {
     }
 
     public void setAutocompleteText(CharSequence text) {
-        if (!mIsAutocompletionEnabled) {
+        if (!mIsAutocompletionEnabled || mIsDeleting) {
             return;
         }
         final String autocompletion = text.toString();
-        if (autocompleteRunnable != null) {
-            autocompleteRunnable.cancel();
+        beginBatchEdit();
+        final Editable currentEditable = getText();
+        if (currentEditable != null && currentEditable.length() > 0) {
+            final String currentText = currentEditable.toString();
+            if (autocompletion.startsWith(currentText) && !currentText.equals(autocompletion)) {
+                setText(autocompletion);
+                setSelection(currentText.length(), autocompletion.length());
+            }
         }
-        autocompleteRunnable = new AutocompleteRunnable(autocompletion);
-        postDelayed(autocompleteRunnable, 200);
+        endBatchEdit();
     }
 
     private class DefaultTextWatcher implements TextWatcher {
 
-        private String mBefore = "";
-
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            if (mIsAutocompleting) {
-                return;
-            }
-            if (autocompleteRunnable != null) {
-                autocompleteRunnable.cancel();
-            }
-
-            mIsTyping = true;
-
             for (TextWatcher watcher: mListeners) {
                 watcher.beforeTextChanged(s, start, count, after);
             }
@@ -206,34 +192,20 @@ public class AutocompleteEditText extends AppCompatEditText {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (mIsAutocompleting) {
-                return;
-            }
             for (TextWatcher watcher: mListeners) {
                 watcher.onTextChanged(s, start, before, count);
             }
-
-            final String str = s.toString();
-            mDeleting = mBefore.startsWith(str) && mBefore.length() >= str.length();
-            mBefore = str;
-
-            if (mDeleting) {
-                mTelemetry.sendTypingSignal(TelemetryKeys.KEYSTROKE_DEL, s.length());
-            }
+            mIsDeleting = count == 0;
         }
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (mIsAutocompleting) {
-                return;
-            }
             mIsAutocompleted = false;
             for (TextWatcher watcher: mListeners) {
                 watcher.afterTextChanged(s);
             }
             mQuery = s.toString();
             setDrawable(!mQuery.isEmpty());
-            mIsTyping = false;
         }
     }
 
@@ -251,26 +223,6 @@ public class AutocompleteEditText extends AppCompatEditText {
             mTelemetry.sendPasteSignal(textLength);
         }
         return super.onTextContextMenuItem(id);
-    }
-
-    @Override
-    protected void onSelectionChanged(int selStart, int selEnd) {
-        final Editable editable = getText();
-        final String text = editable != null ? editable.toString() : "";
-        if(selStart == 0 && selEnd == 0 && text.length() != 0) {
-            boolean isUserTouch = false;
-            final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-
-            for (StackTraceElement stackTraceElement : stackTraceElements) {
-                if ("onTouchEvent".equals(stackTraceElement.getMethodName())) {
-                    isUserTouch = true;
-                    break;
-                }
-            }
-
-            if(!isUserTouch)
-                setSelection(0, getText().length());
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -302,38 +254,5 @@ public class AutocompleteEditText extends AppCompatEditText {
         return super.performClick();
     }
 
-    private class AutocompleteRunnable implements Runnable {
 
-        private boolean mCancelled = false;
-
-        private final String completion;
-
-        AutocompleteRunnable(String completion) {
-            this.completion = completion;
-        }
-
-        public void cancel() {
-            mCancelled = true;
-        }
-
-        @Override
-        public void run() {
-            if (mDeleting || mIsTyping || mCancelled) {
-                return;
-            }
-            mIsAutocompleting = true;
-            if (completion.startsWith(mQuery)) {
-                mIsAutocompleted = true;
-                final int selectionBegin = mQuery.length();
-                final int selectionEnd = completion.length();
-                try {
-                    setTextKeepState(completion);
-                    setSelection(selectionBegin, selectionEnd);
-                } catch (IndexOutOfBoundsException e) {
-                    Timber.i(e, "Can't select part of the url bar");
-                }
-            }
-            mIsAutocompleting = false;
-        }
-    }
 }
