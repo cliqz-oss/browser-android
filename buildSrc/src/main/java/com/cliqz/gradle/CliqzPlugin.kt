@@ -7,7 +7,7 @@ import com.android.build.gradle.api.ApplicationVariant
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -26,8 +26,8 @@ class CliqzPlugin: Plugin<Project> {
             throw GradleException("Error reading the version name from ${versionFile.path}", e)
         }
 
-        (project.property("ext") as? DefaultExtraPropertiesExtension)?.apply {
-            setProperty("cliqzVersionName", versionName)
+        (project.property("ext") as? ExtraPropertiesExtension)?.apply {
+            set("cliqzVersionName", versionName)
         }
 
         project.afterEvaluate {
