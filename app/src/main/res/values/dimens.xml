@@ -37,4 +37,12 @@
     <dimen name="text_padding">10dp</dimen>
     <dimen name="topsites_logo_cornes_radius">5dp</dimen>
     <dimen name="topsites_logo_textsize">24sp</dimen>
+
+    <dimen name="context_menu_corner_radius">6dp</dimen>
+
+    <dimen name="context_menu_height">36dp</dimen>
+    <dimen name="context_menu_x_offset">13dp</dimen>
+    <dimen name="context_menu_y_offset">8dp</dimen>
+
+    <dimen name="context_menu_elevation">3dp</dimen>
 </resources>
