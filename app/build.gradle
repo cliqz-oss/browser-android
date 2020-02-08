@@ -76,14 +76,14 @@ android {
                     'src/cliqz/res',
             ]
         }
-//        huawei {
-//            java.srcDirs += [
-//                    'src/cliqz/java',
-//            ]
-//            res.srcDirs += [
-//                    'src/cliqz/res',
-//            ]
-//        }
+        huawei {
+            java.srcDirs += [
+                    'src/cliqz/java',
+            ]
+            res.srcDirs += [
+                    'src/cliqz/res',
+            ]
+        }
     }
 
     flavorDimensions "api"
@@ -103,11 +103,11 @@ android {
             dimension "api"
             versionCode 8
         }
-//        huawei {
-//            dimension "api"
-//            versionCode 5
-//            applicationIdSuffix ".huawei"
-//        }
+        huawei {
+            dimension "api"
+            versionCode 5
+            applicationIdSuffix ".huawei"
+        }
     }
 
     splits {
@@ -199,6 +199,7 @@ dependencies {
     // On-boarding
     cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
     amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    huaweiImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
 
     // memory leak analysis
     debugImplementation 'com.gu.android:toolargetool:0.2.1@aar'

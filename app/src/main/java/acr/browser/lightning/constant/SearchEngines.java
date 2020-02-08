@@ -27,7 +27,7 @@ public enum SearchEngines {
         try {
             return SearchEngines.valueOf(value);
         } catch (IllegalArgumentException e) {
-            return google;
+            return cliqz;
         }
     }
     public final String engineName;
