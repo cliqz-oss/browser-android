@@ -5,11 +5,8 @@
     <string name="rate_us">Lumen Browser bewerten</string>
     <string name="summary_adblock_data">Bitte beachte: Lumen Browser muss größere Informationspakete laden bevor der Werbeblocker effizient funktioniert. Dazu muss die App mit einem WLAN verbunden sein.</string>
     <string name="tips_and_tricks">Hol dir das Beste aus Lumen</string>
-    <string name="msg_pairing_instructions_dialog">Öffne den Lumen Browser auf deinem Computer (oder lade ihn von cliqz.com herunter).</string>
-    <string name="pairing_information">Verbinde Lumen auf deinem mobilen Endgerät mit Lumen auf deinem Computer. Damit kannst du Tabs zwischen deinem Computer und deinem mobilen Browser schicken. Du kannst außerdem Videos direkt auf dein mobiles Gerät herunterladen.</string>
     <string name="request_location_access">Darf Lumen Browser auf deine Standortinformationen zugreifen?</string>
     <string name="msg_new_icon">Hey, das Lumen-logo ist jetzt blau. Schau doch mal in die neue Version rein!</string>
-    <string name="send_tab_no_connection_error_msg">Du bist mit keinem Lumen Desktop-Browser verbunden. Gehe ins \'Connect\'-Menu, um eine neue Verbindung hinzuzufügen.</string>
     <string name="share_card_email_subject">Ich habe das hier im Lumen Browser entdeckt</string>
     <string name="settings_category_tab">Lumen Tab</string>
     <string name="clear_data_summary">Lumen löscht die Daten automatisch beim Verwenden der Funktion \"Beenden\" aus dem Hauptmenü.</string>

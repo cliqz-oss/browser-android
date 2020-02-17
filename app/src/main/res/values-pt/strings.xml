@@ -116,7 +116,6 @@ Gostaria de utilizar a sua localização</string>
     <string name="overview">Menu geral</string>
     <string name="open_tabs">Separadores abertos</string>
     <string name="favorites">Favoritos</string>
-    <string name="action_connect">Connect</string>
     <string name="antiphishing_dialog_title">Aviso: Site enganador!</string>
     <string name="antiphishing_walk_away">Tirem-me daqui</string>
     <string name="antiphishing_ignore_danger">Ignorar este aviso</string>
@@ -160,12 +159,6 @@ Gostaria de utilizar a sua localização</string>
     <string name="attrack_disabled_header">Seus dados não são protegidos</string>
     <string name="attrack_disabled">Anti-tracking está desativado</string>
     <string name="activate">Ativar</string>
-    <string name="desktop_pairing">Connect</string>
-    <string name="unpair_device">Eliminar</string>
-    <string name="device_paired_and_connected">Ligado</string>
-    <string name="device_paired_but_offline">Computador desligado</string>
-    <string name="title_connect">Connect</string>
-    <string name="qrcode_scanner_pairing_instructions">Dirige a ![the firefox menu](firefox_menu) seleciona \'Connect\" para scanear o código QR.</string>
     <string name="regional_settings">Resultados de pesquisa para</string>
     <string name="germany">Alemanha</string>
     <string name="france">França</string>
@@ -179,17 +172,8 @@ Gostaria de utilizar a sua localização</string>
     <string name="report_site">Denunciar uma página</string>
     <string name="clear_passwords">Remover palavras-passe</string>
     <string name="clear_passwords_message">Gostaria de remover as palavras-passe guardados?</string>
-    <string name="pairing_error_title">A ligação falhou</string>
     <string name="action_retry">Tentar novamente</string>
-    <string name="pairing_successful_title">Ligação foi bem sucedida</string>
-    <string name="pairing_successful_message">Você conectou seu primeiro dispositivo!
-
-Está pronto para mandar separadores entre seu computador e seu telemóvel. Também pode descarregar vídeos desde o navegador do seu computador e seu telemóvel.</string>
-    <string name="rename_paired_device">Renomear</string>
-    <string name="pairing_device_rename_title">Renomear ligação</string>
-    <string name="pairing_device_rename_hint">Novo nome</string>
     <string name="query_suggestion">Sugestões de pesquisa</string>
-    <string name="msg_connecting_to_desktop">A ligar ao computador…</string>
     <string name="freshtab_no_topsites">Suas páginas mais visitadas vão aparecer aqui</string>
     <string name="action_done">Pronto</string>
     <string name="action_undo">Desfazer</string>
@@ -198,19 +182,10 @@ Está pronto para mandar separadores entre seu computador e seu telemóvel. Tamb
     <string name="action_resume">Restaurar</string>
     <string name="action_close_all_tabs">Fechar todos os separadores</string>
     <string name="please_wait">Por favor, aguarde…</string>
-    <string name="send_tab_device_picker_title">Escolha a ligação:</string>
-    <string name="send_tab_generic_error_title">Não foi enviado o separador</string>
-    <string name="send_tab_generic_error_msg">Êpa, o separador não foi enviado para o seu computador. Por favor verifique o estatuto da ligação.</string>
-    <string name="action_go_to_connect">Vai para Connect</string>
-    <string name="send_tab_no_connection_error_title">Sem ligação</string>
-    <string name="send_tab_to_desktop">Mandar o separador para o computador</string>
     <string name="code_scanner">Scâner de códigos QR</string>
     <string name="qrcode_scanner_scanning_instructions">![QR-Code example](qr_code_icon_small) Scaneie o código QR</string>
-    <string name="tab_send_success_msg">Separador enviado a %1$s</string>
     <string name="code_scanner_title">Scâner de códigos QR</string>
     <string name="close_tabs_on_exit">Fechar os separadores ao sair</string>
-<string name="pairing_error_message">Desculpe, mas os dispositivos não foram ligados. Por favor tente de novo.</string>
-    <string name="pairing_device_rename_message">Entre um novo nome para a ligação:</string>
     <string name="subscribe_soccer_league">Liga</string>
     <string name="subscribe_soccer_club">Clube</string>
     <string name="subscribe_soccer_game">Jogo</string>

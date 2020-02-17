@@ -34,7 +34,6 @@ import com.cliqz.browser.app.BaseModule;
 import com.cliqz.browser.app.BrowserApp;
 import com.cliqz.browser.app.DaggerBaseComponent;
 import com.cliqz.browser.main.MainActivity;
-import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.utils.SubscriptionsManager;
@@ -266,7 +265,7 @@ public class MessageListenerService extends GcmListenerService {
     void handleServiceSubType(int subType, Bundle data) {
         switch (subType) {
             case ServiceTypes.START_PEER:
-                PeerCommunicationService.startPeerCommunication(this);
+                /*PeerCommunicationService.startPeerCommunication(this);*/
                 break;
             case ServiceTypes.DOWNLOAD_FILE:
                 break;

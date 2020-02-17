@@ -117,7 +117,6 @@ public class PreferenceManager {
         static final String SHOULD_SHOW_ANTI_TRACKING_DESCRIPTION = "should_show_anti_tracking_description";
         static final String SHOULD_SHOW_SEARCH_DESCRIPTION = "should_show_search_description";
         static final String ATTRACK_ENABLED = "attrack_enabled";
-        static final String PAIRING_FIRST_DEVICE_DIALOG_SHOWN = "pairing_first_device_dialog_shown";
         // TODO: Temporary fix for faulty autocompletion
         static final String AUTO_COMPLETION_ENABLED = "auto_completion_enabled";
         static final String LAST_KNOWN_LOCATION = "last_known_location";
@@ -444,10 +443,6 @@ public class PreferenceManager {
 
     public boolean getShouldShowSearchDescription() {
         return mPrefs.getBoolean(Name.SHOULD_SHOW_SEARCH_DESCRIPTION, true);
-    }
-
-    public boolean getFirstDevicePaired() {
-        return mPrefs.getBoolean(Name.PAIRING_FIRST_DEVICE_DIALOG_SHOWN, false);
     }
 
     public boolean isAttrackEnabled() {
@@ -822,10 +817,6 @@ public class PreferenceManager {
         setShouldShowOnboarding(value);
         setShouldShowAntiTrackingDescription(value);
         setShouldShowSearchDescription(value);
-    }
-
-    public void setFirstDevicePaired(boolean value) {
-        putBoolean(Name.PAIRING_FIRST_DEVICE_DIALOG_SHOWN, value);
     }
 
     public void setABTestPreference(String preferenceName, boolean value) {

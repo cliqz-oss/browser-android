@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.connect.SyncEvents;
 import com.cliqz.browser.qrscanner.camera.CameraManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.nove.Bus;

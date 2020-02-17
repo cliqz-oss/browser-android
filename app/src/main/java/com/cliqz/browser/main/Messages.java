@@ -200,9 +200,6 @@ public final class Messages {
         }
     }
 
-    public static class SentTabToDesktop {
-    }
-
     public static class OnFreshTabVisible {
     }
 

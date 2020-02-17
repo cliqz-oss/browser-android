@@ -16,8 +16,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -48,7 +45,6 @@ import com.cliqz.browser.extensions.ContextExtensionKt;
 import com.cliqz.browser.gcm.RegistrationIntentService;
 import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.overview.OverviewFragment;
-import com.cliqz.browser.peercomm.PeerCommunicationService;
 import com.cliqz.browser.purchases.PurchaseFragment;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.reactnative.ReactMessages;
@@ -63,7 +59,6 @@ import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.ActivityUtils;
-import com.cliqz.utils.StringUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -85,7 +80,6 @@ import acr.browser.lightning.utils.Utils;
 import acr.browser.lightning.utils.WebUtils;
 import timber.log.Timber;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
@@ -270,8 +264,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
 
         Utils.updateUserLocation(preferenceManager);
 
-        // Finally start the PeerCommunicationService
-        PeerCommunicationService.startPeerCommunication(this);
         telemetry.sendOrientationSignal(getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_LANDSCAPE ? TelemetryKeys.LANDSCAPE : TelemetryKeys.PORTRAIT,
                 TelemetryKeys.HOME);
@@ -579,21 +571,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    public void sendTabToDesktop(Messages.SentTabToDesktop event) {
-        final TabFragment2 tabFragment = tabsManager.getCurrentTab();
-        if (tabFragment == null) {
-            return;
-        }
-        final String url = tabFragment.getUrl();
-        final String title = tabFragment.getTitle();
-        final boolean isIncognito = tabFragment.isIncognito();
-        if (url.isEmpty()) {
-            return;
-        }
-        SendTabHelper.sendTab(this, url, title, isIncognito);
-    }
-
-    @Subscribe
     public void showSnackBarMessage(BrowserEvents.ShowSnackBarMessage msg) {
         if (msg.message != null) {
             Utils.showSnackbar(this, msg.message);
@@ -699,24 +676,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         } else {
             finish();
         }
-    }
-
-    @Subscribe
-    void sendTabError(CliqzMessages.NotifyTabError event) {
-        SendTabErrorDialog.show(this, SendTabErrorTypes.GENERIC_ERROR);
-    }
-
-    @Subscribe
-    void sendTabSuccess(CliqzMessages.NotifyTabSuccess event) {
-        String message;
-        try {
-            message = getString(R.string.tab_send_success_msg, event.json.getString("name"));
-        } catch (JSONException e) {
-            message = getString(R.string.tab_send_success_msg, "UNKOWN");
-            Timber.e(e);
-        }
-        bus.post(new BrowserEvents.ShowSnackBarMessage(message));
-        telemetry.sendSendTabSuccessSignal();
     }
 
     @Subscribe
@@ -848,70 +807,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     }
 
     @Subscribe
-    void downloadVideo(CliqzMessages.DownloadVideo data) {
-        final JSONObject jsonObject = data.json;
-        final String filename = jsonObject.optString("filename", null);
-        final String rawUrl = jsonObject.optString("url", null);
-        final String url = StringUtils.encodeURLProperly(rawUrl);
-        final Context context = getApplicationContext();
-        final ConnectivityManager connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager == null) {
-            return;
-        }
-        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        if (activeNetwork.getType() != ConnectivityManager.TYPE_WIFI) {
-            NoWiFiDialog.show(this, bus);
-            return;
-        }
-        if (canDownloadInBackground(context) && url != null) {
-            DownloadHelper.download(context, url, filename, null,
-                    new DownloadHelper.DownloaderListener() {
-                        @Override
-                        public void onSuccess(String url) {
-                            bus.post(new BrowserEvents
-                                    .ShowSnackBarMessage(context
-                                    .getString(R.string.download_started)));
-                        }
-
-                        @Override
-                        public void onFailure(String url, DownloadHelper.Error error,
-                                              Throwable throwable) {
-                            final String title;
-                            final String message;
-                            switch (error) {
-                                case MEDIA_NOT_MOUNTED:
-                                    message = context.getString(R.string.download_sdcard_busy_dlg_msg);
-                                    title = context.getString(R.string.download_sdcard_busy_dlg_title);
-                                    break;
-                                case MEDIA_NOT_AVAILABLE:
-                                    message = context.getString(R.string.download_no_sdcard_dlg_msg);
-                                    title = context.getString(R.string.download_no_sdcard_dlg_title);
-                                    break;
-                                default:
-                                    message = context.getString(R.string.download_failed);
-                                    title = context.getString(R.string.title_error);
-                                    break;
-                            }
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setTitle(title)
-                                    .setMessage(message)
-                                    .setPositiveButton(R.string.action_ok, null)
-                                    .show();
-                        }
-                    });
-        } else {
-            // We must show interface here, just start the browser
-            final Intent intent = new Intent(context, MainActivity.class);
-            intent.setAction(MainActivity.ACTION_DOWNLOAD);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(StringUtils.encodeURLProperly(rawUrl)));
-            intent.putExtra(MainActivity.EXTRA_FILENAME, filename);
-            context.startActivity(intent);
-        }
-    }
-
-    @Subscribe
     void onReactCheckPermission(ReactMessages.CheckPermission event) {
         if (PermissionsManager.hasPermission(this, event.permission)) {
             event.promise.resolve(true);
@@ -924,12 +819,6 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
     void onReactRequestPermission(ReactMessages.RequestPermission event) {
         PermissionsManager.getInstance()
                 .requestPermissionsIfNecessaryForResult(this, event, event.permission);
-    }
-
-    private static boolean canDownloadInBackground(Context context) {
-        final int result = ContextCompat
-                .checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
-        return result == PERMISSION_GRANTED;
     }
 
     @Subscribe

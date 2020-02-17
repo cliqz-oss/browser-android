@@ -68,14 +68,6 @@ public class JSBridge extends ReactContextBaseJavaModule {
         forwardedEvents.put("mobile-search:copyValue", args -> new CliqzMessages.CopyData(args.getString(0)));
         forwardedEvents.put("mobile-search:call", args -> new CliqzMessages.CallNumber(args.getString(0)));
         forwardedEvents.put("mobile-search:map", args -> CliqzMessages.OpenLink.open(args.getString(0)));
-        forwardedEvents.put("mobile-pairing:openTab", args -> new CliqzMessages.OpenTab(args.getMap(0)));
-
-        forwardedEvents.put("mobile-pairing:pushPairingData", args -> new CliqzMessages.PushPairingData(args.getMap(0)));
-        forwardedEvents.put("mobile-pairing:notifyPairingSuccess", args -> new CliqzMessages.NotifyPairingSuccess(args.getMap(0)));
-        forwardedEvents.put("mobile-pairing:notifyPairingError", args -> new CliqzMessages.NotifyPairingError(args.getMap(0)));
-        forwardedEvents.put("mobile-pairing:notifyTabSuccess", args -> new CliqzMessages.NotifyTabSuccess(args.getMap(0)));
-        forwardedEvents.put("mobile-pairing:notifyTabError", args -> new CliqzMessages.NotifyTabError(args.getMap(0)));
-        forwardedEvents.put("mobile-pairing:downloadVideo", args -> new CliqzMessages.DownloadVideo(args.getMap(0)));
     }
 
 

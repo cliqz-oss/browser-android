@@ -9,7 +9,6 @@ import com.cliqz.browser.gcm.AwsSNSManager;
 import com.cliqz.browser.main.BackgroundThreadHandler;
 import com.cliqz.browser.main.MainThreadHandler;
 import com.cliqz.browser.main.QueryManager;
-import com.cliqz.browser.peercomm.ChunkedFileManager;
 import com.cliqz.browser.purchases.PurchasesManager;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.Timings;
@@ -110,12 +109,6 @@ public class AppModule {
     @Singleton
     Insights provideInsights(Engine engine) {
         return new Insights(engine);
-    }
-
-
-    @Provides
-    ChunkedFileManager providesChunkedFileManaget(Context context) {
-        return new ChunkedFileManager(context);
     }
 
     @Provides

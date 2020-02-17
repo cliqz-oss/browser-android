@@ -1,8 +1,6 @@
 package com.cliqz.browser.app;
 
 import com.cliqz.browser.abtesting.ABTestFetcher;
-import com.cliqz.browser.connect.PairedDevicesFragment;
-import com.cliqz.browser.connect.SyncActivity;
 import com.cliqz.browser.controlcenter.ControlCenterComponent;
 import com.cliqz.browser.controlcenter.ControlCenterModule;
 import com.cliqz.browser.gcm.MessageListenerService;
@@ -15,8 +13,6 @@ import com.cliqz.browser.main.SearchModule;
 import com.cliqz.browser.main.SubscriptionModule;
 import com.cliqz.browser.main.TabsManager;
 import com.cliqz.browser.main.search.TopsitesAdapter;
-import com.cliqz.browser.peercomm.PeerCommBridge;
-import com.cliqz.browser.peercomm.PeerWebView;
 import com.cliqz.browser.qrscanner.CaptureFragment;
 import com.cliqz.browser.qrscanner.CodeScannerActivity;
 import com.cliqz.browser.reactnative.AutoCompletion;
@@ -86,12 +82,6 @@ public interface BaseAppComponent {
 
     void inject(Bridge bridge);
 
-    void inject(PeerCommBridge peerCommBridge);
-
-    void inject(PairedDevicesFragment fragment);
-
-    void inject(SyncActivity activity);
-
     void inject(CaptureFragment captureFragment);
 
     void inject(TopsitesAdapter topsitesAdapter);
@@ -109,8 +99,6 @@ public interface BaseAppComponent {
     void inject(CodeScannerActivity codeScannerActivity);
 
     void inject(SearchBar searchBar);
-
-    void inject(PeerWebView peerWebView);
 
     void inject(SubscriptionModule subscriptionModule);
 

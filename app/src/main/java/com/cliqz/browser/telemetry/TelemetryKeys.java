@@ -200,7 +200,6 @@ public final class TelemetryKeys {
     public static final String QUERY_SUGGESTIONS = "query_suggestions";
     public static final String SUGGESTION_AVAILABLE_COUNT = "qs_available_count";
     public static final String SUGGESTION_SHOWN_COUNT = "qs_show_count";
-    public static final String CONNECT = "connect";
     public static final String REMOVE = "remove";
     public static final String START = "start";
     public static final String RENAME = "rename";
@@ -211,7 +210,6 @@ public final class TelemetryKeys {
     public static final String CONNECT_DURATION = "connect_duration";
     public static final String CLOSE_ALL_TABS = "close_all_tabs";
     public static final String AUTO_FORGET_TAB = "auto_forget_tab";
-    public static final String SEND_TAB = "send_tab";
     public static final String CONNECTIONS = "connections";
     public static final String CANCEL = "cancel";
     public static final String BACKGROUND = "background";

@@ -97,8 +97,7 @@ public class OverFlowMenu extends FrameLayout {
         REACT_DEBUG(EntryType.REGULAR, R.id.react_debug, R.string.debug_react_native),
         REQUEST_DESKTOP_SITE(EntryType.MULTICHOICE, R.id.request_desktop_site, R.string.request_desktop_site),
         QUIT(EntryType.REGULAR, R.id.quit_menu_button, R.string.exit),
-        CODE_SCANNER(EntryType.REGULAR, R.id.code_scanner, R.string.code_scanner),
-        SEND_TAB_TO_DESKTOP(EntryType.REGULAR, R.id.send_tab_menu_button, R.string.send_tab_to_desktop);
+        CODE_SCANNER(EntryType.REGULAR, R.id.code_scanner, R.string.code_scanner);
 
         final EntryType type;
         final int stringID;
@@ -118,7 +117,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.TABS,
             Entries.SEARCH_IN_PAGE,
             Entries.GO_TO_FAVORITES,
-            Entries.SEND_TAB_TO_DESKTOP,
             Entries.CODE_SCANNER,
             Entries.SETTINGS,
             Entries.REQUEST_DESKTOP_SITE,
@@ -132,7 +130,6 @@ public class OverFlowMenu extends FrameLayout {
             Entries.NEW_INCOGNITO_TAB,
             Entries.TABS,
             Entries.SEARCH_IN_PAGE,
-            Entries.SEND_TAB_TO_DESKTOP,
             Entries.CODE_SCANNER,
             Entries.SETTINGS,
             Entries.REQUEST_DESKTOP_SITE,
@@ -322,9 +319,6 @@ public class OverFlowMenu extends FrameLayout {
         List<Entries> entries = new ArrayList<>(
                 Arrays.asList(mIncognitoMode ? INCOGNITO_ENTRIES : ENTRIES));
 
-        if (BuildConfig.IS_LUMEN) {
-            entries.remove(Entries.SEND_TAB_TO_DESKTOP);
-        }
         if (BuildConfig.IS_NOT_LUMEN) {
             entries.remove(Entries.TABS);
         }
@@ -389,11 +383,7 @@ public class OverFlowMenu extends FrameLayout {
             final boolean hasValidId = mUrl != null &&  !mUrl.isEmpty() && !mUrl.contains("cliqz://trampoline");
             final boolean isShowingWebPage = state == null || state.getMode() == Mode.WEBPAGE;
             final boolean isSearchInPage = mEntries[position] == Entries.SEARCH_IN_PAGE;
-            final boolean isSendTab = entry == Entries.SEND_TAB_TO_DESKTOP;
-            return (!isSearchInPage && !isSendTab) ||
-                    (hasValidId && isShowingWebPage) ||
-                    (isSearchInPage && isShowingWebPage) ||
-                    (isSendTab && isShowingWebPage);
+            return (!isSearchInPage) || (hasValidId && isShowingWebPage) || (isShowingWebPage);
         }
 
         @Override
@@ -587,10 +577,6 @@ public class OverFlowMenu extends FrameLayout {
                     telemetry.sendMainMenuSignal(TelemetryKeys.QUIT, isIncognitoMode(),
                             state.getMode() == Mode.SEARCH ? "cards" : "web");
                     bus.post(new Messages.Quit());
-                    break;
-                case SEND_TAB_TO_DESKTOP:
-                    telemetry.sendMainMenuSignal(TelemetryKeys.SEND_TAB, isIncognitoMode(), "web");
-                    bus.post(new Messages.SentTabToDesktop());
                     break;
                 case CODE_SCANNER:
                     if (PermissionsManager.hasPermission(activity, Manifest.permission.CAMERA)) {

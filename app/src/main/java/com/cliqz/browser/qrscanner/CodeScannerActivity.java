@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.connect.SyncEvents;
 import com.cliqz.browser.main.MainActivity;
 import com.cliqz.nove.Bus;
 import com.cliqz.nove.Subscribe;

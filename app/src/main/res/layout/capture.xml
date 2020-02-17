@@ -25,7 +25,7 @@
         android:paddingBottom="10dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:text="@string/qrcode_scanner_pairing_instructions"
+        android:text="@string/qrcode_scanner_scanning_instructions"
         android:textSize="14sp"/>
 
 </FrameLayout>

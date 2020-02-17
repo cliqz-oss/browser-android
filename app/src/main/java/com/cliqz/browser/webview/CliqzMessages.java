@@ -134,60 +134,6 @@ public class CliqzMessages {
         }
     }
 
-    private static class ConnectMessage {
-        public JSONObject json;
-
-        ConnectMessage(ReadableMap data) {
-            try {
-                this.json = convertMapToJson(data);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static final class PushPairingData extends ConnectMessage {
-
-        public PushPairingData(ReadableMap data) {
-            super(data);
-        }
-    }
-
-    public static final class NotifyPairingSuccess extends ConnectMessage {
-
-        public NotifyPairingSuccess(ReadableMap data) {
-            super(data);
-        }
-    }
-
-    public static final class NotifyPairingError extends ConnectMessage {
-
-        public NotifyPairingError(ReadableMap data) {
-            super(data);
-        }
-    }
-
-    public static final class DownloadVideo extends ConnectMessage {
-
-        public DownloadVideo(ReadableMap data) {
-            super(data);
-        }
-    }
-
-    public static final class NotifyTabError extends ConnectMessage {
-
-        public NotifyTabError(ReadableMap data) {
-            super(data);
-        }
-    }
-
-    public static final class NotifyTabSuccess extends ConnectMessage {
-
-        public NotifyTabSuccess(ReadableMap data) {
-            super(data);
-        }
-    }
-
     public static class Subscribe {
         public final String type;
         public final String subtype;
