@@ -12,7 +12,6 @@
     <item name="request_desktop_site" type="id" />
     <item name="control_center" type="id"/>
     <item name="cc_icon" type="id"/>
-    <item name="desktop_pairing" type="id"/>
     <!-- Zxing barcode scanner ids -->
     <item name="restart_preview" type="id" />
     <item name="decode_succeeded" type="id" />
@@ -30,7 +29,6 @@
     <item name="enableable_view" type="id" />
     <item name="go_to_favorites_button" type="id" />
     <item name="react_debug" type="id" />
-    <item name="send_tab_menu_button" type="id" />
     <item name="code_scanner" type="id" />
     <item name="reader_mode" type="id" />
     <item name="overflow_menu_list" type="id" />

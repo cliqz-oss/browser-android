@@ -42,7 +42,7 @@
     <string name="message_text_copied">Text copied to clipboard</string>
     <string name="message_url_copied">Url copied to clipboard</string>
     <string name="licenses">Policies and Licenses</string>
-    <string name="block_ads">Block Ads</string>
+    <string name="block_ads">Block Ads</string>J
     <string name="message_insecure_connection">Connection to this site is not secure:\n%1$s\nProceed anyway?</string>
     <string name="message_certificate_date_invalid">date of certificate is invalid</string>
     <string name="message_certificate_expired">certificate is expired</string>
@@ -169,13 +169,7 @@
     <string name="attrack_disabled_header">Your data is not protected</string>
     <string name="attrack_disabled">Anti-tracking is turned off</string>
     <string name="activate">Activate</string>
-    <string name="desktop_pairing">Connect</string>
-    <string name="unpair_device">Remove</string>
     <string name="msg_camera_framework_bug">Sorry, the Android camera encountered a problem. You may need to restart the device.</string>
-    <string name="device_paired_and_connected">Connected</string>
-    <string name="device_paired_but_offline">Desktop offline</string>
-    <string name="title_connect">Connect</string>
-    <string name="qrcode_scanner_pairing_instructions">Go to ![the firefox menu](firefox_menu) and select \'Connect\' to scan the QR code.</string>
     <string name="regional_settings">Search results for</string>
     <string name="germany">Germany</string>
     <string name="france">France</string>
@@ -183,19 +177,8 @@
     <string name="report_site">Report Website</string>
     <string name="clear_passwords">Clear passwords</string>
     <string name="clear_passwords_message">Would you like to clear saved passwords?</string>
-    <string name="pairing_error_message">Sorry, but the devices could not be connected. Please try again.</string>
-    <string name="pairing_error_title">Connection failed</string>
     <string name="action_retry">Retry</string>
-    <string name="pairing_successful_title">Connection successful</string>
-    <string name="pairing_successful_message">You connected your first device!
-
-Now you are ready to send tabs between your desktop and your mobile device. You can also directly download videos from your desktop browser to your mobile device.</string>
-    <string name="rename_paired_device">Rename</string>
-    <string name="pairing_device_rename_title">Rename connection</string>
-    <string name="pairing_device_rename_message">Enter a new name for the connection:</string>
-    <string name="pairing_device_rename_hint">New name</string>
     <string name="query_suggestion">Search query suggestions</string>
-    <string name="msg_connecting_to_desktop">Connecting to Desktop…</string>
     <string name="freshtab_no_topsites">Your most visited sites will appear here</string>
     <string name="action_done">Done</string>
     <string name="action_undo">Undo</string>
@@ -225,16 +208,8 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="control_center_tracker_ad_blocked">%1$d Trackers</string>
     <string name="action_close_all_tabs">Close All Tabs</string>
     <string name="please_wait">Please, wait…</string>
-    <string name="send_tab_device_picker_title">Select the connection:</string>
-    <string name="send_tab_generic_error_title">Tab could not be sent</string>
-    <string name="send_tab_generic_error_msg">Oops, the tab could not be sent to Desktop. Please check your connection status.</string>
-    <string name="action_go_to_connect">Go to Connect</string>
-    <string name="send_tab_no_connection_error_title">No Connection</string>
-    <string name="action_connect">Connect</string>
-    <string name="send_tab_to_desktop">Send Tab to Desktop</string>
     <string name="code_scanner">QR-Code scanner</string>
     <string name="qrcode_scanner_scanning_instructions">![QR-Code example](qr_code_icon_small) Scan the QR-Code</string>
-    <string name="tab_send_success_msg">Tab sent to %1$s</string>
     <string name="code_scanner_title">QR-Code Scanner</string>
     <string name="close_tabs_on_exit">Close tabs on exit</string>
     <string name="subscribe_soccer_league">League</string>

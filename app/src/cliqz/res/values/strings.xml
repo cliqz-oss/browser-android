@@ -8,11 +8,8 @@
     <string name="rate_us">Rate Cliqz Browser</string>
     <string name="summary_adblock_data">Please note: Cliqz Browser has to download some data packages first, before the ad-blocker works efficiently. For this, the app must be connected to Wi-Fi.</string>
     <string name="tips_and_tricks">Get the best out of Cliqz</string>
-    <string name="msg_pairing_instructions_dialog">Open Cliqz Browser on your computer (or get it from cliqz.com).</string>
-    <string name="pairing_information">Connect Cliqz on your mobile device with Cliqz on your computer. This will allow you to send tabs between your desktop and your mobile device. You can also directly download videos from your desktop browser to your mobile device.</string>
     <string name="request_location_access">Allow Cliqz Browser to access location information</string>
     <string name="msg_new_icon">Hey, the Cliqz logo is now blue. Check out the new version of the app!</string>
-    <string name="send_tab_no_connection_error_msg">You are not connected to any Cliqz Browser for Desktop. Go to the \'Connect\' menu to add a new connection.</string>
     <string name="share_card_email_subject">I discovered this in the Cliqz Browser</string>
     <string name="settings_category_tab">Cliqz Tab</string>
     <string name="clear_data_summary">Cliqz will automatically clear your data whenever you select \"Exit\" from the main menu.</string>

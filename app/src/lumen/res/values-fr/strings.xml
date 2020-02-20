@@ -8,11 +8,8 @@
     <string name="rate_us">Noter le navigateur Lumen</string>
     <string name="tips_and_tricks">Obtenir le meilleur de Lumen</string>
     <string name="summary_adblock_data">À noter : le navigateur Lumen doit d\'abord télécharger des données afin d\'initialiser le Bloqueur de Publicités. Pour cela, vous devez être connecté au Wi-Fi.</string>
-    <string name="msg_pairing_instructions_dialog">Ouvrez le navigateur Lumen sur votre ordinateur (ou téléchargez-le sur cliqz.com).</string>
-    <string name="pairing_information">Connectez Lumen entre votre téléphone et votre ordinateur. Vous pourrez ainsi partager des onglets entre votre téléphone et votre ordinateur, ou télécharger des vidéos depuis votre ordinateur vers votre téléphone.</string>
     <string name="request_location_access">Permettre au navigateur Lumen d\'accéder à votre localisation</string>
     <string name="msg_new_icon">Le logo de Lumen est désormais bleu. Découvrez la nouvelle version de l\'application !</string>
-    <string name="send_tab_no_connection_error_msg">Vous n\'êtes pas connecté·e à Lumen sur votre ordinateur. Cliquez sur « Connect » pour ajouter une nouvelle connexion.</string>
     <string name="share_card_email_subject">J\'ai découvert ça grâce au navigateur Lumen</string>
     <string name="settings_category_tab">Lumen Tab</string>
     <string name="clear_data_summary">Lumen supprimera automatiquement vos données dès que vous sélectionnerez \"Quitter\" dans le menu principal.</string>

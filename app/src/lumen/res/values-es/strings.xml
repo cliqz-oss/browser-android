@@ -8,11 +8,8 @@
     <string name="summary_adblock_data">Ten en cuenta que el navegador Lumen debe descargar paquetes de datos para que el AdBlocker funcione correctamente. Se recomienda estar conectado a una red Wi-Fi.</string>
     <string name="rate_us">Valora el navegador Lumen</string>
     <string name="tips_and_tricks">Trucos de Lumen</string>
-    <string name="msg_pairing_instructions_dialog">Abre el navegador Lumen en tu ordenador (o descárgatelo de cliqz.com).</string>
-    <string name="pairing_information">Conecta Lumen en tu móvil con el ordenador y podrás enviar pestañas entre tus dispositivos. También puedes descargar vídeos directamente desde el navegador de tu ordenador a tu dispositivo móvil.</string>
     <string name="request_location_access">¿Permites a Lumen acceder a tu ubicación?</string>
     <string name="msg_new_icon">¡Eh, el logo de Lumen ahora es azul. Prueba la nueva version de la app!</string>
-    <string name="send_tab_no_connection_error_msg">No estás conectado a Lumen en tu ordenador. Abre el menú de \'Connect\' para iniciar una conexión.</string>
     <string name="share_card_email_subject">Descubierto con el navegador Lumen</string>
     <string name="settings_category_tab">Lumen Tab</string>
     <string name="clear_data_summary">Lumen eliminará automáticamente tus datos personales cuando selecciones \"Salir\" en el menú principal.</string>

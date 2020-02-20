@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 
 import com.cliqz.browser.BuildConfig;
 import com.cliqz.browser.main.OnBoardingHelper;
-import com.cliqz.browser.main.SendTabErrorTypes;
 import com.cliqz.browser.main.search.NewsUtils;
 import com.cliqz.browser.purchases.PurchasesManager;
 
@@ -942,190 +941,6 @@ public class Telemetry {
         saveSignal(signal, false);
     }
 
-
-    public void sendConnectSignal(String target) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, target);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.START);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-
-    public void sendConnectHideSignal(long duration, String view) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.HIDE);
-            signal.put(TelemetryKeys.SHOW_DURATION, duration);
-            signal.put(TelemetryKeys.VIEW, view);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendConnectShowSignal(int totalDeviceCount, int connectedDeviceCount) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.DEVICE_COUNT, totalDeviceCount);
-            signal.put(TelemetryKeys.CONNECTION_COUNT, connectedDeviceCount);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.START);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendConnectScanSignal(long time) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.CONFIRM);
-            signal.put(TelemetryKeys.SHOW_DURATION, time);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.SCAN_INTRO);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendConnectBackSignal() {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.BACK);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendConnectPairingSignal(long duration, boolean success) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CONNECT);
-            signal.put(TelemetryKeys.CONNECT_DURATION, duration);
-            signal.put(TelemetryKeys.IS_SUCCESS, success);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.START);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.CONNECT);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabShowSignal() {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.CONNECTIONS);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabDevicePickerCancelledSignal(int devicesNo, long duration) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CANCEL);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.BACKGROUND);
-            signal.put(TelemetryKeys.CONNECTION_COUNT, devicesNo);
-            signal.put(TelemetryKeys.SHOW_DURATION, duration);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.CONNECTIONS);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabDevicePickerClickSignal(int index, int devicesNo, long duration) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.CONNECTION);
-            signal.put(TelemetryKeys.INDEX, index);
-            signal.put(TelemetryKeys.CONNECTION_COUNT, devicesNo);
-            signal.put(TelemetryKeys.SHOW_DURATION, duration);
-            signal.put(TelemetryKeys.VIEW, TelemetryKeys.CONNECTIONS);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabErrorSignal(SendTabErrorTypes errorType) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SHOW);
-            signal.put(TelemetryKeys.VIEW,
-                    errorType == SendTabErrorTypes.NO_CONNECTION_ERROR ?
-                            TelemetryKeys.NO_CONNECTION_MESSAGE :
-                            TelemetryKeys.SEND_ERROR_MESSAGE);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabErrorClickSignal(SendTabErrorTypes errorType, String target) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CLICK);
-            signal.put(TelemetryKeys.TARGET, target);
-            signal.put(TelemetryKeys.VIEW,
-                    errorType == SendTabErrorTypes.NO_CONNECTION_ERROR ?
-                            TelemetryKeys.NO_CONNECTION_MESSAGE :
-                            TelemetryKeys.SEND_ERROR_MESSAGE);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-    public void sendSendTabErrorCancelSignal(SendTabErrorTypes errorType, long duration) {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.CANCEL);
-            signal.put(TelemetryKeys.TARGET, TelemetryKeys.BACKGROUND);
-            signal.put(TelemetryKeys.DURATION, duration);
-            signal.put(TelemetryKeys.VIEW,
-                    errorType == SendTabErrorTypes.NO_CONNECTION_ERROR ?
-                            TelemetryKeys.NO_CONNECTION_MESSAGE :
-                            TelemetryKeys.SEND_ERROR_MESSAGE);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
-    public void sendSendTabSuccessSignal() {
-        JSONObject signal = new JSONObject();
-        try {
-            signal.put(TelemetryKeys.TYPE, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.ACTION, TelemetryKeys.SEND_TAB);
-            signal.put(TelemetryKeys.IS_SUCCESS, true);
-        } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
-        }
-        saveSignal(signal, false);
-    }
-
     public void sendSubscriptionSignal(boolean confirmed) {
         JSONObject signal = new JSONObject();
         try {
@@ -1148,7 +963,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.NEWS_EDITION, NewsUtils.getEdition());
             signal.put(TelemetryKeys.VIEW, TelemetryKeys.NEWS);
         } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
+            logError(TelemetryKeys.NEWS);
         }
         saveSignal(signal, false);
     }
@@ -1162,7 +977,7 @@ public class Telemetry {
             signal.put(TelemetryKeys.IS_FORGET, mIsIncognito);
             signal.put(TelemetryKeys.VIEW, freshTabVisible ? TelemetryKeys.HOME : TelemetryKeys.CARDS);
         } catch (JSONException e) {
-            logError(TelemetryKeys.SEND_TAB);
+            logError(TelemetryKeys.BACK);
         }
         saveSignal(signal, false);
     }

@@ -9,11 +9,8 @@
     <string name="summary_adblock_data">Nota: per far funzionare correttamente Blocca Pubblicità, il browser Lumen deve scaricare una considerevole quantità di dati. Questi vengono scaricati solo se è disponibile una connessione Wi-Fi.</string>
     <string name="tips_and_tricks">Sfrutta Lumen al meglio</string>
     <string name="app_name">Browser Lumen</string>
-    <string name="msg_pairing_instructions_dialog">Apri il browser Lumen sul tuo computer (o scaricalo da cliqz.com).</string>
-    <string name="pairing_information">Connetti Lumen sul tuo smartphone con Lumen sul tuo computer. In questo modo potrai inviare tab o scaricare video dal tuo computer direttamente sul tuo telefono.</string>
     <string name="request_location_access">Consenti al browser Lumen di accedere alle informazioni sulla posizione</string>
     <string name="msg_new_icon">Ehi, guarda, il logo di Lumen adesso è blu! Scopri la nuova versione!</string>
-    <string name="send_tab_no_connection_error_msg">Non sei connesso a Lumen sul computer. Vai al menu di Connect per aggiungere una nuova connessione.</string>
     <string name="share_card_email_subject">Ho scoperto questo usando Lumen Browser</string>
     <string name="settings_category_tab">Lumen Tab</string>
     <string name="clear_data_summary">Selezionando \"Esci\" dal menù principale, il browser Lumen cancellerà automaticamente i tuoi dati personali.</string>

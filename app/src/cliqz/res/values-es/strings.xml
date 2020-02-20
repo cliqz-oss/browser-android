@@ -7,11 +7,8 @@
     <string name="summary_adblock_data">Ten en cuenta que el navegador Cliqz debe descargar paquetes de datos para que el AdBlocker funcione correctamente. Se recomienda estar conectado a una red Wi-Fi.</string>
     <string name="rate_us">Valora el navegador Cliqz</string>
     <string name="tips_and_tricks">Trucos de Cliqz</string>
-    <string name="msg_pairing_instructions_dialog">Abre el navegador Cliqz en tu ordenador (o descárgatelo de cliqz.com).</string>
-    <string name="pairing_information">Conecta Cliqz en tu móvil con el ordenador y podrás enviar pestañas entre tus dispositivos. También puedes descargar vídeos directamente desde el navegador de tu ordenador a tu dispositivo móvil.</string>
     <string name="request_location_access">¿Permites a Cliqz acceder a tu ubicación?</string>
     <string name="msg_new_icon">¡Eh, el logo de Cliqz ahora es azul. Prueba la nueva version de la app!</string>
-    <string name="send_tab_no_connection_error_msg">No estás conectado a Cliqz en tu ordenador. Abre el menú de \'Connect\' para iniciar una conexión.</string>
     <string name="share_card_email_subject">Descubierto con el navegador Cliqz</string>
     <string name="settings_category_tab">Cliqz Tab</string>
     <string name="clear_data_summary">Cliqz eliminará automáticamente tus datos personales cuando selecciones \"Salir\" en el menú principal.</string>
