@@ -3,15 +3,15 @@
     <string name="support_url">https://cliqz.com/en/support</string>
     <string name="report_site_url">https://cliqz.com/en/report-url</string>
     <string name="tips_and_tricks_url">https://cliqz.com/en/tips-android</string>
-    <string name="google_url">https://www.google.com/search?q=</string>
-    <string name="yahoo_url">https://search.yahoo.com/search?p=</string>
-    <string name="bing_url" translatable="false">https://www.bing.com/search?q=</string>
-    <string name="duck_url" translatable="false">https://duckduckgo.com/?t=com.cliqz.browser&amp;q=</string>
-    <string name="ecosia_url" translatable="false">https://www.ecosia.org/search?q=</string>
-    <string name="startpage_url" translatable="false">https://startpage.com/do/search?query=</string>
-    <string name="qwant_url" translatable="false">https://www.qwant.com/?t=all&amp;q=</string>
+    <string name="google_url">https://www.google.com/search?q=\u0025s</string>
+    <string name="yahoo_url">https://search.yahoo.com/search?p=\u0025s</string>
+    <string name="bing_url" translatable="false">https://www.bing.com/search?q=\u0025s</string>
+    <string name="duck_url" translatable="false">https://duckduckgo.com/?t=com.cliqz.browser&amp;q=\u0025s</string>
+    <string name="ecosia_url" translatable="false">https://www.ecosia.org/search?q=\u0025s</string>
+    <string name="startpage_url" translatable="false">https://startpage.com/do/search?query=\u0025s</string>
+    <string name="qwant_url" translatable="false">https://www.qwant.com/?t=all&amp;q=\u0025s</string>
     <string name="myoffrz_url">https://cliqz.com/en/myoffrz</string>
-    <string name="cliqz_url" translatable="false">https://beta.cliqz.com/search?q=</string>
+    <string name="cliqz_url" translatable="false">https://beta.cliqz.com/search?q=\u0025s#channel=abrowser</string>
 
     <!-- Lumen -->
     <string name="lumen_faq_url" translatable="false">https://lumenbrowser.com/faq.html</string>

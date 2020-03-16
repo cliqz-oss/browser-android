@@ -655,8 +655,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
                 } else {
                     telemetry.sendResultEnterSignal(true, false, content.length(), -1);
                     setSearchEngine();
-                    String searchUrl = mSearchEngine + UrlUtils.QUERY_PLACE_HOLDER;
-                    event = CliqzMessages.OpenLink.open(UrlUtils.smartUrlFilter(content, true, searchUrl));
+                    event = CliqzMessages.OpenLink.open(UrlUtils.smartUrlFilter(content, true, mSearchEngine));
                 }
                 if (!onBoardingHelper.conditionallyShowSearchDescription()) {
                     bus.post(event);

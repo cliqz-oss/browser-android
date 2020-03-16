@@ -74,6 +74,7 @@ import javax.inject.Inject;
 import acr.browser.lightning.activity.SettingsActivity;
 import acr.browser.lightning.bus.BrowserEvents;
 import acr.browser.lightning.constant.Constants;
+import acr.browser.lightning.constant.SearchEngines;
 import acr.browser.lightning.database.HistoryDatabase;
 import acr.browser.lightning.preference.PreferenceManager;
 import acr.browser.lightning.utils.Utils;
@@ -239,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements ActivityComponent
         final int previousVersionCode = preferenceManager.getVersionCode();
         if (previousVersionCode == 0) {
             preferenceManager.setVersionCode(BuildConfig.VERSION_CODE);
+            preferenceManager.setSearchChoice(SearchEngines.cliqz);
         } else if (currentVersionCode > previousVersionCode) {
             preferenceManager.setVersionCode(currentVersionCode);
             telemetry.sendLifeCycleSignal(TelemetryKeys.UPDATE);
