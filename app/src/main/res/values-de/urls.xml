@@ -3,7 +3,7 @@
     <string name="support_url">https://cliqz.com/de/support</string>
     <string name="report_site_url">https://cliqz.com/report-url</string>
     <string name="tips_and_tricks_url">https://cliqz.com/tips-android</string>
-    <string name="google_url">https://www.google.de/search?q=</string>
-    <string name="yahoo_url">https://de.search.yahoo.com/search?p=</string>
+    <string name="google_url">https://www.google.de/search?q={}</string>
+    <string name="yahoo_url">https://de.search.yahoo.com/search?p={}</string>
     <string name="myoffrz_url">https://cliqz.com/myoffrz</string>
 </resources>

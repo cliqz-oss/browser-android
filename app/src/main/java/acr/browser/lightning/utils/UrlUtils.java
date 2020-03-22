@@ -42,7 +42,7 @@ public class UrlUtils {
                     ')' +
                     "(.*)");
     // Google search
-    public final static String QUERY_PLACE_HOLDER = "%s";
+    public final static String QUERY_PLACE_HOLDER = "{}";
 
     private final static Set<String> HOST_PREFIXES = new HashSet<>(Arrays.asList(new String[] {
             "www", "m", "mobile", "amp"
