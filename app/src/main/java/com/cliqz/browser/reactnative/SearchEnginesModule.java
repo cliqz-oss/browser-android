@@ -55,7 +55,7 @@ public class SearchEnginesModule extends ReactContextBaseJavaModule {
             String url = mReactContext.getString(engine.engineUrl);
             WritableMap map = Arguments.createMap();
             WritableMap urls = Arguments.createMap();
-            urls.putString(type, url + searchTerm);
+            urls.putString(type, url.replace("{}", searchTerm));
             map.putString("name", engine.engineName);
             map.putBoolean("default", engine == defaultEngine);
             map.putString("base_url", url);
@@ -67,4 +67,3 @@ public class SearchEnginesModule extends ReactContextBaseJavaModule {
         promise.resolve(result);
     }
 }
-
