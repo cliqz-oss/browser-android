@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Base64;
@@ -72,11 +71,17 @@ public class LightningView extends FrameLayout {
         void onFavIconLoaded(Bitmap favicon);
     }
 
+    private static final String CLIQZ_EXTENSION = "Cliqz/1.0.0";
     private static final String HEADER_REQUESTED_WITH = "X-Requested-With";
     private static final String HEADER_WAP_PROFILE = "X-Wap-Profile";
     private static final String HEADER_DNT = "DNT";
+
+    // Given user-agent: Mozilla/5.0 (Linux; Android 6.0; Android SDK built for x86_64 Build/MASTER; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/44.0.2403.119 Mobile Safari/537.36
+    // Group 1: Mozilla/5.0
+    // Group 2: Linux; Android 6.0; Android SDK built for x86_64 Build/MASTER; wv
+    // Group 3: AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/44.0.2403.119 Mobile Safari/537.36
     private static final Pattern USER_AGENT_PATTERN =
-            Pattern.compile("(.*);\\s+wv(.*)( Version/(\\d+\\.?)+)(.*)");
+            Pattern.compile("([^\\s]+)\\s\\(([^)]+)\\)\\s(.*)");
 
     final LightningViewTitle mTitle;
     private CliqzWebView mWebView;
@@ -581,12 +586,36 @@ public class LightningView extends FrameLayout {
         final String defaultUserAgent = mWebView.getSettings().getUserAgentString();
         final Matcher matcher = USER_AGENT_PATTERN.matcher(defaultUserAgent);
         final String userAgent;
-        if (matcher.matches() && matcher.groupCount() >= 5) {
-            userAgent = matcher.group(1) + matcher.group(2) + matcher.group(5);
+        if (matcher.matches() && matcher.groupCount() >= 3) {
+            final String product = matcher.group(1);
+            final String systemAndPlatform = matcher.group(2);
+            final String extensions = matcher.group(3);
+            final String cleanSystemAndPlatform = getCleanSystemAndPlatform(systemAndPlatform);
+            userAgent = String.format(
+                    "%s (%s) %s %s",
+                    product,
+                    cleanSystemAndPlatform,
+                    extensions,
+                    CLIQZ_EXTENSION
+            );
         } else {
             userAgent = defaultUserAgent;
         }
         return userAgent;
+    }
+
+    // Removes device information
+    private String getCleanSystemAndPlatform(String systemAndPlatform) {
+        final String[] parts = systemAndPlatform.split(";\\s?");
+        if (parts.length < 3) {
+            return systemAndPlatform;
+        } else {
+            return String.format(
+                    "%s; %s; Generic Android Device; wv",
+                    parts[0],
+                    parts[1]
+            );
+        }
     }
 
     void addItemToHistory(@Nullable final String title, @NonNull final String url) {
