@@ -283,7 +283,7 @@ public class PreferenceManager {
     }
 
     public SearchEngines getSearchChoice() {
-        return SearchEngines.safeValueOf(mPrefs.getString(Name.SEARCH, ""));
+        return SearchEngines.safeValueOf(mPrefs.getString(Name.SEARCH, "cliqz"));
     }
 
     public String getSearchUrl() {
