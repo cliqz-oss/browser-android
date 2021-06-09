@@ -28,6 +28,7 @@ import timber.log.Timber;
 public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
     private static final String TAG = Engine.class.getSimpleName();
     public final ReactRootView reactRootView;
+    public final ReactRootView offboaringView;
     public final ReactInstanceManager reactInstanceManager;
     private List<Runnable> startupCallbacks = new LinkedList<>();
     private ReactContext mReactContext = null;
@@ -37,6 +38,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
 
     public Engine(final Application app, Bus bus) {
         reactRootView = new ReactRootView(app);
+        offboaringView = new ReactRootView(app);
         reactInstanceManager = ReactInstanceManager.builder()
                 .setApplication(app)
                 .setBundleAssetName("jsengine.bundle.js")
@@ -60,6 +62,7 @@ public class Engine implements ReactInstanceManager.ReactInstanceEventListener {
         reactInstanceManager.addReactInstanceEventListener(this);
         reactInstanceManager.createReactContextInBackground();
         reactRootView.startReactApplication(reactInstanceManager, "ExtensionApp", null);
+        offboaringView.startReactApplication(reactInstanceManager, "Offboarding", null);
         engineQueuingThread = new EngineQueuingThread(this);
         engineQueuingThread.start();
     }

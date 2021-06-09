@@ -36,6 +36,7 @@ import com.cliqz.browser.utils.LocationCache;
 import com.cliqz.browser.webview.CliqzMessages;
 import com.cliqz.jsengine.Engine;
 import com.cliqz.nove.Bus;
+import com.facebook.react.ReactRootView;
 
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +67,9 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
 
     @BindView(R.id.topsites_grid)
     GridView topsitesGridView;
+
+    @BindView(R.id.offboarding)
+    LinearLayout offboardingView;
 
     @BindView(R.id.topnews_list)
     LinearLayout topnewsListView;
@@ -222,20 +226,34 @@ public class Freshtab extends FrameLayout implements NewsFetcher.OnTaskCompleted
         }
     }
 
+    public void showOffboarding() {
+        newsLabel.setVisibility(GONE);
+        topnewsListView.setVisibility(GONE);
+
+        final ReactRootView mReactView = engine.offboaringView;
+        final ViewGroup parent = (ViewGroup) mReactView.getParent();
+        if (parent != null) {
+            parent.removeView(mReactView);
+        }
+        offboardingView.addView(mReactView, -1, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    }
+
+
     public void updateFreshTab(boolean isIncognito) {
         this.mIsIncognito = isIncognito;
         refreshTopsites();
-        if (preferenceManager.shouldShowNews()) {
-            topnewsListView.setVisibility(VISIBLE);
-            newsLabel.setVisibility(VISIBLE);
-            if (shouldRefreshNews()) {
-                getTopnews();
-                newsLastRefreshedOn = System.currentTimeMillis();
-            }
-        } else {
-            topnewsListView.setVisibility(GONE);
-            newsLabel.setVisibility(GONE);
-        }
+//        if (preferenceManager.shouldShowNews()) {
+//            topnewsListView.setVisibility(VISIBLE);
+//            newsLabel.setVisibility(VISIBLE);
+//            if (shouldRefreshNews()) {
+//                getTopnews();
+//                newsLastRefreshedOn = System.currentTimeMillis();
+//            }
+//        } else {
+//            topnewsListView.setVisibility(GONE);
+//            newsLabel.setVisibility(GONE);
+//        }
+        showOffboarding();
         checkForMessages();
         final Context context = getContext();
         if (preferenceManager.isBackgroundImageEnabled()) {
