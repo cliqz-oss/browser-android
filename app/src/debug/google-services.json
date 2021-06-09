@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:516809952847:android:f25974c66ce7c471",
         "android_client_info": {
-          "package_name": "com.cliqz.browser.debug"
+          "package_name": "com.cliqz.browser"
         }
       },
       "oauth_client": [],
