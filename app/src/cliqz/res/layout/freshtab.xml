@@ -32,6 +32,21 @@
                 android:numColumns="4" />
 
             <LinearLayout
+                android:id="@+id/offboarding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:elevation="3dp"
+                android:orientation="vertical"
+                android:background="@null">
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/news_widget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
