@@ -30,7 +30,7 @@ android {
         buildConfigField 'int', "VISIBLE_TOP_SITES", '4'
         buildConfigField 'String', "REVISION", "\"${revision}\""
         buildConfigField 'String', "BUILD_TIME", "\"${buildTime}\""
-        
+
         applicationId "com.cliqz.browser"
         testApplicationId "com.cliqz.browser.test"
         testInstrumentationRunner "com.cliqz.browser.test.CustomTestRunner"
@@ -76,24 +76,24 @@ android {
                     'src/cliqz/java'
             ]
         }
-        amazon {
-            res.srcDirs += [
-                    'src/cliqz/res'
-            ]
-            java.srcDirs += [
-                    'src/cliqz/java'
-            ]
-        }
-        amazonDebug {
-            res.srcDirs += [
-                    'src/cliqzDebug/res'
-            ]
-        }
-        amazonRelease {
-            res.srcDirs += [
-                    'src/cliqzRelease/res'
-            ]
-        }
+        // amazon {
+        //     res.srcDirs += [
+        //             'src/cliqz/res'
+        //     ]
+        //     java.srcDirs += [
+        //             'src/cliqz/java'
+        //     ]
+        // }
+        // amazonDebug {
+        //     res.srcDirs += [
+        //             'src/cliqzDebug/res'
+        //     ]
+        // }
+        // amazonRelease {
+        //     res.srcDirs += [
+        //             'src/cliqzRelease/res'
+        //     ]
+        // }
 //        huawei {
 //            java.srcDirs += [
 //                    'src/cliqz/java',
@@ -122,10 +122,10 @@ android {
             buildConfigField 'int', "VISIBLE_TOP_SITES", '8'
             useGoogleServices = false
         }
-        amazon {
-            dimension "api"
-            versionCode 8
-        }
+        // amazon {
+        //     dimension "api"
+        //     versionCode 8
+        // }
 //        huawei {
 //            dimension "api"
 //            versionCode 5
@@ -173,6 +173,7 @@ configurations.all {
 }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.aar'])
 
     // support libraries
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -222,10 +223,10 @@ dependencies {
     // On-boarding
     cliqzImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
     canaryImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
-    amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
+    // amazonImplementation 'com.github.deano2390:MaterialShowcaseView:1.2.0@aar'
 
     // memory leak analysis
-    debugImplementation 'com.gu.android:toolargetool:0.2.1@aar'
+    debugImplementation 'com.gu.android:toolargetool:0.3.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     androidTestImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
@@ -256,7 +257,7 @@ dependencies {
     lumenImplementation 'com.revenuecat.purchases:purchases:2.1.2'
 
     // vpn module
-    lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.4'
+    // cp lumenImplementation 'com.cliqz:com.cliqz.vpnlib:1.0.4'
 
     // Testing-only dependencies
     testImplementation 'junit:junit:4.12'
