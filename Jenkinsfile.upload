@@ -1,6 +1,13 @@
 #!/bin/env groovy
 @Library(['cliqz-shared-library@v1.2']) _
 
+
+properties([
+    parameters([
+        string(name: 'PRODUCT', defaultValue: '', description: 'Select product to build - when empty defaults to canary, possible values: cliqz or lumen'),
+    ]),
+])
+
 node('master'){
     def imageName = 'android-browser'
     def scmVars = [:]
