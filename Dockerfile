@@ -76,6 +76,7 @@ RUN mkdir -p $ANDROID_HOME; \
     tools/bin/sdkmanager \
         "build-tools;29.0.2" \
         "platforms;android-28" \
+        "platforms;android-29" \
         "platform-tools" \
         "tools" \
         "extras;google;m2repository" \
