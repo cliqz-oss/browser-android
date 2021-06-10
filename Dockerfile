@@ -89,7 +89,7 @@ RUN cd /home/jenkins && \
     tar xf node.tar.gz && \
     rm -f node.tar.gz
 ENV PATH "/home/jenkins/node-v$NODE_VERSION-linux-x64/bin:$PATH"
-RUN npm install -g npm
+RUN npm install -g npm@6.11.3
 
 #Install Ruby and Fastlane
 RUN for key in 409B6B1796C275462A1703113804BB82D39DC0E3 \
