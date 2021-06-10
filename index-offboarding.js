@@ -9,9 +9,9 @@ import {
   NativeModules,
 } from 'react-native';
 
-
 const LocaleConstants = NativeModules.LocaleConstants;
-const lang = LocaleConstants.lang;
+const langs = ['en', 'de'];
+const lang = langs.indexOf(LocaleConstants.lang) >= 0 ? LocaleConstants.lang : 'en';
 const translations = {
   'en': {
     'HomeView.CliqzOffboarding.Header': 'Dear Cliqz User,',
@@ -127,7 +127,15 @@ const openPlayStore = (id) => {
 }
 
 export class Offboarding extends React.Component {
+  state = {
+    show: true,
+  }
+
   render () {
+    if (!this.state.show) {
+      return <View></View>;
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.centeredView}>
@@ -172,6 +180,14 @@ export class Offboarding extends React.Component {
               onPress={() => openPlayStore('com.brave.browser')}
             >
               <Text style={styles.browserLinkText}>Brave</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => this.setState({show: false })}
+            >
+              <Text style={styles.textStyle}>
+                OK
+              </Text>
             </Pressable>
 
             <Text style={styles.footerText}>
