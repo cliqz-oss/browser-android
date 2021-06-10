@@ -37,7 +37,7 @@ RUN dpkg --add-architecture i386 && \
         libncurses5-dev \
         libreadline6-dev \
         libsqlite3-dev \
-        libssl-dev \   
+        libssl-dev \
         libtool \
         libyaml-dev \
         pkg-config \
@@ -60,7 +60,7 @@ RUN getent group $GID || groupadd jenkins --gid $GID && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV ANDROID_HOME /home/jenkins/android_home
 ENV GRADLE_USER_HOME /home/jenkins/gradle_home
-ENV NVM_DIR /home/jenkins/nvm 
+ENV NVM_DIR /home/jenkins/nvm
 ENV NODE_VERSION 9.11.2
 
 USER jenkins
@@ -105,7 +105,7 @@ RUN for key in 409B6B1796C275462A1703113804BB82D39DC0E3 \
 RUN curl -sSL https://get.rvm.io | bash -s stable --ruby=2.6.5 && \
     source /home/jenkins/.rvm/scripts/rvm \
     rvm reload && \
-    gem install fastlane --version 2.137.0
+    gem install fastlane --version 2.185.0
 
 #Install AWS CLI
 RUN pip install awscli --upgrade --user
