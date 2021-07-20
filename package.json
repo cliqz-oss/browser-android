@@ -38,7 +38,7 @@
     "pouchdb-adapter-react-native-sqlite": "1.0.3",
     "pouchdb-react-native": "6.3.4",
     "react": "16.9.0",
-    "react-native": "0.59.8",
+    "react-native": "0.62.3",
     "react-native-collapsible": "0.8.1",
     "react-native-device-info": "0.10.2",
     "react-native-fs": "2.8.1",
