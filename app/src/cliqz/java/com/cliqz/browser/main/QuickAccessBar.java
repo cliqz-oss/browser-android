@@ -32,7 +32,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.cliqz.browser.R;
 import com.cliqz.browser.app.BrowserApp;
-import com.cliqz.browser.main.search.SearchView;
 import com.cliqz.browser.telemetry.Telemetry;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.nove.Bus;
@@ -100,9 +99,6 @@ public class QuickAccessBar extends FrameLayout {
 
     @Inject
     Bus bus;
-
-    @Inject
-    SearchView searchView;
 
     public QuickAccessBar(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs,0);
@@ -314,9 +310,7 @@ public class QuickAccessBar extends FrameLayout {
 
     private void safeTelemetry(@Nullable String target) {
         if (telemetry != null) {
-            final String view = searchView != null && searchView.isFreshTabVisible() ?
-                    TelemetryKeys.HOME : TelemetryKeys.CARDS;
-            telemetry.sendQuickAccessBarSignal(TelemetryKeys.CLICK, target, view);
+            telemetry.sendQuickAccessBarSignal(TelemetryKeys.CLICK, target, TelemetryKeys.HOME);
         }
     }
 

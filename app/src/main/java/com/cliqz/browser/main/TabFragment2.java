@@ -68,7 +68,6 @@ import com.cliqz.nove.Subscribe;
 import com.cliqz.utils.FragmentUtilsV4;
 import com.cliqz.utils.NoInstanceException;
 import com.cliqz.utils.StringUtils;
-import com.cliqz.utils.ViewUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -127,7 +126,10 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     private static final int KEYBOARD_ANIMATION_DELAY = 200;
 
+    private FrameLayout mContainer;
+
     private ControlCenterHelper mControlCenterHelper;
+
     private Unbinder mUnbinder;
 
     @BindView(R.id.statusbar)
@@ -139,8 +141,8 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @BindView(R.id.search_edit_text)
     AutocompleteEditText searchEditText;
 
-    @BindView(R.id.search_view_container)
-    FrameLayout searchViewContainer;
+    @BindView(R.id.search_view)
+    SearchView searchView2;
 
     @BindView(R.id.progress_view)
     AnimatedProgressBar progressBar;
@@ -185,9 +187,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     @BindView(R.id.webview_container)
     LightningView lightningView;
-
-    @Inject
-    SearchView searchView2;
 
     @Inject
     SubscriptionsManager subscriptionsManager;
@@ -250,9 +249,17 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
     @NotNull
     @Override
     public final View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final int themeResId = getFragmentTheme();
+        mContainer = new FrameLayout(container.getContext());
+        return mContainer;
+    }
 
-        final Activity activity = Objects.requireNonNull(getActivity());
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        final int themeResId = getFragmentTheme();
+        final LayoutInflater inflater = LayoutInflater.from(getActivity());
+
+        final MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
         final Resources.Theme theme = activity.getTheme();
         final TypedValue value = new TypedValue();
         theme.resolveAttribute(R.attr.colorPrimaryDark, value, true);
@@ -272,23 +279,15 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
             localInflater = inflater;
         }
 
-        final View view = localInflater.inflate(R.layout.fragment_tab, container, false);
+        final View view = localInflater.inflate(R.layout.fragment_tab, mContainer, true);
         if (BuildConfig.IS_NOT_LUMEN) {
             final ViewStub stub = view.findViewById(R.id.quick_access_bar_stub);
             stub.inflate();
         }
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
-        final MainActivity activity = (MainActivity) getActivity();
-        final FlavoredActivityComponent component = activity != null ?
-                BrowserApp.getActivityComponent(activity) : null;
+        final FlavoredActivityComponent component = BrowserApp.getActivityComponent(activity);
         if (component != null) {
             component.inject(this);
         }
@@ -309,7 +308,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
         TabFragmentListener.create(this);
         searchView2.setCurrentTabState(tab);
-        ViewUtils.safelyAddView(searchViewContainer, searchView2);
         searchBar.setTrackerCount(mTrackerCount);
         if (quickAccessBar != null) {
             quickAccessBar.hide();
@@ -485,7 +483,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     void bringSearchToFront() {
         lightningView.setVisibility(View.GONE);
-        searchViewContainer.setVisibility(View.VISIBLE);
+        searchView2.setVisibility(View.VISIBLE);
         disableUrlBarScrolling();
         searchView2.refresh();
     }
@@ -704,7 +702,7 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
 
     private void bringWebViewToFront(Animation animation) {
         lightningView.setVisibility(View.VISIBLE);
-        searchViewContainer.setVisibility(View.INVISIBLE);
+        searchView2.setVisibility(View.INVISIBLE);
         enableUrlBarScrolling();
         searchBar.showTitleBar();
         searchBar.showProgressBar();
@@ -722,10 +720,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         } catch (NoInstanceException e) {
             Timber.e(e, "Null context");
         }
-    }
-
-    LightningView getLightningView() {
-        return lightningView;
     }
 
     private boolean isHttpsUrl(@Nullable String url) {
@@ -794,18 +788,6 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         if (telemetry != null) {
             telemetry.resetNavigationVariables(eventUrl.length());
         }
-
-        /* final Uri.Builder builder = Uri.parse(eventUrl).buildUpon();
-        builder.appendQueryParameter(TrampolineConstants.TRAMPOLINE_COMMAND_PARAM_NAME,
-                TrampolineConstants.TRAMPOLINE_COMMAND_GOTO)
-                .appendQueryParameter(TrampolineConstants.TRAMPOLINE_QUERY_PARAM_NAME, lastQuery);
-        if (reset) {
-            builder.appendQueryParameter(TrampolineConstants.TRAMPOLINE_RESET_PARAM_NAME, "true");
-        }
-        if (fromHistory) {
-            builder.appendQueryParameter(TrampolineConstants.TRAMPOLINE_FROM_HISTORY_PARAM_NAME, "true");
-        }
-        final String url = builder.build().toString(); */
         final String url = eventUrl;
         lightningView.loadUrl(url);
         searchBar.setTitle(eventUrl);
