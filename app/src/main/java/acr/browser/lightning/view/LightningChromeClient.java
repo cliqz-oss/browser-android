@@ -30,6 +30,8 @@ import com.cliqz.browser.main.FlavoredActivityComponent;
 import com.cliqz.browser.main.Messages;
 import com.cliqz.nove.Bus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -94,6 +96,19 @@ public class LightningChromeClient extends WebChromeClient implements CliqzWebVi
 
     @Override
     public void onPermissionRequest(PermissionRequest request) {
+        List<String> permissions = new ArrayList<>();
+        for (String requestedPermission : request.getResources()) {
+            switch (requestedPermission) {
+                case "android.webkit.resource.VIDEO_CAPTURE":
+                    permissions.add(Manifest.permission.CAMERA);
+                    break;
+                case "android.webkit.resource.AUDIO_CAPTURE":
+                    permissions.add(Manifest.permission.RECORD_AUDIO);
+                    break;
+                default:
+                    break;
+            }
+        }
         activity.runOnUiThread(() -> PermissionsManager.getInstance()
                 .requestPermissionsIfNecessaryForResult(activity, new PermissionsResultAction() {
             @Override
@@ -103,9 +118,10 @@ public class LightningChromeClient extends WebChromeClient implements CliqzWebVi
 
             @Override
             public void onDenied(String permission) {
-                // no-op
+                Timber.i("The permission was denied by the user");
+                request.deny();
             }
-        }, Manifest.permission.CAMERA));
+        }, permissions.toArray(new String[permissions.size()])));
     }
 
     @Override
