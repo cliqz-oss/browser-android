@@ -17,6 +17,7 @@ import android.os.Message;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +26,13 @@ import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
@@ -51,6 +55,7 @@ import com.cliqz.browser.tabs.Tab.Mode;
 import com.cliqz.browser.tabs.TabsManager;
 import com.cliqz.browser.telemetry.TelemetryKeys;
 import com.cliqz.browser.utils.AppBackgroundManager;
+import com.cliqz.browser.utils.ClipboardHandler;
 import com.cliqz.browser.utils.ConfirmSubscriptionDialog;
 import com.cliqz.browser.utils.EnableNotificationDialog;
 import com.cliqz.browser.utils.SubscriptionsManager;
@@ -286,6 +291,19 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         mUnbinder = ButterKnife.bind(this, view);
         searchBar.setSearchEditText(searchEditText);
         searchBar.setProgressBar(progressBar);
+        searchBar.setOnClickListener(v -> {
+            if (searchBar.titleBar.getVisibility() == View.VISIBLE) {
+                if (antiTrackingDetails != null) {
+                    searchBar.setAntiTrackingDetailsVisibility(View.GONE);
+                }
+                searchBar.showSearchEditText();
+                if (searchBar.mListener != null) {
+                    searchBar.mListener.onTitleClicked(searchBar);
+                }
+            }
+        });
+        searchBar.setOnLongClickListener(v -> showClipboardPopUp());
+
         final MainActivity activity = (MainActivity) getActivity();
         final FlavoredActivityComponent component = activity != null ?
                 BrowserApp.getActivityComponent(activity) : null;
@@ -348,6 +366,60 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         } else {
             return TelemetryKeys.CARDS;
         }
+    }
+
+    private boolean showClipboardPopUp() {
+        final Context context = getContext();
+        final ClipboardHandler clipboard = new ClipboardHandler(context);
+        final View customView = LayoutInflater.from(context)
+                .inflate(R.layout.searchbar_long_press_popup_window, null);
+        final PopupWindow popupWindow = new PopupWindow(
+                customView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                context.getResources().getDimensionPixelSize(R.dimen.context_menu_height),
+                true
+        );
+
+        popupWindow.setElevation(context.getResources().getDimension(R.dimen.context_menu_elevation));
+
+        final Button copyButton = customView.findViewById(R.id.copy);
+        final Button pasteButton = customView.findViewById(R.id.paste);
+        final Button pasteAndGoButton = customView.findViewById(R.id.paste_and_go);
+
+        copyButton.setVisibility(searchBar.titleBar.getText().toString().isEmpty() ? View.GONE : View.VISIBLE);
+        pasteButton.setVisibility((clipboard.getText() != null && !clipboard.getText().isEmpty()) ? View.VISIBLE : View.GONE);
+        pasteAndGoButton.setVisibility((clipboard.getText() != null && !clipboard.getText().isEmpty()) ? View.VISIBLE : View.GONE);
+
+        copyButton.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            clipboard.setText(searchBar.titleBar.getText().toString());
+            Toast.makeText(
+                    context,
+                    R.string.search_bar_long_press_popup_copied_to_clipboard_toast,
+                    Toast.LENGTH_SHORT
+            ).show();
+        });
+
+        pasteButton.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            searchBar.setSearchText(clipboard.getText());
+            searchBar.showSearchEditText();
+        });
+
+        pasteAndGoButton.setOnClickListener(v -> {
+            popupWindow.dismiss();
+            searchBar.setSearchText(clipboard.getText());
+            final String content = searchBar.getSearchText();
+            searchOrVisitUrl(content);
+        });
+
+        popupWindow.showAsDropDown(
+                toolBarContainer,
+                getContext().getResources().getDimensionPixelSize(R.dimen.context_menu_x_offset),
+                getContext().getResources().getDimensionPixelSize(R.dimen.context_menu_y_offset),
+                Gravity.START
+        );
+        return true;
     }
 
     private void updateVpnIcon() {
@@ -605,30 +677,36 @@ public class TabFragment2 extends FragmentWithBus implements LightningView.Light
         if (keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER
                 && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
             final String content = searchBar.getSearchText();
-            if (content != null && !content.isEmpty()) {
-                final Object event;
-                if (Patterns.WEB_URL.matcher(content).matches()) {
-                    final String guessedUrl = StringUtils.guessUrl(content);
-                    if (searchBar.isAutoCompleted()) {
-                        telemetry.sendResultEnterSignal(false, true,
-                                searchBar.getQuery().length(), guessedUrl.length());
-                    } else {
-                        telemetry.sendResultEnterSignal(false, false, content.length(), -1);
-                    }
-                    event = CliqzMessages.OpenLink.open(guessedUrl);
+            return searchOrVisitUrl(content);
+        }
+        return false;
+    }
+
+
+    private boolean searchOrVisitUrl(String content) {
+        if (content != null && !content.isEmpty()) {
+            final Object event;
+            if (Patterns.WEB_URL.matcher(content).matches()) {
+                final String guessedUrl = StringUtils.guessUrl(content);
+                if (searchBar.isAutoCompleted()) {
+                    telemetry.sendResultEnterSignal(false, true,
+                            searchBar.getQuery().length(), guessedUrl.length());
                 } else {
-                    telemetry.sendResultEnterSignal(true, false, content.length(), -1);
-                    setSearchEngine();
-                    String searchUrl = mSearchEngine + UrlUtils.QUERY_PLACE_HOLDER;
-                    event = CliqzMessages.OpenLink.open(UrlUtils.smartUrlFilter(content, true, searchUrl));
+                    telemetry.sendResultEnterSignal(false, false, content.length(), -1);
                 }
-                if (!onBoardingHelper.conditionallyShowSearchDescription()) {
-                    bus.post(event);
-                } else {
-                    hideKeyboard(null);
-                }
-                return true;
+                event = CliqzMessages.OpenLink.open(guessedUrl);
+            } else {
+                telemetry.sendResultEnterSignal(true, false, content.length(), -1);
+                setSearchEngine();
+                final String searchUrl = mSearchEngine + UrlUtils.QUERY_PLACE_HOLDER;
+                event = CliqzMessages.OpenLink.open(UrlUtils.smartUrlFilter(content, true, searchUrl));
             }
+            if (!onBoardingHelper.conditionallyShowSearchDescription()) {
+                bus.post(event);
+            } else {
+                hideKeyboard(null);
+            }
+            return true;
         }
         return false;
     }

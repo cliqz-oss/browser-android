@@ -329,4 +329,10 @@ Now you are ready to send tabs between your desktop and your mobile device. You 
     <string name="build_time">Build Date &amp; Time</string>
     <string name="enable_android_backup_title">Enable Android Auto Backup</string>
     <string name="enable_android_backup_summary">Auto Backup for Apps automatically backs up a user\'s data by uploading it to the user\'s Google Drive</string>
+
+    <!--Search bar long press popup menu -->
+    <string name="search_bar_long_press_popup_copy">Copy</string>
+    <string name="search_bar_long_press_popup_paste_and_go">Paste &amp; Go</string>
+    <string name="search_bar_long_press_popup_paste">Paste</string>
+    <string name="search_bar_long_press_popup_copied_to_clipboard_toast">URL copied to clipboard</string>
 </resources>

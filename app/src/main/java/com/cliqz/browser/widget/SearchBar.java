@@ -11,7 +11,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -73,7 +72,7 @@ public class SearchBar extends FrameLayout {
     AppCompatImageView lock;
 
     @BindView(R.id.title_bar)
-    TextView titleBar;
+    public TextView titleBar;
 
     @Nullable
     @BindView(R.id.tracker_counter)
@@ -84,7 +83,7 @@ public class SearchBar extends FrameLayout {
     ViewGroup antiTrackingDetails;
 
     @Nullable
-    Listener mListener;
+    public Listener mListener;
 
     @Nullable
     @BindView(R.id.reader_mode_button)
@@ -325,35 +324,6 @@ public class SearchBar extends FrameLayout {
         if (mListener != null) {
             mListener.onKeyboardOpen();
         }
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (event.getAction() != MotionEvent.ACTION_DOWN) {
-            return super.onInterceptTouchEvent(event);
-        }
-
-        if (antiTrackingDetails != null && antiTrackingDetails.getVisibility() == VISIBLE
-                && event.getX() >= antiTrackingDetails.getX()) {
-            return super.onInterceptTouchEvent(event);
-        }
-
-        if (readerModeButton != null && readerModeButton.getVisibility() == VISIBLE
-                && event.getX() >= readerModeButton.getX()) {
-            return super.onInterceptTouchEvent(event);
-        }
-
-        if (titleBar.getVisibility() == VISIBLE) {
-            if (antiTrackingDetails != null) {
-                setAntiTrackingDetailsVisibility(GONE);
-            }
-            showSearchEditText();
-            if (mListener != null) {
-                mListener.onTitleClicked(SearchBar.this);
-            }
-            return true;
-        }
-        return super.onInterceptTouchEvent(event);
     }
 
     /**
